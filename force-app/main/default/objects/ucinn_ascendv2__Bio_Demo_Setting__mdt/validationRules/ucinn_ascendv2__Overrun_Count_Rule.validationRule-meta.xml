@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>ucinn_ascendv2__Overrun_Count_Rule</fullName>
+    <active>true</active>
+    <description>Household Naming Overrun Count must not be blank and must be greater than 0.</description>
+    <errorConditionFormula>OR( ISBLANK( ucinn_ascendv2__Household_Name_Overrun_Count__c ), ucinn_ascendv2__Household_Name_Overrun_Count__c &lt; 1)</errorConditionFormula>
+    <errorDisplayField>ucinn_ascendv2__Household_Name_Overrun_Count__c</errorDisplayField>
+    <errorMessage>Household Naming Overrun Count must not be blank and must be greater than 0.</errorMessage>
+</ValidationRule>

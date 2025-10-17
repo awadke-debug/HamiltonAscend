@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObjectTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <caseValues>
+        <plural>false</plural>
+        <value>工作項目</value>
+    </caseValues>
+    <nameFieldLabel>工作項目編號</nameFieldLabel>
+    <validationRules>
+        <errorMessage>若 Work_Item 非 Development_Approved，則無法設定 Development_Approved_By。</errorMessage>
+        <name>sf_devops__Approved_By_Without_Approved</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>您必須在核准此工作項目時設定 Development_Approved_By。</errorMessage>
+        <name>sf_devops__Approved_Without_Approved_By</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>無法核准沒有檢閱的工作項目。</errorMessage>
+        <name>sf_devops__Approved_Without_Review</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>工作項目必須和其變更配套屬於相同的專案。</errorMessage>
+        <name>sf_devops__Change_Bundle_Project</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>若工作項目位於配套中，則無法為「已結合」。</errorMessage>
+        <name>sf_devops__Combined_Bundled</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>若工作項目未參考與其結合的工作項目，則無法為「已結合」。</errorMessage>
+        <name>sf_devops__Combined_Not_Combined_With</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>若工作項目從未升級，則無法為「已結合」。</errorMessage>
+        <name>sf_devops__Combined_Not_Promoted</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>若工作項目不處於「已結合」狀態，則無法設定 Combined_With。</errorMessage>
+        <name>sf_devops__Combined_With_Not_Combined</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>工作項目不能將 Combined_With 設定為未執行「結合」作業的工作項目。</errorMessage>
+        <name>sf_devops__Combined_With_Not_Survivor</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Concluded_c 的可能值包括：CLOSED、NEVERED、COMBINED 或空白。</errorMessage>
+        <name>sf_devops__Concluded_values</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>工作項目的 Concluded__c 欄位設定後便無法變更。</errorMessage>
+        <name>sf_devops__Disable_Concluded</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>工作項目的 Promoted__c 欄位設定後便無法停用。</errorMessage>
+        <name>sf_devops__Disable_Promoted</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>工作項目無法連線至過期的環境。</errorMessage>
+        <name>sf_devops__Environment_Expired</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>工作項目必須和其環境屬於相同的專案。</errorMessage>
+        <name>sf_devops__Environment_Project</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>無法參考不支援變更追蹤的環境。</errorMessage>
+        <name>sf_devops__Environment_Requires_Tracking</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>工作項目的 Promoted_From_Environment__c 欄位設定後便無法變更。</errorMessage>
+        <name>sf_devops__PromotedFromEnvironment_Changed</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>工作項目的 Promoted_From_Environment__c 欄位值無法設定為與 Environment__c 的值不同，且只能在 Environment__c 設為空值時設定。</errorMessage>
+        <name>sf_devops__PromotedFromEnvironment_Set</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>若 Work_Item 從未升級過，則無法成為 Change_Bundle 的成員。</errorMessage>
+        <name>sf_devops__Promoted_And_Installed</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>您建立 Work_Item 時無法使用「已升級」標記。</errorMessage>
+        <name>sf_devops__Promoted_On_Create</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>工作項目若非「已核准」，則無法升級。</errorMessage>
+        <name>sf_devops__Promoted_Without_Approval</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>若工作項目未升級、配套或結束，則無法設定其「重定基礎分支」欄位。</errorMessage>
+        <name>sf_devops__Rebase_Branch</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Deprecated --></errorMessage>
+        <name>sf_devops__Rebase_Remote_Reference</name>
+    </validationRules>
+    <webLinks>
+        <label>在 DevOps Center 中檢視</label>
+        <name>sf_devops__Devops_Center</name>
+    </webLinks>
+</CustomObjectTranslation>

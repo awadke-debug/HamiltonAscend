@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObjectTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <caseValues>
+        <plural>false</plural>
+        <value>Object Activity</value>
+    </caseValues>
+    <caseValues>
+        <plural>true</plural>
+        <value>Object Activities</value>
+    </caseValues>
+    <startsWith>Vowel</startsWith>
+    <validationRules>
+        <errorMessage><!-- The referenced Change_Submission__c must be from the same Work_Item. --></errorMessage>
+        <name>sf_devops__Change_Submission_Work_Item</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- The referenced Environment__c must be from the same project as the Object_Activity__c. --></errorMessage>
+        <name>sf_devops__Environment_Project</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- The referenced Parent_Activity__c must be from the same project as the Object_Activity__c. --></errorMessage>
+        <name>sf_devops__Parent_Activity_Project</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- The referenced Pipeline__c must be from the same project as the Object_Activity__c. --></errorMessage>
+        <name>sf_devops__Pipeline_Project</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- The referenced Target_Pipeline_Stage__c must be from the same Pipeline. --></errorMessage>
+        <name>sf_devops__Target_Stage_Pipeline</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- The referenced Work_Item__c must be from the same project as the Object_Activity__c. --></errorMessage>
+        <name>sf_devops__Work_Item_Project</name>
+    </validationRules>
+</CustomObjectTranslation>

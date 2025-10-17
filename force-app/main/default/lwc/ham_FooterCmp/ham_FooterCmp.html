@@ -1,0 +1,99 @@
+<template> 
+    <footer class="hamilton-footer">
+        <template if:true={isDesktopView}>
+            <!-- Top Section: Address and Social Icons -->
+            <div class="slds-grid slds-grid_align-spread slds-grid_vertical-align-center slds-p-horizontal_large slds-p-vertical_medium hamilton-footer__top-row">
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-text-align_center slds-medium-text-align_left">
+                    <p class="hamilton-footer-address">
+                        <a href={label.addressLink} target="_blank" class="hamilton-footer-link-text hamilton-footer-address-text">
+                           {label.address}
+                        </a>&nbsp;-&nbsp;
+                        <a href={label.phoneLink} class="hamilton-footer-link-text hamilton-footer-address-text">
+                            {label.phone}   
+                        </a>
+                    </p>
+                </div>
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-grid slds-grid_align-end slds-text-align_center slds-medium-text-align_right">
+                    <ul class="slds-list_horizontal slds-has-inline-block-links_reset hamilton-social-icons">
+                        <template for:each={socialMediaLinks} for:item="link">
+                            <li key={link.id} class="slds-p-horizontal_small">
+                                <a href={link.url} target="_blank" title={link.label} class="hamilton-social-link">
+                                    <span class="icon"><img src={link.displayImage} alt={link.label}></img></span>
+                                    <span class="slds-assistive-text">{link.label}</span>
+                                </a>
+                            </li>
+                        </template>
+                    </ul>
+                </div>
+            </div>
+
+            <hr class="hamilton-divider" />
+
+            <div class="slds-grid slds-grid_align-spread slds-grid_vertical-align-start slds-p-horizontal_large slds-p-vertical_medium hamilton-footer__bottom-row">
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_8-of-12 slds-text-align_center slds-medium-text-align_left"> 
+                    <ul class="slds-list_horizontal slds-has-inline-block-links_reset slds-grid slds-grid_vertical-align-start slds-wrap hamilton-footer-nav-links">
+                        <template for:each={officialLinks} for:item="link">
+                            <li key={link.id} class="hamilton-footer-nav-item">
+                                <a href={link.url} target="_blank" class="hamilton-footer-link-text">{link.label}</a>
+                            </li>
+                        </template>
+                    </ul>
+                </div>
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_4-of-12 slds-grid_align-end slds-text-align_right slds-medium-text-align_right">
+                    <p class="hamilton-footer-copyright">{label.copyright}</p>
+                </div>
+            </div>
+        </template>
+
+        <template if:true={isMobileView}>
+            <div class="slds-grid slds-grid_align-spread slds-grid_vertical-align-center slds-p-horizontal_large slds-p-vertical_medium hamilton-footer__top-row">
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_6-of-12 slds-grid slds-grid_align-end slds-text-align_center slds-medium-text-align_right">
+                    <ul class="slds-list_horizontal slds-has-inline-block-links_reset hamilton-social-icons">
+                        <template for:each={socialMediaLinks} for:item="link">
+                            <li key={link.id} class="slds-p-horizontal_small">
+                                <a href={link.url} target="_blank" title={link.label} class="hamilton-social-link">
+                                    <span class="icon"><img src={link.displayImage} alt={link.label}></img></span>
+                                    <span class="slds-assistive-text">{link.label}</span>
+                                </a>
+                            </li>
+                        </template>
+                    </ul>
+                </div>
+            </div>   
+
+            <hr class="hamilton-divider" />         
+
+            <div class="slds-grid slds-grid_align-spread slds-grid_vertical-align-start slds-p-horizontal_large slds-p-vertical_medium hamilton-footer__bottom-row">
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_8-of-12 slds-text-align_center slds-medium-text-align_left"> 
+                    <ul class="slds-list_horizontal slds-has-inline-block-links_reset slds-grid slds-grid_vertical-align-start slds-wrap hamilton-footer-nav-links">
+                        <template for:each={officialLinks} for:item="link">
+                            <li key={link.id} class="hamilton-footer-nav-item">
+                                <a href={link.url} target="_blank" class="hamilton-footer-link-text">{link.label}</a>
+                            </li>
+                        </template>
+                    </ul>
+                </div>
+            </div>
+
+            <hr class="hamilton-divider" />
+
+            <div class="slds-grid slds-grid_align-spread slds-grid_vertical-align-center slds-p-horizontal_large slds-p-vertical_medium hamilton-footer__top-row">
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_12-of-12 slds-text-align_center slds-medium-text-align_center">
+                    <p class="hamilton-footer-address">
+                        <a href={label.addressLink} target="_blank" class="hamilton-footer-link-text">
+                           {label.address}
+                        </a>                                                
+                    </p>
+                    <p class="hamilton-footer-address">
+                        <a href={label.phoneLink} class="hamilton-footer-link-text">
+                            {label.phone}   
+                        </a>                         
+                    </p>
+                </div>
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_4-of-12 slds-grid_align-end slds-text-align_right slds-medium-text-align_right">
+                    <p class="hamilton-footer-copyright">{label.copyright}</p>
+                </div> 
+            </div>     
+        </template>
+    </footer>
+</template>

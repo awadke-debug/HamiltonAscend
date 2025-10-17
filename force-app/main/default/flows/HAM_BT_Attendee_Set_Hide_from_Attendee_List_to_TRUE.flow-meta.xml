@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>61.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <description>When an attendee record has a HAM Event Item Public Item Name of &quot;I am unable to attend&quot; set the Hide from Attendee List value to TRUE, so this attendee will not show in the attendee list.</description>
+    <environments>Default</environments>
+    <interviewLabel>HAM BT Attendee - Set Hide from Attendee List to TRUE {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>HAM BT Attendee - Set Hide from Attendee List to TRUE</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordUpdates>
+        <description>Set the Hide from Attendee List value to TRUE, so this will not display in the event attendee list.</description>
+        <name>Update_Records_1</name>
+        <label>Update Records 1</label>
+        <locationX>176</locationX>
+        <locationY>323</locationY>
+        <inputAssignments>
+            <field>conference360__Hide_from_Attendee_List__c</field>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <start>
+        <locationX>50</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Update_Records_1</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>HAM_Event_Item_Public_Item_Name__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>I am unable to attend</stringValue>
+            </value>
+        </filters>
+        <object>conference360__Attendee__c</object>
+        <recordTriggerType>CreateAndUpdate</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Active</status>
+</Flow>

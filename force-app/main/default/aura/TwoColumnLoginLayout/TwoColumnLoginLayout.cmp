@@ -1,0 +1,16 @@
+<aura:component implements="forceCommunity:layout" access="global">
+    <!-- Builder regions (do NOT put these in .design) -->
+    <aura:attribute name="column1" type="Aura.Component[]"/>
+    <aura:attribute name="column2" type="Aura.Component[]"/>
+    <!-- Simple settings used by .design -->
+    <aura:attribute name="leftPadding"  type="Integer" default="64"/>
+    <aura:attribute name="rightPadding" type="Integer" default="0"/>
+    <aura:attribute name="stackOnMobile" type="Boolean" default="true"/>
+
+    <div class="container" style="{!'--lp:' + v.leftPadding + 'px;--rp:' + v.rightPadding + 'px;'}">
+        <div class="form-wrapper">
+            <div class="left">{!v.column1}</div>
+        </div>
+        <div class="right">{!v.column2}</div>
+    </div>
+</aura:component>

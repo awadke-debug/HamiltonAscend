@@ -1,0 +1,2485 @@
+{
+  "version" : "63.0",
+  "nodes" : {
+    "LOAD_DATASET0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "APAnniD.All_Purposes_Anniversary_Date_1YR", "Account_or_Contact_Id", "HAM_1812__c", "Pure_Donor.Status_Date", "Aggregate.SUM_FY00_Collected_Amount_HF", "Aggregate.SUM_FY05_Collected_Amount", "Aggregate.Sum.FY03_Collected_Amount", "Aggregate.Sum.FY00_Collected_Amount", "Aggregate.Sum.FY04_Collected_Amount", "Aggregate.Sum.FY01_Collected_Amount", "Aggregate.SUM_FY05_Collected_Amount_HF", "Aggregate.SUM_FY04_Collected_Amount_HF", "Aggregate.Sum.FY02_Collected_Amount", "Aggregate.SUM_FY03_Collected_Amount_HF", "Aggregate.SUM_FY01_Collected_Amount_HF", "Aggregate.SUM_FY02_Collected_Amount_HF" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Account and Contact Dataset",
+          "name" : "Account_and_Contact_Dataset"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "LOAD_DATASET34_copy0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "ucinn_ascendv2__Giving_Society__c", "ucinn_ascendv2__Account__c", "ucinn_ascendv2__Anniversary_Date__c", "ucinn_ascendv2__Contact__c", "ucinn_ascendv2__Expiration_Date__c", "ucinn_ascendv2__Membership_Status__c", "Current_Fiscal_Year_Member__c", "HAM_Planned_Gift__c", "HAM_Will_Provision__c", "HAM_Member_Expiration_Fiscal_Year__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "ucinn_ascendv2__Society_Membership__c",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "ucinn_ascendv2__Society_Membership__c"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "LOAD_DATASET35_copy0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "ucinn_ascendv2__Status__c", "Id", "Name" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "ucinn_ascendv2__Giving_Society__c",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "ucinn_ascendv2__Giving_Society__c"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN54_copy0" : {
+      "action" : "join",
+      "sources" : [ "LOAD_DATASET34_copy0", "LOAD_DATASET35_copy0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Giving_Society.Id", "ucinn_ascendv2__Giving_Society__c" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "ucinn_ascendv2__Giving_Society__c" ],
+        "rightQualifier" : "Giving_Society",
+        "rightKeys" : [ "Id" ]
+      }
+    },
+    "FILTER77_copy0" : {
+      "action" : "filter",
+      "sources" : [ "JOIN54_copy0" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "Giving_Society.Name",
+          "operator" : "EQUAL",
+          "operands" : [ "1812 Society" ]
+        } ]
+      }
+    },
+    "FORMULA273_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FILTER77_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "GS_1812_1YR",
+          "label" : "GS 1812 1YR",
+          "formulaExpression" : "case \r\n    when Current_Fiscal_Year_Member__c=fiscalYear(current_date())-1\r\n    then 'true'\r\n    else\r\n    'false'\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA274_copy0" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA279" ],
+      "parameters" : {
+        "partitionBy" : [ "Account_or_Contact_Id" ],
+        "orderBy" : [ {
+          "fieldName" : "GS_1812_1YR",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Is_GS_1812_1YR",
+          "label" : "Is GS 1812 1YR",
+          "formulaExpression" : "last_value(GS_1812_1YR)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA275_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA273_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Account_or_Contact_Id",
+          "label" : "Account or Contact Id",
+          "formulaExpression" : "coalesce(ucinn_ascendv2__Contact__c,ucinn_ascendv2__Account__c,'other')",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "DROP_FIELDS60_copy0" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA283" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "SELECT",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Account_or_Contact_Id", "Is_GS_1812_1YR", "Is_GS_1812_2YR", "Is_GS_1812_3YR", "Is_GS_1812_4YR", "Is_GS_1812_5YR" ]
+        }
+      }
+    },
+    "FORMULA276" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA275_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "GS_1812_2YR",
+          "label" : "GS 1812 2YR",
+          "formulaExpression" : "case \r\n    when Current_Fiscal_Year_Member__c=fiscalYear(current_date())-2\r\n    then 'true'\r\n    else\r\n    'false'\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA277" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA276" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "GS_1812_3YR",
+          "label" : "GS 1812 3YR",
+          "formulaExpression" : "case \r\n    when Current_Fiscal_Year_Member__c=fiscalYear(current_date())-3\r\n    then 'true'\r\n    else\r\n    'false'\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA278" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA277" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "GS_1812_4YR",
+          "label" : "GS 1812 4YR",
+          "formulaExpression" : "case \r\n    when Current_Fiscal_Year_Member__c=fiscalYear(current_date())-4\r\n    then 'true'\r\n    else\r\n    'false'\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA279" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA278" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "GS_1812_5YR",
+          "label" : "GS 1812 5YR",
+          "formulaExpression" : "case \r\n    when Current_Fiscal_Year_Member__c=fiscalYear(current_date())-5\r\n    then 'true'\r\n    else\r\n    'false'\r\nend",
+          "precision" : 10,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA280" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA274_copy0" ],
+      "parameters" : {
+        "partitionBy" : [ "Account_or_Contact_Id" ],
+        "orderBy" : [ {
+          "fieldName" : "GS_1812_2YR",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Is_GS_1812_2YR",
+          "label" : "Is GS 1812 2YR",
+          "formulaExpression" : "last_value(GS_1812_2YR)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA281" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA280" ],
+      "parameters" : {
+        "partitionBy" : [ "Account_or_Contact_Id" ],
+        "orderBy" : [ {
+          "fieldName" : "GS_1812_3YR",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Is_GS_1812_3YR",
+          "label" : "Is GS 1812 3YR",
+          "formulaExpression" : "last_value(GS_1812_3YR)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA282" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA281" ],
+      "parameters" : {
+        "partitionBy" : [ "Account_or_Contact_Id" ],
+        "orderBy" : [ {
+          "fieldName" : "GS_1812_4YR",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Is_GS_1812_4YR",
+          "label" : "Is GS 1812 4YR",
+          "formulaExpression" : "last_value(GS_1812_4YR)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA283" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA282" ],
+      "parameters" : {
+        "partitionBy" : [ "Account_or_Contact_Id" ],
+        "orderBy" : [ {
+          "fieldName" : "GS_1812_5YR",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Is_GS_1812_5YR",
+          "label" : "Is GS 1812 5YR",
+          "formulaExpression" : "last_value(GS_1812_5YR)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "JOIN109_copy0" : {
+      "action" : "join",
+      "sources" : [ "FORMULA286", "DROP_FIELDS60_copy0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "GS1812.Account_or_Contact_Id" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Account_or_Contact_Id" ],
+        "rightQualifier" : "GS1812",
+        "rightKeys" : [ "Account_or_Contact_Id" ]
+      }
+    },
+    "FORMULA284" : {
+      "action" : "formula",
+      "sources" : [ "BUCKET6" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Fiscal_Year",
+          "label" : "Fiscal Year",
+          "formulaExpression" : "'2024'",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA285" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA284" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "New_1812",
+          "label" : "New 1812",
+          "formulaExpression" : "case \r\nwhen \r\n\"GS1812.Is_GS_1812_2YR\"='false'\r\nand \"GS1812.Is_GS_1812_1YR\"='true'\r\nthen 1\r\nend",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA287" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA285" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Retained_1812",
+          "label" : "Retained 1812",
+          "formulaExpression" : "case \r\nwhen \r\n\"GS1812.Is_GS_1812_2YR\"='true'\r\nand \"GS1812.Is_GS_1812_1YR\"='true'\r\nthen 1\r\nend",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA288" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA287" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Lost_1812",
+          "label" : "Lost 1812",
+          "formulaExpression" : "case \r\nwhen \r\n\"GS1812.Is_GS_1812_2YR\"='true'\r\nand \"GS1812.Is_GS_1812_1YR\"='false'\r\nthen 1\r\nend",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "DROP_FIELDS61" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA295" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "SELECT",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Account_or_Contact_Id", "Fiscal_Year", "New_1812", "Retained_1812", "Lost_1812", "Is_1812", "Status_1812", "Aggregate.Sum.FY01_Collected_Amount", "Aggregate.SUM_FY01_Collected_Amount_HF", "APAnniD.All_Purposes_Anniversary_Date_1YR", "Pure_Donor.Status_Date" ]
+        }
+      }
+    },
+    "FORMULA290" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA288" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Is_1812",
+          "label" : "Is 1812",
+          "formulaExpression" : "case when \"GS1812.Is_GS_1812_1YR\"='true'\r\nthen 1\r\nend",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA295" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA290" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Status_1812",
+          "label" : "1812 Status",
+          "formulaExpression" : "case \r\nwhen \r\n\"GS1812.Is_GS_1812_2YR\"='false'\r\nand \"GS1812.Is_GS_1812_1YR\"='true'\r\nthen 'New 1812'\r\nwhen \r\n\"GS1812.Is_GS_1812_2YR\"='true'\r\nand \"GS1812.Is_GS_1812_1YR\"='true'\r\nthen 'Retained 1812'\r\nwhen \r\n\"GS1812.Is_GS_1812_2YR\"='true'\r\nand \"GS1812.Is_GS_1812_1YR\"='false'\r\nthen 'Lost 1812'\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA286" : {
+      "action" : "formula",
+      "sources" : [ "LOAD_DATASET0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Is_1812_CYR",
+          "label" : "Is 1812 CYR",
+          "formulaExpression" : "HAM_1812__c",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA284_copy0" : {
+      "action" : "formula",
+      "sources" : [ "BUCKET6" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Fiscal_Year",
+          "label" : "Fiscal Year",
+          "formulaExpression" : "'2023'",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA285_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA284_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "New_1812",
+          "label" : "New 1812",
+          "formulaExpression" : "case \r\nwhen \r\n\"GS1812.Is_GS_1812_3YR\"='false'\r\nand \"GS1812.Is_GS_1812_2YR\"='true'\r\nthen 1\r\nend",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA287_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA285_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Retained_1812",
+          "label" : "Retained 1812",
+          "formulaExpression" : "case \r\nwhen \r\n\"GS1812.Is_GS_1812_3YR\"='true'\r\nand \"GS1812.Is_GS_1812_2YR\"='true'\r\nthen 1\r\nend",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA288_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA287_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Lost_1812",
+          "label" : "Lost 1812",
+          "formulaExpression" : "case \r\nwhen \r\n\"GS1812.Is_GS_1812_3YR\"='true'\r\nand \"GS1812.Is_GS_1812_2YR\"='false'\r\nthen 1\r\nend",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "DROP_FIELDS61_copy0" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA296" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "SELECT",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Account_or_Contact_Id", "Fiscal_Year", "New_1812", "Retained_1812", "Lost_1812", "Is_1812", "Status_1812", "Aggregate.Sum.FY02_Collected_Amount", "Aggregate.SUM_FY02_Collected_Amount_HF", "APAnniD.All_Purposes_Anniversary_Date_1YR", "Pure_Donor.Status_Date" ]
+        }
+      }
+    },
+    "FORMULA291" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA288_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Is_1812",
+          "label" : "Is 1812",
+          "formulaExpression" : "case when \"GS1812.Is_GS_1812_2YR\"='true'\r\nthen 1\r\nend",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA296" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA291" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Status_1812",
+          "label" : "1812 Status",
+          "formulaExpression" : "case \r\nwhen \r\n\"GS1812.Is_GS_1812_3YR\"='false'\r\nand \"GS1812.Is_GS_1812_2YR\"='true'\r\nthen 'New 1812'\r\nwhen \r\n\"GS1812.Is_GS_1812_3YR\"='true'\r\nand \"GS1812.Is_GS_1812_2YR\"='true'\r\nthen 'Retained 1812'\r\nwhen \r\n\"GS1812.Is_GS_1812_3YR\"='true'\r\nand \"GS1812.Is_GS_1812_2YR\"='false'\r\nthen 'Lost 1812'\r\nend\r\n",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA284_copy0_copy0" : {
+      "action" : "formula",
+      "sources" : [ "BUCKET6" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Fiscal_Year",
+          "label" : "Fiscal Year",
+          "formulaExpression" : "'2022'",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA285_copy0_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA284_copy0_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "New_1812",
+          "label" : "New 1812",
+          "formulaExpression" : "case \r\nwhen \r\n\"GS1812.Is_GS_1812_4YR\"='false'\r\nand \"GS1812.Is_GS_1812_3YR\"='true'\r\nthen 1\r\nend",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA287_copy0_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA285_copy0_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Retained_1812",
+          "label" : "Retained 1812",
+          "formulaExpression" : "case \r\nwhen \r\n\"GS1812.Is_GS_1812_4YR\"='true'\r\nand \"GS1812.Is_GS_1812_3YR\"='true'\r\nthen 1\r\nend",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA288_copy0_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA287_copy0_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Lost_1812",
+          "label" : "Lost 1812",
+          "formulaExpression" : "case \r\nwhen \r\n\"GS1812.Is_GS_1812_4YR\"='true'\r\nand \"GS1812.Is_GS_1812_3YR\"='false'\r\nthen 1\r\nend",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "DROP_FIELDS61_copy0_copy0" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA297" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "SELECT",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Account_or_Contact_Id", "Fiscal_Year", "New_1812", "Retained_1812", "Lost_1812", "Is_1812", "Status_1812", "Aggregate.Sum.FY03_Collected_Amount", "Aggregate.SUM_FY03_Collected_Amount_HF", "APAnniD.All_Purposes_Anniversary_Date_1YR", "Pure_Donor.Status_Date" ]
+        }
+      }
+    },
+    "FORMULA292" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA288_copy0_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Is_1812",
+          "label" : "Is 1812",
+          "formulaExpression" : "case when \"GS1812.Is_GS_1812_3YR\"='true'\r\nthen 1\r\nend",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA297" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA292" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Status_1812",
+          "label" : "1812 Status",
+          "formulaExpression" : "case \r\nwhen \r\n\"GS1812.Is_GS_1812_4YR\"='false'\r\nand \"GS1812.Is_GS_1812_3YR\"='true'\r\nthen 'New 1812'\r\nwhen \r\n\"GS1812.Is_GS_1812_4YR\"='true'\r\nand \"GS1812.Is_GS_1812_3YR\"='true'\r\nthen 'Retained 1812'\r\nwhen \r\n\"GS1812.Is_GS_1812_4YR\"='true'\r\nand \"GS1812.Is_GS_1812_3YR\"='false'\r\nthen 'Lost 1812'\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA284_copy0_copy0_copy0" : {
+      "action" : "formula",
+      "sources" : [ "BUCKET6" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Fiscal_Year",
+          "label" : "Fiscal Year",
+          "formulaExpression" : "'2021'",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA285_copy0_copy0_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA284_copy0_copy0_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "New_1812",
+          "label" : "New 1812",
+          "formulaExpression" : "case \r\nwhen \r\n\"GS1812.Is_GS_1812_5YR\"='false'\r\nand \"GS1812.Is_GS_1812_4YR\"='true'\r\nthen 1\r\nend",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA287_copy0_copy0_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA285_copy0_copy0_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Retained_1812",
+          "label" : "Retained 1812",
+          "formulaExpression" : "case \r\nwhen \r\n\"GS1812.Is_GS_1812_5YR\"='true'\r\nand \"GS1812.Is_GS_1812_4YR\"='true'\r\nthen 1\r\nend",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA288_copy0_copy0_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA287_copy0_copy0_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Lost_1812",
+          "label" : "Lost 1812",
+          "formulaExpression" : "case \r\nwhen \r\n\"GS1812.Is_GS_1812_5YR\"='true'\r\nand \"GS1812.Is_GS_1812_4YR\"='false'\r\nthen 1\r\nend",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "DROP_FIELDS61_copy0_copy0_copy0" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA298" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "SELECT",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Account_or_Contact_Id", "Fiscal_Year", "New_1812", "Retained_1812", "Lost_1812", "Is_1812", "Status_1812", "Aggregate.Sum.FY04_Collected_Amount", "Aggregate.SUM_FY04_Collected_Amount_HF", "APAnniD.All_Purposes_Anniversary_Date_1YR", "Pure_Donor.Status_Date" ]
+        }
+      }
+    },
+    "FORMULA293" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA288_copy0_copy0_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Is_1812",
+          "label" : "Is 1812",
+          "formulaExpression" : "case when \"GS1812.Is_GS_1812_4YR\"='true'\r\nthen 1\r\nend",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA298" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA293" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Status_1812",
+          "label" : "1812 Status",
+          "formulaExpression" : "case \r\nwhen \r\n\"GS1812.Is_GS_1812_5YR\"='false'\r\nand \"GS1812.Is_GS_1812_4YR\"='true'\r\nthen 'New 1812'\r\nwhen \r\n\"GS1812.Is_GS_1812_5YR\"='true'\r\nand \"GS1812.Is_GS_1812_4YR\"='true'\r\nthen 'Retained 1812'\r\nwhen \r\n\"GS1812.Is_GS_1812_5YR\"='true'\r\nand \"GS1812.Is_GS_1812_4YR\"='false'\r\nthen 'Lost 1812'\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FILTER78" : {
+      "action" : "filter",
+      "sources" : [ "DROP_FIELDS61" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "NUMBER",
+          "field" : "Lost_1812",
+          "operator" : "EQUAL",
+          "operands" : [ "1" ]
+        }, {
+          "type" : "NUMBER",
+          "field" : "New_1812",
+          "operator" : "EQUAL",
+          "operands" : [ "1" ]
+        }, {
+          "type" : "NUMBER",
+          "field" : "Retained_1812",
+          "operator" : "EQUAL",
+          "operands" : [ "1" ]
+        } ],
+        "filterBooleanLogic" : "1 or 2 or 3"
+      }
+    },
+    "FILTER78_copy0" : {
+      "action" : "filter",
+      "sources" : [ "DROP_FIELDS61_copy0" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "NUMBER",
+          "field" : "Lost_1812",
+          "operator" : "EQUAL",
+          "operands" : [ "1" ]
+        }, {
+          "type" : "NUMBER",
+          "field" : "New_1812",
+          "operator" : "EQUAL",
+          "operands" : [ "1" ]
+        }, {
+          "type" : "NUMBER",
+          "field" : "Retained_1812",
+          "operator" : "EQUAL",
+          "operands" : [ "1" ]
+        } ],
+        "filterBooleanLogic" : "1 or 2 or 3"
+      }
+    },
+    "FILTER78_copy1" : {
+      "action" : "filter",
+      "sources" : [ "DROP_FIELDS61_copy0_copy0" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "NUMBER",
+          "field" : "Lost_1812",
+          "operator" : "EQUAL",
+          "operands" : [ "1" ]
+        }, {
+          "type" : "NUMBER",
+          "field" : "New_1812",
+          "operator" : "EQUAL",
+          "operands" : [ "1" ]
+        }, {
+          "type" : "NUMBER",
+          "field" : "Retained_1812",
+          "operator" : "EQUAL",
+          "operands" : [ "1" ]
+        } ],
+        "filterBooleanLogic" : "1 or 2 or 3"
+      }
+    },
+    "FILTER78_copy2" : {
+      "action" : "filter",
+      "sources" : [ "DROP_FIELDS61_copy0_copy0_copy0" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "NUMBER",
+          "field" : "Lost_1812",
+          "operator" : "EQUAL",
+          "operands" : [ "1" ]
+        }, {
+          "type" : "NUMBER",
+          "field" : "New_1812",
+          "operator" : "EQUAL",
+          "operands" : [ "1" ]
+        }, {
+          "type" : "NUMBER",
+          "field" : "Retained_1812",
+          "operator" : "EQUAL",
+          "operands" : [ "1" ]
+        } ],
+        "filterBooleanLogic" : "1 or 2 or 3"
+      }
+    },
+    "APPEND0" : {
+      "action" : "appendV2",
+      "sources" : [ "APPEND3", "FILTER78_copy0" ],
+      "parameters" : {
+        "fieldMappings" : [ {
+          "top" : "APAnniD.All_Purposes_Anniversary_Date_1YR",
+          "bottom" : "APAnniD.All_Purposes_Anniversary_Date_1YR"
+        }, {
+          "top" : "Account_or_Contact_Id",
+          "bottom" : "Account_or_Contact_Id"
+        }, {
+          "top" : "Pure_Donor.Status_Date",
+          "bottom" : "Pure_Donor.Status_Date"
+        }, {
+          "top" : "Aggregate.SUM_FY00_Collected_Amount_HF",
+          "bottom" : "Aggregate.SUM_FY02_Collected_Amount_HF"
+        }, {
+          "top" : "Aggregate.Sum.FY00_Collected_Amount",
+          "bottom" : "Aggregate.Sum.FY02_Collected_Amount"
+        }, {
+          "top" : "Fiscal_Year",
+          "bottom" : "Fiscal_Year"
+        }, {
+          "top" : "New_1812",
+          "bottom" : "New_1812"
+        }, {
+          "top" : "Retained_1812",
+          "bottom" : "Retained_1812"
+        }, {
+          "top" : "Lost_1812",
+          "bottom" : "Lost_1812"
+        }, {
+          "top" : "Is_1812",
+          "bottom" : "Is_1812"
+        }, {
+          "top" : "Status_1812",
+          "bottom" : "Status_1812"
+        } ]
+      }
+    },
+    "APPEND1" : {
+      "action" : "appendV2",
+      "sources" : [ "APPEND0", "FILTER78_copy1" ],
+      "parameters" : {
+        "fieldMappings" : [ {
+          "top" : "APAnniD.All_Purposes_Anniversary_Date_1YR",
+          "bottom" : "APAnniD.All_Purposes_Anniversary_Date_1YR"
+        }, {
+          "top" : "Account_or_Contact_Id",
+          "bottom" : "Account_or_Contact_Id"
+        }, {
+          "top" : "Pure_Donor.Status_Date",
+          "bottom" : "Pure_Donor.Status_Date"
+        }, {
+          "top" : "Aggregate.SUM_FY00_Collected_Amount_HF",
+          "bottom" : "Aggregate.SUM_FY03_Collected_Amount_HF"
+        }, {
+          "top" : "Aggregate.Sum.FY00_Collected_Amount",
+          "bottom" : "Aggregate.Sum.FY03_Collected_Amount"
+        }, {
+          "top" : "Fiscal_Year",
+          "bottom" : "Fiscal_Year"
+        }, {
+          "top" : "New_1812",
+          "bottom" : "New_1812"
+        }, {
+          "top" : "Retained_1812",
+          "bottom" : "Retained_1812"
+        }, {
+          "top" : "Lost_1812",
+          "bottom" : "Lost_1812"
+        }, {
+          "top" : "Is_1812",
+          "bottom" : "Is_1812"
+        }, {
+          "top" : "Status_1812",
+          "bottom" : "Status_1812"
+        } ]
+      }
+    },
+    "APPEND2" : {
+      "action" : "appendV2",
+      "sources" : [ "APPEND1", "FILTER78_copy2" ],
+      "parameters" : {
+        "fieldMappings" : [ {
+          "top" : "APAnniD.All_Purposes_Anniversary_Date_1YR",
+          "bottom" : "APAnniD.All_Purposes_Anniversary_Date_1YR"
+        }, {
+          "top" : "Account_or_Contact_Id",
+          "bottom" : "Account_or_Contact_Id"
+        }, {
+          "top" : "Pure_Donor.Status_Date",
+          "bottom" : "Pure_Donor.Status_Date"
+        }, {
+          "top" : "Aggregate.SUM_FY00_Collected_Amount_HF",
+          "bottom" : "Aggregate.SUM_FY04_Collected_Amount_HF"
+        }, {
+          "top" : "Aggregate.Sum.FY00_Collected_Amount",
+          "bottom" : "Aggregate.Sum.FY04_Collected_Amount"
+        }, {
+          "top" : "Fiscal_Year",
+          "bottom" : "Fiscal_Year"
+        }, {
+          "top" : "New_1812",
+          "bottom" : "New_1812"
+        }, {
+          "top" : "Retained_1812",
+          "bottom" : "Retained_1812"
+        }, {
+          "top" : "Lost_1812",
+          "bottom" : "Lost_1812"
+        }, {
+          "top" : "Is_1812",
+          "bottom" : "Is_1812"
+        }, {
+          "top" : "Status_1812",
+          "bottom" : "Status_1812"
+        } ]
+      }
+    },
+    "OUTPUT0" : {
+      "action" : "save",
+      "sources" : [ "BUCKET0" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Attrition Rate of 1812",
+          "name" : "Attrition_Rate_of_1812",
+          "folderName" : "SharedApp"
+        },
+        "dateConfigurationName" : "July_Fiscal_Year",
+        "measuresToCurrencies" : [ ]
+      }
+    },
+    "FORMULA284_copy1" : {
+      "action" : "formula",
+      "sources" : [ "BUCKET6" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Fiscal_Year",
+          "label" : "Fiscal Year",
+          "formulaExpression" : "'2025'",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA285_copy1" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA284_copy1" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "New_1812",
+          "label" : "New 1812",
+          "formulaExpression" : "case \r\nwhen \r\n\"GS1812.Is_GS_1812_1YR\"='false'\r\nand Is_1812_CYR='true'\r\nthen 1\r\nend",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA287_copy1" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA285_copy1" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Retained_1812",
+          "label" : "Retained 1812",
+          "formulaExpression" : "case \r\nwhen \r\n\"GS1812.Is_GS_1812_1YR\"='true'\r\nand Is_1812_CYR='true'\r\nthen 1\r\nend",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA288_copy1" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA287_copy1" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Lost_1812",
+          "label" : "Lost 1812",
+          "formulaExpression" : "case \r\nwhen \r\n\"GS1812.Is_GS_1812_1YR\"='true'\r\nand Is_1812_CYR='false'\r\nthen 1\r\nend",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "DROP_FIELDS61_copy1" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA294" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "SELECT",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Account_or_Contact_Id", "Fiscal_Year", "New_1812", "Retained_1812", "Lost_1812", "Is_1812", "Status_1812", "Aggregate.Sum.FY00_Collected_Amount", "Aggregate.SUM_FY00_Collected_Amount_HF", "APAnniD.All_Purposes_Anniversary_Date_1YR", "Pure_Donor.Status_Date" ]
+        }
+      }
+    },
+    "FORMULA289" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA288_copy1" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Is_1812",
+          "label" : "Is 1812",
+          "formulaExpression" : "case when Is_1812_CYR='true'\r\nthen 1\r\nend",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA294" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA289" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Status_1812",
+          "label" : "1812 Status",
+          "formulaExpression" : "case \r\nwhen \r\n\"GS1812.Is_GS_1812_1YR\"='false'\r\nand Is_1812_CYR='true'\r\nthen 'New 1812'\r\nwhen \r\n\"GS1812.Is_GS_1812_1YR\"='true'\r\nand Is_1812_CYR='true'\r\nthen 'Retained 1812'\r\nwhen \r\n\"GS1812.Is_GS_1812_1YR\"='true'\r\nand Is_1812_CYR='false'\r\nthen 'Lost 1812'\r\n\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FILTER78_copy3" : {
+      "action" : "filter",
+      "sources" : [ "DROP_FIELDS61_copy1" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "NUMBER",
+          "field" : "Lost_1812",
+          "operator" : "EQUAL",
+          "operands" : [ "1" ]
+        }, {
+          "type" : "NUMBER",
+          "field" : "New_1812",
+          "operator" : "EQUAL",
+          "operands" : [ "1" ]
+        }, {
+          "type" : "NUMBER",
+          "field" : "Retained_1812",
+          "operator" : "EQUAL",
+          "operands" : [ "1" ]
+        } ],
+        "filterBooleanLogic" : "1 or 2 or 3"
+      }
+    },
+    "APPEND3" : {
+      "action" : "appendV2",
+      "sources" : [ "FILTER78_copy3", "FILTER78" ],
+      "parameters" : {
+        "fieldMappings" : [ {
+          "top" : "APAnniD.All_Purposes_Anniversary_Date_1YR",
+          "bottom" : "APAnniD.All_Purposes_Anniversary_Date_1YR"
+        }, {
+          "top" : "Account_or_Contact_Id",
+          "bottom" : "Account_or_Contact_Id"
+        }, {
+          "top" : "Pure_Donor.Status_Date",
+          "bottom" : "Pure_Donor.Status_Date"
+        }, {
+          "top" : "Aggregate.SUM_FY00_Collected_Amount_HF",
+          "bottom" : "Aggregate.SUM_FY01_Collected_Amount_HF"
+        }, {
+          "top" : "Aggregate.Sum.FY00_Collected_Amount",
+          "bottom" : "Aggregate.Sum.FY01_Collected_Amount"
+        }, {
+          "top" : "Fiscal_Year",
+          "bottom" : "Fiscal_Year"
+        }, {
+          "top" : "New_1812",
+          "bottom" : "New_1812"
+        }, {
+          "top" : "Retained_1812",
+          "bottom" : "Retained_1812"
+        }, {
+          "top" : "Lost_1812",
+          "bottom" : "Lost_1812"
+        }, {
+          "top" : "Is_1812",
+          "bottom" : "Is_1812"
+        }, {
+          "top" : "Status_1812",
+          "bottom" : "Status_1812"
+        } ]
+      }
+    },
+    "FORMULA284_copy0_copy0_copy0_copy0" : {
+      "action" : "formula",
+      "sources" : [ "BUCKET6" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Fiscal_Year",
+          "label" : "Fiscal Year",
+          "formulaExpression" : "'2020'",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA288_copy0_copy0_copy0_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA284_copy0_copy0_copy0_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Is_1812",
+          "label" : "Is 1812",
+          "formulaExpression" : "case \r\nwhen \r\n\"GS1812.Is_GS_1812_5YR\"='true'\r\n\r\nthen 1\r\nend",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "DROP_FIELDS61_copy0_copy0_copy0_copy0" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA288_copy0_copy0_copy0_copy0" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "SELECT",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Account_or_Contact_Id", "Fiscal_Year", "Is_1812", "Aggregate.SUM_FY05_Collected_Amount", "Aggregate.SUM_FY05_Collected_Amount_HF", "APAnniD.All_Purposes_Anniversary_Date_1YR", "Pure_Donor.Status_Date" ]
+        }
+      }
+    },
+    "FILTER78_copy2_copy0" : {
+      "action" : "filter",
+      "sources" : [ "DROP_FIELDS61_copy0_copy0_copy0_copy0" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "NUMBER",
+          "field" : "Is_1812",
+          "operator" : "EQUAL",
+          "operands" : [ "1" ]
+        } ]
+      }
+    },
+    "APPEND4" : {
+      "action" : "appendV2",
+      "sources" : [ "APPEND2", "FILTER78_copy2_copy0" ],
+      "parameters" : {
+        "fieldMappings" : [ {
+          "top" : "APAnniD.All_Purposes_Anniversary_Date_1YR",
+          "bottom" : "APAnniD.All_Purposes_Anniversary_Date_1YR"
+        }, {
+          "top" : "Account_or_Contact_Id",
+          "bottom" : "Account_or_Contact_Id"
+        }, {
+          "top" : "Pure_Donor.Status_Date",
+          "bottom" : "Pure_Donor.Status_Date"
+        }, {
+          "top" : "Aggregate.SUM_FY00_Collected_Amount_HF",
+          "bottom" : "Aggregate.SUM_FY05_Collected_Amount_HF"
+        }, {
+          "top" : "Aggregate.Sum.FY00_Collected_Amount",
+          "bottom" : "Aggregate.SUM_FY05_Collected_Amount"
+        }, {
+          "top" : "Fiscal_Year",
+          "bottom" : "Fiscal_Year"
+        }, {
+          "top" : "Is_1812",
+          "bottom" : "Is_1812"
+        } ]
+      }
+    },
+    "LOAD_DATASET0_copy0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Primary_Relationship_Manager.Assigned_User_Name", "ucinn_ascendv2__Age_Formula__c", "ucinn_ascendv2__Wealth_Rating__c", "Wealth_Rating.HAM_Wealth_Rating_Number__c", "Account_or_Contact_Id", "Name", "Is_Primary_Contact", "Class_Decade", "HAM_Reunion_Year__c", "ActiveCB.Is_Active_Chapel_Bell", "ucinn_ascendv2__Primary_Contact_Type__c" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Account and Contact Dataset",
+          "name" : "Account_and_Contact_Dataset"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN110" : {
+      "action" : "join",
+      "sources" : [ "APPEND4", "LOAD_DATASET0_copy0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Contact.Account_or_Contact_Id", "Contact.HAM_1812__c" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Account_or_Contact_Id" ],
+        "rightQualifier" : "Contact",
+        "rightKeys" : [ "Account_or_Contact_Id" ]
+      }
+    },
+    "EDIT_ATTRIBUTES0" : {
+      "action" : "schema",
+      "sources" : [ "JOIN110" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Aggregate.Sum.FY00_Collected_Amount",
+          "newProperties" : {
+            "label" : "Cash Amount",
+            "name" : "Cash_Amount"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES1" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES0" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Aggregate.SUM_FY00_Collected_Amount_HF",
+          "newProperties" : {
+            "label" : "Cash Amount (HF)",
+            "name" : "Aggregate.SUM_FY00_Collected_Amount_HF"
+          }
+        } ]
+      }
+    },
+    "FORMULA299" : {
+      "action" : "formula",
+      "sources" : [ "EDIT_ATTRIBUTES2" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Wealth_Rating_Sorting",
+          "label" : "Wealth Rating Sorting",
+          "formulaExpression" : "case \r\nwhen \r\n\"Contact.Wealth_Rating.HAM_Wealth_Rating_Number__c\"=1 \r\nthen concat('a:',\"Contact.ucinn_ascendv2__Wealth_Rating__c\")\r\nwhen \r\n\"Contact.Wealth_Rating.HAM_Wealth_Rating_Number__c\"=2 \r\nthen concat('b:',\"Contact.ucinn_ascendv2__Wealth_Rating__c\")\r\nwhen \r\n\"Contact.Wealth_Rating.HAM_Wealth_Rating_Number__c\"=3 \r\nthen concat('c:',\"Contact.ucinn_ascendv2__Wealth_Rating__c\")\r\nwhen \r\n\"Contact.Wealth_Rating.HAM_Wealth_Rating_Number__c\"=4 \r\nthen concat('d:',\"Contact.ucinn_ascendv2__Wealth_Rating__c\")\r\nwhen \r\n\"Contact.Wealth_Rating.HAM_Wealth_Rating_Number__c\"=5 \r\nthen concat('e:',\"Contact.ucinn_ascendv2__Wealth_Rating__c\")\r\nwhen \r\n\"Contact.Wealth_Rating.HAM_Wealth_Rating_Number__c\"=6 \r\nthen concat('f:',\"Contact.ucinn_ascendv2__Wealth_Rating__c\")\r\nwhen \r\n\"Contact.Wealth_Rating.HAM_Wealth_Rating_Number__c\"=7 \r\nthen concat('g:',\"Contact.ucinn_ascendv2__Wealth_Rating__c\")\r\nwhen \r\n\"Contact.Wealth_Rating.HAM_Wealth_Rating_Number__c\"=8 \r\nthen concat('h:',\"Contact.ucinn_ascendv2__Wealth_Rating__c\")\r\nwhen \r\n\"Contact.Wealth_Rating.HAM_Wealth_Rating_Number__c\"=9 \r\nthen concat('i:',\"Contact.ucinn_ascendv2__Wealth_Rating__c\")\r\nwhen \r\n\"Contact.Wealth_Rating.HAM_Wealth_Rating_Number__c\"=10 \r\nthen concat('j:',\"Contact.ucinn_ascendv2__Wealth_Rating__c\")\r\nwhen \r\n\"Contact.Wealth_Rating.HAM_Wealth_Rating_Number__c\"=11 \r\nthen concat('k:',\"Contact.ucinn_ascendv2__Wealth_Rating__c\")\r\nwhen \r\n\"Contact.Wealth_Rating.HAM_Wealth_Rating_Number__c\"=12 \r\nthen concat('l:',\"Contact.ucinn_ascendv2__Wealth_Rating__c\")\r\nwhen \r\n\"Contact.Wealth_Rating.HAM_Wealth_Rating_Number__c\"=13 \r\nthen concat('m:',\"Contact.ucinn_ascendv2__Wealth_Rating__c\")\r\nwhen \r\n\"Contact.Wealth_Rating.HAM_Wealth_Rating_Number__c\"=14 \r\nthen concat('n:',\"Contact.ucinn_ascendv2__Wealth_Rating__c\")\r\nwhen \r\n\"Contact.Wealth_Rating.HAM_Wealth_Rating_Number__c\" is null\r\nthen concat('o:',\"Contact.ucinn_ascendv2__Wealth_Rating__c\")\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA300" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA299" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Primary_Contact_Type_Group",
+          "label" : "Primary Contact Type Group",
+          "formulaExpression" : "case \r\nwhen \r\n\"Contact.ucinn_ascendv2__Primary_Contact_Type__c\"='Current Parent' \r\nthen 'Parent' \r\nwhen \r\n\"Contact.ucinn_ascendv2__Primary_Contact_Type__c\"='Employee' \r\nthen 'Friend' \r\nwhen \r\n\"Contact.ucinn_ascendv2__Primary_Contact_Type__c\"='Former Employee' \r\nthen 'Friend' \r\nwhen \r\n\"Contact.ucinn_ascendv2__Primary_Contact_Type__c\"='Friend' \r\nthen 'Friend' \r\nwhen \r\n\"Contact.ucinn_ascendv2__Primary_Contact_Type__c\"='Grandparent' \r\nthen 'Parent' \r\nwhen \r\n\"Contact.ucinn_ascendv2__Primary_Contact_Type__c\"='Hamilton Alumni' \r\nthen 'Alumni' \r\nwhen \r\n\"Contact.ucinn_ascendv2__Primary_Contact_Type__c\"='Hamilton Withdrawn' \r\nthen 'Alumni' \r\nwhen \r\n\"Contact.ucinn_ascendv2__Primary_Contact_Type__c\"='Kirkland Alumnae' \r\nthen 'Alumni' \r\nwhen \r\n\"Contact.ucinn_ascendv2__Primary_Contact_Type__c\" is null\r\nthen 'Org' \r\nwhen \r\n\"Contact.ucinn_ascendv2__Primary_Contact_Type__c\"='Parent of Withdrawn' \r\nthen 'Parent' \r\nwhen \r\n\"Contact.ucinn_ascendv2__Primary_Contact_Type__c\"='Parent on Leave' \r\nthen 'Parent' \r\nwhen \r\n\"Contact.ucinn_ascendv2__Primary_Contact_Type__c\"='Past Parent' \r\nthen 'Parent' \r\nwhen \r\n\"Contact.ucinn_ascendv2__Primary_Contact_Type__c\"='Retiree' \r\nthen 'Friend' \r\nwhen \r\n\"Contact.ucinn_ascendv2__Primary_Contact_Type__c\"='Spouse of Alumni or Trustee' \r\nthen 'Friend' \r\nwhen \r\n\"Contact.ucinn_ascendv2__Primary_Contact_Type__c\"='Student' \r\nthen 'Alumni' \r\nwhen \r\n\"Contact.ucinn_ascendv2__Primary_Contact_Type__c\"='Student on Leave' \r\nthen 'Alumni' \r\nwhen \r\n\"Contact.ucinn_ascendv2__Primary_Contact_Type__c\"='Surviving Spouse' \r\nthen 'Friend' \r\nwhen \r\n\"Contact.ucinn_ascendv2__Primary_Contact_Type__c\"='Trustee' \r\nthen 'Trustee'\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA301" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA300" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Reunion_Decade_Group",
+          "label" : "Reunion Decade Group",
+          "formulaExpression" : "Case when \"Contact.HAM_Reunion_Year__c\"<=1969 then '1969 and Prior'\r\nwhen \"Contact.HAM_Reunion_Year__c\">1969\r\nthen '1970 and after'\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA302" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA301" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Cash_Group",
+          "label" : "Cash Group",
+          "formulaExpression" : "case when Cash_Amount<2500 then 'a: Under $2,500'\r\nwhen Cash_Amount>=2500 and Cash_Amount<5000 then 'b: $2,500-$4,999.99'\r\nwhen Cash_Amount>=5000 and Cash_Amount<10000 then 'c: $5,000-$9,999.99'\r\nwhen Cash_Amount>=10000 then 'd: $10,000+'\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "BUCKET0" : {
+      "action" : "bucket",
+      "sources" : [ "FORMULA302" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Contact.ucinn_ascendv2__Age_Formula__c_bucket",
+          "label" : "Age Group",
+          "type" : "TEXT",
+          "bucketsSetup" : {
+            "nullBucketValue" : "Other",
+            "isPassthroughEnabled" : false,
+            "sourceField" : {
+              "name" : "Contact.ucinn_ascendv2__Age_Formula__c",
+              "type" : "NUMBER"
+            },
+            "buckets" : [ {
+              "value" : "Other",
+              "rangeEnd" : 1.0
+            }, {
+              "value" : "0-20",
+              "rangeStart" : 1.0,
+              "rangeEnd" : 20.0
+            }, {
+              "value" : "20-30",
+              "rangeStart" : 20.0,
+              "rangeEnd" : 30.0
+            }, {
+              "value" : "30-40",
+              "rangeStart" : 30.0,
+              "rangeEnd" : 40.0
+            }, {
+              "value" : "40-50",
+              "rangeStart" : 40.0,
+              "rangeEnd" : 50.0
+            }, {
+              "value" : "50-60",
+              "rangeStart" : 50.0,
+              "rangeEnd" : 60.0
+            }, {
+              "value" : "60-70",
+              "rangeStart" : 60.0,
+              "rangeEnd" : 70.0
+            }, {
+              "value" : "70-80",
+              "rangeStart" : 70.0,
+              "rangeEnd" : 80.0
+            }, {
+              "value" : "80+",
+              "rangeStart" : 80.0
+            } ]
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES2" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES1" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "APAnniD.All_Purposes_Anniversary_Date_1YR",
+          "newProperties" : {
+            "label" : "All Purposes Anniversary Date - 1YR",
+            "name" : "All_Purposes_Anniversary_Date_1YR"
+          }
+        } ]
+      }
+    },
+    "BUCKET1" : {
+      "action" : "bucket",
+      "sources" : [ "JOIN109_copy0" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "GS1812.Is_GS_1812_1YR_bucket",
+          "newProperties" : {
+            "name" : "GS1812.Is_GS_1812_1YR"
+          }
+        } ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "GS1812.Is_GS_1812_1YR" ]
+        }
+      },
+      "parameters" : {
+        "fields" : [ {
+          "name" : "GS1812.Is_GS_1812_1YR_bucket",
+          "label" : "Is GS 1812 1YR",
+          "type" : "TEXT",
+          "bucketsSetup" : {
+            "nullBucketValue" : "false",
+            "isPassthroughEnabled" : true,
+            "sourceField" : {
+              "name" : "GS1812.Is_GS_1812_1YR",
+              "type" : "TEXT"
+            },
+            "buckets" : [ {
+              "value" : "true",
+              "sourceValues" : [ "true" ]
+            }, {
+              "value" : "false",
+              "sourceValues" : [ "false" ]
+            } ]
+          }
+        } ]
+      }
+    },
+    "BUCKET2" : {
+      "action" : "bucket",
+      "sources" : [ "BUCKET1" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "GS1812.Is_GS_1812_2YR_bucket",
+          "newProperties" : {
+            "name" : "GS1812.Is_GS_1812_2YR"
+          }
+        } ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "GS1812.Is_GS_1812_2YR" ]
+        }
+      },
+      "parameters" : {
+        "fields" : [ {
+          "name" : "GS1812.Is_GS_1812_2YR_bucket",
+          "label" : "Is GS 1812 2YR",
+          "type" : "TEXT",
+          "bucketsSetup" : {
+            "nullBucketValue" : "false",
+            "isPassthroughEnabled" : true,
+            "sourceField" : {
+              "name" : "GS1812.Is_GS_1812_2YR",
+              "type" : "TEXT"
+            },
+            "buckets" : [ {
+              "value" : "true",
+              "sourceValues" : [ "true" ]
+            }, {
+              "value" : "false",
+              "sourceValues" : [ "false" ]
+            } ]
+          }
+        } ]
+      }
+    },
+    "BUCKET3" : {
+      "action" : "bucket",
+      "sources" : [ "BUCKET2" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "GS1812.Is_GS_1812_3YR_bucket",
+          "newProperties" : {
+            "name" : "GS1812.Is_GS_1812_3YR"
+          }
+        } ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "GS1812.Is_GS_1812_3YR" ]
+        }
+      },
+      "parameters" : {
+        "fields" : [ {
+          "name" : "GS1812.Is_GS_1812_3YR_bucket",
+          "label" : "Is GS 1812 3YR",
+          "type" : "TEXT",
+          "bucketsSetup" : {
+            "nullBucketValue" : "false",
+            "isPassthroughEnabled" : true,
+            "sourceField" : {
+              "name" : "GS1812.Is_GS_1812_3YR",
+              "type" : "TEXT"
+            },
+            "buckets" : [ {
+              "value" : "true",
+              "sourceValues" : [ "true" ]
+            }, {
+              "value" : "false",
+              "sourceValues" : [ "false" ]
+            } ]
+          }
+        } ]
+      }
+    },
+    "BUCKET4" : {
+      "action" : "bucket",
+      "sources" : [ "BUCKET3" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "GS1812.Is_GS_1812_4YR_bucket",
+          "newProperties" : {
+            "name" : "GS1812.Is_GS_1812_4YR"
+          }
+        } ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "GS1812.Is_GS_1812_4YR" ]
+        }
+      },
+      "parameters" : {
+        "fields" : [ {
+          "name" : "GS1812.Is_GS_1812_4YR_bucket",
+          "label" : "Is GS 1812 4YR",
+          "type" : "TEXT",
+          "bucketsSetup" : {
+            "nullBucketValue" : "false",
+            "isPassthroughEnabled" : true,
+            "sourceField" : {
+              "name" : "GS1812.Is_GS_1812_4YR",
+              "type" : "TEXT"
+            },
+            "buckets" : [ {
+              "value" : "true",
+              "sourceValues" : [ "true" ]
+            }, {
+              "value" : "false",
+              "sourceValues" : [ "false" ]
+            } ]
+          }
+        } ]
+      }
+    },
+    "BUCKET5" : {
+      "action" : "bucket",
+      "sources" : [ "BUCKET4" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "GS1812.Is_GS_1812_5YR_bucket",
+          "newProperties" : {
+            "name" : "GS1812.Is_GS_1812_5YR"
+          }
+        } ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "GS1812.Is_GS_1812_5YR" ]
+        }
+      },
+      "parameters" : {
+        "fields" : [ {
+          "name" : "GS1812.Is_GS_1812_5YR_bucket",
+          "label" : "Is GS 1812 5YR",
+          "type" : "TEXT",
+          "bucketsSetup" : {
+            "nullBucketValue" : "false",
+            "isPassthroughEnabled" : true,
+            "sourceField" : {
+              "name" : "GS1812.Is_GS_1812_5YR",
+              "type" : "TEXT"
+            },
+            "buckets" : [ {
+              "value" : "true",
+              "sourceValues" : [ "true" ]
+            }, {
+              "value" : "false",
+              "sourceValues" : [ "false" ]
+            } ]
+          }
+        } ]
+      }
+    },
+    "BUCKET6" : {
+      "action" : "bucket",
+      "sources" : [ "BUCKET5" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "Is_1812_CYR_bucket",
+          "newProperties" : {
+            "name" : "Is_1812_CYR"
+          }
+        } ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Is_1812_CYR" ]
+        }
+      },
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Is_1812_CYR_bucket",
+          "label" : "Is 1812 CYR",
+          "type" : "TEXT",
+          "bucketsSetup" : {
+            "nullBucketValue" : "false",
+            "isPassthroughEnabled" : true,
+            "sourceField" : {
+              "name" : "Is_1812_CYR",
+              "type" : "TEXT"
+            },
+            "buckets" : [ {
+              "value" : "true",
+              "sourceValues" : [ "true" ]
+            }, {
+              "value" : "false",
+              "sourceValues" : [ "false" ]
+            } ]
+          }
+        } ]
+      }
+    }
+  },
+  "ui" : {
+    "nodes" : {
+      "LOAD_DATASET0" : {
+        "label" : "Account and Contact Dataset",
+        "type" : "LOAD_DATASET",
+        "top" : 250.5,
+        "left" : 112.1,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "LOAD_DATASET34_copy0" : {
+        "label" : "ucinn_ascendv2__Society_Membership__c",
+        "description" : "",
+        "type" : "LOAD_DATASET",
+        "top" : 672.4,
+        "left" : 252.10000000000002,
+        "parameters" : {
+          "sampleSize" : 10000
+        }
+      },
+      "LOAD_DATASET35_copy0" : {
+        "label" : "ucinn_ascendv2__Giving_Society__c",
+        "type" : "LOAD_DATASET",
+        "top" : 812.4,
+        "left" : 392.1,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN54_copy0" : {
+        "label" : "Lookup Giving Society To Society Membership",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 672.4,
+        "left" : 392.1
+      },
+      "FILTER77_copy0" : {
+        "label" : "Filter to 1812",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 532.4,
+        "left" : 392.1
+      },
+      "TRANSFORM85_copy0" : {
+        "label" : "Enrich Fields",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 392.4,
+        "left" : 392.1,
+        "graph" : {
+          "FORMULA273_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "1812 1YR"
+          },
+          "FORMULA274_copy0" : {
+            "label" : "Is GS 1812 1YR"
+          },
+          "FORMULA275_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Account or Contact Id"
+          },
+          "DROP_FIELDS60_copy0" : {
+            "label" : "Keep Columns"
+          },
+          "FORMULA276" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "1812 2YR"
+          },
+          "FORMULA277" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "1812 3YR"
+          },
+          "FORMULA278" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "1812 4YR"
+          },
+          "FORMULA279" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "1812 5YR"
+          },
+          "FORMULA280" : {
+            "label" : "Is GS 1812 2YR"
+          },
+          "FORMULA281" : {
+            "label" : "Is GS 1812 3YR"
+          },
+          "FORMULA282" : {
+            "label" : "Is GS 1812 4YR"
+          },
+          "FORMULA283" : {
+            "label" : "Is GS 1812 5YR"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA273_copy0",
+          "target" : "FORMULA275_copy0"
+        }, {
+          "source" : "FORMULA275_copy0",
+          "target" : "FORMULA276"
+        }, {
+          "source" : "FORMULA276",
+          "target" : "FORMULA277"
+        }, {
+          "source" : "FORMULA277",
+          "target" : "FORMULA278"
+        }, {
+          "source" : "FORMULA279",
+          "target" : "FORMULA274_copy0"
+        }, {
+          "source" : "FORMULA278",
+          "target" : "FORMULA279"
+        }, {
+          "source" : "FORMULA274_copy0",
+          "target" : "FORMULA280"
+        }, {
+          "source" : "FORMULA280",
+          "target" : "FORMULA281"
+        }, {
+          "source" : "FORMULA281",
+          "target" : "FORMULA282"
+        }, {
+          "source" : "FORMULA283",
+          "target" : "DROP_FIELDS60_copy0"
+        }, {
+          "source" : "FORMULA282",
+          "target" : "FORMULA283"
+        } ]
+      },
+      "JOIN109_copy0" : {
+        "label" : "Look up 1812 CYR 1YR",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 252.39999999999998,
+        "left" : 392.1
+      },
+      "TRANSFORM86" : {
+        "label" : "FY24",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 392.3,
+        "left" : 812.6,
+        "graph" : {
+          "FORMULA284" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Fiscal Year"
+          },
+          "FORMULA285" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "New 1812"
+          },
+          "FORMULA287" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Retained 1812"
+          },
+          "FORMULA288" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Lost 1812"
+          },
+          "DROP_FIELDS61" : {
+            "label" : "Keep Columns"
+          },
+          "FORMULA290" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Is 1812"
+          },
+          "FORMULA295" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "1812 Status"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA284",
+          "target" : "FORMULA285"
+        }, {
+          "source" : "FORMULA285",
+          "target" : "FORMULA287"
+        }, {
+          "source" : "FORMULA287",
+          "target" : "FORMULA288"
+        }, {
+          "source" : "FORMULA288",
+          "target" : "FORMULA290"
+        }, {
+          "source" : "FORMULA295",
+          "target" : "DROP_FIELDS61"
+        }, {
+          "source" : "FORMULA290",
+          "target" : "FORMULA295"
+        } ]
+      },
+      "TRANSFORM87" : {
+        "label" : "Enrich Fields",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 252,
+        "left" : 252,
+        "graph" : {
+          "FORMULA286" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Is 1812 CYR"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "TRANSFORM86_copy0" : {
+        "label" : "FY23",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 532.3,
+        "left" : 812.6,
+        "graph" : {
+          "FORMULA284_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Fiscal Year"
+          },
+          "FORMULA285_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "New 1812"
+          },
+          "FORMULA287_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Retained 1812"
+          },
+          "FORMULA288_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Lost 1812"
+          },
+          "DROP_FIELDS61_copy0" : {
+            "label" : "Keep Columns"
+          },
+          "FORMULA291" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Is 1812"
+          },
+          "FORMULA296" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "1812 Status"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA284_copy0",
+          "target" : "FORMULA285_copy0"
+        }, {
+          "source" : "FORMULA285_copy0",
+          "target" : "FORMULA287_copy0"
+        }, {
+          "source" : "FORMULA287_copy0",
+          "target" : "FORMULA288_copy0"
+        }, {
+          "source" : "FORMULA288_copy0",
+          "target" : "FORMULA291"
+        }, {
+          "source" : "FORMULA296",
+          "target" : "DROP_FIELDS61_copy0"
+        }, {
+          "source" : "FORMULA291",
+          "target" : "FORMULA296"
+        } ]
+      },
+      "TRANSFORM86_copy0_copy0" : {
+        "label" : "FY22",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 672.3,
+        "left" : 812.6,
+        "graph" : {
+          "FORMULA284_copy0_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Fiscal Year"
+          },
+          "FORMULA285_copy0_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "New 1812"
+          },
+          "FORMULA287_copy0_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Retained 1812"
+          },
+          "FORMULA288_copy0_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Lost 1812"
+          },
+          "DROP_FIELDS61_copy0_copy0" : {
+            "label" : "Keep Columns"
+          },
+          "FORMULA292" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Is 1812"
+          },
+          "FORMULA297" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "1812 Status"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA284_copy0_copy0",
+          "target" : "FORMULA285_copy0_copy0"
+        }, {
+          "source" : "FORMULA285_copy0_copy0",
+          "target" : "FORMULA287_copy0_copy0"
+        }, {
+          "source" : "FORMULA287_copy0_copy0",
+          "target" : "FORMULA288_copy0_copy0"
+        }, {
+          "source" : "FORMULA288_copy0_copy0",
+          "target" : "FORMULA292"
+        }, {
+          "source" : "FORMULA297",
+          "target" : "DROP_FIELDS61_copy0_copy0"
+        }, {
+          "source" : "FORMULA292",
+          "target" : "FORMULA297"
+        } ]
+      },
+      "TRANSFORM86_copy0_copy0_copy0" : {
+        "label" : "FY21",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 812.3,
+        "left" : 812.6,
+        "graph" : {
+          "FORMULA284_copy0_copy0_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Fiscal Year"
+          },
+          "FORMULA285_copy0_copy0_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "New 1812"
+          },
+          "FORMULA287_copy0_copy0_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Retained 1812"
+          },
+          "FORMULA288_copy0_copy0_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Lost 1812"
+          },
+          "DROP_FIELDS61_copy0_copy0_copy0" : {
+            "label" : "Keep Columns"
+          },
+          "FORMULA293" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Is 1812"
+          },
+          "FORMULA298" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "1812 Status"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA284_copy0_copy0_copy0",
+          "target" : "FORMULA285_copy0_copy0_copy0"
+        }, {
+          "source" : "FORMULA285_copy0_copy0_copy0",
+          "target" : "FORMULA287_copy0_copy0_copy0"
+        }, {
+          "source" : "FORMULA287_copy0_copy0_copy0",
+          "target" : "FORMULA288_copy0_copy0_copy0"
+        }, {
+          "source" : "FORMULA288_copy0_copy0_copy0",
+          "target" : "FORMULA293"
+        }, {
+          "source" : "FORMULA298",
+          "target" : "DROP_FIELDS61_copy0_copy0_copy0"
+        }, {
+          "source" : "FORMULA293",
+          "target" : "FORMULA298"
+        } ]
+      },
+      "FILTER78" : {
+        "label" : "Filter Related Donors",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 392.3,
+        "left" : 952.6
+      },
+      "FILTER78_copy0" : {
+        "label" : "Filter Related Donors",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 532.3,
+        "left" : 952.6
+      },
+      "FILTER78_copy1" : {
+        "label" : "Filter Related Donors",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 672.3,
+        "left" : 952.6
+      },
+      "FILTER78_copy2" : {
+        "label" : "Filter Related Donors",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 812.3,
+        "left" : 952.6
+      },
+      "APPEND0" : {
+        "label" : "Append 0",
+        "type" : "APPEND",
+        "top" : 252.3,
+        "left" : 1232.6
+      },
+      "APPEND1" : {
+        "label" : "Append 1",
+        "type" : "APPEND",
+        "top" : 252.3,
+        "left" : 1372.6
+      },
+      "APPEND2" : {
+        "label" : "Append 2",
+        "type" : "APPEND",
+        "top" : 252.3,
+        "left" : 1512.6
+      },
+      "OUTPUT0" : {
+        "label" : "Output 0",
+        "type" : "OUTPUT",
+        "top" : 252.3,
+        "left" : 2072.6
+      },
+      "TRANSFORM86_copy1" : {
+        "label" : "FY25",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 252.3,
+        "left" : 812.6,
+        "graph" : {
+          "FORMULA284_copy1" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Fiscal Year"
+          },
+          "FORMULA285_copy1" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "New 1812"
+          },
+          "FORMULA287_copy1" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Retained 1812"
+          },
+          "FORMULA288_copy1" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Lost 1812"
+          },
+          "DROP_FIELDS61_copy1" : {
+            "label" : "Keep Columns"
+          },
+          "FORMULA289" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Is 1812"
+          },
+          "FORMULA294" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "1812 Status"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA284_copy1",
+          "target" : "FORMULA285_copy1"
+        }, {
+          "source" : "FORMULA285_copy1",
+          "target" : "FORMULA287_copy1"
+        }, {
+          "source" : "FORMULA287_copy1",
+          "target" : "FORMULA288_copy1"
+        }, {
+          "source" : "FORMULA288_copy1",
+          "target" : "FORMULA289"
+        }, {
+          "source" : "FORMULA294",
+          "target" : "DROP_FIELDS61_copy1"
+        }, {
+          "source" : "FORMULA289",
+          "target" : "FORMULA294"
+        } ]
+      },
+      "FILTER78_copy3" : {
+        "label" : "Filter Related Donors",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 252.3,
+        "left" : 952.6
+      },
+      "APPEND3" : {
+        "label" : "Append 3",
+        "type" : "APPEND",
+        "top" : 252.3,
+        "left" : 1092.6
+      },
+      "TRANSFORM86_copy0_copy0_copy0_copy0" : {
+        "label" : "FY20",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 952.3,
+        "left" : 812.6,
+        "graph" : {
+          "FORMULA284_copy0_copy0_copy0_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Fiscal Year"
+          },
+          "FORMULA288_copy0_copy0_copy0_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Is 1812"
+          },
+          "DROP_FIELDS61_copy0_copy0_copy0_copy0" : {
+            "label" : "Keep Columns"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA288_copy0_copy0_copy0_copy0",
+          "target" : "DROP_FIELDS61_copy0_copy0_copy0_copy0"
+        }, {
+          "source" : "FORMULA284_copy0_copy0_copy0_copy0",
+          "target" : "FORMULA288_copy0_copy0_copy0_copy0"
+        } ]
+      },
+      "FILTER78_copy2_copy0" : {
+        "label" : "Filter Related Donors",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 952.3,
+        "left" : 952.6
+      },
+      "APPEND4" : {
+        "label" : "Append 4",
+        "type" : "APPEND",
+        "top" : 252.3,
+        "left" : 1652.6
+      },
+      "LOAD_DATASET0_copy0" : {
+        "label" : "Account and Contact Dataset",
+        "description" : "",
+        "type" : "LOAD_DATASET",
+        "top" : 392.3,
+        "left" : 1792.6,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN110" : {
+        "label" : "Join 110",
+        "type" : "JOIN",
+        "top" : 252.3,
+        "left" : 1792.6
+      },
+      "TRANSFORM88" : {
+        "label" : "Enrich Fields",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 252.3,
+        "left" : 1932.6,
+        "graph" : {
+          "EDIT_ATTRIBUTES0" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES1" : {
+            "label" : "Edit Attributes"
+          },
+          "FORMULA299" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Wealth Rating Sorting"
+          },
+          "FORMULA300" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Primary Contact Type Group"
+          },
+          "FORMULA301" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Reunion Decade Group"
+          },
+          "FORMULA302" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Cash Group"
+          },
+          "BUCKET0" : {
+            "label" : "Bucket Age"
+          },
+          "EDIT_ATTRIBUTES2" : {
+            "label" : "Edit Attributes"
+          }
+        },
+        "connectors" : [ {
+          "source" : "EDIT_ATTRIBUTES0",
+          "target" : "EDIT_ATTRIBUTES1"
+        }, {
+          "source" : "FORMULA299",
+          "target" : "FORMULA300"
+        }, {
+          "source" : "FORMULA300",
+          "target" : "FORMULA301"
+        }, {
+          "source" : "FORMULA301",
+          "target" : "FORMULA302"
+        }, {
+          "source" : "FORMULA302",
+          "target" : "BUCKET0"
+        }, {
+          "source" : "EDIT_ATTRIBUTES2",
+          "target" : "FORMULA299"
+        }, {
+          "source" : "EDIT_ATTRIBUTES1",
+          "target" : "EDIT_ATTRIBUTES2"
+        } ]
+      },
+      "TRANSFORM89" : {
+        "label" : "Bucket",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 253.3,
+        "left" : 532,
+        "graph" : {
+          "BUCKET1" : {
+            "label" : "Bucket"
+          },
+          "BUCKET2" : {
+            "label" : "Bucket"
+          },
+          "BUCKET3" : {
+            "label" : "Bucket"
+          },
+          "BUCKET4" : {
+            "label" : "Bucket"
+          },
+          "BUCKET5" : {
+            "label" : "Bucket"
+          },
+          "BUCKET6" : {
+            "label" : "Bucket"
+          }
+        },
+        "connectors" : [ {
+          "source" : "BUCKET1",
+          "target" : "BUCKET2"
+        }, {
+          "source" : "BUCKET2",
+          "target" : "BUCKET3"
+        }, {
+          "source" : "BUCKET3",
+          "target" : "BUCKET4"
+        }, {
+          "source" : "BUCKET4",
+          "target" : "BUCKET5"
+        }, {
+          "source" : "BUCKET5",
+          "target" : "BUCKET6"
+        } ]
+      }
+    },
+    "connectors" : [ {
+      "source" : "APPEND3",
+      "target" : "APPEND0"
+    }, {
+      "source" : "TRANSFORM87",
+      "target" : "JOIN109_copy0"
+    }, {
+      "source" : "LOAD_DATASET34_copy0",
+      "target" : "JOIN54_copy0"
+    }, {
+      "source" : "LOAD_DATASET35_copy0",
+      "target" : "JOIN54_copy0"
+    }, {
+      "source" : "JOIN54_copy0",
+      "target" : "FILTER77_copy0"
+    }, {
+      "source" : "FILTER77_copy0",
+      "target" : "TRANSFORM85_copy0"
+    }, {
+      "source" : "TRANSFORM85_copy0",
+      "target" : "JOIN109_copy0"
+    }, {
+      "source" : "LOAD_DATASET0",
+      "target" : "TRANSFORM87"
+    }, {
+      "source" : "TRANSFORM86",
+      "target" : "FILTER78"
+    }, {
+      "source" : "TRANSFORM86_copy0",
+      "target" : "FILTER78_copy0"
+    }, {
+      "source" : "TRANSFORM86_copy0_copy0",
+      "target" : "FILTER78_copy1"
+    }, {
+      "source" : "TRANSFORM86_copy0_copy0_copy0",
+      "target" : "FILTER78_copy2"
+    }, {
+      "source" : "FILTER78_copy0",
+      "target" : "APPEND0"
+    }, {
+      "source" : "APPEND0",
+      "target" : "APPEND1"
+    }, {
+      "source" : "FILTER78_copy1",
+      "target" : "APPEND1"
+    }, {
+      "source" : "APPEND1",
+      "target" : "APPEND2"
+    }, {
+      "source" : "FILTER78_copy2",
+      "target" : "APPEND2"
+    }, {
+      "source" : "TRANSFORM88",
+      "target" : "OUTPUT0"
+    }, {
+      "source" : "TRANSFORM86_copy1",
+      "target" : "FILTER78_copy3"
+    }, {
+      "source" : "FILTER78_copy3",
+      "target" : "APPEND3"
+    }, {
+      "source" : "FILTER78",
+      "target" : "APPEND3"
+    }, {
+      "source" : "TRANSFORM86_copy0_copy0_copy0_copy0",
+      "target" : "FILTER78_copy2_copy0"
+    }, {
+      "source" : "APPEND2",
+      "target" : "APPEND4"
+    }, {
+      "source" : "FILTER78_copy2_copy0",
+      "target" : "APPEND4"
+    }, {
+      "source" : "APPEND4",
+      "target" : "JOIN110"
+    }, {
+      "source" : "LOAD_DATASET0_copy0",
+      "target" : "JOIN110"
+    }, {
+      "source" : "JOIN110",
+      "target" : "TRANSFORM88"
+    }, {
+      "source" : "JOIN109_copy0",
+      "target" : "TRANSFORM89"
+    }, {
+      "source" : "TRANSFORM89",
+      "target" : "TRANSFORM86_copy1"
+    }, {
+      "source" : "TRANSFORM89",
+      "target" : "TRANSFORM86"
+    }, {
+      "source" : "TRANSFORM89",
+      "target" : "TRANSFORM86_copy0"
+    }, {
+      "source" : "TRANSFORM89",
+      "target" : "TRANSFORM86_copy0_copy0"
+    }, {
+      "source" : "TRANSFORM89",
+      "target" : "TRANSFORM86_copy0_copy0_copy0"
+    }, {
+      "source" : "TRANSFORM89",
+      "target" : "TRANSFORM86_copy0_copy0_copy0_copy0"
+    } ],
+    "hiddenColumns" : [ ]
+  },
+  "runMode" : "full"
+}

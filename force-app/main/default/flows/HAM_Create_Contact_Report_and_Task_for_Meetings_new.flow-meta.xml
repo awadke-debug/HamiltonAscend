@@ -1,0 +1,365 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>63.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <constants>
+        <description>This is a constant whose value is &quot;Contact Report Creation&quot;</description>
+        <name>MeetingSubject</name>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>Fill out the Contact Report </stringValue>
+        </value>
+    </constants>
+    <decisions>
+        <name>Check_Status</name>
+        <label>Check Status</label>
+        <locationX>380</locationX>
+        <locationY>431</locationY>
+        <defaultConnector>
+            <targetReference>Delete_Task</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Meeting Cancelled</defaultConnectorLabel>
+        <rules>
+            <name>Meeting_completed</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.HAM_Meeting_Status__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Completed</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Is_meeting_with_Constituent</targetReference>
+            </connector>
+            <doesRequireRecordChangedToMeetCriteria>true</doesRequireRecordChangedToMeetCriteria>
+            <label>Meeting completed</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <description>This element check if its meeting with constituent or Organization</description>
+        <name>Is_meeting_with_Constituent</name>
+        <label>Is meeting with Constituent?</label>
+        <locationX>182</locationX>
+        <locationY>539</locationY>
+        <defaultConnector>
+            <targetReference>Contact_Report_for_Organization</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Organization meeting</defaultConnectorLabel>
+        <rules>
+            <name>Contact_meeting</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.WhatId</leftValueReference>
+                <operator>IsBlank</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Contact_Report</targetReference>
+            </connector>
+            <label>Contact meeting</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Is_this_Meeting</name>
+        <label>Is this Meeting?</label>
+        <locationX>611</locationX>
+        <locationY>323</locationY>
+        <defaultConnectorLabel>Other Event Types</defaultConnectorLabel>
+        <rules>
+            <name>Meeting_record_types</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>IsMeeting</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Check_Status</targetReference>
+            </connector>
+            <label>Meeting record types</label>
+        </rules>
+    </decisions>
+    <description>This flow is used to 
+1. create a new draft Contact Report and a task for the PRM to enter the values as soon as the meeting is completed.
+2. Delete contact report and task if event is cancelled</description>
+    <environments>Default</environments>
+    <formulas>
+        <description>This element stores today&apos;s date and adds that to the Date of Contact</description>
+        <name>DateofContactCR</name>
+        <dataType>Date</dataType>
+        <expression>TODAY()</expression>
+    </formulas>
+    <formulas>
+        <description>This variable stores the date which is 2 weeks from date of contact</description>
+        <name>DueDateofTask2weeksfromdateofcontact</name>
+        <dataType>Date</dataType>
+        <expression>{!$Record.EndDate} + 14</expression>
+    </formulas>
+    <formulas>
+        <description>This is true for only events of type meeting</description>
+        <name>IsMeeting</name>
+        <dataType>Boolean</dataType>
+        <expression>IF( ({!$Record.RecordType.Name} = &apos;Meeting&apos;), TRUE, FALSE)</expression>
+    </formulas>
+    <interviewLabel>HAM Create Contact Report and Task for Meetings {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>HAM Create Contact Report and Task for Meetings new</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordCreates>
+        <description>This activity is used to create a placeholder meeting report for the Gift Officers to enter the details post their meeting</description>
+        <name>Contact_Report</name>
+        <label>Contact Report</label>
+        <locationX>50</locationX>
+        <locationY>647</locationY>
+        <connector>
+            <targetReference>Create_Task</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>HAM_Campus_Stakeholders__c</field>
+            <value>
+                <elementReference>$Record.HAM_Campus_Stakeholders__c</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>HAM_In_Person__c</field>
+            <value>
+                <elementReference>$Record.HAM_In_Person__c</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>OwnerId</field>
+            <value>
+                <elementReference>$Record.Owner:User.Id</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>ucinn_ascendv2__Contact__c</field>
+            <value>
+                <elementReference>$Record.WhoId</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>ucinn_ascendv2__Date__c</field>
+            <value>
+                <elementReference>DateofContactCR</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>ucinn_ascendv2__Date_and_Time__c</field>
+            <value>
+                <elementReference>$Record.StartDateTime</elementReference>
+            </value>
+        </inputAssignments>
+        <object>ucinn_ascendv2__Contact_Report__c</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordCreates>
+    <recordCreates>
+        <description>This activity is used to create a placeholder meeting report for the Gift Officers to enter the details post their meeting</description>
+        <name>Contact_Report_for_Organization</name>
+        <label>Contact Report for Organization</label>
+        <locationX>314</locationX>
+        <locationY>647</locationY>
+        <connector>
+            <targetReference>Create_Task</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>HAM_Campus_Stakeholders__c</field>
+            <value>
+                <elementReference>$Record.HAM_Campus_Stakeholders__c</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>OwnerId</field>
+            <value>
+                <elementReference>$Record.Owner:User.Id</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>ucinn_ascendv2__Account__c</field>
+            <value>
+                <elementReference>$Record.WhatId</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>ucinn_ascendv2__Date__c</field>
+            <value>
+                <elementReference>DateofContactCR</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>ucinn_ascendv2__Date_and_Time__c</field>
+            <value>
+                <elementReference>$Record.StartDateTime</elementReference>
+            </value>
+        </inputAssignments>
+        <object>ucinn_ascendv2__Contact_Report__c</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordCreates>
+    <recordCreates>
+        <description>This element is specially used to create a task for the PRM to fill out the Contact report created</description>
+        <name>Create_Task</name>
+        <label>Create Task</label>
+        <locationX>182</locationX>
+        <locationY>839</locationY>
+        <connector>
+            <targetReference>Update_the_Contact_report_Id_on_the_event</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>ActivityDate</field>
+            <value>
+                <elementReference>DueDateofTask2weeksfromdateofcontact</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>HAM_In_Person__c</field>
+            <value>
+                <elementReference>$Record.HAM_In_Person__c</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>OwnerId</field>
+            <value>
+                <elementReference>$Record.Owner:User.Id</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Priority</field>
+            <value>
+                <stringValue>High</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Status</field>
+            <value>
+                <stringValue>Open</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Subject</field>
+            <value>
+                <stringValue>Contact Report Creation</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>WhatId</field>
+            <value>
+                <elementReference>Contact_Report</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>WhoId</field>
+            <value>
+                <elementReference>$Record.WhoId</elementReference>
+            </value>
+        </inputAssignments>
+        <object>Task</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordCreates>
+    <recordDeletes>
+        <description>This task is used to delete the contact report associated with meeting</description>
+        <name>Delete_Contact_Report</name>
+        <label>Delete Contact Report</label>
+        <locationX>578</locationX>
+        <locationY>647</locationY>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.HAM_Contact_Report__c</elementReference>
+            </value>
+        </filters>
+        <object>ucinn_ascendv2__Contact_Report__c</object>
+    </recordDeletes>
+    <recordDeletes>
+        <description>This task is used to delete the task that was created associated with the contact report</description>
+        <name>Delete_Task</name>
+        <label>Delete Task</label>
+        <locationX>578</locationX>
+        <locationY>539</locationY>
+        <connector>
+            <targetReference>Delete_Contact_Report</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>WhatId</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.HAM_Contact_Report__c</elementReference>
+            </value>
+        </filters>
+        <object>Task</object>
+    </recordDeletes>
+    <recordUpdates>
+        <description>Update the contact report on the event to keep a link between them.</description>
+        <name>Update_the_Contact_report_Id_on_the_event</name>
+        <label>Update the Contact report Id on the event</label>
+        <locationX>182</locationX>
+        <locationY>947</locationY>
+        <inputAssignments>
+            <field>HAM_Contact_Report__c</field>
+            <value>
+                <elementReference>Contact_Report</elementReference>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <start>
+        <locationX>485</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Is_this_Meeting</targetReference>
+        </connector>
+        <filterLogic>or</filterLogic>
+        <filters>
+            <field>HAM_Meeting_Status__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Completed</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>HAM_Meeting_Status__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Cancelled</stringValue>
+            </value>
+        </filters>
+        <object>Event</object>
+        <recordTriggerType>Update</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Active</status>
+    <variables>
+        <name>DummyContactreportcreated</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <value>
+            <elementReference>Contact_Report</elementReference>
+        </value>
+    </variables>
+</Flow>

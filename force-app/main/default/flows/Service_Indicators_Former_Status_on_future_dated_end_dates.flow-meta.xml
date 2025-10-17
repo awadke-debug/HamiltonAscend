@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>59.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <decisions>
+        <description>Evaluates whether service indicator end date is in the future or the past</description>
+        <name>Evaluate_End_Date</name>
+        <label>Evaluate End Date</label>
+        <locationX>182</locationX>
+        <locationY>252</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>End_Date_has_passed</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.ucinn_ascendv2__End_Date__c</leftValueReference>
+                <operator>LessThanOrEqualTo</operator>
+                <rightValue>
+                    <elementReference>Today</elementReference>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Set_Is_Active_to_False</targetReference>
+            </connector>
+            <label>End Date has passed</label>
+        </rules>
+    </decisions>
+    <description>Reviews the end date on an active service indicator to see if the future end date is now past</description>
+    <environments>Default</environments>
+    <formulas>
+        <description>Today</description>
+        <name>Today</name>
+        <dataType>Date</dataType>
+        <expression>TODAY()</expression>
+    </formulas>
+    <interviewLabel>Service Indicators - Former Status on future dated end dates {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Service Indicators - Former Status on future dated end dates</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordUpdates>
+        <description>Unchecks Is Active checkbox</description>
+        <name>Set_Is_Active_to_False</name>
+        <label>Set Is Active to False</label>
+        <locationX>50</locationX>
+        <locationY>360</locationY>
+        <inputAssignments>
+            <field>ucinn_ascendv2__Is_Active__c</field>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <start>
+        <locationX>56</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Evaluate_End_Date</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>ucinn_ascendv2__Is_Active__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <filters>
+            <field>ucinn_ascendv2__End_Date__c</field>
+            <operator>IsNull</operator>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
+        </filters>
+        <object>ucinn_ascendv2__Service_Indicator__c</object>
+        <schedule>
+            <frequency>Daily</frequency>
+            <startDate>2023-12-08</startDate>
+            <startTime>00:00:00.000Z</startTime>
+        </schedule>
+        <triggerType>Scheduled</triggerType>
+    </start>
+    <status>Active</status>
+</Flow>

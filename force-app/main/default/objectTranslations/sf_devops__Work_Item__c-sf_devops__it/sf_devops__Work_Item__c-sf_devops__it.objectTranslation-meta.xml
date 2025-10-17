@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObjectTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <caseValues>
+        <plural>false</plural>
+        <value>Voce su cui lavorare</value>
+    </caseValues>
+    <caseValues>
+        <plural>true</plural>
+        <value>Voci su cui lavorare</value>
+    </caseValues>
+    <gender>Feminine</gender>
+    <nameFieldLabel>Numero voci su cui lavorare</nameFieldLabel>
+    <startsWith>Consonant</startsWith>
+    <validationRules>
+        <errorMessage>Una Work_Item non può avere Development_Approved_By impostato se non è Development_Approved.</errorMessage>
+        <name>sf_devops__Approved_By_Without_Approved</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Devi impostare Development_Approved_By quando questa voce su cui lavorare viene approvata.</errorMessage>
+        <name>sf_devops__Approved_Without_Approved_By</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Una voce su cui lavorare non può essere approvata senza una revisione.</errorMessage>
+        <name>sf_devops__Approved_Without_Review</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Una voce su cui lavorare deve appartenere allo stesso progetto del relativo bundle di modifiche.</errorMessage>
+        <name>sf_devops__Change_Bundle_Project</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Una voce su cui lavorare non può essere combinata se si trova in un bundle.</errorMessage>
+        <name>sf_devops__Combined_Bundled</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Una voce su cui lavorare non può essere combinata se non fa riferimento alla voce su cui lavorare in cui è combinata.</errorMessage>
+        <name>sf_devops__Combined_Not_Combined_With</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Una voce su cui lavorare non può essere combinata se non è mai stata promossa.</errorMessage>
+        <name>sf_devops__Combined_Not_Promoted</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Una voce su cui lavorare non può avere Combined_With impostato se non si trova nello stato Combinata.</errorMessage>
+        <name>sf_devops__Combined_With_Not_Combined</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Una voce su cui lavorare non può avere Combined_With impostato su una voce su cui lavorare che non ha eseguito l&apos;operazione Combina.</errorMessage>
+        <name>sf_devops__Combined_With_Not_Survivor</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>I valori possibili per Concluded_c sono: CLOSED, NEVERED, COMBINED o vuoto.</errorMessage>
+        <name>sf_devops__Concluded_values</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>In una voce su cui lavorare non è possibile modificare il campo Concluded__c una volta impostato.</errorMessage>
+        <name>sf_devops__Disable_Concluded</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>In una voce su cui lavorare il campo Promoted__c non può essere disabilitato una volta impostato.</errorMessage>
+        <name>sf_devops__Disable_Promoted</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Le voci su cui lavorare non possono essere collegate ad ambienti scaduti.</errorMessage>
+        <name>sf_devops__Environment_Expired</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Una voce su cui lavorare deve appartenere allo stesso progetto del relativo ambiente.</errorMessage>
+        <name>sf_devops__Environment_Project</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Impossibile fare riferimento a un ambiente che non supporta il tracciamento delle modifiche.</errorMessage>
+        <name>sf_devops__Environment_Requires_Tracking</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>In una voce su cui lavorare non è possibile modificare il campo Promoted_From_Environment__c una volta impostato.</errorMessage>
+        <name>sf_devops__PromotedFromEnvironment_Changed</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>In una voce su cui lavorare, il campo Promoted_From_Environment__c non può essere impostato con un valore diverso dal valore di Environment__c e può essere impostato solo se Environment__c viene impostato su null.</errorMessage>
+        <name>sf_devops__PromotedFromEnvironment_Set</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Una Work_Item non può essere membro di un Change_Bundle se non è mai stata promossa.</errorMessage>
+        <name>sf_devops__Promoted_And_Installed</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Non è possibile creare una Work_Item con il flag Promossa impostato.</errorMessage>
+        <name>sf_devops__Promoted_On_Create</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Impossibile promuovere una WorkItem se non è approvata.</errorMessage>
+        <name>sf_devops__Promoted_Without_Approval</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Una voce su cui lavorare non può avere il proprio campo Branch di modifica base impostato se è Non promossa, In bundle o Conclusa.</errorMessage>
+        <name>sf_devops__Rebase_Branch</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Deprecated --></errorMessage>
+        <name>sf_devops__Rebase_Remote_Reference</name>
+    </validationRules>
+    <webLinks>
+        <label>Visualizza in DevOps Center</label>
+        <name>sf_devops__Devops_Center</name>
+    </webLinks>
+</CustomObjectTranslation>

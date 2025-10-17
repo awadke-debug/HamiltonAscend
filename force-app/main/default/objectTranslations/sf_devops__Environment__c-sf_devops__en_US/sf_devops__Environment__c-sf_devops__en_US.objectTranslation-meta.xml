@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObjectTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <caseValues>
+        <plural>false</plural>
+        <value>Environment</value>
+    </caseValues>
+    <caseValues>
+        <plural>true</plural>
+        <value>Environments</value>
+    </caseValues>
+    <startsWith>Consonant</startsWith>
+    <validationRules>
+        <errorMessage><!-- An Environment cannot have its Expired__c field set to false. --></errorMessage>
+        <name>sf_devops__Expired_Changed</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- An Environment cannot be inserted with Expired__c set to true. --></errorMessage>
+        <name>sf_devops__Expired_Insert</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- A replacement Environment must be expired. --></errorMessage>
+        <name>sf_devops__Expired_Replaces</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Refresh_Source and Refresh_Date most both be set, or both be empty. --></errorMessage>
+        <name>sf_devops__Refresh_Source_And_Date</name>
+    </validationRules>
+</CustomObjectTranslation>

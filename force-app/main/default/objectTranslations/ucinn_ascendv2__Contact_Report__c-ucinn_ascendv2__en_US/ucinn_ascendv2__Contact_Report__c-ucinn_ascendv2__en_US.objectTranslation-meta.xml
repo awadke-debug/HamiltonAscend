@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObjectTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <caseValues>
+        <plural>false</plural>
+        <value>Contact Report</value>
+    </caseValues>
+    <caseValues>
+        <plural>true</plural>
+        <value>Contact Reports</value>
+    </caseValues>
+    <fieldSets>
+        <label><!-- Contact Report Description --></label>
+        <name>ucinn_ascendv2__Contact_Report_Description</name>
+    </fieldSets>
+    <fieldSets>
+        <label><!-- Contact Report Detail-Constituent --></label>
+        <name>ucinn_ascendv2__Contact_Report_Detail_Constituent</name>
+    </fieldSets>
+    <fieldSets>
+        <label><!-- Contact Report Detail-Organization --></label>
+        <name>ucinn_ascendv2__Contact_Report_Detail_Organization</name>
+    </fieldSets>
+    <fieldSets>
+        <label><!-- System Information --></label>
+        <name>ucinn_ascendv2__System_Information</name>
+    </fieldSets>
+    <layouts>
+        <layout>Contact Report Layout</layout>
+        <sections>
+            <label><!-- Additional Details --></label>
+            <section>Additional Details</section>
+        </sections>
+        <sections>
+            <label><!-- Contact Report --></label>
+            <section>Contact Report</section>
+        </sections>
+        <sections>
+            <label><!-- Custom Links --></label>
+            <section>Custom Links</section>
+        </sections>
+        <sections>
+            <label><!-- Responsible Parties --></label>
+            <section>Responsible Parties</section>
+        </sections>
+        <sections>
+            <label><!-- Solicitors --></label>
+            <section>Solicitors</section>
+        </sections>
+    </layouts>
+    <quickActions>
+        <label><!-- New Task --></label>
+        <name>New_Task_CR</name>
+    </quickActions>
+    <startsWith>Consonant</startsWith>
+    <validationRules>
+        <errorMessage><!-- Please add a constituent or organization to this contact report. Thanks! --></errorMessage>
+        <name>HAM_Constituent_or_Org_Present</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- You cannot have more than 1 Primary Fundraiser on a contact report. --></errorMessage>
+        <name>One_Primary_Fundraiser_Only</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Only the RMATS team can select a status of approved, incomplete, or inactive. --></errorMessage>
+        <name>ucinn_ascendv2__Status_Development_Officer</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Only the RMATS team can select a status of approved, incomplete, or inactive. --></errorMessage>
+        <name>ucinn_ascendv2__Status_Development_Research</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Only the RMATS team can select a status of approved, incomplete, or inactive. --></errorMessage>
+        <name>ucinn_ascendv2__Status_GPM</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Only the RMATS team can select a status of approved, incomplete, or inactive. --></errorMessage>
+        <name>ucinn_ascendv2__Status_Presidential</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Only the RMATS team can select a status of approved, incomplete, or inactive. --></errorMessage>
+        <name>ucinn_ascendv2__Status_Stewardship_Officer</name>
+    </validationRules>
+</CustomObjectTranslation>

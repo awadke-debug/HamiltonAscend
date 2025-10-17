@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObjectTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <caseValues>
+        <plural>false</plural>
+        <value>การส่งเสริมรายการงาน</value>
+    </caseValues>
+    <nameFieldLabel>ชื่อการเลื่อนขั้นรายการงาน</nameFieldLabel>
+    <validationRules>
+        <errorMessage>คุณไม่สามารถเลื่อนขั้น Work_Item ไปยังไปป์ไลน์ที่ไม่ได้ใช้งาน</errorMessage>
+        <name>sf_devops__No_Promotion_to_Inactive_Pipeline</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>ไม่สามารถเลื่อนขั้น Work_Item ที่เป็นสมาชิกของ Change_Bundle ไปยัง Pipeline_Stage</errorMessage>
+        <name>sf_devops__Promoted_And_Installed</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>ไม่สามารถเลื่อนขั้น Work_Item ไปยัง Pipeline_Stage ที่มีเวอร์ชัน</errorMessage>
+        <name>sf_devops__Promoted_To_Versioned</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>ไม่สามารถเลื่อนขั้น WorkItem ถ้ายังไม่ได้รับอนุมัติ</errorMessage>
+        <name>sf_devops__Promoted_Without_Approval</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>สามารถเลื่อนขั้น WorkItem ไปยังลำดับขั้นภายในโครงการเดียวกันได้เท่านั้น</errorMessage>
+        <name>sf_devops__Promoted_Wrong_Project</name>
+    </validationRules>
+</CustomObjectTranslation>

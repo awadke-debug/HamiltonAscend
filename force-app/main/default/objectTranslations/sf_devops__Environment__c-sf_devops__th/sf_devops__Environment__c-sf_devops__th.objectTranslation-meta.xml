@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObjectTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <caseValues>
+        <plural>false</plural>
+        <value>สภาพแวดล้อม</value>
+    </caseValues>
+    <nameFieldLabel>ชื่อสภาพแวดล้อม</nameFieldLabel>
+    <validationRules>
+        <errorMessage>สภาพแวดล้อมต้องไม่มีฟิลด์ Expired__c ที่ตั้งเป็นเท็จ</errorMessage>
+        <name>sf_devops__Expired_Changed</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>สภาพแวดล้อมต้องไม่ได้แทรก Expired__c ที่ตั้งเป็นจริง</errorMessage>
+        <name>sf_devops__Expired_Insert</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>สภาพแวดล้อมการแทนที่ต้องหมดอายุแล้ว</errorMessage>
+        <name>sf_devops__Expired_Replaces</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>ต้องตั้งทั้ง Refresh_Source และ Refresh_Date หรือว่างเปล่าทั้งคู่</errorMessage>
+        <name>sf_devops__Refresh_Source_And_Date</name>
+    </validationRules>
+</CustomObjectTranslation>

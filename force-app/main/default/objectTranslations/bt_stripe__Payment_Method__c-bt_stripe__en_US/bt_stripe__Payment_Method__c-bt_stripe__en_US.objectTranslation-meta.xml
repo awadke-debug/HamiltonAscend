@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObjectTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <caseValues>
+        <plural>false</plural>
+        <value>Payment Method</value>
+    </caseValues>
+    <caseValues>
+        <plural>true</plural>
+        <value>Payment Methods</value>
+    </caseValues>
+    <fieldSets>
+        <label><!-- Virtual Terminal --></label>
+        <name>bt_stripe__Virtual_Terminal</name>
+    </fieldSets>
+    <layouts>
+        <layout>ACH (Bank Account)</layout>
+        <sections>
+            <label><!-- All Left Required - Leave Right Blank --></label>
+            <section>All Left Required - Leave Right Blank</section>
+        </sections>
+        <sections>
+            <label><!-- Bank Account Verification --></label>
+            <section>Bank Account Verification</section>
+        </sections>
+        <sections>
+            <label><!-- Billing Information --></label>
+            <section>Billing Information</section>
+        </sections>
+        <sections>
+            <label><!-- Custom Links --></label>
+            <section>Custom Links</section>
+        </sections>
+        <sections>
+            <label><!-- Mandate Data --></label>
+            <section>Mandate Data</section>
+        </sections>
+        <sections>
+            <label><!-- Payment Gateway Data --></label>
+            <section>Payment Gateway Data</section>
+        </sections>
+        <sections>
+            <label><!-- Related To --></label>
+            <section>Related To</section>
+        </sections>
+    </layouts>
+    <layouts>
+        <layout>Charge Card</layout>
+        <sections>
+            <label><!-- All Left Required, Leave Right Blank- # &amp; CVV Will Disappear On Save --></label>
+            <section>All Left Required, Leave Right Blank- # &amp; CVV Will Disappear On Save</section>
+        </sections>
+        <sections>
+            <label><!-- Billing Information --></label>
+            <section>Billing Information</section>
+        </sections>
+        <sections>
+            <label><!-- Custom Links --></label>
+            <section>Custom Links</section>
+        </sections>
+        <sections>
+            <label><!-- Mobile Capture --></label>
+            <section>Mobile Capture</section>
+        </sections>
+        <sections>
+            <label><!-- Payment Gateway Data --></label>
+            <section>Payment Gateway Data</section>
+        </sections>
+        <sections>
+            <label><!-- Related To --></label>
+            <section>Related To</section>
+        </sections>
+    </layouts>
+    <layouts>
+        <layout>Other</layout>
+        <sections>
+            <label><!-- All Left Required, Leave Right Blank- # &amp; CVV Will Disappear On Save --></label>
+            <section>All Left Required, Leave Right Blank- # &amp; CVV Will Disappear On Save</section>
+        </sections>
+        <sections>
+            <label><!-- Billing Information --></label>
+            <section>Billing Information</section>
+        </sections>
+        <sections>
+            <label><!-- Custom Links --></label>
+            <section>Custom Links</section>
+        </sections>
+        <sections>
+            <label><!-- Mobile Capture --></label>
+            <section>Mobile Capture</section>
+        </sections>
+        <sections>
+            <label><!-- Payment Gateway Data --></label>
+            <section>Payment Gateway Data</section>
+        </sections>
+        <sections>
+            <label><!-- Related To --></label>
+            <section>Related To</section>
+        </sections>
+    </layouts>
+    <quickActions>
+        <label><!-- Charge Card --></label>
+        <name>bt_stripe__Charge_Card</name>
+    </quickActions>
+    <recordTypes>
+        <description><!-- Automated Clearing House or ACH payments allow you to receive debit payments directly from a customer&apos;s bank account instead of using credit or debit cards. --></description>
+        <label><!-- ACH --></label>
+        <name>bt_stripe__ACH</name>
+    </recordTypes>
+    <recordTypes>
+        <description><!-- Use for Charge and Debit cards. Support for Visa, MasterCard, American Express, JCB (US-only), Discover (US-only), Diners Club (US-only). --></description>
+        <label><!-- Card --></label>
+        <name>bt_stripe__Charge_Card</name>
+    </recordTypes>
+    <recordTypes>
+        <description><!-- Use for all non-card or ACH payment methods. --></description>
+        <label><!-- Other --></label>
+        <name>bt_stripe__Other</name>
+    </recordTypes>
+    <startsWith>Consonant</startsWith>
+    <validationRules>
+        <errorMessage><!-- When entering micro-deposit amounts, the amount should be entered for example as &quot;32&quot;, not &quot;0.32&quot; or &quot;.32). --></errorMessage>
+        <name>bt_stripe__Micro_Deposit_Field_Value_Greater_Than_1</name>
+    </validationRules>
+    <webLinks>
+        <label><!-- Remove_From_Stripe --></label>
+        <name>bt_stripe__Remove_From_Stripe</name>
+    </webLinks>
+</CustomObjectTranslation>

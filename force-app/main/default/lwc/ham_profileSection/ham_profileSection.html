@@ -1,0 +1,108 @@
+<template>
+    <div class="left-panel">
+        <div class="profile-header">
+            <template if:false={contact.userPic}>
+                <lightning-icon class="person-icon" icon-name="standard:user" size="large"></lightning-icon>
+            </template>
+            <template if:true={contact.userPic}>
+                <img src={contact.userPic} alt={contact.name} class="avatar" />
+            </template>
+            <div class="name-year">
+                <span class="name">{contact.name} </span>
+                <span class="year">{contact.year}</span>
+            </div>
+        </div>
+
+        <div class="info-group">
+            <template for:each={personalSection} for:item="field">
+                <p key={field.displayOrder} class="info-spacing profile-left-spacing"><strong>{field.displayLabel}:
+                    </strong>
+                    <template if:true={field.isLink}>
+                        <a class="profile-left-text-field" href={field.href}
+                            target={field.target}>{field.displayValue}</a>
+                    </template>
+                    <template if:false={field.isLink}>
+                        {field.displayValue}
+                    </template>
+                </p>
+            </template>
+            <div class="linkedin-section info-group">
+                <a href={linkedInLink} class={linkedInClass} target="_blank" rel="noopener noreferrer">
+                    <span class="button-content"><img src={images.linkedInImage} alt="" width="25px"
+                            height="25px"></img></span>
+                    {label.mylinkedinprofile}
+                </a>
+            </div>
+        </div>
+
+        <div class="info-group">
+            <h3 class="info-spacing profile-left-bottom-section"><strong>{label.myconnections}</strong></h3>
+            <div class="relative-for-popup">
+
+                <p class="info-spacing clickable-contact profile-left-bottom-section-text" onclick={openConnectionPopUp}
+                    data-name="CampusContact">
+                    <strong>{label.mycampuscontact}:</strong> {campusContact.name}
+                </p>
+
+                <template if:true={isPopupVisible}>
+                    <template if:true={isDesktopView}>
+                        <div class="popup-card">
+                            <div class="popup-close" onclick={closeConnectionPopUp}>×</div>
+                            <div class="popup-item">
+                                <span><img src={images.callImage} class="popup-icon" alt="" width="25px"
+                                        height="25px"></img></span>
+                                <a href={campusContact.phone}>{campusContact.phoneLabel}</a>
+                            </div>
+                            <div class="popup-item">
+                                <span><img src={images.mailImage} class="popup-icon" alt="" width="25px"
+                                        height="25px"></img></span>
+                                <a href={campusContact.email}>{campusContact.emailLabel}</a>
+                            </div>
+                        </div>
+                    </template>
+
+                    <template if:true={isMobileView}>
+                        <div aria-label="Dialog title" aria-describedby="popover-body-id" class="slds-popover">
+                            <div style="color: #002F86;" class="slds-popover__close slds-float_right"
+                                onclick={closeConnectionPopUp}>×</div>
+                            <div id="popover-body-id" class="slds-popover__body">
+                                <span><img src={images.callImage} class="popup-icon" alt="" width="25px"
+                                        height="25px"></img></span>
+                                <a href={campusContact.phone}>{campusContact.phoneLabel}</a>
+                                <br /><br />
+                                <span><img src={images.mailImage} class="popup-icon" alt="" width="25px"
+                                        height="25px"></img></span>
+                                <a href={campusContact.email}>{campusContact.emailLabel}</a>
+                            </div>
+                        </div>
+                    </template>
+
+                </template>
+            </div>
+
+
+            <template for:each={myConnect} for:item="field">
+                <p key={field.displayOrder} class="info-spacing profile-left-bottom-section-text">
+                    <strong>{field.displayLabel}:</strong> {field.displayValue}
+                </p>
+            </template>
+        </div>
+        <!-- Commenting this code on UI but backend logic remains as is: developments on this will proceed in phase 2 as per John & Ameya's direction -->
+        <!---------------------------------------------------------------------------------------------------------->
+        <!-- <div class="facebook-section info-group">
+            <a href={facebookUrl} class="facebook-button slds-button" target="_blank" rel="noopener noreferrer">
+                <span><img src={images.faceBookImage} alt="" width="25px" height="25px"></img></span>
+                {label.facebook}
+            </a>
+        </div> -->
+        <!-- --------------------------------------------------------------------------------------------------------->
+
+        <div class="info-group info-group">
+            <h3 class="info-spacing profile-left-bottom-section"><strong>{label.myhamiltondegree}</strong></h3>
+            <p class="info-spacing profile-left-bottom-section-text"><strong>{label.major}</strong> {majorMinor.majors}
+            </p>
+            <p class="info-spacing profile-left-bottom-section-text"><strong>{label.minor}</strong> {majorMinor.minors}
+            </p>
+        </div>
+    </div>
+</template>

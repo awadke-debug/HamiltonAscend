@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>HAM_Institutional_Suffix__c</fullName>
+    <externalId>false</externalId>
+    <formula>IF(
+    NOT(ISBLANK(HAM_Alum_Suffix__c)),
+    HAM_Alum_Suffix__c &amp; IF(
+        NOT(ISBLANK(HAM_Surv_Spouse_Suffix__c)) ||
+        NOT(ISBLANK(HAM_Parent_Suffix__c)) ||
+        NOT(ISBLANK(HAM_GP_Suffix__c)),
+        &quot;, &quot;,
+        &quot;&quot;
+    ),
+    &quot;&quot;
+) &amp;
+IF(
+    NOT(ISBLANK(HAM_Surv_Spouse_Suffix__c)),
+    HAM_Surv_Spouse_Suffix__c &amp; IF(
+        NOT(ISBLANK(HAM_Parent_Suffix__c)) ||
+        NOT(ISBLANK(HAM_GP_Suffix__c)),
+        &quot;, &quot;,
+        &quot;&quot;
+    ),
+    &quot;&quot;
+) &amp;
+IF(
+    NOT(ISBLANK(HAM_Parent_Suffix__c)),
+    HAM_Parent_Suffix__c &amp; IF(
+        NOT(ISBLANK(HAM_GP_Suffix__c)),
+        &quot;, &quot;,
+        &quot;&quot;
+    ),
+    &quot;&quot;
+) &amp;
+IF(
+    NOT(ISBLANK(HAM_GP_Suffix__c)),
+    HAM_GP_Suffix__c,
+    &quot;&quot;
+)</formula>
+    <label>Institutional Suffix</label>
+    <required>false</required>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

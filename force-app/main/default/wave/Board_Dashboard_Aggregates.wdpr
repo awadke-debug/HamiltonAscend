@@ -1,0 +1,431 @@
+{
+  "version" : "63.0",
+  "nodes" : {
+    "LOAD_DATASET0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Is_In_Period", "Designation.ucinn_ascendv2__Areas_of_Giving_CASE_Type__c", "ucinn_ascendv2__Credit_Type__c", "Fiscal_Year", "ucinn_ascendv2__Credit_Date_Formula__c", "Object", "Cash_Amount", "Fundraising_Amount", "Fiscal_Year_Numeric" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Gift Credit and Payment",
+          "name" : "Gift_Credit_and_Payment"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "EXTRACT0" : {
+      "action" : "extractGrains",
+      "sources" : [ "FILTER0" ],
+      "parameters" : {
+        "grainExtractions" : [ ]
+      }
+    },
+    "AGGREGATE1" : {
+      "action" : "aggregate",
+      "sources" : [ "EXTRACT0" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "Received",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        }, {
+          "name" : "Committed_Including_Bequest_Intention",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        }, {
+          "name" : "SUM_HF_Received",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        }, {
+          "name" : "Received_FYTD",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        }, {
+          "name" : "Committed_Including_Bequest_Intention_FYTD",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        }, {
+          "name" : "HF_Received_FYTD",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        } ]
+      },
+      "parameters" : {
+        "aggregations" : [ {
+          "action" : "SUM",
+          "source" : "Cash_Amount",
+          "name" : "Received",
+          "label" : "Received"
+        }, {
+          "action" : "SUM",
+          "source" : "Fundraising_Amount",
+          "name" : "Committed_Including_Bequest_Intention",
+          "label" : "Committed Including Bequest Intention"
+        }, {
+          "action" : "SUM",
+          "source" : "HF_Received",
+          "name" : "SUM_HF_Received",
+          "label" : "HF Received"
+        }, {
+          "action" : "SUM",
+          "source" : "Cash_Amount_FYTD",
+          "name" : "Received_FYTD",
+          "label" : "Received FYTD"
+        }, {
+          "action" : "SUM",
+          "source" : "Fundraising_Amount_FYTD",
+          "name" : "Committed_Including_Bequest_Intention_FYTD",
+          "label" : "Committed Including Bequest Intention FYTD"
+        }, {
+          "action" : "SUM",
+          "source" : "HF_Cash_FYTD",
+          "name" : "HF_Received_FYTD",
+          "label" : "HF Received FYTD"
+        } ],
+        "groupings" : [ "Fiscal_Year" ],
+        "pivots" : [ ],
+        "nodeType" : "STANDARD"
+      }
+    },
+    "FORMULA0" : {
+      "action" : "formula",
+      "sources" : [ "LOAD_DATASET0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "HF_Received",
+          "label" : "HF Received",
+          "formulaExpression" : "case\r\nwhen\r\n    \r\n    contains(\"Designation.ucinn_ascendv2__Areas_of_Giving_CASE_Type__c\",'Hamilton Fund')\r\nthen\r\n    Cash_Amount\r\nelse\r\n    0\r\nend",
+          "precision" : 10,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA1" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Number_of_Years_Past",
+          "label" : "Number of Years Past",
+          "formulaExpression" : "fiscalYear(current_date()) - Fiscal_Year_Numeric",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA3" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA1" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "HF_Cash_FYTD",
+          "label" : "HF Cash FYTD",
+          "formulaExpression" : "case \r\n    when Is_In_Period='true' \r\n    then HF_Received\r\n    else\r\n    0\r\nend",
+          "precision" : 10,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA4" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA3" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Cash_Amount_FYTD",
+          "label" : "Cash Amount FYTD",
+          "formulaExpression" : "case \r\n    when Is_In_Period='true' \r\n    then Cash_Amount\r\n    else\r\n    0\r\nend",
+          "precision" : 10,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA5" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA4" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Fundraising_Amount_FYTD",
+          "label" : "Fundraising Amount FYTD",
+          "formulaExpression" : "case \r\n    when Is_In_Period='true' \r\n    then Fundraising_Amount\r\n    else\r\n    0\r\nend",
+          "precision" : 10,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "TO_MEASURE0" : {
+      "action" : "typeCast",
+      "sources" : [ "AGGREGATE1" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "Fiscal_Year_to_measure",
+          "newProperties" : {
+            "name" : "Fiscal_Year"
+          }
+        } ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Fiscal_Year" ]
+        }
+      },
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Fiscal_Year",
+          "newProperties" : {
+            "label" : "Fiscal Year",
+            "name" : "Fiscal_Year_to_measure",
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 0,
+              "precision" : 18
+            }
+          }
+        } ]
+      }
+    },
+    "FORMULA2" : {
+      "action" : "formula",
+      "sources" : [ "TO_MEASURE0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "DATETIME",
+          "name" : "Report_Update_Date",
+          "label" : "Report Update Date",
+          "formulaExpression" : "now()",
+          "format" : "MM/dd/yyyy",
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FILTER0" : {
+      "action" : "filter",
+      "sources" : [ "FORMULA5" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "NUMBER",
+          "field" : "Number_of_Years_Past",
+          "operator" : "LESS_OR_EQUAL",
+          "operands" : [ "5" ]
+        }, {
+          "type" : "TEXT",
+          "field" : "Fiscal_Year",
+          "operator" : "IS_NOT_NULL",
+          "operands" : [ ]
+        }, {
+          "type" : "TEXT",
+          "field" : "Object",
+          "operator" : "EQUAL",
+          "operands" : [ "Hard and Soft Credit" ]
+        }, {
+          "type" : "TEXT",
+          "field" : "ucinn_ascendv2__Credit_Type__c",
+          "operator" : "EQUAL",
+          "operands" : [ "Hard" ]
+        }, {
+          "type" : "NUMBER",
+          "field" : "Number_of_Years_Past",
+          "operator" : "GREATER_OR_EQUAL",
+          "operands" : [ "0" ]
+        } ]
+      }
+    },
+    "OUTPUT0" : {
+      "action" : "save",
+      "sources" : [ "FORMULA2" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Board Dashboard ADV Aggregates",
+          "name" : "Board_Dashboard_ADV_Aggregates",
+          "folderName" : "SharedApp"
+        },
+        "dateConfigurationName" : "July_Fiscal_Year",
+        "measuresToCurrencies" : [ ]
+      }
+    }
+  },
+  "ui" : {
+    "nodes" : {
+      "LOAD_DATASET0" : {
+        "label" : "Gift Credit and Payment",
+        "type" : "LOAD_DATASET",
+        "top" : 112,
+        "left" : 112,
+        "parameters" : {
+          "sampleSize" : 10000
+        }
+      },
+      "AGGREGATE0" : {
+        "label" : "Aggregate to FY",
+        "description" : "",
+        "type" : "AGGREGATE",
+        "top" : 112,
+        "left" : 672,
+        "graph" : {
+          "EXTRACT0" : null,
+          "AGGREGATE1" : null
+        },
+        "connectors" : [ {
+          "source" : "EXTRACT0",
+          "target" : "AGGREGATE1"
+        } ]
+      },
+      "TRANSFORM0" : {
+        "label" : "HF and FYTD",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 112,
+        "left" : 252,
+        "graph" : {
+          "FORMULA0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "HF Received"
+          },
+          "FORMULA1" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Number of Years Past"
+          },
+          "FORMULA3" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "HF Cash FYTD"
+          },
+          "FORMULA4" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Cash Amount FYTD"
+          },
+          "FORMULA5" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Fundraising Amount FYTD"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA0",
+          "target" : "FORMULA1"
+        }, {
+          "source" : "FORMULA1",
+          "target" : "FORMULA3"
+        }, {
+          "source" : "FORMULA3",
+          "target" : "FORMULA4"
+        }, {
+          "source" : "FORMULA4",
+          "target" : "FORMULA5"
+        } ]
+      },
+      "TRANSFORM1" : {
+        "label" : "Transform FY to numeric",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 112,
+        "left" : 812,
+        "graph" : {
+          "TO_MEASURE0" : {
+            "label" : "To Number"
+          },
+          "FORMULA2" : {
+            "parameters" : {
+              "type" : "DATE_NOW_UI"
+            },
+            "label" : "Formula Now"
+          }
+        },
+        "connectors" : [ {
+          "source" : "TO_MEASURE0",
+          "target" : "FORMULA2"
+        } ]
+      },
+      "FILTER0" : {
+        "label" : "Filter to last 5 FY and Hard Credit",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 112.19999999999999,
+        "left" : 532
+      },
+      "OUTPUT0" : {
+        "label" : "Output 0",
+        "type" : "OUTPUT",
+        "top" : 112,
+        "left" : 952
+      }
+    },
+    "connectors" : [ {
+      "source" : "LOAD_DATASET0",
+      "target" : "TRANSFORM0"
+    }, {
+      "source" : "AGGREGATE0",
+      "target" : "TRANSFORM1"
+    }, {
+      "source" : "TRANSFORM0",
+      "target" : "FILTER0"
+    }, {
+      "source" : "TRANSFORM1",
+      "target" : "OUTPUT0"
+    }, {
+      "source" : "FILTER0",
+      "target" : "AGGREGATE0"
+    } ],
+    "hiddenColumns" : [ ]
+  },
+  "runMode" : "full"
+}

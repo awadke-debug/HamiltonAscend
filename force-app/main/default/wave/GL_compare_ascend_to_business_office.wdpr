@@ -1,0 +1,869 @@
+{
+  "version" : "61.0",
+  "nodes" : {
+    "LOAD_DATASET0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Gift Credit and Payment",
+          "name" : "Gift_Credit_and_Payment"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "FILTER0" : {
+      "action" : "filter",
+      "sources" : [ "LOAD_DATASET0" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "Object",
+          "operator" : "EQUAL",
+          "operands" : [ "Hard and Soft Credit" ]
+        }, {
+          "type" : "TEXT",
+          "field" : "ucinn_ascendv2__Credit_Type__c",
+          "operator" : "EQUAL",
+          "operands" : [ "Hard" ]
+        }, {
+          "type" : "DATETIME",
+          "field" : "PaymentGL.ucinn_ascendv2__Post_to_G_L_Date__c_payment",
+          "operator" : "GREATER_OR_EQUAL",
+          "operands" : [ "1705536000000" ]
+        } ]
+      }
+    },
+    "EXTRACT0" : {
+      "action" : "extractGrains",
+      "sources" : [ "FORMULA6" ],
+      "parameters" : {
+        "grainExtractions" : [ {
+          "source" : "PaymentGL.ucinn_ascendv2__Post_to_G_L_Date__c_payment",
+          "targets" : [ {
+            "name" : "PaymentGL.ucinn_ascendv2__Post_to_G_L_Date__c_payment_DAY",
+            "label" : "PaymentGL.Payment Post to G / L Date Day",
+            "grainType" : "DAY"
+          }, {
+            "name" : "PaymentGL.ucinn_ascendv2__Post_to_G_L_Date__c_payment_MONTH",
+            "label" : "PaymentGL.Payment Post to G / L Date Month",
+            "grainType" : "MONTH"
+          }, {
+            "name" : "PaymentGL.ucinn_ascendv2__Post_to_G_L_Date__c_payment_YEAR",
+            "label" : "PaymentGL.Payment Post to G / L Date Year",
+            "grainType" : "YEAR"
+          } ]
+        } ]
+      }
+    },
+    "AGGREGATE1" : {
+      "action" : "aggregate",
+      "sources" : [ "EXTRACT0" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "SUM_Cash_Amount",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        } ]
+      },
+      "parameters" : {
+        "aggregations" : [ {
+          "action" : "SUM",
+          "source" : "Cash_Amount",
+          "name" : "SUM_Cash_Amount",
+          "label" : "Sum of Cash Amount"
+        } ],
+        "groupings" : [ "PaymentGL.ucinn_ascendv2__Post_to_G_L_Date__c_payment_DAY", "PaymentGL.ucinn_ascendv2__Post_to_G_L_Date__c_payment_MONTH", "PaymentGL.ucinn_ascendv2__Post_to_G_L_Date__c_payment_YEAR", "SF_Match_Key", "PaymentGL.ucinn_ascendv2__G_L_Account__c_payment" ],
+        "pivots" : [ ],
+        "nodeType" : "STANDARD"
+      }
+    },
+    "FILTER1" : {
+      "action" : "filter",
+      "sources" : [ "AGGREGATE1" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "NUMBER",
+          "field" : "SUM_Cash_Amount",
+          "operator" : "GREATER_THAN",
+          "operands" : [ "0" ]
+        }, {
+          "type" : "TEXT",
+          "field" : "PaymentGL.ucinn_ascendv2__Post_to_G_L_Date__c_payment_YEAR",
+          "operator" : "IS_NOT_NULL",
+          "operands" : [ ]
+        } ]
+      }
+    },
+    "LOAD_DATASET1" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Gl_No", "Month", "Gla_Description", "Gla_Sys_Date", "Gla_Source", "Gla_Tr_Date", "Gla_Ref_No", "Gla_Acct_Id", "Gla_Credit", "Gla_Debit" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "GL Activity 06-20-24",
+          "name" : "GL_Activity_06_20_24"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "EXTRACT1" : {
+      "action" : "extractGrains",
+      "sources" : [ "FORMULA5" ],
+      "parameters" : {
+        "grainExtractions" : [ {
+          "source" : "Gla_Tr_Date",
+          "targets" : [ {
+            "name" : "Gla_Tr_Date_DAY",
+            "label" : "Gla Tr Date Day",
+            "grainType" : "DAY"
+          }, {
+            "name" : "Gla_Tr_Date_MONTH",
+            "label" : "Gla Tr Date Month",
+            "grainType" : "MONTH"
+          }, {
+            "name" : "Gla_Tr_Date_YEAR",
+            "label" : "Gla Tr Date Year",
+            "grainType" : "YEAR"
+          } ]
+        } ]
+      }
+    },
+    "AGGREGATE3" : {
+      "action" : "aggregate",
+      "sources" : [ "EXTRACT1" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "SUM_Gla_Credit",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        }, {
+          "name" : "SUM_Gla_Debit",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        } ]
+      },
+      "parameters" : {
+        "aggregations" : [ {
+          "action" : "SUM",
+          "source" : "Gla_Credit",
+          "name" : "SUM_Gla_Credit",
+          "label" : "Sum of Gla Credit"
+        }, {
+          "action" : "SUM",
+          "source" : "Gla_Debit",
+          "name" : "SUM_Gla_Debit",
+          "label" : "Sum of Gla Debit"
+        } ],
+        "groupings" : [ "Gl_No", "Gla_Tr_Date_DAY", "Gla_Tr_Date_MONTH", "Gla_Tr_Date_YEAR", "BO_Match_Key" ],
+        "pivots" : [ ],
+        "nodeType" : "STANDARD"
+      }
+    },
+    "FILTER2" : {
+      "action" : "filter",
+      "sources" : [ "AGGREGATE3" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "NUMBER",
+          "field" : "SUM_Gla_Credit",
+          "operator" : "GREATER_THAN",
+          "operands" : [ "0" ]
+        }, {
+          "type" : "TEXT",
+          "field" : "Gla_Tr_Date_YEAR",
+          "operator" : "IS_NOT_NULL",
+          "operands" : [ ]
+        } ]
+      }
+    },
+    "JOIN0" : {
+      "action" : "join",
+      "sources" : [ "FILTER1", "FILTER2" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "OUTER",
+        "leftKeys" : [ "PaymentGL.ucinn_ascendv2__G_L_Account__c_payment", "PaymentGL.ucinn_ascendv2__Post_to_G_L_Date__c_payment_YEAR", "PaymentGL.ucinn_ascendv2__Post_to_G_L_Date__c_payment_MONTH", "PaymentGL.ucinn_ascendv2__Post_to_G_L_Date__c_payment_DAY" ],
+        "rightQualifier" : "SF_BO",
+        "rightKeys" : [ "Gl_No", "Gla_Tr_Date_YEAR", "Gla_Tr_Date_MONTH", "Gla_Tr_Date_DAY" ]
+      }
+    },
+    "FORMULA0" : {
+      "action" : "formula",
+      "sources" : [ "JOIN0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "SF_Flag",
+          "label" : "SF Flag",
+          "formulaExpression" : "case \r\n    when \"PaymentGL.ucinn_ascendv2__Post_to_G_L_Date__c_payment_DAY\">0\r\n    then 'SF'\r\n    else\r\n    'Not SF'\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA1" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Business_Office_Flag",
+          "label" : "Business Office Flag",
+          "formulaExpression" : "case \r\n    when \"SF_BO.Gla_Tr_Date_YEAR\">0\r\n    then 'BO'\r\n    else\r\n    'No BO'\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA2" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA1" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "GL_Match_Flag",
+          "label" : "GL Match Flag",
+          "formulaExpression" : "case \r\n    when SUM_Cash_Amount=\"SF_BO.SUM_Gla_Credit\"\r\n    then 'Match on Dollars'\r\n    else\r\n    'No Match on Dollars'\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "OUTPUT0" : {
+      "action" : "save",
+      "sources" : [ "FORMULA2" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "GL Validation FY24",
+          "name" : "GL_Validation_FY24",
+          "folderName" : "SharedApp"
+        },
+        "dateConfigurationName" : "July_Fiscal_Year",
+        "measuresToCurrencies" : [ ]
+      }
+    },
+    "FORMULA5" : {
+      "action" : "formula",
+      "sources" : [ "LOAD_DATASET1" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "BO_Match_Key",
+          "label" : "BO Match Key",
+          "formulaExpression" : "concat(\r\n    Gl_No,\r\n    '-',\r\n    year(Gla_Tr_Date),\r\n    '-',\r\n    month(Gla_Tr_Date),\r\n    '-',\r\n    day(Gla_Tr_Date))",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "OUTPUT1" : {
+      "action" : "save",
+      "sources" : [ "FORMULA5" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "GL Business Office",
+          "name" : "GL_Business_Office",
+          "folderName" : "SharedApp"
+        },
+        "measuresToCurrencies" : [ ]
+      }
+    },
+    "FORMULA6" : {
+      "action" : "formula",
+      "sources" : [ "FILTER0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "SF_Match_Key",
+          "label" : "SF Match Key",
+          "formulaExpression" : "concat(\r\n    \"PaymentGL.ucinn_ascendv2__G_L_Account__c_payment\"\r\n    ,\r\n    '-',\r\n    year(\"PaymentGL.ucinn_ascendv2__Post_to_G_L_Date__c_payment\"),\r\n    '-',\r\n   month(\"PaymentGL.ucinn_ascendv2__Post_to_G_L_Date__c_payment\"),\r\n    '-',\r\n    day(\"PaymentGL.ucinn_ascendv2__Post_to_G_L_Date__c_payment\")\r\n)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "DROP_FIELDS1" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA6" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "SELECT",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Opportunity.Adjustment_Session.ucinn_ascendv2__Is_Ready_for_G_L__c", "Designation.ucinn_ascendv2__Areas_of_Giving_CASE_Type__c", "ucinn_ascendv2__Opportunity__c", "CreatedBy.Name", "Opportunity.RecordType.Name", "ucinn_ascendv2__Credit_Type__c", "Object", "Id", "Contact.ucinn_ascendv2__Full_Name_Formula__c", "Opportunity.ucinn_ascendv2__External_System_ID__c", "Organization_or_Constituent_Account_Id", "ucinn_ascendv2__Session__c", "Opportunity.Name", "ucinn_asce.Name", "ucinn_ascendv2__G_L_Account_Formula__c", "ucinn_ascendv2__External_System_ID__c", "ucinn_ascendv2__Gift_Type_Formula__c", "Organization_or_Contact_External_Id", "CreatedById", "Opportunity.StageName", "Opportunity.ucinn_ascendv2__Adjustment_Session__c", "Opportunity.Type", "Constituent_or_Account_Id", "Contact.Name", "ucinn_ascendv2__Is_Ready_for_G_L_Formula__c", "ucinn_ascendv2__Credit_Amount__c", "LastModifiedDate", "Hard_And_Soft_Credit_Payment.ucinn_ascendv2__Post_to_G_L_Date__c", "Updated_Date", "ucinn_ascendv2__Credit_Date_Formula__c", "Opportunity.ucinn_ascendv2__Credit_Date__c", "SF_Match_Key", "Cash_Amount", "PaymentGL.ucinn_ascendv2__Post_to_G_L_Date__c_payment", "PaymentGL.ucinn_ascendv2__G_L_Account__c_payment", "PaymentGL.ucinn_ascendv2__Session_Approved_Date_Formula__c_payment" ]
+        }
+      }
+    },
+    "OUTPUT2" : {
+      "action" : "save",
+      "sources" : [ "DROP_FIELDS1" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Gift Credit Payment for GL",
+          "name" : "Gift_Credit_Payment_for_GL",
+          "folderName" : "SharedApp"
+        },
+        "measuresToCurrencies" : [ ]
+      }
+    },
+    "FILTER3" : {
+      "action" : "filter",
+      "sources" : [ "LOAD_DATASET0" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "Object",
+          "operator" : "EQUAL",
+          "operands" : [ "Hard and Soft Credit" ]
+        }, {
+          "type" : "TEXT",
+          "field" : "ucinn_ascendv2__Credit_Type__c",
+          "operator" : "EQUAL",
+          "operands" : [ "Hard" ]
+        }, {
+          "type" : "NUMBER",
+          "field" : "Cash_Amount",
+          "operator" : "GREATER_THAN",
+          "operands" : [ "0" ]
+        }, {
+          "type" : "DATETIME",
+          "field" : "PaymentGL.ucinn_ascendv2__Session_Approved_Date_Formula__c_payment",
+          "operator" : "GREATER_OR_EQUAL",
+          "operands" : [ "1708819200000" ]
+        } ]
+      }
+    },
+    "EXTRACT2" : {
+      "action" : "extractGrains",
+      "sources" : [ "FILTER3" ],
+      "parameters" : {
+        "grainExtractions" : [ ]
+      }
+    },
+    "AGGREGATE5" : {
+      "action" : "aggregate",
+      "sources" : [ "EXTRACT2" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "SUM_Cash_Amount",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        } ]
+      },
+      "parameters" : {
+        "aggregations" : [ {
+          "action" : "SUM",
+          "source" : "Cash_Amount",
+          "name" : "SUM_Cash_Amount",
+          "label" : "Sum of Cash Amount"
+        } ],
+        "groupings" : [ "PaymentGL.ucinn_ascendv2__G_L_Account__c_payment" ],
+        "nodeType" : "STANDARD"
+      }
+    },
+    "EXTRACT3" : {
+      "action" : "extractGrains",
+      "sources" : [ "LOAD_DATASET1" ],
+      "parameters" : {
+        "grainExtractions" : [ ]
+      }
+    },
+    "AGGREGATE7" : {
+      "action" : "aggregate",
+      "sources" : [ "EXTRACT3" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "SUM_Gla_Credit",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        } ]
+      },
+      "parameters" : {
+        "aggregations" : [ {
+          "action" : "SUM",
+          "source" : "Gla_Credit",
+          "name" : "SUM_Gla_Credit",
+          "label" : "Sum of Gla Credit"
+        } ],
+        "groupings" : [ "Gl_No" ],
+        "nodeType" : "STANDARD"
+      }
+    },
+    "JOIN1" : {
+      "action" : "join",
+      "sources" : [ "AGGREGATE5", "AGGREGATE7" ],
+      "schema" : {
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "OUTER",
+        "leftKeys" : [ "PaymentGL.ucinn_ascendv2__G_L_Account__c_payment" ],
+        "rightQualifier" : "Aggregatet",
+        "rightKeys" : [ "Gl_No" ]
+      }
+    },
+    "OUTPUT3" : {
+      "action" : "save",
+      "sources" : [ "DROP_FIELDS2" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "GL Comparison",
+          "name" : "GL_Comparison",
+          "folderName" : "SharedApp"
+        }
+      }
+    },
+    "FORMULA7" : {
+      "action" : "formula",
+      "sources" : [ "JOIN1" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Cash_Amount",
+          "label" : "Cash Amount",
+          "formulaExpression" : "coalesce(SUM_Cash_Amount,0)",
+          "precision" : 10,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA8" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA7" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Gla_Credit",
+          "label" : "Gla Credit",
+          "formulaExpression" : "coalesce(\"Aggregatet.SUM_Gla_Credit\",0)",
+          "precision" : 10,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA9" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA8" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "SF_less_BO",
+          "label" : "SF less BO",
+          "formulaExpression" : "Cash_Amount-Gla_Credit",
+          "precision" : 10,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "DROP_FIELDS2" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA9" ],
+      "parameters" : {
+        "slice" : {
+          "mode" : "SELECT",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Aggregatet.Gl_No", "Cash_Amount", "Gla_Credit", "SF_less_BO", "PaymentGL.ucinn_ascendv2__G_L_Account__c_payment" ]
+        }
+      }
+    }
+  },
+  "ui" : {
+    "nodes" : {
+      "LOAD_DATASET0" : {
+        "label" : "Gift Credit and Payment",
+        "type" : "LOAD_DATASET",
+        "top" : 392,
+        "left" : 670.2,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "FILTER0" : {
+        "label" : "Filter to Hard Credit and date GE 1/18/24",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 392,
+        "left" : 810.2
+      },
+      "AGGREGATE0" : {
+        "label" : "Aggregate to GL, Date",
+        "description" : "",
+        "type" : "AGGREGATE",
+        "top" : 392,
+        "left" : 1090.2,
+        "graph" : {
+          "EXTRACT0" : null,
+          "AGGREGATE1" : null
+        },
+        "connectors" : [ {
+          "source" : "EXTRACT0",
+          "target" : "AGGREGATE1"
+        } ]
+      },
+      "FILTER1" : {
+        "label" : "Remove missing dates, keep positive cash",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 392,
+        "left" : 1230.2
+      },
+      "LOAD_DATASET1" : {
+        "label" : "GL Activity 06-20-24",
+        "type" : "LOAD_DATASET",
+        "top" : 532,
+        "left" : 670.2,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "AGGREGATE2" : {
+        "label" : "Aggregate to GL, Date",
+        "description" : "",
+        "type" : "AGGREGATE",
+        "top" : 532,
+        "left" : 1090.2,
+        "graph" : {
+          "EXTRACT1" : null,
+          "AGGREGATE3" : null
+        },
+        "connectors" : [ {
+          "source" : "EXTRACT1",
+          "target" : "AGGREGATE3"
+        } ]
+      },
+      "FILTER2" : {
+        "label" : "Remove missing dates, keep positive credit",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 532,
+        "left" : 1230.2
+      },
+      "JOIN0" : {
+        "label" : "Join on GL and date",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 392,
+        "left" : 1370.2
+      },
+      "TRANSFORM0" : {
+        "label" : "Create Flags",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 392,
+        "left" : 1510.2,
+        "graph" : {
+          "FORMULA0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "SF Flag"
+          },
+          "FORMULA1" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Business Office Flag"
+          },
+          "FORMULA2" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "GL Match Flag"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA0",
+          "target" : "FORMULA1"
+        }, {
+          "source" : "FORMULA1",
+          "target" : "FORMULA2"
+        } ]
+      },
+      "OUTPUT0" : {
+        "label" : "Output 0",
+        "type" : "OUTPUT",
+        "top" : 392,
+        "left" : 1650.2
+      },
+      "TRANSFORM1" : {
+        "label" : "Create Key",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 532,
+        "left" : 950.2,
+        "graph" : {
+          "FORMULA5" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "BO Match Key"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "OUTPUT1" : {
+        "label" : "Output 1",
+        "type" : "OUTPUT",
+        "top" : 672,
+        "left" : 950.2
+      },
+      "TRANSFORM2" : {
+        "label" : "Create Key",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 392,
+        "left" : 950.2,
+        "graph" : {
+          "FORMULA6" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "SF Match Key"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "TRANSFORM3" : {
+        "label" : "Keep Cols",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 252,
+        "left" : 950.2,
+        "graph" : {
+          "DROP_FIELDS1" : {
+            "label" : "Drop Columns"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "OUTPUT2" : {
+        "label" : "Output GCP GL",
+        "description" : "",
+        "type" : "OUTPUT",
+        "top" : 252,
+        "left" : 1090.2
+      },
+      "FILTER3" : {
+        "label" : "Filter  to hard credit approved sessions >=2/25/24",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 392,
+        "left" : 530.2
+      },
+      "AGGREGATE4" : {
+        "label" : "Aggregate to GL",
+        "description" : "",
+        "type" : "AGGREGATE",
+        "top" : 392,
+        "left" : 390.2,
+        "graph" : {
+          "EXTRACT2" : null,
+          "AGGREGATE5" : null
+        },
+        "connectors" : [ {
+          "source" : "EXTRACT2",
+          "target" : "AGGREGATE5"
+        } ]
+      },
+      "AGGREGATE6" : {
+        "label" : "Aggregate to GL",
+        "description" : "",
+        "type" : "AGGREGATE",
+        "top" : 532,
+        "left" : 390.2,
+        "graph" : {
+          "EXTRACT3" : null,
+          "AGGREGATE7" : null
+        },
+        "connectors" : [ {
+          "source" : "EXTRACT3",
+          "target" : "AGGREGATE7"
+        } ]
+      },
+      "JOIN1" : {
+        "label" : "Join 1",
+        "type" : "JOIN",
+        "top" : 392.3,
+        "left" : 112.1
+      },
+      "OUTPUT3" : {
+        "label" : "Output GL Level",
+        "description" : "",
+        "type" : "OUTPUT",
+        "top" : 113.9,
+        "left" : 112
+      },
+      "TRANSFORM4" : {
+        "label" : "Clean up NULLs",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 252,
+        "left" : 112,
+        "graph" : {
+          "FORMULA7" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Cash Amount"
+          },
+          "FORMULA8" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Gla Credit"
+          },
+          "FORMULA9" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "SF less BO"
+          },
+          "DROP_FIELDS2" : {
+            "label" : "Drop Columns"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA7",
+          "target" : "FORMULA8"
+        }, {
+          "source" : "FORMULA8",
+          "target" : "FORMULA9"
+        }, {
+          "source" : "FORMULA9",
+          "target" : "DROP_FIELDS2"
+        } ]
+      }
+    },
+    "connectors" : [ {
+      "source" : "LOAD_DATASET0",
+      "target" : "FILTER0"
+    }, {
+      "source" : "TRANSFORM2",
+      "target" : "AGGREGATE0"
+    }, {
+      "source" : "AGGREGATE0",
+      "target" : "FILTER1"
+    }, {
+      "source" : "AGGREGATE2",
+      "target" : "FILTER2"
+    }, {
+      "source" : "FILTER1",
+      "target" : "JOIN0"
+    }, {
+      "source" : "FILTER2",
+      "target" : "JOIN0"
+    }, {
+      "source" : "JOIN0",
+      "target" : "TRANSFORM0"
+    }, {
+      "source" : "TRANSFORM0",
+      "target" : "OUTPUT0"
+    }, {
+      "source" : "LOAD_DATASET1",
+      "target" : "TRANSFORM1"
+    }, {
+      "source" : "TRANSFORM1",
+      "target" : "AGGREGATE2"
+    }, {
+      "source" : "TRANSFORM1",
+      "target" : "OUTPUT1"
+    }, {
+      "source" : "FILTER0",
+      "target" : "TRANSFORM2"
+    }, {
+      "source" : "TRANSFORM2",
+      "target" : "TRANSFORM3"
+    }, {
+      "source" : "TRANSFORM3",
+      "target" : "OUTPUT2"
+    }, {
+      "source" : "LOAD_DATASET0",
+      "target" : "FILTER3"
+    }, {
+      "source" : "FILTER3",
+      "target" : "AGGREGATE4"
+    }, {
+      "source" : "LOAD_DATASET1",
+      "target" : "AGGREGATE6"
+    }, {
+      "source" : "AGGREGATE4",
+      "target" : "JOIN1"
+    }, {
+      "source" : "AGGREGATE6",
+      "target" : "JOIN1"
+    }, {
+      "source" : "TRANSFORM4",
+      "target" : "OUTPUT3"
+    }, {
+      "source" : "JOIN1",
+      "target" : "TRANSFORM4"
+    } ],
+    "hiddenColumns" : [ ]
+  },
+  "runMode" : "full"
+}

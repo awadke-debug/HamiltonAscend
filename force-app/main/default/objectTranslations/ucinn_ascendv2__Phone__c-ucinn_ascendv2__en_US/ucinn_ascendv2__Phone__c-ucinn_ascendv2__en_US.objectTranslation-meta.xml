@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObjectTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <caseValues>
+        <plural>false</plural>
+        <value>Phone</value>
+    </caseValues>
+    <caseValues>
+        <plural>true</plural>
+        <value>Phones</value>
+    </caseValues>
+    <layouts>
+        <layout>Account Phone Layout</layout>
+        <sections>
+            <label><!-- Custom Links --></label>
+            <section>Custom Links</section>
+        </sections>
+    </layouts>
+    <layouts>
+        <layout>Contact Phone Layout</layout>
+        <sections>
+            <label><!-- Custom Links --></label>
+            <section>Custom Links</section>
+        </sections>
+    </layouts>
+    <recordTypes>
+        <description><!-- A constituent&apos;s phone number. --></description>
+        <label><!-- Contact Phone --></label>
+        <name>ucinn_ascendv2__Contact_Phone</name>
+    </recordTypes>
+    <recordTypes>
+        <description><!-- A Corporation/organization&apos;s phone number. --></description>
+        <label><!-- Organization Phone --></label>
+        <name>ucinn_ascendv2__Organization_Phone</name>
+    </recordTypes>
+    <startsWith>Consonant</startsWith>
+    <validationRules>
+        <errorMessage><!-- Phone number must be a valid US or international number between 10 and 15 numbers in length not counting: +- () characters --></errorMessage>
+        <name>Enforce_10_Digit_Phone_Number</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- A phone can be associated to either a constituent or an organization, but not both. --></errorMessage>
+        <name>ucinn_ascendv2__Only_Contact_OR_Org_Can_Have_a_Value</name>
+    </validationRules>
+</CustomObjectTranslation>

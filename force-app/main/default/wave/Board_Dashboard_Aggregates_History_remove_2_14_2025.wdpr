@@ -1,0 +1,79 @@
+{
+  "version" : "62.0",
+  "nodes" : {
+    "LOAD_DATASET0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Fiscal_Year", "Report_Update_Date", "SUM_HF_Received", "Committed_Including_Bequest_Intention", "Received" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Board Dashboard ADV Aggregates History",
+          "name" : "Board_Dashboard_ADV_Aggregates_History"
+        },
+        "sampleDetails" : {
+          "type" : "TopN"
+        }
+      }
+    },
+    "FILTER0" : {
+      "action" : "filter",
+      "sources" : [ "LOAD_DATASET0" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "DATETIME",
+          "field" : "Report_Update_Date",
+          "operator" : "NOT",
+          "operands" : [ "1739491200000" ]
+        } ]
+      }
+    },
+    "OUTPUT0" : {
+      "action" : "save",
+      "sources" : [ "FILTER0" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Board_Dashboard_ADV_Aggregates_History",
+          "name" : "Board_Dashboard_ADV_Aggregates_History",
+          "folderName" : "SharedApp"
+        }
+      }
+    }
+  },
+  "ui" : {
+    "nodes" : {
+      "LOAD_DATASET0" : {
+        "label" : "Board Dashboard ADV Aggregates History",
+        "type" : "LOAD_DATASET",
+        "top" : 112,
+        "left" : 112,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "FILTER0" : {
+        "label" : "Filter 0",
+        "type" : "FILTER",
+        "top" : 112,
+        "left" : 252
+      },
+      "OUTPUT0" : {
+        "label" : "Output 0",
+        "type" : "OUTPUT",
+        "top" : 112,
+        "left" : 392
+      }
+    },
+    "connectors" : [ {
+      "source" : "LOAD_DATASET0",
+      "target" : "FILTER0"
+    }, {
+      "source" : "FILTER0",
+      "target" : "OUTPUT0"
+    } ],
+    "hiddenColumns" : [ ]
+  },
+  "runMode" : "full"
+}

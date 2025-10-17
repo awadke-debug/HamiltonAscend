@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObjectTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <caseValues>
+        <plural>false</plural>
+        <value>Release Signoff Infrastructure</value>
+    </caseValues>
+    <caseValues>
+        <plural>true</plural>
+        <value>Release Signoffs Infrastructure</value>
+    </caseValues>
+    <layouts>
+        <layout>New Pod Layout</layout>
+        <sections>
+            <label><!-- Custom Links --></label>
+            <section>Custom Links</section>
+        </sections>
+        <sections>
+            <label><!-- Executive Sign-off --></label>
+            <section>Executive Sign-off</section>
+        </sections>
+        <sections>
+            <label><!-- Functional Signoff --></label>
+            <section>Functional Signoff</section>
+        </sections>
+        <sections>
+            <label><!-- New Pod Team Signoff --></label>
+            <section>New Pod Team Signoff</section>
+        </sections>
+        <sections>
+            <label><!-- Scrum Teams/Distributed Applications Approvals --></label>
+            <section>Scrum Teams/Distributed Applications Approvals</section>
+        </sections>
+    </layouts>
+    <layouts>
+        <layout>Release Signoff Splits &amp; Migrations Layout</layout>
+        <sections>
+            <label><!-- Custom Links --></label>
+            <section>Custom Links</section>
+        </sections>
+        <sections>
+            <label><!-- Executive Sign-off --></label>
+            <section>Executive Sign-off</section>
+        </sections>
+        <sections>
+            <label><!-- Functional Signoff --></label>
+            <section>Functional Signoff</section>
+        </sections>
+        <sections>
+            <label><!-- Scrum Teams/Distributed Applications Approvals --></label>
+            <section>Scrum Teams/Distributed Applications Approvals</section>
+        </sections>
+        <sections>
+            <label><!-- Splits/Migrations Team Signoff --></label>
+            <section>Splits/Migrations Team Signoff</section>
+        </sections>
+    </layouts>
+    <recordTypes>
+        <description><!-- Tracks approvals for new POD buildouts --></description>
+        <label><!-- New Pods --></label>
+        <name>agf__New_Pods</name>
+    </recordTypes>
+    <recordTypes>
+        <description><!-- Tracks approvals for POD migrations and splits --></description>
+        <label><!-- Splits &amp; Migrations --></label>
+        <name>agf__Splits_Migrations</name>
+    </recordTypes>
+    <startsWith>Consonant</startsWith>
+    <validationRules>
+        <errorMessage><!-- Signoff dates cannot be in the future. --></errorMessage>
+        <name>agf__Dates_must_not_be_future</name>
+    </validationRules>
+</CustomObjectTranslation>

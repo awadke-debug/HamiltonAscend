@@ -1,0 +1,160 @@
+{
+  "version" : "63.0",
+  "nodes" : {
+    "LOAD_DATASET0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Is_Contactable", "Preferred_Address.ucinn_ascendv2__Address_State_Formula__c", "ucinn_ascendv2__Ethnicity__c", "Is_Active", "All_Degree_Codes", "ucinn_ascendv2__Preferred_Address_Country__c", "HAM_Is_Primary_Constituent__c", "ucinn_ascendv2__Is_Deceased__c", "Largest_Pledge_Designation", "All_Student_Programs_Involvements", "Wealth_Rating.HAM_Wealth_Rating_Number__c", "Largest_Cash_Gift_Type", "All_Student_Housing_Involvements", "Is_Ever_Trustee", "All_Private_Societies_Involvements", "Name", "Society_Membership.All_Active_Giving_Societies", "All_Involvement_Except_Student_Involvement", "Degree.All_Minors", "All_Active_Organization_Names", "ucinn_ascendv2__Gender__c", "ucinn_ascendv2__Is_Anonymous__c", "TransformT1.Tiered_1812_2YR", "Multicultural_Affinity", "ChildReuni.Is_Hamilton_Parent", "All_NCAA_Involvements", "All_Society.All_Giving_Societies", "Is_Alumni", "Is_Solicitable", "Largest_HF_Gift_Designation", "ucinn_ascendv2__Primary_Contact_Type__c", "Aggregate.SUM_FY00_Collected_Amount_HF", "Lifetime_Cash_Amount", "ucinn_ascendv2__Lifetime_Cash__c", "Account.ucinn_ascendv2__Lifetime_Cash__c", "Aggregate.SUM_Current_Calendar_Year_Total_Cash_HF", "HAM_Consecutive_Years_of_Giving__c", "Aggregate.SUM_HF_Calendar_Year_Total_Cash_1YR", "Aggregate.Sum.FY02_Committed_Amount", "Aggregate.SUM_FY00_Collected_Amount_No_Event_Fee_Gifts", "Aggregate.SUM_Calendar_Year_Total_Cash_1YR", "ucinn_ascendv2__Age_Formula__c", "Aggregate.SUM_FY02_Committed_Excluding_BQI", "Aggregate_02.Sum.Is_Consecutive_Year", "Aggregate.SUM_FY02_Bequest_Intention_Amount", "COUNT_Rows", "Aggregate.Sum.FY02_Collected_Amount", "Aggregate.SUM_FY01_Collected_Amount_HF", "Aggregate.SUM_FY02_Collected_Amount_HF", "Aggregate.SUM_FY03_Collected_Amount_HF" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Account and Contact Dataset",
+          "name" : "Account_and_Contact_Dataset"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "FILTER0" : {
+      "action" : "filter",
+      "sources" : [ "LOAD_DATASET0" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "Is_Active",
+          "operator" : "EQUAL",
+          "operands" : [ "true" ]
+        }, {
+          "type" : "TEXT",
+          "field" : "ucinn_ascendv2__Is_Deceased__c",
+          "operator" : "EQUAL",
+          "operands" : [ "false" ]
+        }, {
+          "type" : "TEXT",
+          "field" : "Is_Alumni",
+          "operator" : "EQUAL",
+          "operands" : [ "true" ]
+        }, {
+          "type" : "TEXT",
+          "field" : "ucinn_ascendv2__Primary_Contact_Type__c",
+          "operator" : "EQUAL",
+          "operands" : [ "Hamilton Alumni", "Hamilton Withdrawn", "Kirkland Alumnae", "Trustee" ]
+        }, {
+          "type" : "TEXT",
+          "field" : "Is_Solicitable",
+          "operator" : "EQUAL",
+          "operands" : [ "true" ]
+        } ],
+        "filterBooleanLogic" : "1 AND 2 AND 3 AND 4 AND 5"
+      }
+    },
+    "FORMULA0" : {
+      "action" : "formula",
+      "sources" : [ "FILTER0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "COUNT_Rows_formula",
+          "label" : "Events Attended Formula",
+          "formulaExpression" : "CASE \r\n    WHEN \"Aggregate_02.Sum.Is_Consecutive_Year\" > 2   \r\n        THEN \"Aggregate_02.Sum.Is_Consecutive_Year\" - 2 \r\n    ELSE 0 \r\nEND",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA1" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Is_5K_HF_DONOR1_1YR",
+          "label" : "Is 5k HF Donor 1YR",
+          "formulaExpression" : "case \r\n    when \"Aggregate.SUM_FY01_Collected_Amount_HF\">=5000\r\n    then 'true'\r\n    else\r\n    'false'\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "OUTPUT0" : {
+      "action" : "save",
+      "sources" : [ "FORMULA1" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Model 5K HF Donor 1YR",
+          "name" : "Model_5K_HF_Donor_1YR",
+          "folderName" : "SharedApp"
+        },
+        "measuresToCurrencies" : [ ]
+      }
+    }
+  },
+  "ui" : {
+    "nodes" : {
+      "LOAD_DATASET0" : {
+        "label" : "Account and Contact Dataset",
+        "type" : "LOAD_DATASET",
+        "top" : 112,
+        "left" : 112,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "FILTER0" : {
+        "label" : "Filter 0",
+        "type" : "FILTER",
+        "top" : 112,
+        "left" : 252
+      },
+      "TRANSFORM0" : {
+        "label" : "Transform 0",
+        "type" : "TRANSFORM",
+        "top" : 112,
+        "left" : 392,
+        "graph" : {
+          "FORMULA0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Consecutive Year Count 2YR"
+          },
+          "FORMULA1" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Is 5K HF Donor 1YR?"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA0",
+          "target" : "FORMULA1"
+        } ]
+      },
+      "OUTPUT0" : {
+        "label" : "Output 0",
+        "type" : "OUTPUT",
+        "top" : 112,
+        "left" : 532
+      }
+    },
+    "connectors" : [ {
+      "source" : "LOAD_DATASET0",
+      "target" : "FILTER0"
+    }, {
+      "source" : "FILTER0",
+      "target" : "TRANSFORM0"
+    }, {
+      "source" : "TRANSFORM0",
+      "target" : "OUTPUT0"
+    } ],
+    "hiddenColumns" : [ ]
+  },
+  "runMode" : "full"
+}

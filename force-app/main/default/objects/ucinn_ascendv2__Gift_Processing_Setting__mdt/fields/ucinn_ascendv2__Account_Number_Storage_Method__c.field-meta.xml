@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>ucinn_ascendv2__Account_Number_Storage_Method__c</fullName>
+    <deprecated>false</deprecated>
+    <fieldManageability>SubscriberControlled</fieldManageability>
+    <inlineHelpText>Determines how ascend stores Bank Routing and Account Number for ACH transactions.
+No Storage: {no information is stored - best option}
+Masked &amp; Unencrypted: ******7890 - acceptable option
+Unmasked &amp; Unencrypted: 1234567890 - worst option</inlineHelpText>
+    <label>Account Number Storage Method</label>
+    <required>false</required>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>No Storage</fullName>
+                <default>true</default>
+                <label>No Storage</label>
+            </value>
+            <value>
+                <fullName>Masked &amp; Unencrypted</fullName>
+                <default>false</default>
+                <label>Masked &amp; Unencrypted</label>
+            </value>
+            <value>
+                <fullName>Unmasked &amp; Unencrypted</fullName>
+                <default>false</default>
+                <label>Unmasked &amp; Unencrypted</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

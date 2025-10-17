@@ -1,0 +1,85 @@
+{
+  "version" : "53.0",
+  "nodes" : {
+    "LOAD_DATASET0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Status", "Account_Id", "Support_Type", "Owner_Id", "CaseNumber" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Cases",
+          "name" : "Cases"
+        }
+      }
+    },
+    "EDIT_ATTRIBUTES0" : {
+      "action" : "schema",
+      "sources" : [ "LOAD_DATASET0" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Support_Type",
+          "newProperties" : {
+            "label" : "Support Level",
+            "name" : "Support_Level"
+          }
+        } ]
+      }
+    },
+    "OUTPUT0" : {
+      "action" : "save",
+      "sources" : [ "EDIT_ATTRIBUTES0" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Learn - Edit Attributes",
+          "name" : "Learn_Edit_Attributes",
+          "folderName" : "Learning_Adventure"
+        }
+      }
+    }
+  },
+  "ui" : {
+    "nodes" : {
+      "LOAD_DATASET0" : {
+        "label" : "Cases",
+        "type" : "LOAD_DATASET",
+        "top" : 112,
+        "left" : 112,
+        "graph" : {
+          "LOAD_DATASET0" : null
+        },
+        "connectors" : [ ],
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "TRANSFORM0" : {
+        "label" : "Edit Attributes Transform",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 112,
+        "left" : 252,
+        "graph" : {
+          "EDIT_ATTRIBUTES0" : null
+        },
+        "connectors" : [ ]
+      },
+      "OUTPUT0" : {
+        "label" : "Output",
+        "type" : "OUTPUT",
+        "top" : 112,
+        "left" : 392
+      }
+    },
+    "connectors" : [ {
+      "source" : "LOAD_DATASET0",
+      "target" : "TRANSFORM0"
+    }, {
+      "source" : "TRANSFORM0",
+      "target" : "OUTPUT0"
+    } ],
+    "hiddenColumns" : [ ]
+  }
+}

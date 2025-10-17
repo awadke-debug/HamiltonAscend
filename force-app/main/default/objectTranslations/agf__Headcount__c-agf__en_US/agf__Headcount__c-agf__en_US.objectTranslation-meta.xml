@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObjectTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <caseValues>
+        <plural>false</plural>
+        <value>Position</value>
+    </caseValues>
+    <caseValues>
+        <plural>true</plural>
+        <value>Roster</value>
+    </caseValues>
+    <startsWith>Consonant</startsWith>
+    <validationRules>
+        <errorMessage><!-- When moving a Headcount to status &quot;Open - Backfill,&quot; there must be a name in the Headcount Name field, which will be moved into the Backfill Name field automatically. --></errorMessage>
+        <name>agf__Backfill_Headcount_must_have_BF_name</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- When marking a Headcount as &quot;Filled,&quot; you must choose an associated User for the Headcount Name field. --></errorMessage>
+        <name>agf__Filled_Headcount_must_have_name</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Headcount in New status can&apos;t have any names associated with it via the Headcount Name or Backfill Name fields. --></errorMessage>
+        <name>agf__New_headcount_cant_have_any_Names</name>
+    </validationRules>
+    <webLinks>
+        <label><!-- Transfer_Headcount --></label>
+        <name>agf__Transfer_Headcount</name>
+    </webLinks>
+</CustomObjectTranslation>

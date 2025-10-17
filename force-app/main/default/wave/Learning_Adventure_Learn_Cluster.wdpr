@@ -1,0 +1,176 @@
+{
+  "version" : "53.0",
+  "nodes" : {
+    "LOAD_DATASET0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "IsDeleted", "IsCustomerPortal", "IsLocked", "Name", "Industry", "Type", "BillingCountry", "AccountSource", "Segment__c", "BillingState", "IsPartner", "Rating", "NumberOfEmployees", "Sic", "AnnualRevenue" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Salesforce_Account",
+          "name" : "Salesforce_Account"
+        }
+      }
+    },
+    "REPLACE0" : {
+      "action" : "formula",
+      "sources" : [ "LOAD_DATASET0" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "BillingState_replace",
+          "newProperties" : {
+            "name" : "BillingState"
+          }
+        } ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "BillingState" ]
+        }
+      },
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "BillingState_replace",
+          "label" : "BillingState",
+          "formulaExpression" : "coalesce(BillingState, null, 'N/A')"
+        } ]
+      }
+    },
+    "REPLACE1" : {
+      "action" : "formula",
+      "sources" : [ "REPLACE0" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "AccountSource_replace",
+          "newProperties" : {
+            "name" : "AccountSource"
+          }
+        } ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "AccountSource" ]
+        }
+      },
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "AccountSource_replace",
+          "label" : "AccountSource",
+          "formulaExpression" : "coalesce(AccountSource, null, 'N/A')"
+        } ]
+      }
+    },
+    "DROP_FIELDS0" : {
+      "action" : "schema",
+      "sources" : [ "REPLACE1" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "IsDeleted", "IsLocked" ]
+        }
+      }
+    },
+    "CLUSTERING0" : {
+      "action" : "clustering",
+      "sources" : [ "DROP_FIELDS0" ],
+      "parameters" : {
+        "clusterCount" : 4,
+        "sourceFields" : [ "Rating", "NumberOfEmployees" ],
+        "targetField" : {
+          "name" : "NumberOfEmployees_clustering",
+          "label" : "Cluster"
+        }
+      }
+    },
+    "OUTPUT0" : {
+      "action" : "save",
+      "sources" : [ "CLUSTERING0" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Learn - Cluster",
+          "name" : "Learn_Cluster",
+          "folderName" : "Learning_Adventure"
+        }
+      }
+    }
+  },
+  "ui" : {
+    "nodes" : {
+      "LOAD_DATASET0" : {
+        "label" : "Salesforce_Account",
+        "type" : "LOAD_DATASET",
+        "top" : 112,
+        "left" : 112,
+        "graph" : {
+          "LOAD_DATASET0" : null
+        },
+        "connectors" : [ ],
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "TRANSFORM0" : {
+        "label" : "Transform to Clean Up",
+        "type" : "TRANSFORM",
+        "top" : 112,
+        "left" : 252,
+        "graph" : {
+          "REPLACE0" : {
+            "parameters" : {
+              "type" : "REPLACE_UI"
+            }
+          },
+          "REPLACE1" : {
+            "parameters" : {
+              "type" : "REPLACE_UI"
+            }
+          },
+          "DROP_FIELDS0" : null
+        },
+        "connectors" : [ {
+          "source" : "REPLACE0",
+          "target" : "REPLACE1"
+        }, {
+          "source" : "REPLACE1",
+          "target" : "DROP_FIELDS0"
+        } ]
+      },
+      "TRANSFORM1" : {
+        "label" : "Cluster Transform",
+        "type" : "TRANSFORM",
+        "top" : 112,
+        "left" : 392,
+        "graph" : {
+          "CLUSTERING0" : null
+        },
+        "connectors" : [ ]
+      },
+      "OUTPUT0" : {
+        "label" : "Output",
+        "type" : "OUTPUT",
+        "top" : 112,
+        "left" : 532
+      }
+    },
+    "connectors" : [ {
+      "source" : "LOAD_DATASET0",
+      "target" : "TRANSFORM0"
+    }, {
+      "source" : "TRANSFORM0",
+      "target" : "TRANSFORM1"
+    }, {
+      "source" : "TRANSFORM1",
+      "target" : "OUTPUT0"
+    } ],
+    "hiddenColumns" : [ ]
+  }
+}

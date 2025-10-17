@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>HAM_CFY_Ask__c</fullName>
+    <formula>IF(
+    IF( 
+        (MONTH( Today() ) &gt;= 6 &amp;&amp; MONTH( Today() ) &lt;= 12), 
+        ((YEAR( Today() )+ 1)), 
+        ((YEAR( Today() )) )
+    )
+    =
+    IF( 
+        (
+            MONTH( ucinn_ascendv2__Expected_Close_Date__c ) &gt;= 6 
+            &amp;&amp; MONTH( ucinn_ascendv2__Expected_Close_Date__c ) &lt;= 12
+        ), 
+        ((YEAR( ucinn_ascendv2__Expected_Close_Date__c )+ 1)), 
+        ((YEAR( ucinn_ascendv2__Expected_Close_Date__c )))
+    ), 
+    TRUE, 
+    FALSE
+)</formula>
+    <label>CFY Ask</label>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

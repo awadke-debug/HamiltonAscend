@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>HAM_Is_Primary_Constituent__c</fullName>
+    <description>Indicates whether this constituent is also the primary constituent on the household.</description>
+    <formula>IF(Id = Account.ucinn_ascendv2__Primary_Contact__r.Id,TRUE,FALSE)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <inlineHelpText>Indicates whether this constituent is also the primary constituent on the household.</inlineHelpText>
+    <label>Is Primary Constituent</label>
+    <type>Checkbox</type>
+</CustomField>

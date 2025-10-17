@@ -1,0 +1,43 @@
+/* Mobile-first: stack columns */
+.THIS .container {
+  display: block;
+  width: 100%;
+}
+.THIS .left, .THIS .right {
+  width: 100%;
+  float: none;
+  min-height: auto;
+  box-sizing: border-box;
+}
+
+/* Form block sizing on mobile */
+.THIS .left {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;          /* center form horizontally */
+  padding: 24px 16px;
+}
+.THIS .left .form-wrapper {
+  width: 100%;
+  max-width: 420px;             /* keep inputs readable on phones */
+}
+
+/* Tablet: side-by-side with comfortable spacing */
+@media (min-width: 1024px){
+  .THIS .container { display: flex; }
+  .THIS .left, .THIS .right { width: 50%; }
+  .THIS .left {
+    justify-content: center;    /* vertically center on tablet+ */
+    align-items: flex-start;    /* keep left-aligned text */
+    padding: 48px 40px;
+  }
+  .THIS .left .form-wrapper { max-width: 520px; }
+  .THIS .right { min-height: 100vh; padding: 0; }
+}
+
+/* Desktop: generous margins */
+@media (min-width: 1200px){
+  .THIS .left { padding: 64px 80px; }
+  .THIS .left .form-wrapper { max-width: 560px; }
+}

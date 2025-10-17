@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObjectTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <caseValues>
+        <plural>false</plural>
+        <value>Team Member</value>
+    </caseValues>
+    <caseValues>
+        <plural>true</plural>
+        <value>Team Members</value>
+    </caseValues>
+    <layouts>
+        <layout>Team Member Layout</layout>
+        <sections>
+            <label><!-- Custom Links --></label>
+            <section>Custom Links</section>
+        </sections>
+        <sections>
+            <label><!-- Fields --></label>
+            <section>Fields</section>
+        </sections>
+    </layouts>
+    <recordTypes>
+        <description><!-- Employee from outside SFDC --></description>
+        <label><!-- External --></label>
+        <name>agf__External</name>
+    </recordTypes>
+    <recordTypes>
+        <description><!-- SFDC Employee --></description>
+        <label><!-- Internal --></label>
+        <name>agf__Internal</name>
+    </recordTypes>
+    <recordTypes>
+        <description><!-- Planned head count --></description>
+        <label><!-- Planned --></label>
+        <name>agf__Planned</name>
+    </recordTypes>
+    <startsWith>Consonant</startsWith>
+    <validationRules>
+        <errorMessage><!-- Allocation percent should not exceed 100% --></errorMessage>
+        <name>agf__Allocate_over_limit</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Allocation should not be a negative number --></errorMessage>
+        <name>agf__Allocation_above_0</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Allocation should not exceed 100% --></errorMessage>
+        <name>agf__Allocation_cant_exceed_100</name>
+    </validationRules>
+    <webLinks>
+        <label><!-- View_Members_and_Allocations --></label>
+        <name>agf__View_Members_and_Allocations</name>
+    </webLinks>
+</CustomObjectTranslation>

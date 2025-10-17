@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObjectTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <caseValues>
+        <plural>false</plural>
+        <value>Involvement</value>
+    </caseValues>
+    <caseValues>
+        <plural>true</plural>
+        <value>Involvements</value>
+    </caseValues>
+    <layouts>
+        <layout>Account Involvement Layout</layout>
+        <sections>
+            <label><!-- Custom Links --></label>
+            <section>Custom Links</section>
+        </sections>
+    </layouts>
+    <layouts>
+        <layout>AwardHonor</layout>
+        <sections>
+            <label><!-- Custom Links --></label>
+            <section>Custom Links</section>
+        </sections>
+    </layouts>
+    <layouts>
+        <layout>Board of Trustees</layout>
+        <sections>
+            <label><!-- Custom Links --></label>
+            <section>Custom Links</section>
+        </sections>
+    </layouts>
+    <layouts>
+        <layout>Committee</layout>
+        <sections>
+            <label><!-- Custom Links --></label>
+            <section>Custom Links</section>
+        </sections>
+    </layouts>
+    <layouts>
+        <layout>Contact Involvement Layout</layout>
+        <sections>
+            <label><!-- Custom Links --></label>
+            <section>Custom Links</section>
+        </sections>
+    </layouts>
+    <layouts>
+        <layout>Student Activity</layout>
+        <sections>
+            <label><!-- Custom Links --></label>
+            <section>Custom Links</section>
+        </sections>
+    </layouts>
+    <layouts>
+        <layout>Student Housing</layout>
+        <sections>
+            <label><!-- Custom Links --></label>
+            <section>Custom Links</section>
+        </sections>
+    </layouts>
+    <recordTypes>
+        <label><!-- Award/Honor --></label>
+        <name>Award_Honor</name>
+    </recordTypes>
+    <recordTypes>
+        <label><!-- Board of Trustees --></label>
+        <name>Board_of_Trustees</name>
+    </recordTypes>
+    <recordTypes>
+        <label><!-- Committee --></label>
+        <name>Committee</name>
+    </recordTypes>
+    <recordTypes>
+        <label><!-- Student Housing --></label>
+        <name>Student_Housing</name>
+    </recordTypes>
+    <recordTypes>
+        <label><!-- Student Involvement --></label>
+        <name>Student_Involvement</name>
+    </recordTypes>
+    <recordTypes>
+        <description><!-- A corporation/organization&apos;s involvement in a specified club/society. --></description>
+        <label><!-- Account Involvement --></label>
+        <name>ucinn_ascendv2__Account_Involvement</name>
+    </recordTypes>
+    <recordTypes>
+        <description><!-- A constituent&apos;s involvement in a specified club/society. --></description>
+        <label><!-- Contact Involvement --></label>
+        <name>ucinn_ascendv2__Contact_Involvement</name>
+    </recordTypes>
+    <startsWith>Consonant</startsWith>
+    <validationRules>
+        <errorMessage><!-- The Involvement Value selected does not match the Involvement record type you are trying to add. --></errorMessage>
+        <name>Record_Type_Must_Equal_Type</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Student Involvements and Housing are managed centrally. --></errorMessage>
+        <name>Student_Involvements_Centrally_Managed</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Award/honor rec&apos;d date is required for involvement type of award/honor. --></errorMessage>
+        <name>ucinn_ascendv2__Award_Honor_Received_Date</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Start date can&apos;t be after the end date. --></errorMessage>
+        <name>ucinn_ascendv2__Start_Date_Before_End_Date</name>
+    </validationRules>
+</CustomObjectTranslation>

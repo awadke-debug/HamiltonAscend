@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObjectTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <caseValues>
+        <plural>false</plural>
+        <value>Session</value>
+    </caseValues>
+    <caseValues>
+        <plural>true</plural>
+        <value>Sessions</value>
+    </caseValues>
+    <layouts>
+        <layout>Session Layout</layout>
+        <sections>
+            <label><!-- Custom Links --></label>
+            <section>Custom Links</section>
+        </sections>
+        <sections>
+            <label><!-- General Ledger Information --></label>
+            <section>General Ledger Information</section>
+        </sections>
+        <sections>
+            <label><!-- Session Approval Information --></label>
+            <section>Session Approval Information</section>
+        </sections>
+        <sections>
+            <label><!-- Session Details --></label>
+            <section>Session Details</section>
+        </sections>
+        <sections>
+            <label><!-- Session Operations --></label>
+            <section>Session Operations</section>
+        </sections>
+    </layouts>
+    <nameFieldLabel>Session ID</nameFieldLabel>
+    <quickActions>
+        <label><!-- Open xGPv2 --></label>
+        <name>Open_xGPv2</name>
+    </quickActions>
+    <quickActions>
+        <label><!-- Batchify --></label>
+        <name>ucinn_ascendv2__Batchify</name>
+    </quickActions>
+    <quickActions>
+        <label><!-- Expedited Gift Processing --></label>
+        <name>ucinn_ascendv2__Expedited_Gift_Processing</name>
+    </quickActions>
+    <quickActions>
+        <label><!-- Expedited Gift Processing (v2) --></label>
+        <name>ucinn_ascendv2__Expedited_Gift_ProcessingV2</name>
+    </quickActions>
+    <quickActions>
+        <label><!-- Finalize Close Session --></label>
+        <name>ucinn_ascendv2__Finalize_Close_Session</name>
+    </quickActions>
+    <quickActions>
+        <label><!-- New Transactions --></label>
+        <name>ucinn_ascendv2__New_Transactions</name>
+    </quickActions>
+    <quickActions>
+        <label><!-- Set Gateways --></label>
+        <name>ucinn_ascendv2__Set_Gateways</name>
+    </quickActions>
+    <quickActions>
+        <label><!-- View Pre-Balance Report --></label>
+        <name>ucinn_ascendv2__View_Pre_Balance_Report</name>
+    </quickActions>
+    <startsWith>Consonant</startsWith>
+    <validationRules>
+        <errorMessage><!-- Please update session date as its more than 30 days old. --></errorMessage>
+        <name>HAM_Session_30_Day_Limit</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Double the Donation is enabled. Please select a Double the Donation account. --></errorMessage>
+        <name>ucinn_ascendv2__DTD_Required</name>
+    </validationRules>
+</CustomObjectTranslation>

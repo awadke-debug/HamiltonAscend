@@ -1,0 +1,141 @@
+.hamilton-footer {
+    background-color: #003366 !important; /* Hamilton blue background */
+    color: #FFFFFF !important; /* White text color */
+    font-family: 'Times New Roman', serif !important; /* Apply Times New Roman font */
+    padding: 0; /* Remove overall padding, handled by inner divs */
+    margin-top: 2rem; /* Keep margin-top to separate from content */
+    margin-bottom: 2rem; /* Keep margin-bottom to separate from content */
+
+}
+
+/* Top Row Styling */
+.hamilton-footer__top-row {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2); /* Subtle separator line */
+}
+
+.hamilton-footer-address {
+    font-size: 0.95rem;
+    font-weight: bold;
+    white-space: nowrap; /* Prevent wrapping for address */
+	text-align: left;
+    font-family: 'Miller', sans-serif;
+}
+.hamilton-footer-address-text{
+    font-family: 'Miller', sans-serif;
+}
+
+.hamilton-social-icons lightning-icon {
+    --sds-c-icon-color-foreground-default: #FFFFFF !important; /* White icons */
+    width: 20px; /* Adjust size */
+    height: 20px; /* Adjust size */
+	text-align: right;
+}
+
+.hamilton-social-link {
+    display: inline-flex; /* Align icon and text if any */
+    text-align: right;
+    text-decoration: none; /* No underline */
+    color: #FFFFFF; /* Ensure link color is white */
+}
+
+.hamilton-social-link .icon img{
+    width: 24px;
+}
+
+/* Divider Line */
+.hamilton-divider {
+    border: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.1); /* Lighter divider */
+    margin: 0 0.5rem; /* Adjust horizontal margin */
+}
+
+/* Bottom Row Styling */
+.hamilton-footer-nav-links {
+    /* Ensure flex container for wrapping */
+    display: flex;
+    flex-wrap: wrap;
+    font-weight: bold;
+    justify-content: flex-start; /* Align items to the left */
+    list-style: none; /* Remove bullet points */
+    padding: 0; /* Remove default padding */
+    margin: 0; /* Remove default margin */
+}
+
+.hamilton-footer-nav-item {
+    /* Calculate width for 4 items per row on medium/large screens */
+    flex-basis: 25%; /* 4 items per row */
+    max-width: 25%; /* Ensure it doesn't grow beyond 25% */
+    padding: 0.25rem 0.5rem; /* Adjust padding for items */
+    box-sizing: border-box; /* Include padding in width calculation */
+    text-align: left; /* Ensure text is left-aligned within its 25% container */
+    font-weight: bold;
+}
+
+
+.hamilton-footer-link-text {
+    color: #FFFFFF !important; /* White text for all links */
+    text-decoration: none; /* No underline, no hover underline */
+    font-size: 0.9rem;
+    font-weight: bold;
+    white-space: nowrap; /* Prevent wrapping */
+    /* font-family: 'Miller', sans-serif; */
+}
+
+.hamilton-footer-copyright {
+    color: rgba(255, 255, 255, 0.7) !important; /* Slightly faded white for copyright */
+    font-size: 0.75rem;
+    white-space: nowrap; /* Prevent wrapping */
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .hamilton-footer__top-row,
+    .hamilton-footer__bottom-row {
+        flex-direction: column; /* Stack columns vertically */
+        align-items: center; /* Center items in stacked columns */
+        padding: 1rem !important; /* Adjust padding for mobile */
+    }
+	.hamilton-footer-address {
+		flex-basis: 100%;
+		order: 4;
+		text-align: center !important; /* Center text on mobile */
+		width: 100%; /* Take full width */
+	}
+
+    .hamilton-social-icons,
+    .hamilton-footer-nav-links,
+    .hamilton-footer-copyright {
+        text-align: center !important; /* Center text on mobile */
+        width: 100%; /* Take full width */
+		justify-content: center;
+		
+    }
+
+    .hamilton-social-icons {		
+        margin: 0.5rem; /* Space between address and icons */
+        justify-content: center; /* Center social icons */
+    }
+
+    .hamilton-footer-nav-links {
+        margin-top: 1rem; /* Space between divider and nav links */
+        justify-content: center; /* Center nav links */
+    }
+
+    .hamilton-footer-nav-item {
+        flex-basis: 50%; /* Stack items vertically on mobile */
+        max-width: 50%;
+        margin-right: 0; /* Remove horizontal margin for stacked links */
+        padding: 0.25rem 0; /* Adjust vertical padding */
+    }
+
+    .hamilton-footer-copyright {
+        margin-top: 0.5rem; /* Space between nav links and copyright */
+    }
+
+    /* Divider Line */
+    .hamilton-divider {
+        border: none;
+        border-top: 1px solid rgba(255, 255, 255, 0.1); /* Lighter divider */
+        margin: 0 0.5rem; /* Adjust horizontal margin */
+    }
+}

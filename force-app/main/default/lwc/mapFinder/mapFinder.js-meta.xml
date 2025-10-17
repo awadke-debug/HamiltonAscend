@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+	<masterLabel>Map Finder</masterLabel>
+	<apiVersion>62.0</apiVersion>
+	<isExposed>true</isExposed>
+	<targets>
+		<target>lightning__AppPage</target>
+		<target>lightning__HomePage</target>
+	</targets>
+	<targetConfigs>
+		<targetConfig targets="lightning__AppPage, lightning__HomePage">
+			<property label="CMDT configuration name" name="mapInstance" type="String" required="true" default="Map_Finder_App" description="The main CMDT configuration name"/>
+			<property label="Show datatable?" name="showTable" type="Boolean" default="true" description="Also show the results in a table."/>
+			<property label="Show schedule meeting?" name="isSchedulable" type="Boolean" default="true" description="Show schedule meeting on each result."/>
+			<property label="Show Add to Campaign button?" name="showAddToCampaignBtn" type="Boolean" default="true" description="Show Add to Campaign button."/>
+			<property label="Show Export Result button?" name="showExportResultBtn" type="Boolean" default="true" description="Show Export Result button."/>
+			<property label="Map Title Property" name="mapTitleProperty" type="String" required="true" default="ucinn_ascendv2__Expanded_Name_Formula__c" description="Results property to show as map marker title"/>
+			<property label="Map Title Property Lookup Object" name="mapTitlePropertyLookupObject" type="String" required="false" default="ucinn_ascendv2__Contact__r" description="Parent object of the title property"/>
+			<property label="Contact ID Field" name="contactIdField" type="String" default="ucinn_ascendv2__Contact__c" description="Contact ID Field to be used to schedule result a meeting."/>
+		</targetConfig>
+	</targetConfigs>
+</LightningComponentBundle>

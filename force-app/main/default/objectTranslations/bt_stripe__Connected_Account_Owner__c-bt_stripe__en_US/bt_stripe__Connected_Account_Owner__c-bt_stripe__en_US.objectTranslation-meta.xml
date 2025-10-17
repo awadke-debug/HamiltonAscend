@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObjectTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <caseValues>
+        <plural>false</plural>
+        <value>Connected Account Owner</value>
+    </caseValues>
+    <caseValues>
+        <plural>true</plural>
+        <value>Connected Account Owners</value>
+    </caseValues>
+    <layouts>
+        <layout>Connected Account Owner Layout</layout>
+        <sections>
+            <label><!-- Custom Links --></label>
+            <section>Custom Links</section>
+        </sections>
+        <sections>
+            <label><!-- Stripe Data --></label>
+            <section>Stripe Data</section>
+        </sections>
+        <sections>
+            <label><!-- Verification --></label>
+            <section>Verification</section>
+        </sections>
+    </layouts>
+    <startsWith>Consonant</startsWith>
+    <validationRules>
+        <errorMessage><!-- This button should only be used for additional owners. For the primary (first) owner, use the Submit to Stripe button on the related Connected Account --></errorMessage>
+        <name>bt_stripe__Primary_Contact_Error</name>
+    </validationRules>
+    <webLinks>
+        <label><!-- Send_to_Stripe --></label>
+        <name>bt_stripe__Send_to_Stripe</name>
+    </webLinks>
+    <webLinks>
+        <label><!-- Upload_Verification_Document --></label>
+        <name>bt_stripe__Upload_Verification_Document</name>
+    </webLinks>
+</CustomObjectTranslation>

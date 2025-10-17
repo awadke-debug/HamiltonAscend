@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>ucinn_ascendv2__Custom_Display_Positions_and_Field_Order</fullName>
+    <active>true</active>
+    <description>Custom Display Positions cannot be blank if Custom Field Orders is populated, and Custom Field Orders cannot be blank if Custom Display Positions is populated.</description>
+    <errorConditionFormula>(NOT(ISBLANK(ucinn_ascendv2__Custom_Display_Field_Orders__c)) &amp;&amp; ISBLANK(ucinn_ascendv2__Custom_Display_Positions__c)) || (NOT(ISBLANK(ucinn_ascendv2__Custom_Display_Positions__c)) &amp;&amp; ISBLANK(ucinn_ascendv2__Custom_Display_Field_Orders__c))</errorConditionFormula>
+    <errorMessage>Custom Display Positions cannot be blank if Custom Field Orders is populated, and Custom Field Orders cannot be blank if Custom Display Positions is populated.</errorMessage>
+</ValidationRule>

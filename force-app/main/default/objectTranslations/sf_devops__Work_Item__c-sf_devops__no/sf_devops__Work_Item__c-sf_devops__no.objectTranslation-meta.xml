@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObjectTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <caseValues>
+        <article>Definite</article>
+        <plural>false</plural>
+        <value>Arbeidselementet</value>
+    </caseValues>
+    <caseValues>
+        <article>Indefinite</article>
+        <plural>false</plural>
+        <value>Arbeidselement</value>
+    </caseValues>
+    <caseValues>
+        <article>None</article>
+        <plural>false</plural>
+        <value>Arbeidselement</value>
+    </caseValues>
+    <caseValues>
+        <article>Definite</article>
+        <plural>true</plural>
+        <value>Arbeidselementene</value>
+    </caseValues>
+    <caseValues>
+        <article>Indefinite</article>
+        <plural>true</plural>
+        <value>Arbeidselementer</value>
+    </caseValues>
+    <caseValues>
+        <article>None</article>
+        <plural>true</plural>
+        <value>Arbeidselementer</value>
+    </caseValues>
+    <gender>Neuter</gender>
+    <nameFieldLabel>Arbeidselementnummer</nameFieldLabel>
+    <validationRules>
+        <errorMessage>Et Work_Item kan ikke ha Development_Approved_By angitt hvis det ikke er Development_Approved.</errorMessage>
+        <name>sf_devops__Approved_By_Without_Approved</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Du må angi Development_Approved_By når dette arbeidselementet er godkjent.</errorMessage>
+        <name>sf_devops__Approved_Without_Approved_By</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Et arbeidselement kan ikke godkjennes uten en gjennomgang.</errorMessage>
+        <name>sf_devops__Approved_Without_Review</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Et arbeidselement må tilhøre samme prosjekt som dets endringspakke.</errorMessage>
+        <name>sf_devops__Change_Bundle_Project</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Et arbeidselement kan ikke kombineres hvis det er i en pakke.</errorMessage>
+        <name>sf_devops__Combined_Bundled</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Et arbeidselement kan ikke kombineres hvis det ikke refererer til arbeidselementet det er kombinert med.</errorMessage>
+        <name>sf_devops__Combined_Not_Combined_With</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Et arbeidselement kan ikke kombineres hvis det aldri har blitt promotert.</errorMessage>
+        <name>sf_devops__Combined_Not_Promoted</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Et arbeidselement kan ikke ha Combined_With angitt hvis det ikke er i Kombinert-tilstand.</errorMessage>
+        <name>sf_devops__Combined_With_Not_Combined</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Et arbeidselement kan ikke ha Combined_With satt til et arbeidselement som ikke utførte Kombiner-operasjonen.</errorMessage>
+        <name>sf_devops__Combined_With_Not_Survivor</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Mulige verdier for Concluded_c er: CLOSED, NEVERED, COMBINED eller tom.</errorMessage>
+        <name>sf_devops__Concluded_values</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Et arbeidselement kan ikke få Concluded__c-feltet endret etter at det er angitt.</errorMessage>
+        <name>sf_devops__Disable_Concluded</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Et arbeidselement kan ikke få Promoted__c-feltet deaktivert etter at det er angitt.</errorMessage>
+        <name>sf_devops__Disable_Promoted</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Arbeidselementer kan ikke være koblet til utløpte miljøer.</errorMessage>
+        <name>sf_devops__Environment_Expired</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Et arbeidselement må tilhøre samme prosjekt som dets miljø.</errorMessage>
+        <name>sf_devops__Environment_Project</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Kan ikke referere til miljø som ikke støtter endringssporing.</errorMessage>
+        <name>sf_devops__Environment_Requires_Tracking</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Et arbeidselement kan ikke få Promoted_From_Environment__c-feltet endret etter at det er angitt.</errorMessage>
+        <name>sf_devops__PromotedFromEnvironment_Changed</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Et arbeidselement kan ikke få Promoted_From_Environment__c-feltet angitt med en verdi som er forskjellig fra verdien for Environment__c, og det kan bare angis når Environment__c blir satt til null.</errorMessage>
+        <name>sf_devops__PromotedFromEnvironment_Set</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Et Work_Item kan ikke være medlem av en Change_Bundle hvis det aldri har vært promotert.</errorMessage>
+        <name>sf_devops__Promoted_And_Installed</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Du kan ikke opprette et Work_Item med Promotert-flagget angitt.</errorMessage>
+        <name>sf_devops__Promoted_On_Create</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Et arbeidselement kan ikke promoteres hvis det ikke er godkjent.</errorMessage>
+        <name>sf_devops__Promoted_Without_Approval</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Et arbeidselement kan ikke ha basebytte for gren-feltet angitt hvis det er ikke-promotert, pakket eller konkludert.</errorMessage>
+        <name>sf_devops__Rebase_Branch</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Deprecated --></errorMessage>
+        <name>sf_devops__Rebase_Remote_Reference</name>
+    </validationRules>
+    <webLinks>
+        <label>Vis i DevOps Center</label>
+        <name>sf_devops__Devops_Center</name>
+    </webLinks>
+</CustomObjectTranslation>

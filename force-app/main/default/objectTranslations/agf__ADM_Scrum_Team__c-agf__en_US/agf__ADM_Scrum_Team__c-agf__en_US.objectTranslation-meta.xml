@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObjectTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <caseValues>
+        <plural>false</plural>
+        <value>Team</value>
+    </caseValues>
+    <caseValues>
+        <plural>true</plural>
+        <value>Teams</value>
+    </caseValues>
+    <layouts>
+        <layout>Scrum Team Layout</layout>
+        <sections>
+            <label><!-- Custom Links --></label>
+            <section>Custom Links</section>
+        </sections>
+        <sections>
+            <label><!-- Reports --></label>
+            <section>Reports</section>
+        </sections>
+    </layouts>
+    <recordTypes>
+        <description><!-- Used to create Program teams or Programs/Workgroups --></description>
+        <label><!-- Program Team --></label>
+        <name>agf__Program</name>
+    </recordTypes>
+    <recordTypes>
+        <description><!-- Used to create teams of type scrum team --></description>
+        <label><!-- Scrum Team --></label>
+        <name>agf__Scrum_Team</name>
+    </recordTypes>
+    <startsWith>Consonant</startsWith>
+    <validationRules>
+        <errorMessage><!-- Please specify the department this team belongs to. --></errorMessage>
+        <name>agf__Cloud_is_Required</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Scrum Team name cannot contain &quot;&amp;&quot;, please use &quot;and&quot; instead --></errorMessage>
+        <name>agf__No_Ampersand_in_names</name>
+    </validationRules>
+    <webLinks>
+        <label><!-- Kanban_Sfx_Button --></label>
+        <name>agf__Kanban_Sfx_Button</name>
+    </webLinks>
+    <webLinks>
+        <label><!-- Prioritizer --></label>
+        <name>agf__Prioritizer</name>
+    </webLinks>
+    <webLinks>
+        <label><!-- Unified_Wall --></label>
+        <name>agf__Unified_Wall</name>
+    </webLinks>
+    <webLinks>
+        <label><!-- Work_Manager_SFX_Button --></label>
+        <name>agf__Work_Manager_SFX_Button</name>
+    </webLinks>
+</CustomObjectTranslation>

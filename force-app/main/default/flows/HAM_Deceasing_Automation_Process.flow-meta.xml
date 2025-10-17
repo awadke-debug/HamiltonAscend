@@ -1,0 +1,676 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>65.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <assignments>
+        <description>Assign End Date to each looped affiliation</description>
+        <name>Assign_End_Date_to_Affiliation</name>
+        <label>Assign End Date to Affiliation</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>Loop_All_Affiliations.ucinn_ascendv2__End_Date__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Record.HAM_Current_Date__c</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Loop_All_Affiliations</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <description>Assign End Date to each Email record one by one</description>
+        <name>Assign_End_Date_to_Email</name>
+        <label>Assign End Date to Email</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>Loop_All_Emails.ucinn_ascendv2__End_Date__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Record.HAM_Current_Date__c</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Loop_All_Emails</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <description>Assign End Date to each looped Phone</description>
+        <name>Assign_End_Date_to_Phone</name>
+        <label>Assign End Date to Phone</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>Loop_All_Phones.ucinn_ascendv2__End_Date__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Record.HAM_Current_Date__c</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Loop_All_Phones</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <description>Put End Date on All relations</description>
+        <name>Relations_End_Date</name>
+        <label>Relations End Date</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>Loop_All_Relations.ucinn_ascendv2__End_Year__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>EndYear</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>Loop_All_Relations.ucinn_ascendv2__End_Month__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>EndMonth</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Loop_All_Relations</targetReference>
+        </connector>
+    </assignments>
+    <decisions>
+        <description>Has any Unverified Deceased SI</description>
+        <name>Has_any_Unverified_Deceased_SI</name>
+        <label>Has any Unverified Deceased SI</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>Update_All_Relations</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>No Unverified Deceased SI to Delete</defaultConnectorLabel>
+        <rules>
+            <name>Unverified_Deceased_SI_Present</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_All_Unverified</leftValueReference>
+                <operator>IsEmpty</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Delete_All_Unverified_Deceased_SI</targetReference>
+            </connector>
+            <label>Unverified Deceased SI Present</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <description>Check if spouse is alive</description>
+        <name>Spouse_Alive</name>
+        <label>Spouse Alive</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>Get_All_Unverified</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>No Alive</defaultConnectorLabel>
+        <rules>
+            <name>Alive</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.HAM_Is_Active__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Get_All_No_Solicit_SIV</targetReference>
+            </connector>
+            <label>Alive</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <description>Check if Spouse is present</description>
+        <name>Spouse_Check</name>
+        <label>Spouse Check</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>Get_All_Unverified</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>No Spouse</defaultConnectorLabel>
+        <rules>
+            <name>Spouse_Present</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.ucinn_ascendv2__Preferred_Spouse__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Spouse_Alive</targetReference>
+            </connector>
+            <label>Spouse Present</label>
+        </rules>
+    </decisions>
+    <description>This flow is updated logic build when a Constituent is marked as Deceased. Earlier flow had some errors updating the Constituent marked deceased.</description>
+    <environments>Default</environments>
+    <formulas>
+        <description>Today&apos;s Month only</description>
+        <name>EndMonth</name>
+        <dataType>String</dataType>
+        <expression>TEXT(MONTH(TODAY()))</expression>
+    </formulas>
+    <formulas>
+        <description>Today&apos;s End Year only</description>
+        <name>EndYear</name>
+        <dataType>String</dataType>
+        <expression>TEXT(YEAR(TODAY()))</expression>
+    </formulas>
+    <formulas>
+        <description>Formul field giving todays Date</description>
+        <name>TodaysDate</name>
+        <dataType>Date</dataType>
+        <expression>TODAY()</expression>
+    </formulas>
+    <interviewLabel>HAM {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>HAM Deceasing Automation Process</label>
+    <loops>
+        <description>Loop through all affiliations from previous step and assign end date</description>
+        <name>Loop_All_Affiliations</name>
+        <label>Loop All Affiliations</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <collectionReference>AllAffiliations</collectionReference>
+        <iterationOrder>Asc</iterationOrder>
+        <nextValueConnector>
+            <targetReference>Assign_End_Date_to_Affiliation</targetReference>
+        </nextValueConnector>
+        <noMoreValuesConnector>
+            <targetReference>Update_All_Phone</targetReference>
+        </noMoreValuesConnector>
+    </loops>
+    <loops>
+        <description>Loop through all Emails which were fetched in previous step</description>
+        <name>Loop_All_Emails</name>
+        <label>Loop All Emails</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <collectionReference>AllEmails</collectionReference>
+        <iterationOrder>Asc</iterationOrder>
+        <nextValueConnector>
+            <targetReference>Assign_End_Date_to_Email</targetReference>
+        </nextValueConnector>
+        <noMoreValuesConnector>
+            <targetReference>Get_All_Affiliation_Records</targetReference>
+        </noMoreValuesConnector>
+    </loops>
+    <loops>
+        <description>Loop All Phones which were fetched in earlier step</description>
+        <name>Loop_All_Phones</name>
+        <label>Loop All Phones</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <collectionReference>AllPhones</collectionReference>
+        <iterationOrder>Asc</iterationOrder>
+        <nextValueConnector>
+            <targetReference>Assign_End_Date_to_Phone</targetReference>
+        </nextValueConnector>
+        <noMoreValuesConnector>
+            <targetReference>Get_All_Email_Records</targetReference>
+        </noMoreValuesConnector>
+    </loops>
+    <loops>
+        <description>Loop through all Relations where end date is null</description>
+        <name>Loop_All_Relations</name>
+        <label>Loop All Relations</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <collectionReference>AllRelations</collectionReference>
+        <iterationOrder>Asc</iterationOrder>
+        <nextValueConnector>
+            <targetReference>Relations_End_Date</targetReference>
+        </nextValueConnector>
+        <noMoreValuesConnector>
+            <targetReference>Get_All_Phone_Records</targetReference>
+        </noMoreValuesConnector>
+    </loops>
+    <loops>
+        <description>Loop for all SI related to No Solicit</description>
+        <name>Loop_for_creating_All_No_Solicit_SI</name>
+        <label>Loop for creating All No Solicit SI</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <collectionReference>Get_All_No_Solicit_SIV</collectionReference>
+        <iterationOrder>Asc</iterationOrder>
+        <nextValueConnector>
+            <targetReference>Create_Each_SI_in_loop</targetReference>
+        </nextValueConnector>
+        <noMoreValuesConnector>
+            <targetReference>Get_All_Unverified</targetReference>
+        </noMoreValuesConnector>
+    </loops>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordCreates>
+        <description>Create each SI for SIV</description>
+        <name>Create_Each_SI_in_loop</name>
+        <label>Create Each SI in loop</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Loop_for_creating_All_No_Solicit_SI</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>ucinn_ascendv2__Contact__c</field>
+            <value>
+                <elementReference>$Record.ucinn_ascendv2__Preferred_Spouse__r.Id</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>ucinn_ascendv2__Is_Active__c</field>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>ucinn_ascendv2__Service_Indicator_Value__c</field>
+            <value>
+                <elementReference>Loop_for_creating_All_No_Solicit_SI.Name</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>ucinn_ascendv2__Start_Date__c</field>
+            <value>
+                <elementReference>$Record.HAM_Current_Date__c</elementReference>
+            </value>
+        </inputAssignments>
+        <object>ucinn_ascendv2__Service_Indicator__c</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordCreates>
+    <recordCreates>
+        <description>Create a new No - Contact with Hamilton Service Indicator</description>
+        <name>Create_SI_No_Contact_With_Ham</name>
+        <label>Create SI No Contact With Ham</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Get_All_Relations</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>ucinn_ascendv2__Contact__c</field>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>ucinn_ascendv2__Is_Active__c</field>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>ucinn_ascendv2__Service_Indicator_Value__c</field>
+            <value>
+                <elementReference>ServiceIndicatorValueNoContactWithHamilton</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>ucinn_ascendv2__Start_Date__c</field>
+            <value>
+                <elementReference>TodaysDate</elementReference>
+            </value>
+        </inputAssignments>
+        <object>ucinn_ascendv2__Service_Indicator__c</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordCreates>
+    <recordDeletes>
+        <description>Delete All Unverified Deceased SI</description>
+        <name>Delete_All_Unverified_Deceased_SI</name>
+        <label>Delete All Unverified Deceased SI</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Update_All_Relations</targetReference>
+        </connector>
+        <inputReference>Get_All_Unverified</inputReference>
+    </recordDeletes>
+    <recordLookups>
+        <description>Fetch all affiliation records for this constituent</description>
+        <name>Get_All_Affiliation_Records</name>
+        <label>Get All Affiliation Records</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Loop_All_Affiliations</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>ucinn_ascendv2__Contact__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>ucinn_ascendv2__End_Date__c</field>
+            <operator>IsNull</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <object>ucinn_ascendv2__Affiliation__c</object>
+        <outputReference>AllAffiliations</outputReference>
+        <queriedFields>Id</queriedFields>
+        <queriedFields>ucinn_ascendv2__Contact__c</queriedFields>
+        <queriedFields>ucinn_ascendv2__Status__c</queriedFields>
+        <queriedFields>ucinn_ascendv2__End_Date__c</queriedFields>
+    </recordLookups>
+    <recordLookups>
+        <description>FetchAll related Emails this Constituent has</description>
+        <name>Get_All_Email_Records</name>
+        <label>Get All Email Records</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Loop_All_Emails</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>ucinn_ascendv2__Contact__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </filters>
+        <object>ucinn_ascendv2__Email__c</object>
+        <outputReference>AllEmails</outputReference>
+        <queriedFields>Id</queriedFields>
+        <queriedFields>Name</queriedFields>
+        <queriedFields>ucinn_ascendv2__Contact__c</queriedFields>
+        <queriedFields>ucinn_ascendv2__Status__c</queriedFields>
+        <queriedFields>ucinn_ascendv2__End_Date__c</queriedFields>
+    </recordLookups>
+    <recordLookups>
+        <description>Get All No Solicit Records like call, Email, Mail, Text</description>
+        <name>Get_All_No_Solicit_SIV</name>
+        <label>Get All No Solicit SIV</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Loop_for_creating_All_No_Solicit_SI</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Name</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>No Solicit Mass Text</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>Name</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>No Solicit Mass Mail</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>Name</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>No Solicit Mass Email</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>Name</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>No Solicit Mass Call</stringValue>
+            </value>
+        </filters>
+        <getFirstRecordOnly>false</getFirstRecordOnly>
+        <object>ucinn_ascendv2__Service_Indicator_Value__c</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <description>Fetch all related Phone Records from org and make end date on them</description>
+        <name>Get_All_Phone_Records</name>
+        <label>Get All Phone Records</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Loop_All_Phones</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>ucinn_ascendv2__Contact__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </filters>
+        <object>ucinn_ascendv2__Phone__c</object>
+        <outputReference>AllPhones</outputReference>
+        <queriedFields>Id</queriedFields>
+        <queriedFields>ucinn_ascendv2__Contact__c</queriedFields>
+        <queriedFields>ucinn_ascendv2__Type__c</queriedFields>
+        <queriedFields>ucinn_ascendv2__Status__c</queriedFields>
+        <queriedFields>ucinn_ascendv2__End_Date__c</queriedFields>
+        <queriedFields>Name</queriedFields>
+    </recordLookups>
+    <recordLookups>
+        <description>Get All Relations from Constituent</description>
+        <name>Get_All_Relations</name>
+        <label>Get All Relations</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Loop_All_Relations</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>ucinn_ascendv2__Contact__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </filters>
+        <object>ucinn_ascendv2__Relationship__c</object>
+        <outputReference>AllRelations</outputReference>
+        <queriedFields>Id</queriedFields>
+        <queriedFields>ucinn_ascendv2__Contact__c</queriedFields>
+        <queriedFields>ucinn_ascendv2__End_Month__c</queriedFields>
+        <queriedFields>ucinn_ascendv2__End_Year__c</queriedFields>
+    </recordLookups>
+    <recordLookups>
+        <description>Get All Unverified Deceased SI, if someone marked this manually, we need to delete</description>
+        <name>Get_All_Unverified</name>
+        <label>Get All Unverified Deceased SI</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Has_any_Unverified_Deceased_SI</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>ucinn_ascendv2__Contact__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>ucinn_ascendv2__Service_Indicator_Value__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Unverified Deceased</stringValue>
+            </value>
+        </filters>
+        <getFirstRecordOnly>false</getFirstRecordOnly>
+        <object>ucinn_ascendv2__Service_Indicator__c</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <name>Get_No_Contact_Service_Indicator_Value</name>
+        <label>Get No Contact Service Indicator Value</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Create_SI_No_Contact_With_Ham</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Name</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>No Contact with Hamilton</stringValue>
+            </value>
+        </filters>
+        <object>ucinn_ascendv2__Service_Indicator_Value__c</object>
+        <outputAssignments>
+            <assignToReference>ServiceIndicatorValueNoContactWithHamilton</assignToReference>
+            <field>Id</field>
+        </outputAssignments>
+    </recordLookups>
+    <recordUpdates>
+        <description>Update All affifliations from record set</description>
+        <name>Update_All_affifliations</name>
+        <label>Update All affifliations</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Spouse_Check</targetReference>
+        </connector>
+        <inputReference>AllAffiliations</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <description>Update All Emails from Emails Record set</description>
+        <name>Update_All_Emails</name>
+        <label>Update All Emails</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Update_All_affifliations</targetReference>
+        </connector>
+        <inputReference>AllEmails</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <description>Update all phone via stored phone list</description>
+        <name>Update_All_Phone</name>
+        <label>Update All Phone</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Update_All_Emails</targetReference>
+        </connector>
+        <inputReference>AllPhones</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <description>Update all relations from relations set</description>
+        <name>Update_All_Relations</name>
+        <label>Update All Relations</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <inputReference>AllRelations</inputReference>
+    </recordUpdates>
+    <start>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Get_No_Contact_Service_Indicator_Value</targetReference>
+        </connector>
+        <doesRequireRecordChangedToMeetCriteria>true</doesRequireRecordChangedToMeetCriteria>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>ucinn_ascendv2__Is_Deceased__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <object>Contact</object>
+        <recordTriggerType>CreateAndUpdate</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Active</status>
+    <variables>
+        <description>Collection of all affiliation records related to constituent and end date = blank</description>
+        <name>AllAffiliations</name>
+        <dataType>SObject</dataType>
+        <isCollection>true</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>ucinn_ascendv2__Affiliation__c</objectType>
+    </variables>
+    <variables>
+        <description>List of all fetched Emails</description>
+        <name>AllEmails</name>
+        <dataType>SObject</dataType>
+        <isCollection>true</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>ucinn_ascendv2__Email__c</objectType>
+    </variables>
+    <variables>
+        <description>List of all SI ot create</description>
+        <name>AllNoSolicitSIToCreate</name>
+        <dataType>SObject</dataType>
+        <isCollection>true</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+        <objectType>ucinn_ascendv2__Service_Indicator__c</objectType>
+    </variables>
+    <variables>
+        <description>List of all phones which a constituent has</description>
+        <name>AllPhones</name>
+        <dataType>SObject</dataType>
+        <isCollection>true</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>ucinn_ascendv2__Phone__c</objectType>
+    </variables>
+    <variables>
+        <description>Fetch and store all relations for the constituent</description>
+        <name>AllRelations</name>
+        <dataType>SObject</dataType>
+        <isCollection>true</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>ucinn_ascendv2__Relationship__c</objectType>
+    </variables>
+    <variables>
+        <description>Service Indicator Value&apos;s ID for No Contact in Hamilton</description>
+        <name>ServiceIndicatorValueNoContactWithHamilton</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+</Flow>

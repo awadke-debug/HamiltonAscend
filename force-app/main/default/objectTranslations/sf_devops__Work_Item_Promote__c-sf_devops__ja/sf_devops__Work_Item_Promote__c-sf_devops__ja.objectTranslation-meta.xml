@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObjectTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <caseValues>
+        <plural>false</plural>
+        <value>作業項目昇格</value>
+    </caseValues>
+    <nameFieldLabel>作業項目昇格名</nameFieldLabel>
+    <validationRules>
+        <errorMessage>無効なパイプラインに作業項目を昇格することはできません。</errorMessage>
+        <name>sf_devops__No_Promotion_to_Inactive_Pipeline</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Change_Bundle のメンバーではない Work_Item は Pipeline_Stage に昇格できません。</errorMessage>
+        <name>sf_devops__Promoted_And_Installed</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>バージョン管理された Pipeline_Stage に作業項目を昇格することはできません。</errorMessage>
+        <name>sf_devops__Promoted_To_Versioned</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>承認されていない作業項目は昇格できません。</errorMessage>
+        <name>sf_devops__Promoted_Without_Approval</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>作業項目は同じプロジェクト内のフェーズにのみ昇格できます。</errorMessage>
+        <name>sf_devops__Promoted_Wrong_Project</name>
+    </validationRules>
+</CustomObjectTranslation>

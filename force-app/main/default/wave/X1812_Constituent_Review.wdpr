@@ -1,0 +1,837 @@
+{
+  "version" : "62.0",
+  "nodes" : {
+    "LOAD_DATASET1" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Name", "bt_stripe__Description__c", "bt_stripe__Item_Name__c", "conference360__Attendee__c", "Id" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "bt_stripe__Line_Item__c",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "bt_stripe__Line_Item__c"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "LOAD_DATASET5" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "conference360__First_Name2__c", "Id", "Name", "conference360__Contact__c", "conference360__Email2__c", "conference360__Last_Name2__c", "conference360__Registration_DateTime__c", "conference360__Registration_Status__c", "conference360__Attendee_Full_Name__c", "conference360__Event_Name__c", "HAM_Guest_Of__c", "HAM_Event_Item_Public_Item_Name__c", "HAM_Attendee_Group_Name__c", "HAM_Constituent_Type__c", "HAM_Institutional_Suffix__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "conference360__Attendee__c",
+          "connectionName" : "Updated_Hourly",
+          "sourceObjectName" : "conference360__Attendee__c"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN5" : {
+      "action" : "join",
+      "sources" : [ "APPEND1", "EDIT_ATTRIBUTES7" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Item_Name_Attendee", "Rename.Session_Name_Attendee", "conference.Id" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "conference360__Attendee__c" ],
+        "rightQualifier" : "conference",
+        "rightKeys" : [ "Id" ]
+      }
+    },
+    "LOAD_DATASET9" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Name", "Id" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "conference360__Session__c",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "conference360__Session__c"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "LOAD_DATASET10" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "conference360__Session__c", "conference360__Attendee__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "conference360__Session_Attendee__c",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "conference360__Session_Attendee__c"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN12" : {
+      "action" : "join",
+      "sources" : [ "LOAD_DATASET10", "LOAD_DATASET9" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "conference.Id" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "conference360__Session__c" ],
+        "rightQualifier" : "conference",
+        "rightKeys" : [ "Id" ]
+      }
+    },
+    "OUTPUT0" : {
+      "action" : "save",
+      "sources" : [ "FILTER0" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Attendee with Line Item and Session",
+          "name" : "Attendee_with_Line_Item_and_Session",
+          "folderName" : "SharedApp"
+        },
+        "dateConfigurationName" : "July_Fiscal_Year",
+        "measuresToCurrencies" : [ ]
+      }
+    },
+    "EDIT_ATTRIBUTES0" : {
+      "action" : "schema",
+      "sources" : [ "LOAD_DATASET1" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Id",
+          "newProperties" : {
+            "label" : "Line Item Id",
+            "name" : "Id"
+          }
+        } ]
+      }
+    },
+    "FORMULA2" : {
+      "action" : "formula",
+      "sources" : [ "EDIT_ATTRIBUTES0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Item_Name_Attendee",
+          "label" : "Item Name+Attendee",
+          "formulaExpression" : "concat(bt_stripe__Item_Name__c, conference360__Attendee__c)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES1" : {
+      "action" : "schema",
+      "sources" : [ "JOIN12" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "conference360__Session__c",
+          "newProperties" : {
+            "label" : "Session Id",
+            "name" : "conference360__Session__c"
+          }
+        } ]
+      }
+    },
+    "FORMULA3" : {
+      "action" : "formula",
+      "sources" : [ "EDIT_ATTRIBUTES1" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Session_Name_Attendee",
+          "label" : "Session Name+Attendee",
+          "formulaExpression" : "concat(\"conference.Name\", conference360__Attendee__c)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES2" : {
+      "action" : "schema",
+      "sources" : [ "JOIN17" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "bt_stripe__Item_Name__c",
+          "newProperties" : {
+            "label" : "Item Name or Session Name",
+            "name" : "Item_Name_or_Session_Name"
+          }
+        } ]
+      }
+    },
+    "FORMULA1" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA8" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Sort_Column",
+          "label" : "Sort Column",
+          "formulaExpression" : "concat(Item_Name_or_Session_Name, \"Accountand.LastName\", \"conference.conference360__Registration_DateTime__c\", \"conference.HAM_Attendee_Group_Name__c\")",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA5" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA6" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Attendee_Last_Name_Plus_Suffix",
+          "label" : "Attendee Last Name Plus Suffix",
+          "formulaExpression" : "case \r\nwhen \r\n\"conference.HAM_Institutional_Suffix__c\" is null \r\nthen \r\n\"conference.conference360__Last_Name2__c\"\r\nwhen\r\n\"conference.HAM_Institutional_Suffix__c\" is not null\r\nthen\r\nconcat(\"conference.conference360__Last_Name2__c\",' ',\"conference.HAM_Institutional_Suffix__c\")\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA6" : {
+      "action" : "formula",
+      "sources" : [ "EDIT_ATTRIBUTES2" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "First_Name",
+          "label" : "First_Name",
+          "formulaExpression" : "coalesce(\"Accountand.FirstName\",\"conference.conference360__First_Name2__c\")",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA7" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA5" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Contact_Last_Name_Plus_Suffix",
+          "label" : "Contact Last Name Plus Suffix",
+          "formulaExpression" : "case \r\nwhen \r\n\"Accountand.HAM_Institutional_Suffix__c\" is null \r\nthen \r\n\"Accountand.LastName\"\r\nwhen\r\n\"Accountand.HAM_Institutional_Suffix__c\" is not null\r\nthen\r\nconcat(\"Accountand.LastName\",' ',\"Accountand.HAM_Institutional_Suffix__c\")\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA8" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA7" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Last_Name_Plus_Suffix",
+          "label" : "Last Name Plus Suffix",
+          "formulaExpression" : "coalesce(Contact_Last_Name_Plus_Suffix,Attendee_Last_Name_Plus_Suffix)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "DROP_FIELDS0" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA1" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "conference.conference360__First_Name2__c", "Accountand.FirstName", "conference.conference360__Last_Name2__c", "Accountand.LastName", "Attendee_Last_Name_Plus_Suffix", "Contact_Last_Name_Plus_Suffix" ]
+        }
+      }
+    },
+    "FILTER0" : {
+      "action" : "filter",
+      "sources" : [ "DROP_FIELDS0" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "conference.conference360__Registration_Status__c",
+          "operator" : "NOT",
+          "operands" : [ "Canceled", "Invited" ]
+        } ]
+      }
+    },
+    "JOIN15" : {
+      "action" : "join",
+      "sources" : [ "FORMULA2", "FORMULA3" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Rename.conference360__Attendee__c", "Rename.conference.Name" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Item_Name_Attendee" ],
+        "rightQualifier" : "Rename",
+        "rightKeys" : [ "Session_Name_Attendee" ]
+      }
+    },
+    "FORMULA4" : {
+      "action" : "formula",
+      "sources" : [ "JOIN15" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Dup_Flag",
+          "label" : "Dup Flag",
+          "formulaExpression" : "'true'",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "JOIN16" : {
+      "action" : "join",
+      "sources" : [ "FORMULA3", "FORMULA4" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "DupFlag.Name", "DupFlag.bt_stripe__Description__c", "DupFlag.bt_stripe__Item_Name__c", "DupFlag.conference360__Attendee__c", "DupFlag.Id", "DupFlag.Item_Name_Attendee", "DupFlag.Rename.conference360__Session__c", "DupFlag.Rename.Session_Name_Attendee" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Session_Name_Attendee" ],
+        "rightQualifier" : "DupFlag",
+        "rightKeys" : [ "Rename.Session_Name_Attendee" ]
+      }
+    },
+    "FILTER1" : {
+      "action" : "filter",
+      "sources" : [ "JOIN16" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "DupFlag.Dup_Flag",
+          "operator" : "IS_NULL",
+          "operands" : [ ]
+        } ]
+      }
+    },
+    "APPEND1" : {
+      "action" : "appendV2",
+      "sources" : [ "JOIN15", "FILTER1" ],
+      "parameters" : {
+        "fieldMappings" : [ {
+          "top" : "bt_stripe__Item_Name__c",
+          "bottom" : "conference.Name"
+        }, {
+          "top" : "conference360__Attendee__c",
+          "bottom" : "conference360__Attendee__c"
+        }, {
+          "top" : "Rename.conference360__Session__c",
+          "bottom" : "conference360__Session__c"
+        }, {
+          "top" : "Rename.Session_Name_Attendee",
+          "bottom" : "Session_Name_Attendee"
+        } ]
+      }
+    },
+    "LOAD_DATASET11" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "HAM_Institutional_Suffix__c", "FirstName", "Account_or_Contact_Id", "LastName", "ucinn_ascendv2__External_System_ID__c", "Primary_Relationship_Manager.Assigned_User_Name" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Account and Contact Dataset",
+          "name" : "Account_and_Contact_Dataset"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN17" : {
+      "action" : "join",
+      "sources" : [ "JOIN5", "EDIT_ATTRIBUTES8" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Accountand.Account_or_Contact_Id" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "conference.conference360__Contact__c" ],
+        "rightQualifier" : "Accountand",
+        "rightKeys" : [ "Account_or_Contact_Id" ]
+      }
+    },
+    "EDIT_ATTRIBUTES3" : {
+      "action" : "schema",
+      "sources" : [ "LOAD_DATASET5" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "conference360__First_Name2__c",
+          "newProperties" : {
+            "label" : "Attendee First Name",
+            "name" : "conference360__First_Name2__c"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES4" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES3" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "conference360__Last_Name2__c",
+          "newProperties" : {
+            "label" : "Attendee Last Name",
+            "name" : "conference360__Last_Name2__c"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES7" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES4" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "HAM_Institutional_Suffix__c",
+          "newProperties" : {
+            "label" : "Attendee Institutional Suffix",
+            "name" : "HAM_Institutional_Suffix__c"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES5" : {
+      "action" : "schema",
+      "sources" : [ "LOAD_DATASET11" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "FirstName",
+          "newProperties" : {
+            "label" : "Contact First Name",
+            "name" : "FirstName"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES6" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES5" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "LastName",
+          "newProperties" : {
+            "label" : "Contact Last Name",
+            "name" : "LastName"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES8" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES6" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "HAM_Institutional_Suffix__c",
+          "newProperties" : {
+            "label" : "Contact Institutional Suffix",
+            "name" : "HAM_Institutional_Suffix__c"
+          }
+        } ]
+      }
+    }
+  },
+  "ui" : {
+    "nodes" : {
+      "LOAD_DATASET1" : {
+        "label" : "bt_stripe__Line_Item__c",
+        "type" : "LOAD_DATASET",
+        "top" : 251.8,
+        "left" : 112.80000000000001,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "LOAD_DATASET5" : {
+        "label" : "conference360__Attendee__c",
+        "type" : "LOAD_DATASET",
+        "top" : 530.6,
+        "left" : 952.1,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN5" : {
+        "label" : "Lookup Attendee to Line Item",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 252.39999999999998,
+        "left" : 952.4
+      },
+      "LOAD_DATASET9" : {
+        "label" : "conference360__Session__c",
+        "type" : "LOAD_DATASET",
+        "top" : 671.9,
+        "left" : 251.8,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "LOAD_DATASET10" : {
+        "label" : "conference360__Session_Attendee__c",
+        "type" : "LOAD_DATASET",
+        "top" : 532.2,
+        "left" : 111.69999999999999,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN12" : {
+        "label" : "Lookup Session Name",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 531.9,
+        "left" : 251.89999999999998
+      },
+      "OUTPUT0" : {
+        "label" : "Output 0",
+        "type" : "OUTPUT",
+        "top" : 252.39999999999998,
+        "left" : 1512.1
+      },
+      "TRANSFORM1" : {
+        "label" : "Rename Line Item",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 252.2,
+        "left" : 391.9,
+        "graph" : {
+          "EDIT_ATTRIBUTES0" : {
+            "label" : "Edit Attributes"
+          },
+          "FORMULA2" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Item Name+Attendee"
+          }
+        },
+        "connectors" : [ {
+          "source" : "EDIT_ATTRIBUTES0",
+          "target" : "FORMULA2"
+        } ]
+      },
+      "TRANSFORM2" : {
+        "label" : "Rename Session Name",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 532,
+        "left" : 392,
+        "graph" : {
+          "EDIT_ATTRIBUTES1" : {
+            "label" : "Edit Attributes"
+          },
+          "FORMULA3" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Session Name+Attendee"
+          }
+        },
+        "connectors" : [ {
+          "source" : "EDIT_ATTRIBUTES1",
+          "target" : "FORMULA3"
+        } ]
+      },
+      "TRANSFORM3" : {
+        "label" : "Enrich Fields",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 252.39999999999998,
+        "left" : 1232.1,
+        "graph" : {
+          "EDIT_ATTRIBUTES2" : {
+            "label" : "Edit Attributes"
+          },
+          "FORMULA1" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Sort Column"
+          },
+          "FORMULA5" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Attendee Last Name Plus Suffix"
+          },
+          "FORMULA6" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "First Name"
+          },
+          "FORMULA7" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Contact Last Name Plus Suffix"
+          },
+          "FORMULA8" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Last Name Plus Suffix"
+          },
+          "DROP_FIELDS0" : {
+            "label" : "Drop Columns"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA6",
+          "target" : "FORMULA5"
+        }, {
+          "source" : "EDIT_ATTRIBUTES2",
+          "target" : "FORMULA6"
+        }, {
+          "source" : "FORMULA5",
+          "target" : "FORMULA7"
+        }, {
+          "source" : "FORMULA8",
+          "target" : "FORMULA1"
+        }, {
+          "source" : "FORMULA7",
+          "target" : "FORMULA8"
+        }, {
+          "source" : "FORMULA1",
+          "target" : "DROP_FIELDS0"
+        } ]
+      },
+      "FILTER0" : {
+        "label" : "Filter Out Registration",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 252.39999999999998,
+        "left" : 1372.1
+      },
+      "JOIN15" : {
+        "label" : "Lookup Duplicate Session Name",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 252.2,
+        "left" : 532
+      },
+      "TRANSFORM4" : {
+        "label" : "Dup Flag",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 392.2,
+        "left" : 672.1,
+        "graph" : {
+          "FORMULA4" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Dup Flag"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "JOIN16" : {
+        "label" : "Lookup Dup Flag",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 532,
+        "left" : 672
+      },
+      "FILTER1" : {
+        "label" : "Filter Out Dup",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 532.2,
+        "left" : 812.3
+      },
+      "APPEND1" : {
+        "label" : "Append Session to Line Item",
+        "description" : "",
+        "type" : "APPEND",
+        "top" : 252.60000000000002,
+        "left" : 812.1
+      },
+      "LOAD_DATASET11" : {
+        "label" : "Account and Contact Dataset",
+        "type" : "LOAD_DATASET",
+        "top" : 530.6,
+        "left" : 1092.1,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN17" : {
+        "label" : "Lookup Contact to Line Item",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 252.10000000000002,
+        "left" : 1092
+      },
+      "TRANSFORM5" : {
+        "label" : "Rename",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 390.6,
+        "left" : 952,
+        "graph" : {
+          "EDIT_ATTRIBUTES3" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES4" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES7" : {
+            "label" : "Edit Attributes"
+          }
+        },
+        "connectors" : [ {
+          "source" : "EDIT_ATTRIBUTES3",
+          "target" : "EDIT_ATTRIBUTES4"
+        }, {
+          "source" : "EDIT_ATTRIBUTES4",
+          "target" : "EDIT_ATTRIBUTES7"
+        } ]
+      },
+      "TRANSFORM6" : {
+        "label" : "Rename",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 392,
+        "left" : 1092,
+        "graph" : {
+          "EDIT_ATTRIBUTES5" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES6" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES8" : {
+            "label" : "Edit Attributes"
+          }
+        },
+        "connectors" : [ {
+          "source" : "EDIT_ATTRIBUTES5",
+          "target" : "EDIT_ATTRIBUTES6"
+        }, {
+          "source" : "EDIT_ATTRIBUTES6",
+          "target" : "EDIT_ATTRIBUTES8"
+        } ]
+      }
+    },
+    "connectors" : [ {
+      "source" : "JOIN15",
+      "target" : "APPEND1"
+    }, {
+      "source" : "APPEND1",
+      "target" : "JOIN5"
+    }, {
+      "source" : "LOAD_DATASET10",
+      "target" : "JOIN12"
+    }, {
+      "source" : "LOAD_DATASET9",
+      "target" : "JOIN12"
+    }, {
+      "source" : "TRANSFORM5",
+      "target" : "JOIN5"
+    }, {
+      "source" : "LOAD_DATASET1",
+      "target" : "TRANSFORM1"
+    }, {
+      "source" : "JOIN12",
+      "target" : "TRANSFORM2"
+    }, {
+      "source" : "FILTER0",
+      "target" : "OUTPUT0"
+    }, {
+      "source" : "TRANSFORM3",
+      "target" : "FILTER0"
+    }, {
+      "source" : "TRANSFORM1",
+      "target" : "JOIN15"
+    }, {
+      "source" : "TRANSFORM2",
+      "target" : "JOIN15"
+    }, {
+      "source" : "JOIN15",
+      "target" : "TRANSFORM4"
+    }, {
+      "source" : "TRANSFORM2",
+      "target" : "JOIN16"
+    }, {
+      "source" : "TRANSFORM4",
+      "target" : "JOIN16"
+    }, {
+      "source" : "JOIN16",
+      "target" : "FILTER1"
+    }, {
+      "source" : "FILTER1",
+      "target" : "APPEND1"
+    }, {
+      "source" : "JOIN17",
+      "target" : "TRANSFORM3"
+    }, {
+      "source" : "JOIN5",
+      "target" : "JOIN17"
+    }, {
+      "source" : "TRANSFORM6",
+      "target" : "JOIN17"
+    }, {
+      "source" : "LOAD_DATASET5",
+      "target" : "TRANSFORM5"
+    }, {
+      "source" : "LOAD_DATASET11",
+      "target" : "TRANSFORM6"
+    } ],
+    "hiddenColumns" : [ ]
+  },
+  "runMode" : "full"
+}

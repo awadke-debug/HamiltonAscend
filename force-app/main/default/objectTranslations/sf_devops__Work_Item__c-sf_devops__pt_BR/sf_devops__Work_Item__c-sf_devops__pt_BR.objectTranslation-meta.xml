@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObjectTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <caseValues>
+        <plural>false</plural>
+        <value>Item de trabalho</value>
+    </caseValues>
+    <caseValues>
+        <plural>true</plural>
+        <value>Itens de trabalho</value>
+    </caseValues>
+    <gender>Masculine</gender>
+    <nameFieldLabel>Número do item de trabalho</nameFieldLabel>
+    <validationRules>
+        <errorMessage>Um Work_Item não pode ter Development_Approved_By definido se não for Development_Approved.</errorMessage>
+        <name>sf_devops__Approved_By_Without_Approved</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Você deve definir Development_Approved_By quando este item de trabalho for aprovado.</errorMessage>
+        <name>sf_devops__Approved_Without_Approved_By</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Um item de trabalho não pode ser aprovado sem uma revisão.</errorMessage>
+        <name>sf_devops__Approved_Without_Review</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Um item de trabalho deve pertencer ao mesmo projeto que seu pacote de alterações.</errorMessage>
+        <name>sf_devops__Change_Bundle_Project</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Um item de trabalho não pode ser combinado se estiver em um pacote.</errorMessage>
+        <name>sf_devops__Combined_Bundled</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Um item de trabalho não pode ser combinado se não fizer referência ao item de trabalho com o qual está sendo combinado.</errorMessage>
+        <name>sf_devops__Combined_Not_Combined_With</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Um item de trabalho não pode ser combinado se nunca tiver sido promovido.</errorMessage>
+        <name>sf_devops__Combined_Not_Promoted</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Um item de trabalho não pode ter a configuração Combined_With se não estiver no estado Combinado.</errorMessage>
+        <name>sf_devops__Combined_With_Not_Combined</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Um item de trabalho não pode ter a configuração Combined_With para um item de trabalho que não executou a operação Combinar.</errorMessage>
+        <name>sf_devops__Combined_With_Not_Survivor</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Os valores possíveis para Concluded_c são: FECHADO, NUNCA, COMBINADO ou vazio.</errorMessage>
+        <name>sf_devops__Concluded_values</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Um item de trabalho não pode ter seu campo Concluded__c alterado uma vez definido.</errorMessage>
+        <name>sf_devops__Disable_Concluded</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Um item de trabalho não pode ter seu campo Promoted__c desabilitado uma vez definido.</errorMessage>
+        <name>sf_devops__Disable_Promoted</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Itens de trabalho não podem ser conectados a ambientes expirados.</errorMessage>
+        <name>sf_devops__Environment_Expired</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Um item de trabalho deve pertencer ao mesmo projeto que seu ambiente.</errorMessage>
+        <name>sf_devops__Environment_Project</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Não é possível referenciar o ambiente que não oferece suporte ao rastreamento de alterações.</errorMessage>
+        <name>sf_devops__Environment_Requires_Tracking</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Um item de trabalho não pode ter seu campo Promoted_From_Environment__c alterado uma vez definido.</errorMessage>
+        <name>sf_devops__PromotedFromEnvironment_Changed</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Um item de trabalho não pode ter seu campo Promoted_From_Environment__c definido com um valor diferente do valor de Environment__c e só pode ser definido quando Environment__c estiver sendo definido como nulo.</errorMessage>
+        <name>sf_devops__PromotedFromEnvironment_Set</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Um Work_Item não pode ser membro de um Change_Bundle se nunca tiver sido promovido.</errorMessage>
+        <name>sf_devops__Promoted_And_Installed</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Você não pode criar um Work_Item com o sinalizador promovido definido.</errorMessage>
+        <name>sf_devops__Promoted_On_Create</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Um item de trabalho não pode ser promovido se não for aprovado.</errorMessage>
+        <name>sf_devops__Promoted_Without_Approval</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Um item de trabalho não pode ter o campo Ramificação de reconstrução definido se estiver não promovido, empacotado ou concluído.</errorMessage>
+        <name>sf_devops__Rebase_Branch</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Deprecated --></errorMessage>
+        <name>sf_devops__Rebase_Remote_Reference</name>
+    </validationRules>
+    <webLinks>
+        <label>Visualizar no DevOps Center</label>
+        <name>sf_devops__Devops_Center</name>
+    </webLinks>
+</CustomObjectTranslation>

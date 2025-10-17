@@ -1,0 +1,642 @@
+{
+  "version" : "62.0",
+  "nodes" : {
+    "LOAD_DATASET0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "All_NCAA_Involvements", "Is_Contactable", "Is_Contactable_By_Text", "Is_Solicitable_By_Phone", "Is_Active", "Is_Contactable_By_Email", "FirstName", "Account_or_Contact_Id", "Name", "ucinn_ascendv2__Contact_Type__c", "LastName", "ucinn_ascendv2__Full_Name_Formula__c", "Is_Contactable_By_Phone", "Is_Solicitable_By_Mail", "Is_Solicitable_By_Email", "Account_or_Contact_External_Id", "Account_or_Contact_Id_for_Lightning", "Constituent_Type_String", "Is_Solicitable", "Is_Solicitable_By_Text", "HAM_Reunion_Year__c", "HAM_Institutional_Suffix__c", "Preferred_Email.ucinn_ascendv2__Email_Address__c", "Is_Contactable_By_Mail", "Number_of_Solicitable_Channels", "Number_of_Contactable_Channels" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Account and Contact Dataset",
+          "name" : "Account_and_Contact_Dataset"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "LOAD_DATASET2_copy0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Id", "Name", "ucinn_ascendv2__Contact__c", "ucinn_ascendv2__Related_Contact_Role__c", "ucinn_ascendv2__Related_Contact__c", "ucinn_ascendv2__Contact_Role_Formula__c", "ucinn_ascendv2__Related_Contact_Donor_ID_Formula__c", "ucinn_ascendv2__Related_Contact_Name_Formula__c", "Related_Constituent_Reunion_Year__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "ucinn_ascendv2__Relationship__c",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "ucinn_ascendv2__Relationship__c"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "FILTER2_copy0" : {
+      "action" : "filter",
+      "sources" : [ "LOAD_DATASET2_copy0" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "ucinn_ascendv2__Contact_Role_Formula__c",
+          "operator" : "EQUAL",
+          "operands" : [ "Guardian", "Parent", "Ward", "Step-Parent" ]
+        } ]
+      }
+    },
+    "JOIN88" : {
+      "action" : "join",
+      "sources" : [ "FILTER2_copy0", "LOAD_DATASET0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "ucinn_ascendv2__Contact__c" ],
+        "rightQualifier" : "parents",
+        "rightKeys" : [ "Account_or_Contact_Id" ]
+      }
+    },
+    "DROP_FIELDS8" : {
+      "action" : "schema",
+      "sources" : [ "JOIN90" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "SELECT",
+          "ignoreMissingFields" : true,
+          "fields" : [ "account_and_contact.ucinn_ascendv2__Contact_Type__c", "Account_or_Contact_Id", "account_and_contact.ucinn_ascendv2__Full_Name_Formula__c", "account_and_contact.Constituent_Type_String", "ucinn_ascendv2__Involvement_Code_Description_Formula__c", "account_and_contact.HAM_Reunion_Year__c" ]
+        }
+      }
+    },
+    "EDIT_ATTRIBUTES0" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES5" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Account_or_Contact_Id",
+          "newProperties" : {
+            "label" : "Account or Contact Id-Student",
+            "name" : "Account_or_Contact_Id_Student"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES1" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES0" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "All_NCAA_Involvements",
+          "newProperties" : {
+            "label" : "All NCAA Involvements-Student",
+            "name" : "All_NCAA_Involvements_Student"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES2" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES1" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "account_and_contact.ucinn_ascendv2__Full_Name_Formula__c",
+          "newProperties" : {
+            "label" : "Full Name-Student",
+            "name" : "account_and_contact.ucinn_ascendv2__Full_Name_Formula__c_Student"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES3" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES2" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "account_and_contact.Constituent_Type_String",
+          "newProperties" : {
+            "label" : "Constituent Type String-Student",
+            "name" : "account_and_contact.Constituent_Type_String_Student"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES5" : {
+      "action" : "schema",
+      "sources" : [ "DROP_FIELDS8" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "account_and_contact.HAM_Reunion_Year__c",
+          "newProperties" : {
+            "label" : "Reunion Year-Student",
+            "name" : "account_and_contact.HAM_Reunion_Year__c"
+          }
+        } ]
+      }
+    },
+    "DROP_FIELDS1" : {
+      "action" : "schema",
+      "sources" : [ "JOIN88" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "SELECT",
+          "ignoreMissingFields" : true,
+          "fields" : [ "parents.Account_or_Contact_Id", "parents.Account_or_Contact_External_Id", "parents.Account_or_Contact_Id_for_Lightning", "parents.ucinn_ascendv2__Full_Name_Formula__c", "parents.FirstName", "parents.LastName", "parents.ucinn_ascendv2__Contact_Type__c", "parents.Constituent_Type_String", "parents.Is_Active", "parents.Is_Contactable", "parents.Is_Contactable_By_Text", "parents.Is_Contactable_By_Email", "parents.Is_Contactable_By_Phone", "parents.Is_Contactable_By_Mail", "parents.Number_of_Contactable_Channels", "parents.Is_Solicitable_By_Phone", "parents.Is_Solicitable_By_Mail", "parents.Is_Solicitable_By_Email", "parents.Is_Solicitable", "parents.Is_Solicitable_By_Text", "parents.Number_of_Solicitable_Channels", "parents.Preferred_Email.ucinn_ascendv2__Email_Address__c", "ucinn_ascendv2__Related_Contact__c", "parents.HAM_Institutional_Suffix__c", "ucinn_ascendv2__Contact_Role_Formula__c" ]
+        }
+      }
+    },
+    "JOIN89" : {
+      "action" : "join",
+      "sources" : [ "FILTER3", "DROP_FIELDS1" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "INNER",
+        "leftKeys" : [ "Account_or_Contact_Id_Student" ],
+        "rightKeys" : [ "ucinn_ascendv2__Related_Contact__c" ]
+      }
+    },
+    "FILTER3" : {
+      "action" : "filter",
+      "sources" : [ "EDIT_ATTRIBUTES3" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "account_and_contact.Constituent_Type_String_Student",
+          "operator" : "CONTAINS",
+          "operands" : [ "Student" ]
+        } ]
+      }
+    },
+    "OUTPUT0" : {
+      "action" : "save",
+      "sources" : [ "JOIN89" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Parents of Student Athletes",
+          "name" : "Parents_of_Student_Athletes",
+          "folderName" : "SharedApp"
+        },
+        "dateConfigurationName" : "July_Fiscal_Year",
+        "measuresToCurrencies" : [ ]
+      }
+    },
+    "LOAD_DATASET7_copy0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "ucinn_ascendv2__Status__c", "RecordTypeId", "ucinn_ascendv2__Account__c", "ucinn_ascendv2__Contact__c", "ucinn_ascendv2__Involvement_Code__c", "ucinn_ascendv2__Involvement_Code_Description_Formula__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "ucinn_ascendv2__Involvement__c",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "ucinn_ascendv2__Involvement__c"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "LOAD_DATASET8_copy0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Id", "Name" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "RecordType",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "RecordType"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN15_copy0" : {
+      "action" : "join",
+      "sources" : [ "LOAD_DATASET7_copy0", "LOAD_DATASET8_copy0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "RecordTypeId", "Record_Type.Id" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "RecordTypeId" ],
+        "rightQualifier" : "Record_Type",
+        "rightKeys" : [ "Id" ]
+      }
+    },
+    "LOAD_DATASET19_copy0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Id", "HAM_Category__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "ucinn_ascendv2__Involvement_Value__c",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "ucinn_ascendv2__Involvement_Value__c"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN27_copy0" : {
+      "action" : "join",
+      "sources" : [ "JOIN15_copy0", "LOAD_DATASET19_copy0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Involvement_Code.Id", "ucinn_ascendv2__Involvement_Code__c" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "ucinn_ascendv2__Involvement_Code__c" ],
+        "rightQualifier" : "Involvement_Code",
+        "rightKeys" : [ "Id" ]
+      }
+    },
+    "FILTER8_copy0" : {
+      "action" : "filter",
+      "sources" : [ "FORMULA71_copy0" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "Involvement_Code.HAM_Category__c",
+          "operator" : "EQUAL",
+          "operands" : [ "Student NCAA Athletics" ]
+        }, {
+          "type" : "TEXT",
+          "field" : "ucinn_ascendv2__Status__c",
+          "operator" : "EQUAL",
+          "operands" : [ "Current" ]
+        } ]
+      }
+    },
+    "DROP_FIELDS7_copy0" : {
+      "action" : "schema",
+      "sources" : [ "FILTER8_copy0" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "SELECT",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Account_or_Contact_Id", "ucinn_ascendv2__Involvement_Code_Description_Formula__c" ]
+        }
+      }
+    },
+    "EDIT_ATTRIBUTES4" : {
+      "action" : "schema",
+      "sources" : [ "DROP_FIELDS7_copy0" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "ucinn_ascendv2__Involvement_Code_Description_Formula__c",
+          "newProperties" : {
+            "label" : "NCAA Involvement-Student",
+            "name" : "ucinn_ascendv2__Involvement_Code_Description_Formula__c"
+          }
+        } ]
+      }
+    },
+    "FORMULA71_copy0" : {
+      "action" : "formula",
+      "sources" : [ "JOIN27_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Account_or_Contact_Id",
+          "label" : "Account or Contact Id",
+          "formulaExpression" : "coalesce(ucinn_ascendv2__Contact__c,ucinn_ascendv2__Account__c)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "JOIN90" : {
+      "action" : "join",
+      "sources" : [ "EDIT_ATTRIBUTES4", "LOAD_DATASET0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Account_or_Contact_Id" ],
+        "rightQualifier" : "account_and_contact",
+        "rightKeys" : [ "Account_or_Contact_Id" ]
+      }
+    }
+  },
+  "ui" : {
+    "nodes" : {
+      "LOAD_DATASET0" : {
+        "label" : "Account and Contact Dataset",
+        "type" : "LOAD_DATASET",
+        "top" : 252.10000000000002,
+        "left" : 392.2,
+        "parameters" : {
+          "sampleSize" : 10000
+        }
+      },
+      "LOAD_DATASET2_copy0" : {
+        "label" : "ucinn_ascendv2__Relationship__c",
+        "type" : "LOAD_DATASET",
+        "top" : 532.3,
+        "left" : 533.7,
+        "parameters" : {
+          "sampleSize" : 10000
+        }
+      },
+      "FILTER2_copy0" : {
+        "label" : "Filter to Hamilton Parents",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 392.3,
+        "left" : 533.7
+      },
+      "JOIN88" : {
+        "label" : "Lookup Account and Contact to Parents",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 252,
+        "left" : 672
+      },
+      "TRANSFORM61" : {
+        "label" : "Keep Student Fields",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 112,
+        "left" : 812,
+        "graph" : {
+          "DROP_FIELDS8" : {
+            "label" : "Keep Columns"
+          },
+          "EDIT_ATTRIBUTES0" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES1" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES2" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES3" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES5" : {
+            "label" : "Edit Attributes"
+          }
+        },
+        "connectors" : [ {
+          "source" : "EDIT_ATTRIBUTES0",
+          "target" : "EDIT_ATTRIBUTES1"
+        }, {
+          "source" : "EDIT_ATTRIBUTES1",
+          "target" : "EDIT_ATTRIBUTES2"
+        }, {
+          "source" : "EDIT_ATTRIBUTES2",
+          "target" : "EDIT_ATTRIBUTES3"
+        }, {
+          "source" : "EDIT_ATTRIBUTES5",
+          "target" : "EDIT_ATTRIBUTES0"
+        }, {
+          "source" : "DROP_FIELDS8",
+          "target" : "EDIT_ATTRIBUTES5"
+        } ]
+      },
+      "TRANSFORM62" : {
+        "label" : "Keep needed fields",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 252,
+        "left" : 812,
+        "graph" : {
+          "DROP_FIELDS1" : {
+            "label" : "Keep Columns"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "JOIN89" : {
+        "label" : "Inner Join Parents to Students",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 112.30000000000001,
+        "left" : 1093.7
+      },
+      "FILTER3" : {
+        "label" : "Filter to Student Athletes",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 112,
+        "left" : 952
+      },
+      "OUTPUT0" : {
+        "label" : "Output 0",
+        "type" : "OUTPUT",
+        "top" : 112.30000000000001,
+        "left" : 1233.7
+      },
+      "LOAD_DATASET7_copy0" : {
+        "label" : "ucinn_ascendv2__Involvement__c",
+        "type" : "LOAD_DATASET",
+        "top" : 949.8,
+        "left" : 113.80000000000001,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "LOAD_DATASET8_copy0" : {
+        "label" : "RecordType",
+        "type" : "LOAD_DATASET",
+        "top" : 809.8,
+        "left" : 253.8,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN15_copy0" : {
+        "label" : "Join Record Type To Involvement",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 809.8,
+        "left" : 113.80000000000001
+      },
+      "LOAD_DATASET19_copy0" : {
+        "label" : "ucinn_ascendv2__Involvement_Value__c",
+        "type" : "LOAD_DATASET",
+        "top" : 669.8,
+        "left" : 253.8,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN27_copy0" : {
+        "label" : "Lookup Involvement Code To Involvement",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 669.8,
+        "left" : 113.80000000000001
+      },
+      "FILTER8_copy0" : {
+        "label" : "Filter Current NCAA Involvements",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 389.8,
+        "left" : 113.80000000000001
+      },
+      "TRANSFORM9_copy0" : {
+        "label" : "Keep NCAA Involvements",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 249.8,
+        "left" : 113.80000000000001,
+        "graph" : {
+          "DROP_FIELDS7_copy0" : {
+            "label" : "Keep Columns"
+          },
+          "EDIT_ATTRIBUTES4" : {
+            "label" : "Edit Attributes"
+          }
+        },
+        "connectors" : [ {
+          "source" : "DROP_FIELDS7_copy0",
+          "target" : "EDIT_ATTRIBUTES4"
+        } ]
+      },
+      "TRANSFORM26_copy0" : {
+        "label" : "Enrich Involvements",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 529.8,
+        "left" : 113.80000000000001,
+        "graph" : {
+          "FORMULA71_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Contact or Account Id"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "JOIN90" : {
+        "label" : "Lookuo Account and Contact to NCAA",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 112,
+        "left" : 392.7
+      }
+    },
+    "connectors" : [ {
+      "source" : "FILTER3",
+      "target" : "JOIN89"
+    }, {
+      "source" : "LOAD_DATASET2_copy0",
+      "target" : "FILTER2_copy0"
+    }, {
+      "source" : "FILTER2_copy0",
+      "target" : "JOIN88"
+    }, {
+      "source" : "LOAD_DATASET0",
+      "target" : "JOIN88"
+    }, {
+      "source" : "JOIN88",
+      "target" : "TRANSFORM62"
+    }, {
+      "source" : "TRANSFORM62",
+      "target" : "JOIN89"
+    }, {
+      "source" : "JOIN89",
+      "target" : "OUTPUT0"
+    }, {
+      "source" : "TRANSFORM61",
+      "target" : "FILTER3"
+    }, {
+      "source" : "JOIN15_copy0",
+      "target" : "JOIN27_copy0"
+    }, {
+      "source" : "LOAD_DATASET7_copy0",
+      "target" : "JOIN15_copy0"
+    }, {
+      "source" : "LOAD_DATASET8_copy0",
+      "target" : "JOIN15_copy0"
+    }, {
+      "source" : "LOAD_DATASET19_copy0",
+      "target" : "JOIN27_copy0"
+    }, {
+      "source" : "FILTER8_copy0",
+      "target" : "TRANSFORM9_copy0"
+    }, {
+      "source" : "JOIN27_copy0",
+      "target" : "TRANSFORM26_copy0"
+    }, {
+      "source" : "TRANSFORM26_copy0",
+      "target" : "FILTER8_copy0"
+    }, {
+      "source" : "TRANSFORM9_copy0",
+      "target" : "JOIN90"
+    }, {
+      "source" : "LOAD_DATASET0",
+      "target" : "JOIN90"
+    }, {
+      "source" : "JOIN90",
+      "target" : "TRANSFORM61"
+    } ],
+    "hiddenColumns" : [ {
+      "fieldName" : "Is_Contactable_By_Phone",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Account_or_Contact_External_Id",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Account_or_Contact_Id_for_Lightning",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Is_Contactable_By_Mail",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Number_of_Contactable_Channels",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    } ]
+  },
+  "runMode" : "full"
+}

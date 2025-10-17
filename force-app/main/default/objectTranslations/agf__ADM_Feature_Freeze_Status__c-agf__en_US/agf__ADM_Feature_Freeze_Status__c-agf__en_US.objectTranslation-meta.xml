@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObjectTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <caseValues>
+        <plural>false</plural>
+        <value>Freeze Team Status</value>
+    </caseValues>
+    <caseValues>
+        <plural>true</plural>
+        <value>Freeze Team Status</value>
+    </caseValues>
+    <layouts>
+        <layout>Feature Freeze Team Status Layout</layout>
+        <sections>
+            <label><!-- Custom Links --></label>
+            <section>Custom Links</section>
+        </sections>
+        <sections>
+            <label><!-- Deployment Plan --></label>
+            <section>Deployment Plan</section>
+        </sections>
+        <sections>
+            <label><!-- FF Criteria Comments: --></label>
+            <section>FF Criteria Comments:</section>
+        </sections>
+        <sections>
+            <label><!-- FF Criteria Status Dashboard: --></label>
+            <section>FF Criteria Status Dashboard:</section>
+        </sections>
+        <sections>
+            <label><!-- GUS Release Signoff --></label>
+            <section>GUS Release Signoff</section>
+        </sections>
+        <sections>
+            <label><!-- RCA and Security FF Criteria: --></label>
+            <section>RCA and Security FF Criteria:</section>
+        </sections>
+        <sections>
+            <label><!-- Remaining FF Criteria: --></label>
+            <section>Remaining FF Criteria:</section>
+        </sections>
+        <sections>
+            <label><!-- Team Self Assessment --></label>
+            <section>Team Self Assessment</section>
+        </sections>
+    </layouts>
+    <layouts>
+        <layout>Streamlined FF Team Status Layout</layout>
+        <sections>
+            <label><!-- Accessibility Criteria --></label>
+            <section>Accessibility Criteria</section>
+        </sections>
+        <sections>
+            <label><!-- Custom Links --></label>
+            <section>Custom Links</section>
+        </sections>
+        <sections>
+            <label><!-- Feature Freeze Comments ~ Feature Complete --></label>
+            <section>Feature Freeze Comments ~ Feature Complete</section>
+        </sections>
+        <sections>
+            <label><!-- Feature Freeze Comments ~ Feature Incomplete --></label>
+            <section>Feature Freeze Comments ~ Feature Incomplete</section>
+        </sections>
+        <sections>
+            <label><!-- SIGN OFF STATUS: --></label>
+            <section>SIGN OFF STATUS:</section>
+        </sections>
+        <sections>
+            <label><!-- Salesforce1 Certifications: --></label>
+            <section>Salesforce1 Certifications:</section>
+        </sections>
+        <sections>
+            <label><!-- Scale Impact --></label>
+            <section>Scale Impact</section>
+        </sections>
+        <sections>
+            <label><!-- Security Criteria: --></label>
+            <section>Security Criteria:</section>
+        </sections>
+        <sections>
+            <label><!-- Team Self Assessment --></label>
+            <section>Team Self Assessment</section>
+        </sections>
+    </layouts>
+    <layouts>
+        <layout>Streamlined RF Team Status Layout</layout>
+        <sections>
+            <label><!-- Accessibility Criteria --></label>
+            <section>Accessibility Criteria</section>
+        </sections>
+        <sections>
+            <label><!-- Custom Links --></label>
+            <section>Custom Links</section>
+        </sections>
+        <sections>
+            <label><!-- Release Freeze Comments ~ Feature Complete --></label>
+            <section>Release Freeze Comments ~ Feature Complete</section>
+        </sections>
+        <sections>
+            <label><!-- Release Freeze Comments ~ Feature Incomplete --></label>
+            <section>Release Freeze Comments ~ Feature Incomplete</section>
+        </sections>
+        <sections>
+            <label><!-- SIGN OFF STATUS: --></label>
+            <section>SIGN OFF STATUS:</section>
+        </sections>
+        <sections>
+            <label><!-- Salesforce1 Certifications: --></label>
+            <section>Salesforce1 Certifications:</section>
+        </sections>
+        <sections>
+            <label><!-- Scale Impact --></label>
+            <section>Scale Impact</section>
+        </sections>
+        <sections>
+            <label><!-- Security Criteria: --></label>
+            <section>Security Criteria:</section>
+        </sections>
+    </layouts>
+    <recordTypes>
+        <description><!-- Assessment of Team&apos;s Status before Feature Freeze assessment --></description>
+        <label><!-- Early Assessment Record --></label>
+        <name>agf__Early_Assessment_Record</name>
+    </recordTypes>
+    <recordTypes>
+        <description><!-- Feature Freeze team Sign off record --></description>
+        <label><!-- FF Sign Off Record --></label>
+        <name>agf__FF_Sign_Off_Record</name>
+    </recordTypes>
+    <recordTypes>
+        <description><!-- Release Freeze team Sign off record --></description>
+        <label><!-- RF Sign Off Record --></label>
+        <name>agf__RF_Sign_Off_Record</name>
+    </recordTypes>
+    <startsWith>Consonant</startsWith>
+    <validationRules>
+        <errorMessage><!-- You must provide details when reporting open Accessibility bugs. --></errorMessage>
+        <name>agf__Accessibility_details_required_bugs_open</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Details must be provided when reporting open RCA bugs that are older than one month. --></errorMessage>
+        <name>agf__Details_must_be_provided_open_RCA_bugs</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Details must be provided when reporting RCA stories that are older than one month that are not Closed or Scheduled. --></errorMessage>
+        <name>agf__Details_must_be_provided_open_RCAstories</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Details must be provided when reporting open RCA To Do that are older than one month. --></errorMessage>
+        <name>agf__Details_must_be_provided_open_RCAtodos</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Details must be provided when reporting open P0, P1 or P2 Security bugs. --></errorMessage>
+        <name>agf__Details_must_be_provided_open_Secur_bugs</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- You must provide details if signing off without meeting criteria or when setting Signoff Status to &quot;No&quot;. --></errorMessage>
+        <name>agf__Must_Explain_If_Not_Meeting_Criteria</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- You must provide details if Team status is Yellow or Red. --></errorMessage>
+        <name>agf__Must_Explain_if_Yellow_or_Red</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Choose only one of the responses in the 2 Week Overall Assessment section. --></errorMessage>
+        <name>agf__One_2Week_Response_Only</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Choose only one of the responses in the 6-8 Week Overall Assessment section. --></errorMessage>
+        <name>agf__One_6Week_Response_Only</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Choose one of the responses in the 6-8 Week Overall Assessment section. --></errorMessage>
+        <name>agf__One_6Week_Response_Required</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Details must be provided when dependencies on other teams are not closed. --></errorMessage>
+        <name>agf__Provide_details_when_dependencies_open</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Details must be provided when feature is not behind perm and disabled when feature is not complete. --></errorMessage>
+        <name>agf__Provide_details_when_not_behind_perm</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- You must provide details if scale impact has not been reviewed and documented. --></errorMessage>
+        <name>agf__Scale_details_required_if_not_documented</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Enter next steps or assistance that is required. --></errorMessage>
+        <name>agf__Week2_NotReady_Comments_Required</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Enter comments or assistance that is required. --></errorMessage>
+        <name>agf__Week2_Risk_Comments_Required</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Enter next steps or assistance that is required. --></errorMessage>
+        <name>agf__Week6_NotReady_Comments_Required</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Enter comments or assistance that is required. --></errorMessage>
+        <name>agf__Week6_Risk_Comments_Required</name>
+    </validationRules>
+    <webLinks>
+        <label><!-- Update_Metrics --></label>
+        <name>agf__Update_Metrics</name>
+    </webLinks>
+</CustomObjectTranslation>

@@ -1,0 +1,59 @@
+<template>
+      <section class="modal-backdrop">
+        <template if:false={contactDetail.name}>
+            <div class="spinner-container">
+                <lightning-spinner alternative-text="Loading" size="large"></lightning-spinner>
+            </div>
+        </template>
+    <div class="modal-content">
+      <!-- Close Button -->
+      <button class="modal-close" onclick={closeModal}>×</button>
+
+      <div class="modal-body">
+        <div class="modal-left">
+          <template if:false={contactDetail.profilePictureUrl}>
+            <lightning-icon class="person-icon" icon-name="standard:user" size="large"></lightning-icon>
+          </template>
+          <template if:true={contactDetail.profilePictureUrl}>
+            <img src={contactDetail.profilePictureUrl} alt="Alumni Photo" class="modal-avatar"> 
+          </template>
+          <div class="modal-left-right-section">
+
+            <h2 class="alumni-name">{contactDetail.name} <span class="grad-year">{contactDetail.year}</span></h2>
+            <div class="linkedin-section info-group">
+                <a href={contactDetail.linkedIn} class={linkedInClass} target="_blank" rel="noopener noreferrer">
+                    <span><img src={images.linkedInImage} alt="" width="25px" height="25px"></img></span>
+                    {label.linkedinprofile}
+                </a>
+            </div>        
+            <p class="connect-btn" style="cursor: not-allowed; text-align: center;">
+              <img src={images.makeConnectionImage} class="connection-icon"> {label.makeaconnection}
+              <br> <Span style="font-size: 10px;">(To be developed - Phase 2)</Span></br>
+            </p>
+            <div>
+              <p class="alumni-email">
+                <img src={images.mailImage} class="icon"> {contactDetail.email}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-right">
+          <template for:each={overviewData.fields} for:item="field">
+            <div class="text-container-key-val" key={field.order}>
+              <h3>{field.label}</h3>
+              <p>
+                <template if:true={field.value}>
+                  {field.value}
+                </template>
+                <template if:false={field.value}>
+                    &nbsp; -
+                </template>
+              </p>
+            </div>
+          </template>
+        </div>
+      </div>
+    </div>
+  </section>
+</template>

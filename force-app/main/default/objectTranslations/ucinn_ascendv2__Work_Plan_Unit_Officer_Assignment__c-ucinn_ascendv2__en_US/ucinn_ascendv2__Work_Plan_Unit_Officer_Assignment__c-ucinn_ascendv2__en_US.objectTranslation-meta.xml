@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObjectTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <caseValues>
+        <plural>false</plural>
+        <value>Work Plan Unit Officer Assignment</value>
+    </caseValues>
+    <caseValues>
+        <plural>true</plural>
+        <value>Work Plan Unit Officer Assignments</value>
+    </caseValues>
+    <layouts>
+        <layout>Work Plan Unit Officer Assignment Layout</layout>
+        <sections>
+            <label><!-- Custom Links --></label>
+            <section>Custom Links</section>
+        </sections>
+    </layouts>
+    <recordTypes>
+        <description><!-- Used to link development officers and physicians --></description>
+        <label><!-- Physician --></label>
+        <name>ucinn_ascendv2__Physician</name>
+    </recordTypes>
+    <recordTypes>
+        <description><!-- Used to link development officers and work plan unit --></description>
+        <label><!-- Work Plan Unit --></label>
+        <name>ucinn_ascendv2__Work_Plan_Unit</name>
+    </recordTypes>
+    <startsWith>Consonant</startsWith>
+    <validationRules>
+        <errorMessage><!-- Please uncheck the primary assignment field to save the record with an assignment end date. --></errorMessage>
+        <name>ucinn_ascendv2__Assignment_End_Date_and_Primary_Flag</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- There is already an active primary assignment for this work plan unit. Please uncheck the primary assignment flag and resolve this issue. --></errorMessage>
+        <name>ucinn_ascendv2__Primary_Assignment</name>
+    </validationRules>
+</CustomObjectTranslation>

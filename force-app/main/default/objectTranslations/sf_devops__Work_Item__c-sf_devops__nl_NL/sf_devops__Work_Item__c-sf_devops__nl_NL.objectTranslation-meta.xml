@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObjectTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <caseValues>
+        <plural>false</plural>
+        <value>Werkitem</value>
+    </caseValues>
+    <caseValues>
+        <plural>true</plural>
+        <value>Werkitems</value>
+    </caseValues>
+    <gender>Neuter</gender>
+    <nameFieldLabel>Werkitemstatussen</nameFieldLabel>
+    <validationRules>
+        <errorMessage>Er kan geen Development_Approved_By worden ingesteld voor een Work_Item dat niet Development_Approved is.</errorMessage>
+        <name>sf_devops__Approved_By_Without_Approved</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>U moet Development_Approved_By instellen wanneer dit werkitem wordt goedgekeurd.</errorMessage>
+        <name>sf_devops__Approved_Without_Approved_By</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Een werkitem kan niet worden goedgekeurd zonder controle.</errorMessage>
+        <name>sf_devops__Approved_Without_Review</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Een werkitem moet tot hetzelfde project behoren als zijn wijzigingsbundel.</errorMessage>
+        <name>sf_devops__Change_Bundle_Project</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Een werkitem mag niet Samengevoegd zijn indien dit zich in een bundel bevindt.</errorMessage>
+        <name>sf_devops__Combined_Bundled</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Een werkitem mag niet Samengevoegd zijn indien dit niet verwijst naar het werkitem waarin het is samengevoegd.</errorMessage>
+        <name>sf_devops__Combined_Not_Combined_With</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Een werkitem mag niet Samengevoegd zijn indien dit nooit is gepromoveerd.</errorMessage>
+        <name>sf_devops__Combined_Not_Promoted</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Een werkitem mag niet de set Combined_With bevatten indien het niet de status Samengevoegd heeft.</errorMessage>
+        <name>sf_devops__Combined_With_Not_Combined</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Een werkitem mag niet de set Combined_With hebben ingesteld op een werkitem dat de samenvoegingsbewerking niet heeft uitgevoerd.</errorMessage>
+        <name>sf_devops__Combined_With_Not_Survivor</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Mogelijke waarden voor Concluded_c zijn: CLOSED, NEVERED, COMBINED en leeg.</errorMessage>
+        <name>sf_devops__Concluded_values</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Het veld Concluded__c van een werkitem kan niet worden gewijzigd nadat het is ingesteld.</errorMessage>
+        <name>sf_devops__Disable_Concluded</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Het veld Promoted__c van een werkitem kan niet worden uitgeschakeld nadat het is ingesteld.</errorMessage>
+        <name>sf_devops__Disable_Promoted</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Werkitems kunnen niet worden verbonden met verlopen omgevingen.</errorMessage>
+        <name>sf_devops__Environment_Expired</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Een werkitem moet tot hetzelfde project behoren als zijn omgeving.</errorMessage>
+        <name>sf_devops__Environment_Project</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Kan geen verwijzing maken naar een omgeving die wijzigingen bijhouden niet ondersteunt.</errorMessage>
+        <name>sf_devops__Environment_Requires_Tracking</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Het veld Promoted_From_Environment__c van een werkitem kan niet worden gewijzigd nadat het is ingesteld.</errorMessage>
+        <name>sf_devops__PromotedFromEnvironment_Changed</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Het veld Promoted_From_Environment__c van een werkitem kan niet worden ingevuld met een waarde die afwijkt van de waarde van Environment__c, en kan alleen worden ingesteld wanneer Environment__c wordt ingesteld op nul.</errorMessage>
+        <name>sf_devops__PromotedFromEnvironment_Set</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Een Work_Item kan geen deel uitmaken van een Change_Bundle als het nooit is gepromoveerd.</errorMessage>
+        <name>sf_devops__Promoted_And_Installed</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>U kunt geen Work_Item maken met de vlag Gepromoveerd ingesteld.</errorMessage>
+        <name>sf_devops__Promoted_On_Create</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Een WorkItem kan niet worden gepromoveerd als het niet is goedgekeurd.</errorMessage>
+        <name>sf_devops__Promoted_Without_Approval</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Een werkitem mag geen ingesteld veld Rebase-vertakking hebben indien het niet-gepromoveerd, gebundeld of geconcludeerd is.</errorMessage>
+        <name>sf_devops__Rebase_Branch</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Deprecated --></errorMessage>
+        <name>sf_devops__Rebase_Remote_Reference</name>
+    </validationRules>
+    <webLinks>
+        <label>Weergeven in DevOps Center</label>
+        <name>sf_devops__Devops_Center</name>
+    </webLinks>
+</CustomObjectTranslation>

@@ -1,0 +1,566 @@
+{
+  "version" : "63.0",
+  "nodes" : {
+    "LOAD_DATASET0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Opportunity.Name", "Opportunity.Type", "Contact.ucinn_ascendv2__Full_Name_Formula__c", "Account.Id", "Account.Type", "Constituent_or_Account_Id", "ucinn_ascendv2__Credit_Type__c", "Object", "Cash_Amount", "Fundraising_Amount" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Gift Credit and Payment",
+          "name" : "Gift_Credit_and_Payment"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "FILTER0" : {
+      "action" : "filter",
+      "sources" : [ "LOAD_DATASET0" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "NUMBER",
+          "field" : "Fundraising_Amount",
+          "operator" : "GREATER_THAN",
+          "operands" : [ "0" ]
+        }, {
+          "type" : "NUMBER",
+          "field" : "Cash_Amount",
+          "operator" : "GREATER_THAN",
+          "operands" : [ "0" ]
+        } ],
+        "filterBooleanLogic" : "1 OR 2"
+      }
+    },
+    "FORMULA0" : {
+      "action" : "formula",
+      "sources" : [ "FILTER0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Hard_Credit_Cash",
+          "label" : "Hard Credit Cash",
+          "formulaExpression" : "case \r\n    when ucinn_ascendv2__Credit_Type__c='Hard'\r\n    then Cash_Amount\r\n    \r\n    else\r\n    0\r\nend\r\n\r\n\r\n ",
+          "precision" : 10,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA1" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Hard_Credit_Fundraising",
+          "label" : "Hard Credit Fundraising",
+          "formulaExpression" : "case \r\n    when ucinn_ascendv2__Credit_Type__c='Hard'\r\n    then Fundraising_Amount\r\n    \r\n    else\r\n    0\r\nend",
+          "precision" : 10,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "EXTRACT0" : {
+      "action" : "extractGrains",
+      "sources" : [ "FORMULA1" ],
+      "parameters" : {
+        "grainExtractions" : [ ]
+      }
+    },
+    "AGGREGATE1" : {
+      "action" : "aggregate",
+      "sources" : [ "EXTRACT0" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "SUM_Hard_Credit_Cash",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        }, {
+          "name" : "SUM_Hard_Credit_Fundraising",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        }, {
+          "name" : "SUM_Cash_Amount",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        }, {
+          "name" : "SUM_Fundraising_Amount",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        } ]
+      },
+      "parameters" : {
+        "aggregations" : [ {
+          "action" : "SUM",
+          "source" : "Hard_Credit_Cash",
+          "name" : "SUM_Hard_Credit_Cash",
+          "label" : "Sum of Hard Credit Cash"
+        }, {
+          "action" : "SUM",
+          "source" : "Hard_Credit_Fundraising",
+          "name" : "SUM_Hard_Credit_Fundraising",
+          "label" : "Sum of Hard Credit Fundraising"
+        }, {
+          "action" : "SUM",
+          "source" : "Cash_Amount",
+          "name" : "SUM_Cash_Amount",
+          "label" : "Sum of Cash Amount"
+        }, {
+          "action" : "SUM",
+          "source" : "Fundraising_Amount",
+          "name" : "SUM_Fundraising_Amount",
+          "label" : "Sum of Fundraising Amount"
+        } ],
+        "groupings" : [ "Opportunity.Name" ],
+        "pivots" : [ ],
+        "nodeType" : "STANDARD"
+      }
+    },
+    "FORMULA2" : {
+      "action" : "formula",
+      "sources" : [ "AGGREGATE1" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Is_Hard_Credit_Only_Opportunity",
+          "label" : "Is Hard Credit Only Opportunity",
+          "formulaExpression" : "case \r\n    when SUM_Fundraising_Amount=SUM_Hard_Credit_Fundraising \r\n    and \r\n    SUM_Cash_Amount=SUM_Hard_Credit_Cash\r\n    then 'true'\r\n    \r\n    else\r\n    'false'\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "OUTPUT0" : {
+      "action" : "save",
+      "sources" : [ "FORMULA2" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "test",
+          "name" : "test"
+        },
+        "measuresToCurrencies" : [ ]
+      }
+    },
+    "LOAD_DATASET0_copy0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Contact.ucinn_ascendv2__Full_Name_Formula__c", "Account.Id", "Account.Type", "Object", "Opportunity.Name", "Constituent_or_Account_Id" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Gift Credit and Payment",
+          "name" : "Gift_Credit_and_Payment"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN0" : {
+      "action" : "join",
+      "sources" : [ "AGGREGATE3", "FORMULA2" ],
+      "schema" : {
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "OUTER",
+        "leftKeys" : [ "Opportunity.Name" ],
+        "rightQualifier" : "opportunity_level",
+        "rightKeys" : [ "Opportunity.Name" ]
+      }
+    },
+    "EXTRACT1" : {
+      "action" : "extractGrains",
+      "sources" : [ "LOAD_DATASET0_copy0" ],
+      "parameters" : {
+        "grainExtractions" : [ ]
+      }
+    },
+    "AGGREGATE3" : {
+      "action" : "aggregate",
+      "sources" : [ "EXTRACT1" ],
+      "parameters" : {
+        "aggregations" : [ {
+          "action" : "COUNT",
+          "name" : "COUNT_Rows",
+          "label" : "Rows"
+        } ],
+        "groupings" : [ "Constituent_or_Account_Id", "Opportunity.Name" ],
+        "nodeType" : "STANDARD"
+      }
+    },
+    "LOAD_DATASET1" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Aggregate.Sum.Lifetime_Committed_Amount", "Aggregate.Sum.Lifetime_Collected_Amount", "Account.Type", "Account_or_Contact_Id", "ucinn_ascendv2__Full_Name_Formula__c", "Account.Name" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Account and Contact Dataset",
+          "name" : "Account_and_Contact_Dataset"
+        },
+        "sampleDetails" : {
+          "type" : "TopN"
+        }
+      }
+    },
+    "JOIN1" : {
+      "action" : "join",
+      "sources" : [ "AGGREGATE5", "LOAD_DATASET1" ],
+      "schema" : {
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Constituent_or_Account_Id" ],
+        "rightKeys" : [ "Account_or_Contact_Id" ]
+      }
+    },
+    "EXTRACT2" : {
+      "action" : "extractGrains",
+      "sources" : [ "JOIN0" ],
+      "parameters" : {
+        "grainExtractions" : [ ]
+      }
+    },
+    "AGGREGATE5" : {
+      "action" : "aggregate",
+      "sources" : [ "EXTRACT2" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "Total_Cash_Amount",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        }, {
+          "name" : "Total_Fundraising_Amount",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        }, {
+          "name" : "Total_Hard_Credit_Cash",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        }, {
+          "name" : "Total_Hard_Credit_Fundraising",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        } ]
+      },
+      "parameters" : {
+        "aggregations" : [ {
+          "action" : "SUM",
+          "source" : "opportunity_level.SUM_Cash_Amount",
+          "name" : "Total_Cash_Amount",
+          "label" : "Total Cash Amount"
+        }, {
+          "action" : "SUM",
+          "source" : "opportunity_level.SUM_Fundraising_Amount",
+          "name" : "Total_Fundraising_Amount",
+          "label" : "Total Fundraising Amount"
+        }, {
+          "action" : "SUM",
+          "source" : "opportunity_level.SUM_Hard_Credit_Cash",
+          "name" : "Total_Hard_Credit_Cash",
+          "label" : "Total Hard Credit Cash"
+        }, {
+          "action" : "SUM",
+          "source" : "opportunity_level.SUM_Hard_Credit_Fundraising",
+          "name" : "Total_Hard_Credit_Fundraising",
+          "label" : "Total Hard Credit Fundraising"
+        } ],
+        "groupings" : [ "Constituent_or_Account_Id" ],
+        "nodeType" : "STANDARD"
+      }
+    },
+    "FORMULA3" : {
+      "action" : "formula",
+      "sources" : [ "JOIN1" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Is_Hard_Credit_Only_Opportunity_Account",
+          "label" : "Is Hard Credit Only Opportunity Account",
+          "formulaExpression" : "case \r\n    when Total_Fundraising_Amount=Total_Hard_Credit_Fundraising and Total_Cash_Amount=Total_Hard_Credit_Cash\r\n    then 'true'\r\n    else\r\n    'false'\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "OUTPUT1" : {
+      "action" : "save",
+      "sources" : [ "FORMULA3" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "test_opp_credit",
+          "name" : "test_opp_credit"
+        }
+      }
+    }
+  },
+  "ui" : {
+    "nodes" : {
+      "LOAD_DATASET0" : {
+        "label" : "Gift Credit and Payment",
+        "type" : "LOAD_DATASET",
+        "top" : 112,
+        "left" : 112,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "FILTER0" : {
+        "label" : "Filter to credits",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 112,
+        "left" : 252
+      },
+      "TRANSFORM0" : {
+        "label" : "Transform  hard credit",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 112,
+        "left" : 392,
+        "graph" : {
+          "FORMULA0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Hard Credit Cash"
+          },
+          "FORMULA1" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Hard Credit Fundraising"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA0",
+          "target" : "FORMULA1"
+        } ]
+      },
+      "AGGREGATE0" : {
+        "label" : "Aggregate 0",
+        "type" : "AGGREGATE",
+        "top" : 112,
+        "left" : 532,
+        "graph" : {
+          "EXTRACT0" : null,
+          "AGGREGATE1" : null
+        },
+        "connectors" : [ {
+          "source" : "EXTRACT0",
+          "target" : "AGGREGATE1"
+        } ]
+      },
+      "TRANSFORM1" : {
+        "label" : "Transform 1",
+        "type" : "TRANSFORM",
+        "top" : 112.19999999999999,
+        "left" : 812.1,
+        "graph" : {
+          "FORMULA2" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Is Hard Credit Only Opportunity"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "OUTPUT0" : {
+        "label" : "Output 0",
+        "type" : "OUTPUT",
+        "top" : 112,
+        "left" : 952
+      },
+      "LOAD_DATASET0_copy0" : {
+        "label" : "Gift Credit and Payment",
+        "type" : "LOAD_DATASET",
+        "top" : 391.6,
+        "left" : 112.6,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN0" : {
+        "label" : "Join opportunity level to opportunity-account",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 391.8,
+        "left" : 813.9
+      },
+      "AGGREGATE2" : {
+        "label" : "Aggregate to account or contact and opportunity",
+        "description" : "",
+        "type" : "AGGREGATE",
+        "top" : 391.9,
+        "left" : 252.89999999999998,
+        "graph" : {
+          "EXTRACT1" : null,
+          "AGGREGATE3" : null
+        },
+        "connectors" : [ {
+          "source" : "EXTRACT1",
+          "target" : "AGGREGATE3"
+        } ]
+      },
+      "LOAD_DATASET1" : {
+        "label" : "Account and Contact Dataset",
+        "type" : "LOAD_DATASET",
+        "top" : 670.5,
+        "left" : 112.30000000000001,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN1" : {
+        "label" : "Lookup name and type",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 392.4,
+        "left" : 1092.5
+      },
+      "AGGREGATE4" : {
+        "label" : "Credit Aggregates",
+        "description" : "",
+        "type" : "AGGREGATE",
+        "top" : 392,
+        "left" : 952,
+        "graph" : {
+          "EXTRACT2" : null,
+          "AGGREGATE5" : null
+        },
+        "connectors" : [ {
+          "source" : "EXTRACT2",
+          "target" : "AGGREGATE5"
+        } ]
+      },
+      "TRANSFORM2" : {
+        "label" : "Transform 2",
+        "type" : "TRANSFORM",
+        "top" : 392,
+        "left" : 1232,
+        "graph" : {
+          "FORMULA3" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Is Hard Credit Only Opportunity Account"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "OUTPUT1" : {
+        "label" : "Output 1",
+        "type" : "OUTPUT",
+        "top" : 392,
+        "left" : 1372
+      }
+    },
+    "connectors" : [ {
+      "source" : "LOAD_DATASET0",
+      "target" : "FILTER0"
+    }, {
+      "source" : "FILTER0",
+      "target" : "TRANSFORM0"
+    }, {
+      "source" : "TRANSFORM0",
+      "target" : "AGGREGATE0"
+    }, {
+      "source" : "AGGREGATE0",
+      "target" : "TRANSFORM1"
+    }, {
+      "source" : "TRANSFORM1",
+      "target" : "OUTPUT0"
+    }, {
+      "source" : "AGGREGATE2",
+      "target" : "JOIN0"
+    }, {
+      "source" : "TRANSFORM1",
+      "target" : "JOIN0"
+    }, {
+      "source" : "LOAD_DATASET0_copy0",
+      "target" : "AGGREGATE2"
+    }, {
+      "source" : "AGGREGATE4",
+      "target" : "JOIN1"
+    }, {
+      "source" : "LOAD_DATASET1",
+      "target" : "JOIN1"
+    }, {
+      "source" : "JOIN0",
+      "target" : "AGGREGATE4"
+    }, {
+      "source" : "JOIN1",
+      "target" : "TRANSFORM2"
+    }, {
+      "source" : "TRANSFORM2",
+      "target" : "OUTPUT1"
+    } ],
+    "hiddenColumns" : [ ]
+  },
+  "runMode" : "full"
+}

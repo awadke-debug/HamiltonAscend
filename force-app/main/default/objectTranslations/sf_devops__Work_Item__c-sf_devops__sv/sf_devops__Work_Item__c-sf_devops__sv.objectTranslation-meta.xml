@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObjectTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <caseValues>
+        <article>Definite</article>
+        <plural>false</plural>
+        <value>Arbetsobjektet</value>
+    </caseValues>
+    <caseValues>
+        <article>Indefinite</article>
+        <plural>false</plural>
+        <value>Ett arbetsobjekt</value>
+    </caseValues>
+    <caseValues>
+        <article>None</article>
+        <plural>false</plural>
+        <value>Arbetsobjekt</value>
+    </caseValues>
+    <caseValues>
+        <article>Definite</article>
+        <plural>true</plural>
+        <value>Arbetsobjekten</value>
+    </caseValues>
+    <caseValues>
+        <article>Indefinite</article>
+        <plural>true</plural>
+        <value>Arbetsobjekt</value>
+    </caseValues>
+    <caseValues>
+        <article>None</article>
+        <plural>true</plural>
+        <value>Arbetsobjekt</value>
+    </caseValues>
+    <gender>Neuter</gender>
+    <nameFieldLabel>Antal arbetsobjekt</nameFieldLabel>
+    <validationRules>
+        <errorMessage>Ett Work_Item kan inte ha Development_Approved_By inställt om det inte är Development_Approved.</errorMessage>
+        <name>sf_devops__Approved_By_Without_Approved</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Du måste ställa in Development_Approved_By när detta arbetsobjekt har godkänts.</errorMessage>
+        <name>sf_devops__Approved_Without_Approved_By</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Ett arbetsobjekt kan inte godkännas utan granskning.</errorMessage>
+        <name>sf_devops__Approved_Without_Review</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Ett arbetsobjekt måste tillhöra samma projekt som dess ändringspaket.</errorMessage>
+        <name>sf_devops__Change_Bundle_Project</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Ett arbetsobjekt kan inte kombineras om det är i en bunt.</errorMessage>
+        <name>sf_devops__Combined_Bundled</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Ett arbetsobjekt kan inte kombineras om det inte refererar till arbetsobjektet det kombineras till.</errorMessage>
+        <name>sf_devops__Combined_Not_Combined_With</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Ett arbetsobjekt kan inte kombineras om det aldrig har upphöjts.</errorMessage>
+        <name>sf_devops__Combined_Not_Promoted</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Ett arbetsobjekt kan inte ha Combined_With inställt om det inte är i kombinerat tillstånd.</errorMessage>
+        <name>sf_devops__Combined_With_Not_Combined</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Ett arbetsobjekt kan inte ha Combined_With inställt på ett arbetsobjekt som inte utförde Kombinera-operationen.</errorMessage>
+        <name>sf_devops__Combined_With_Not_Survivor</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Möjliga värden för Concluded_c är: STÄNGD, ALDRIG, KOMBINERAD eller tom.</errorMessage>
+        <name>sf_devops__Concluded_values</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Ett arbetsobjekt kan inte ändra sitt Concluded__c-fält när det väl har ställts in.</errorMessage>
+        <name>sf_devops__Disable_Concluded</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Ett arbetsobjekt kan inte ha sitt Promoted__c-fält inaktiverat när det väl har ställts in.</errorMessage>
+        <name>sf_devops__Disable_Promoted</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Arbetsobjekt kan inte kopplas till utgångna miljöer.</errorMessage>
+        <name>sf_devops__Environment_Expired</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Ett arbetsobjekt måste tillhöra samma projekt som dess miljö.</errorMessage>
+        <name>sf_devops__Environment_Project</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Kan inte referera till miljö som inte stöder ändringsspårning.</errorMessage>
+        <name>sf_devops__Environment_Requires_Tracking</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Ett arbetsobjekt kan inte ändra fältet Promoted_From_Environment__c när det väl har ställts in.</errorMessage>
+        <name>sf_devops__PromotedFromEnvironment_Changed</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Ett arbetsobjekt kan inte ha sitt Promoted_From_Environment__c-fält inställt med ett värde som skiljer sig från värdet för Environment__c och det kan bara ställas in när Environment__c sätts till null.</errorMessage>
+        <name>sf_devops__PromotedFromEnvironment_Set</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Ett Work_Item kan inte vara medlem i ett Change_Bundle om det aldrig har flyttats upp.</errorMessage>
+        <name>sf_devops__Promoted_And_Installed</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Du kan inte skapa ett Work_Item med flaggan Uppflyttat angiven.</errorMessage>
+        <name>sf_devops__Promoted_On_Create</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Ett arbetsobjekt kan inte flyttas upp om det inte är godkänt.</errorMessage>
+        <name>sf_devops__Promoted_Without_Approval</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Ett arbetsobjekt kan inte ha sitt Ombasera gren-fält inställt om det inte är uppflyttat, paketerat eller avslutat.</errorMessage>
+        <name>sf_devops__Rebase_Branch</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Deprecated --></errorMessage>
+        <name>sf_devops__Rebase_Remote_Reference</name>
+    </validationRules>
+    <webLinks>
+        <label>Visa i DevOps Center</label>
+        <name>sf_devops__Devops_Center</name>
+    </webLinks>
+</CustomObjectTranslation>

@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObjectTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <caseValues>
+        <plural>false</plural>
+        <value><!-- Élément de travail --></value>
+    </caseValues>
+    <caseValues>
+        <plural>true</plural>
+        <value><!-- Éléments de travail --></value>
+    </caseValues>
+    <gender><!-- Masculine --></gender>
+    <nameFieldLabel><!-- Work Item Number --></nameFieldLabel>
+    <startsWith><!-- Vowel --></startsWith>
+    <validationRules>
+        <errorMessage><!-- A Work_Item can not have Development_Approved_By set if it is not Development_Approved. --></errorMessage>
+        <name>sf_devops__Approved_By_Without_Approved</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- You must set Development_Approved_By when this Work Item is approved. --></errorMessage>
+        <name>sf_devops__Approved_Without_Approved_By</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- A Work Item cannot be approved without a review. --></errorMessage>
+        <name>sf_devops__Approved_Without_Review</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- A Work Item must belong to the same project as its Change Bundle. --></errorMessage>
+        <name>sf_devops__Change_Bundle_Project</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- A Work Item cannot be Combined if it is in a bundle. --></errorMessage>
+        <name>sf_devops__Combined_Bundled</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- A Work Item cannot be Combined if it does not reference the work item it is combined into. --></errorMessage>
+        <name>sf_devops__Combined_Not_Combined_With</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- A Work Item cannot be Combined if it has never been promoted. --></errorMessage>
+        <name>sf_devops__Combined_Not_Promoted</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- A Work Item cannot have Combined_With set if it is not in the Combined state. --></errorMessage>
+        <name>sf_devops__Combined_With_Not_Combined</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- A Work Item cannot have Combined_With set to a work item that did not perform the Combine operation. --></errorMessage>
+        <name>sf_devops__Combined_With_Not_Survivor</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Possible values for Concluded_c are : CLOSED, NEVERED, COMBINED, or empty. --></errorMessage>
+        <name>sf_devops__Concluded_values</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- A Work Item cannot have its Concluded__c field changed once set. --></errorMessage>
+        <name>sf_devops__Disable_Concluded</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- A Work Item cannot have its Promoted__c field disabled once set. --></errorMessage>
+        <name>sf_devops__Disable_Promoted</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Work Items cannot be connected to expired environments. --></errorMessage>
+        <name>sf_devops__Environment_Expired</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- A Work Item must belong to the same project as its Environment. --></errorMessage>
+        <name>sf_devops__Environment_Project</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Cannot reference environment that does not support change tracking. --></errorMessage>
+        <name>sf_devops__Environment_Requires_Tracking</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- A Work Item cannot have its Promoted_From_Environment__c field changed once set. --></errorMessage>
+        <name>sf_devops__PromotedFromEnvironment_Changed</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- A Work Item cannot have its Promoted_From_Environment__c field set with a value different to the value of Environment__c and it can only be set when Environment__c is getting set to null. --></errorMessage>
+        <name>sf_devops__PromotedFromEnvironment_Set</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- A Work_Item cannot be a member of a Change_Bundle if it has never been promoted. --></errorMessage>
+        <name>sf_devops__Promoted_And_Installed</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- You cannot create a Work_Item with the Promoted flag set. --></errorMessage>
+        <name>sf_devops__Promoted_On_Create</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- A WorkItem cannot be promoted if it is not Approved. --></errorMessage>
+        <name>sf_devops__Promoted_Without_Approval</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- A Work Item cannot have its Rebase Branch field set if it is un-promoted, bundled or concluded. --></errorMessage>
+        <name>sf_devops__Rebase_Branch</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Deprecated --></errorMessage>
+        <name>sf_devops__Rebase_Remote_Reference</name>
+    </validationRules>
+    <webLinks>
+        <label><!-- Devops_Center --></label>
+        <name>sf_devops__Devops_Center</name>
+    </webLinks>
+</CustomObjectTranslation>

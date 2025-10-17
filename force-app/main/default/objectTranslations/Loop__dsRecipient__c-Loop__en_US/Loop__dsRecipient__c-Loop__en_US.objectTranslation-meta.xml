@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObjectTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <caseValues>
+        <plural>false</plural>
+        <value>Recipient</value>
+    </caseValues>
+    <caseValues>
+        <plural>true</plural>
+        <value>Recipients</value>
+    </caseValues>
+    <layouts>
+        <layout>Recipient Layout</layout>
+        <sections>
+            <label><!-- Custom Links --></label>
+            <section>Custom Links</section>
+        </sections>
+    </layouts>
+    <startsWith>Consonant</startsWith>
+    <validationRules>
+        <errorMessage><!-- An address is required for a Static Name-Email recipient. --></errorMessage>
+        <name>Loop__Recipient_Address</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- A parameter is required for a Dynamic Name-Email recipient. --></errorMessage>
+        <name>Loop__Recipient_Dynamic_Name</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Selected contact static recipient requires a contact. --></errorMessage>
+        <name>Loop__Recipient_Selected_Contact</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Selected user static recipient requires a user. --></errorMessage>
+        <name>Loop__Recipient_Selected_User</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- An address is required for a Static Name-Email recipient. --></errorMessage>
+        <name>Loop__Recipient_Static_Email</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- A static name is required for a Static Name-Email recipient. --></errorMessage>
+        <name>Loop__Recipient_Static_Name</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- A SignNow Recipient with Type of Signer requires a Role Name. --></errorMessage>
+        <name>Loop__SignNow_Signer_requires_Role_Name</name>
+    </validationRules>
+</CustomObjectTranslation>

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>62.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <environments>Default</environments>
+    <formulas>
+        <name>HAM_Name_and_Suffix</name>
+        <dataType>String</dataType>
+        <expression>{!$Record.LastName} + &quot; &quot; + {!$Record.HAM_Institutional_Suffix__c}</expression>
+    </formulas>
+    <interviewLabel>Update Attendee Last Name and Inst Suffix {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Update Attendee Last Name and Inst Suffix</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordUpdates>
+        <name>Update_Attendee_Last_Name</name>
+        <label>Update Attendee Last Name</label>
+        <locationX>176</locationX>
+        <locationY>323</locationY>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>conference360__Contact__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </filters>
+        <inputAssignments>
+            <field>conference360__Last_Name2__c</field>
+            <value>
+                <elementReference>HAM_Name_and_Suffix</elementReference>
+            </value>
+        </inputAssignments>
+        <object>conference360__Attendee__c</object>
+    </recordUpdates>
+    <start>
+        <locationX>50</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Update_Attendee_Last_Name</targetReference>
+        </connector>
+        <filterFormula>{!$Record__Prior.HAM_Institutional_Suffix__c} != {!$Record.HAM_Institutional_Suffix__c} || {!$Record__Prior.LastName} != {!$Record.LastName}</filterFormula>
+        <object>Contact</object>
+        <recordTriggerType>Update</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Active</status>
+</Flow>

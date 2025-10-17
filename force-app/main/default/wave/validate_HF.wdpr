@@ -1,0 +1,1127 @@
+{
+  "version" : "60.0",
+  "nodes" : {
+    "LOAD_DATASET0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Designation.ucinn_ascendv2__Areas_of_Giving_CASE_Type__c", "ucinn_ascendv2__Opportunity__c", "Spouse.Name", "Designation.ucinn_ascendv2__CASE_Type__c", "ucinn_ascendv2__Credit_Type__c", "Object", "ucinn_ascendv2__Gift_Type_Formula__c", "Organization_or_Contact_External_Id", "Fiscal_Year", "Contact.ucinn_ascendv2__Is_Deceased__c", "Opportunity.StageName", "ucinn_ascendv2__Credit_Date_Formula__c", "Contact.ucinn_ascendv2__Primary_Contact_Type__c", "Designation.ucinn_ascendv2__Fund_Type__c", "Formatted_External_Id", "Is_In_Period", "Hard_And_Soft_Credit_Payment.ucinn_ascendv2__Transaction_ID__c", "Constituent_or_Account_Id", "Fundraising_Amount", "Cash_Amount" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Gift Credit and Payment",
+          "name" : "Gift_Credit_and_Payment"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN0" : {
+      "action" : "join",
+      "sources" : [ "FORMULA9", "FORMULA10" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "dwhHF.Date_of_HF", "dwhHF.Hamilton_DAY", "dwhHF.Hamilton_MONTH", "dwhHF.Hamilton_YEAR", "ucinn_ascendv2__Credit_Date_Formula__c_DAY", "ucinn_ascendv2__Credit_Date_Formula__c_MONTH", "ucinn_ascendv2__Credit_Date_Formula__c_YEAR" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Date" ],
+        "rightQualifier" : "dwhHF",
+        "rightKeys" : [ "Date_of_HF" ]
+      }
+    },
+    "FORMULA0" : {
+      "action" : "formula",
+      "sources" : [ "JOIN0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Cash_Diff",
+          "label" : "Cash Diff",
+          "formulaExpression" : "SUM_Cash_Amount-\"dwhHF.SUM_Collected_HF\"",
+          "precision" : 10,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA2" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Cash_Match_Flag",
+          "label" : "Cash Match Flag",
+          "formulaExpression" : "CASE\r\n    WHEN Cash_Diff=0 THEN 'Match'\r\n    ELSE 'Not Match'\r\nEND\r\n",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "TO_DATE0" : {
+      "action" : "typeCast",
+      "sources" : [ "FORMULA2" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "Date_to_date",
+          "newProperties" : {
+            "name" : "Date"
+          }
+        } ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Date" ]
+        }
+      },
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Date",
+          "newProperties" : {
+            "label" : "Date",
+            "name" : "Date_to_date",
+            "typeProperties" : {
+              "type" : "DATETIME",
+              "format" : "yyyy-MM-dd"
+            }
+          }
+        } ]
+      }
+    },
+    "FORMULA19" : {
+      "action" : "formula",
+      "sources" : [ "TO_DATE0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Fundraising_Diff",
+          "label" : "Fundraising Diff",
+          "formulaExpression" : "SUM_Fundraising_Amount-\"dwhHF.SUM_Committed_HF\"",
+          "precision" : 10,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA20" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA19" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Fundraising_Match_Flag",
+          "label" : "Fundraising Match Flag",
+          "formulaExpression" : "CASE\r\n    WHEN Fundraising_Diff=0 THEN 'Match'\r\n    ELSE 'Not Match'\r\nEND",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FILTER0" : {
+      "action" : "filter",
+      "sources" : [ "LOAD_DATASET0" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "Designation.ucinn_ascendv2__Areas_of_Giving_CASE_Type__c",
+          "operator" : "EQUAL",
+          "operands" : [ "Hamilton Fund Designated", "Hamilton Fund Unrestricted" ]
+        }, {
+          "type" : "TEXT",
+          "field" : "Fiscal_Year",
+          "operator" : "EQUAL",
+          "operands" : [ "2021", "2022", "2023" ]
+        }, {
+          "type" : "TEXT",
+          "field" : "ucinn_ascendv2__Credit_Type__c",
+          "operator" : "EQUAL",
+          "operands" : [ "Hard" ]
+        } ]
+      }
+    },
+    "EXTRACT0" : {
+      "action" : "extractGrains",
+      "sources" : [ "FILTER0" ],
+      "parameters" : {
+        "grainExtractions" : [ {
+          "source" : "ucinn_ascendv2__Credit_Date_Formula__c",
+          "targets" : [ {
+            "name" : "ucinn_ascendv2__Credit_Date_Formula__c_DAY",
+            "label" : "Date Day",
+            "grainType" : "DAY"
+          }, {
+            "name" : "ucinn_ascendv2__Credit_Date_Formula__c_MONTH",
+            "label" : "Date Month",
+            "grainType" : "MONTH"
+          }, {
+            "name" : "ucinn_ascendv2__Credit_Date_Formula__c_YEAR",
+            "label" : "Date Year",
+            "grainType" : "YEAR"
+          } ]
+        } ]
+      }
+    },
+    "AGGREGATE1" : {
+      "action" : "aggregate",
+      "sources" : [ "EXTRACT0" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "SUM_Cash_Amount",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        }, {
+          "name" : "SUM_Fundraising_Amount",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        } ]
+      },
+      "parameters" : {
+        "aggregations" : [ {
+          "action" : "SUM",
+          "source" : "Cash_Amount",
+          "name" : "SUM_Cash_Amount",
+          "label" : "Sum of Cash Amount"
+        }, {
+          "action" : "SUM",
+          "source" : "Fundraising_Amount",
+          "name" : "SUM_Fundraising_Amount",
+          "label" : "Sum of Fundraising Amount"
+        } ],
+        "groupings" : [ "ucinn_ascendv2__Credit_Date_Formula__c_DAY", "ucinn_ascendv2__Credit_Date_Formula__c_MONTH", "ucinn_ascendv2__Credit_Date_Formula__c_YEAR" ],
+        "pivots" : [ ],
+        "nodeType" : "STANDARD"
+      }
+    },
+    "EXTRACT1" : {
+      "action" : "extractGrains",
+      "sources" : [ "LOAD_DATASET3" ],
+      "parameters" : {
+        "grainExtractions" : [ {
+          "source" : "Hamilton_Fund_Date",
+          "targets" : [ {
+            "name" : "Hamilton_Fund_Date_DAY",
+            "label" : "Hamilton Fund Date Day",
+            "grainType" : "DAY"
+          }, {
+            "name" : "Hamilton_Fund_Date_MONTH",
+            "label" : "Hamilton Fund Date Month",
+            "grainType" : "MONTH"
+          }, {
+            "name" : "Hamilton_Fund_Date_YEAR",
+            "label" : "Hamilton Fund Date Year",
+            "grainType" : "YEAR"
+          } ]
+        } ]
+      }
+    },
+    "AGGREGATE3" : {
+      "action" : "aggregate",
+      "sources" : [ "EXTRACT1" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "SUM_Collected_HF",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        }, {
+          "name" : "SUM_Committed_HF",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        } ]
+      },
+      "parameters" : {
+        "aggregations" : [ {
+          "action" : "SUM",
+          "source" : "Collected_HF",
+          "name" : "SUM_Collected_HF",
+          "label" : "Collected HF"
+        }, {
+          "action" : "SUM",
+          "source" : "Committed_HF",
+          "name" : "SUM_Committed_HF",
+          "label" : "Committed HF"
+        } ],
+        "groupings" : [ "Hamilton_Fund_Date_DAY", "Hamilton_Fund_Date_MONTH", "Hamilton_Fund_Date_YEAR" ],
+        "pivots" : [ ],
+        "nodeType" : "STANDARD"
+      }
+    },
+    "OUTPUT0" : {
+      "action" : "save",
+      "sources" : [ "FORMULA20" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Validate HF",
+          "name" : "Validate_HF",
+          "folderName" : "SharedApp"
+        },
+        "dateConfigurationName" : "July_Fiscal_Year",
+        "measuresToCurrencies" : [ ]
+      }
+    },
+    "FORMULA9" : {
+      "action" : "formula",
+      "sources" : [ "AGGREGATE1" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Date",
+          "label" : "Date",
+          "formulaExpression" : "concat(ucinn_ascendv2__Credit_Date_Formula__c_YEAR,'-',ucinn_ascendv2__Credit_Date_Formula__c_MONTH,'-',ucinn_ascendv2__Credit_Date_Formula__c_DAY)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA10" : {
+      "action" : "formula",
+      "sources" : [ "AGGREGATE3" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Date_of_HF",
+          "label" : "Date of HF",
+          "formulaExpression" : "concat(Hamilton_Fund_Date_YEAR,'-',Hamilton_Fund_Date_MONTH,'-',Hamilton_Fund_Date_DAY)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "EXTRACT2" : {
+      "action" : "extractGrains",
+      "sources" : [ "FORMULA11" ],
+      "parameters" : {
+        "grainExtractions" : [ ]
+      }
+    },
+    "AGGREGATE5" : {
+      "action" : "aggregate",
+      "sources" : [ "EXTRACT2" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "SUM_Cash_Amount",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        }, {
+          "name" : "SUM_Fundraising_Amount",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        } ]
+      },
+      "parameters" : {
+        "aggregations" : [ {
+          "action" : "SUM",
+          "source" : "Cash_Amount",
+          "name" : "SUM_Cash_Amount",
+          "label" : "Cash Amount"
+        }, {
+          "action" : "SUM",
+          "source" : "Fundraising_Amount",
+          "name" : "SUM_Fundraising_Amount",
+          "label" : "Fundraising Amount"
+        } ],
+        "groupings" : [ "id_date", "Hard_And_Soft_Credit_Payment.ucinn_ascendv2__Transaction_ID__c" ],
+        "pivots" : [ ],
+        "nodeType" : "STANDARD"
+      }
+    },
+    "FORMULA11" : {
+      "action" : "formula",
+      "sources" : [ "FILTER0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "id_date",
+          "label" : "id+date",
+          "formulaExpression" : "concat(Organization_or_Contact_External_Id,'-',ucinn_ascendv2__Credit_Date_Formula__c)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA13" : {
+      "action" : "formula",
+      "sources" : [ "LOAD_DATASET3" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "DATETIME",
+          "name" : "Date",
+          "label" : "Date",
+          "formulaExpression" : "Hamilton_Fund_Date",
+          "format" : "yyyy-MM-dd",
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA14" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA13" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "id_date",
+          "label" : "id+date",
+          "formulaExpression" : "concat(Person_Id,'-',Date)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "EXTRACT3" : {
+      "action" : "extractGrains",
+      "sources" : [ "FORMULA14" ],
+      "parameters" : {
+        "grainExtractions" : [ ]
+      }
+    },
+    "AGGREGATE7" : {
+      "action" : "aggregate",
+      "sources" : [ "EXTRACT3" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "SUM_Collected_HF",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        }, {
+          "name" : "SUM_Committed_HF",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        } ]
+      },
+      "parameters" : {
+        "aggregations" : [ {
+          "action" : "SUM",
+          "source" : "Collected_HF",
+          "name" : "SUM_Collected_HF",
+          "label" : "Collected HF"
+        }, {
+          "action" : "SUM",
+          "source" : "Committed_HF",
+          "name" : "SUM_Committed_HF",
+          "label" : "Committed HF"
+        } ],
+        "groupings" : [ "id_date", "Contribution_Id" ],
+        "pivots" : [ ],
+        "nodeType" : "STANDARD"
+      }
+    },
+    "JOIN1" : {
+      "action" : "join",
+      "sources" : [ "AGGREGATE7", "AGGREGATE5" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "OUTER",
+        "leftKeys" : [ "id_date", "Contribution_Id" ],
+        "rightQualifier" : "Aggregate4",
+        "rightKeys" : [ "id_date", "Hard_And_Soft_Credit_Payment.ucinn_ascendv2__Transaction_ID__c" ]
+      }
+    },
+    "FORMULA15" : {
+      "action" : "formula",
+      "sources" : [ "FILTER1" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Cash_Diff",
+          "label" : "Cash Diff",
+          "formulaExpression" : "\"Aggregate4.SUM_Cash_Amount\"-SUM_Collected_HF",
+          "precision" : 10,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA16" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA15" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Cash_Match_Flag",
+          "label" : "Cash Match Flag",
+          "formulaExpression" : "CASE\r\n    WHEN Cash_Diff=0 THEN 'Match'\r\n    ELSE 'Not Match'\r\nEND\r\n",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA17" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA23" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Date",
+          "label" : "Date",
+          "formulaExpression" : "substr(id_date_merge,9,10)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA18" : {
+      "action" : "formula",
+      "sources" : [ "TO_DATE1" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Id",
+          "label" : "Id",
+          "formulaExpression" : "substr(id_date_merge,1,7)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "DROP_FIELDS0" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA18" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "id_date", "Aggregate4.id_date", "id_date_merge" ]
+        }
+      }
+    },
+    "TO_DATE1" : {
+      "action" : "typeCast",
+      "sources" : [ "FORMULA17" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "Date_to_date",
+          "newProperties" : {
+            "name" : "Date"
+          }
+        } ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Date" ]
+        }
+      },
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Date",
+          "newProperties" : {
+            "label" : "Date",
+            "name" : "Date_to_date",
+            "typeProperties" : {
+              "type" : "DATETIME",
+              "format" : "yyyy-MM-dd"
+            }
+          }
+        } ]
+      }
+    },
+    "FORMULA21" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA16" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Fundraising_Diff",
+          "label" : "Fundraising Diff",
+          "formulaExpression" : "\"Aggregate4.SUM_Fundraising_Amount\"-SUM_Committed_HF",
+          "precision" : 10,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA22" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA21" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Fundraising_Match_Flag",
+          "label" : "Fundraising Match Flag",
+          "formulaExpression" : "CASE\r\n    WHEN Fundraising_Diff=0 THEN 'Match'\r\n    ELSE 'Not Match'\r\nEND",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA23" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA22" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "id_date_merge",
+          "label" : "id+date-merge",
+          "formulaExpression" : "case \r\nwhen id_date is null\r\nthen \"Aggregate4.id_date\"\r\nelse id_date\r\nend\r\n",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "OUTPUT1" : {
+      "action" : "save",
+      "sources" : [ "JOIN2" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Validate HF Cash PL",
+          "name" : "Validate_HF_Cash_PL",
+          "folderName" : "SharedApp"
+        },
+        "dateConfigurationName" : "July_Fiscal_Year",
+        "measuresToCurrencies" : [ ]
+      }
+    },
+    "FILTER1" : {
+      "action" : "filter",
+      "sources" : [ "JOIN1" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "id_date",
+          "operator" : "IS_NOT_NULL",
+          "operands" : [ ]
+        }, {
+          "type" : "TEXT",
+          "field" : "Aggregate4.id_date",
+          "operator" : "IS_NOT_NULL",
+          "operands" : [ ]
+        } ],
+        "filterBooleanLogic" : "1 or 2"
+      }
+    },
+    "LOAD_DATASET2" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Id", "ucinn_ascendv2__Transaction_ID__c", "ucinn_ascendv2__Is_Designation_Mismatch_Formula__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "ucinn_ascendv2__Payment__c",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "ucinn_ascendv2__Payment__c"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "LOAD_DATASET3" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Designation", "Person_Status", "Type", "Person_Id", "Constituent_Group", "Hamilton_Fund_Date", "SORT_NAME", "Contribution_Id", "Collected_HF", "Committed_HF" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "dwh HF",
+          "name" : "dwh_HF8"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN2" : {
+      "action" : "join",
+      "sources" : [ "DROP_FIELDS0", "FILTER2" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "ucinn_asce.Id", "ucinn_asce.ucinn_ascendv2__Transaction_ID__c" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Contribution_Id" ],
+        "rightQualifier" : "ucinn_asce",
+        "rightKeys" : [ "ucinn_ascendv2__Transaction_ID__c" ]
+      }
+    },
+    "FILTER2" : {
+      "action" : "filter",
+      "sources" : [ "LOAD_DATASET2" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "ucinn_ascendv2__Is_Designation_Mismatch_Formula__c",
+          "operator" : "EQUAL",
+          "operands" : [ "true" ]
+        } ]
+      }
+    }
+  },
+  "ui" : {
+    "nodes" : {
+      "LOAD_DATASET0" : {
+        "label" : "Gift Credit and Payment",
+        "type" : "LOAD_DATASET",
+        "top" : 112.19999999999999,
+        "left" : 112,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN0" : {
+        "label" : "Join 0",
+        "type" : "JOIN",
+        "top" : 112.6,
+        "left" : 812.3
+      },
+      "TRANSFORM0" : {
+        "label" : "Transform 0",
+        "type" : "TRANSFORM",
+        "top" : 112.6,
+        "left" : 952.3,
+        "graph" : {
+          "FORMULA0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Cash Diff"
+          },
+          "FORMULA2" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Cash Match Flag"
+          },
+          "TO_DATE0" : {
+            "label" : "To Date"
+          },
+          "FORMULA19" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Fundraising Diff"
+          },
+          "FORMULA20" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Fundraising Match Flag"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA0",
+          "target" : "FORMULA2"
+        }, {
+          "source" : "FORMULA2",
+          "target" : "TO_DATE0"
+        }, {
+          "source" : "TO_DATE0",
+          "target" : "FORMULA19"
+        }, {
+          "source" : "FORMULA19",
+          "target" : "FORMULA20"
+        } ]
+      },
+      "FILTER0" : {
+        "label" : "Filter 0",
+        "type" : "FILTER",
+        "top" : 112.4,
+        "left" : 251.10000000000002
+      },
+      "AGGREGATE0" : {
+        "label" : "Aggregate 0",
+        "type" : "AGGREGATE",
+        "top" : 112,
+        "left" : 532.1,
+        "graph" : {
+          "EXTRACT0" : null,
+          "AGGREGATE1" : null
+        },
+        "connectors" : [ {
+          "source" : "EXTRACT0",
+          "target" : "AGGREGATE1"
+        } ]
+      },
+      "AGGREGATE2" : {
+        "label" : "Aggregate 2",
+        "type" : "AGGREGATE",
+        "top" : 392.2,
+        "left" : 531.8,
+        "graph" : {
+          "EXTRACT1" : null,
+          "AGGREGATE3" : null
+        },
+        "connectors" : [ {
+          "source" : "EXTRACT1",
+          "target" : "AGGREGATE3"
+        } ]
+      },
+      "OUTPUT0" : {
+        "label" : "Output 0",
+        "type" : "OUTPUT",
+        "top" : 112.19999999999999,
+        "left" : 1512.1
+      },
+      "TRANSFORM3" : {
+        "label" : "Transform 3",
+        "type" : "TRANSFORM",
+        "top" : 112,
+        "left" : 672,
+        "graph" : {
+          "FORMULA9" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Date"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "TRANSFORM4" : {
+        "label" : "Transform 4",
+        "type" : "TRANSFORM",
+        "top" : 392.2,
+        "left" : 671.8,
+        "graph" : {
+          "FORMULA10" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Date of HF"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "AGGREGATE4" : {
+        "label" : "Aggregate 4",
+        "type" : "AGGREGATE",
+        "top" : 252,
+        "left" : 532,
+        "graph" : {
+          "EXTRACT2" : null,
+          "AGGREGATE5" : null
+        },
+        "connectors" : [ {
+          "source" : "EXTRACT2",
+          "target" : "AGGREGATE5"
+        } ]
+      },
+      "TRANSFORM5" : {
+        "label" : "Transform 5",
+        "type" : "TRANSFORM",
+        "top" : 252,
+        "left" : 252,
+        "graph" : {
+          "FORMULA11" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "id+date"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "TRANSFORM6" : {
+        "label" : "Transform 6",
+        "type" : "TRANSFORM",
+        "top" : 531.7,
+        "left" : 251.89999999999998,
+        "graph" : {
+          "FORMULA13" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Date"
+          },
+          "FORMULA14" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "id+date"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA13",
+          "target" : "FORMULA14"
+        } ]
+      },
+      "AGGREGATE6" : {
+        "label" : "Aggregate 6",
+        "type" : "AGGREGATE",
+        "top" : 532.1,
+        "left" : 532,
+        "graph" : {
+          "EXTRACT3" : null,
+          "AGGREGATE7" : null
+        },
+        "connectors" : [ {
+          "source" : "EXTRACT3",
+          "target" : "AGGREGATE7"
+        } ]
+      },
+      "JOIN1" : {
+        "label" : "Join 1",
+        "type" : "JOIN",
+        "top" : 252.3,
+        "left" : 952.7
+      },
+      "TRANSFORM7" : {
+        "label" : "Transform 7",
+        "type" : "TRANSFORM",
+        "top" : 252,
+        "left" : 1232,
+        "graph" : {
+          "FORMULA15" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Cash Diff"
+          },
+          "FORMULA16" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Cash Match Flag"
+          },
+          "FORMULA17" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Date"
+          },
+          "FORMULA18" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Id"
+          },
+          "DROP_FIELDS0" : {
+            "label" : "Drop Columns"
+          },
+          "TO_DATE1" : {
+            "label" : "To Date"
+          },
+          "FORMULA21" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Fundraising Diff"
+          },
+          "FORMULA22" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Fundraising Match Flag"
+          },
+          "FORMULA23" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "id+date-merge"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA15",
+          "target" : "FORMULA16"
+        }, {
+          "source" : "FORMULA18",
+          "target" : "DROP_FIELDS0"
+        }, {
+          "source" : "TO_DATE1",
+          "target" : "FORMULA18"
+        }, {
+          "source" : "FORMULA17",
+          "target" : "TO_DATE1"
+        }, {
+          "source" : "FORMULA16",
+          "target" : "FORMULA21"
+        }, {
+          "source" : "FORMULA21",
+          "target" : "FORMULA22"
+        }, {
+          "source" : "FORMULA23",
+          "target" : "FORMULA17"
+        }, {
+          "source" : "FORMULA22",
+          "target" : "FORMULA23"
+        } ]
+      },
+      "OUTPUT1" : {
+        "label" : "Output 1",
+        "type" : "OUTPUT",
+        "top" : 252,
+        "left" : 1512
+      },
+      "FILTER1" : {
+        "label" : "Filter 1",
+        "type" : "FILTER",
+        "top" : 252,
+        "left" : 1092
+      },
+      "LOAD_DATASET2" : {
+        "label" : "ucinn_ascendv2__Payment__c",
+        "type" : "LOAD_DATASET",
+        "top" : 532.2,
+        "left" : 1372.1,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "LOAD_DATASET3" : {
+        "label" : "dwh HF",
+        "type" : "LOAD_DATASET",
+        "top" : 392,
+        "left" : 111.9,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN2" : {
+        "label" : "Join 2",
+        "type" : "JOIN",
+        "top" : 252.2,
+        "left" : 1372
+      },
+      "FILTER2" : {
+        "label" : "Filter 2",
+        "type" : "FILTER",
+        "top" : 392.2,
+        "left" : 1372.1
+      }
+    },
+    "connectors" : [ {
+      "source" : "TRANSFORM3",
+      "target" : "JOIN0"
+    }, {
+      "source" : "TRANSFORM4",
+      "target" : "JOIN0"
+    }, {
+      "source" : "JOIN0",
+      "target" : "TRANSFORM0"
+    }, {
+      "source" : "LOAD_DATASET0",
+      "target" : "FILTER0"
+    }, {
+      "source" : "TRANSFORM0",
+      "target" : "OUTPUT0"
+    }, {
+      "source" : "AGGREGATE0",
+      "target" : "TRANSFORM3"
+    }, {
+      "source" : "AGGREGATE2",
+      "target" : "TRANSFORM4"
+    }, {
+      "source" : "FILTER0",
+      "target" : "AGGREGATE0"
+    }, {
+      "source" : "TRANSFORM5",
+      "target" : "AGGREGATE4"
+    }, {
+      "source" : "FILTER0",
+      "target" : "TRANSFORM5"
+    }, {
+      "source" : "TRANSFORM6",
+      "target" : "AGGREGATE6"
+    }, {
+      "source" : "AGGREGATE6",
+      "target" : "JOIN1"
+    }, {
+      "source" : "AGGREGATE4",
+      "target" : "JOIN1"
+    }, {
+      "source" : "FILTER1",
+      "target" : "TRANSFORM7"
+    }, {
+      "source" : "JOIN1",
+      "target" : "FILTER1"
+    }, {
+      "source" : "JOIN2",
+      "target" : "OUTPUT1"
+    }, {
+      "source" : "LOAD_DATASET3",
+      "target" : "AGGREGATE2"
+    }, {
+      "source" : "LOAD_DATASET3",
+      "target" : "TRANSFORM6"
+    }, {
+      "source" : "TRANSFORM7",
+      "target" : "JOIN2"
+    }, {
+      "source" : "FILTER2",
+      "target" : "JOIN2"
+    }, {
+      "source" : "LOAD_DATASET2",
+      "target" : "FILTER2"
+    } ],
+    "hiddenColumns" : [ ]
+  },
+  "runMode" : "full"
+}

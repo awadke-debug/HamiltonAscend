@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObjectTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <caseValues>
+        <plural>false</plural>
+        <value>Session</value>
+    </caseValues>
+    <caseValues>
+        <plural>true</plural>
+        <value>Sessions</value>
+    </caseValues>
+    <fieldSets>
+        <label><!-- Blackthorn | Events Wizard Session Fields --></label>
+        <name>conference360__Blackthorn_Events_Wizard_Session_Fields</name>
+    </fieldSets>
+    <fieldSets>
+        <label><!-- Blackthorn | Events Wizard Virtual Session Fields --></label>
+        <name>conference360__Blackthorn_Events_Wizard_Session_Virtual</name>
+    </fieldSets>
+    <fieldSets>
+        <label><!-- Blackthorn | Event Builder Session Fields --></label>
+        <name>conference360__Blackthorn_V2_Events_Wizard_Session_Fiel</name>
+    </fieldSets>
+    <layouts>
+        <layout>Session Layout</layout>
+        <sections>
+            <label><!-- Attendance Summaries --></label>
+            <section>Attendance Summaries</section>
+        </sections>
+        <sections>
+            <label><!-- Custom Links --></label>
+            <section>Custom Links</section>
+        </sections>
+        <sections>
+            <label><!-- Date and Time --></label>
+            <section>Date and Time</section>
+        </sections>
+        <sections>
+            <label><!-- Event Page --></label>
+            <section>Event Page</section>
+        </sections>
+        <sections>
+            <label><!-- Webinar Information --></label>
+            <section>Webinar Information</section>
+        </sections>
+    </layouts>
+    <startsWith>Consonant</startsWith>
+    <validationRules>
+        <errorMessage><!-- Session Category cannot conflict with the Event Location. Virtual Events must have Virtual Sessions and Venue Events must have Venue Sessions. --></errorMessage>
+        <name>conference360__Session_Category_Must_Align_With_Event</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Main Stage Sessions are visible for all Attendees, you cannot assign a Visibility Control value to this Session. --></errorMessage>
+        <name>conference360__Session_Visible</name>
+    </validationRules>
+    <webLinks>
+        <label><!-- Create_Webinar --></label>
+        <name>conference360__Create_Webinar</name>
+    </webLinks>
+</CustomObjectTranslation>

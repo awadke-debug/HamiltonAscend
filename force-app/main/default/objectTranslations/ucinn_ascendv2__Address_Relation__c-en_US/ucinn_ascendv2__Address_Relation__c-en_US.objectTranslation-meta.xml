@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObjectTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <caseValues>
+        <plural>false</plural>
+        <value>Address Relation</value>
+    </caseValues>
+    <caseValues>
+        <plural>true</plural>
+        <value>Address Relations</value>
+    </caseValues>
+    <layouts>
+        <layout>Contact Address Relation Create Layout</layout>
+        <sections>
+            <label><!-- Additional Information --></label>
+            <section>Additional Information</section>
+        </sections>
+        <sections>
+            <label><!-- Custom Links --></label>
+            <section>Custom Links</section>
+        </sections>
+    </layouts>
+    <layouts>
+        <layout>Contact Address Relation Layout</layout>
+        <sections>
+            <label><!-- Custom Links --></label>
+            <section>Custom Links</section>
+        </sections>
+    </layouts>
+    <layouts>
+        <layout>Household Address Relation Layout</layout>
+        <sections>
+            <label><!-- Custom Links --></label>
+            <section>Custom Links</section>
+        </sections>
+    </layouts>
+    <layouts>
+        <layout>Organization Address Relation Layout</layout>
+        <sections>
+            <label><!-- Custom Links --></label>
+            <section>Custom Links</section>
+        </sections>
+    </layouts>
+    <nameFieldLabel>Address Relation ID</nameFieldLabel>
+    <recordTypes>
+        <description><!-- A relationship between a Contact and an Address. --></description>
+        <label><!-- Constituent Address Relation --></label>
+        <name>ucinn_ascendv2__Contact_Address_Relation</name>
+    </recordTypes>
+    <recordTypes>
+        <description><!-- A relationship between a Household and an Address. --></description>
+        <label><!-- Household Address Relation --></label>
+        <name>ucinn_ascendv2__Household_Address_Relation</name>
+    </recordTypes>
+    <recordTypes>
+        <description><!-- A relationship between an Organization and an Address. --></description>
+        <label><!-- Organization Address Relation --></label>
+        <name>ucinn_ascendv2__Organization_Address_Relation</name>
+    </recordTypes>
+    <startsWith>Vowel</startsWith>
+    <validationRules>
+        <errorMessage><!-- Invalid entry. The end date cannot be earlier than the start date. --></errorMessage>
+        <name>ucinn_ascendv2__End_Date_Greater_Than_Start_Date</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Please specify a valid end date for former address. End date cannot be a future date for former address. --></errorMessage>
+        <name>ucinn_ascendv2__End_Date_Is_Past_Date_for_Former</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Invalid end date. Please enter a future end date for current address. --></errorMessage>
+        <name>ucinn_ascendv2__End_Date_Is_in_Future_for_Current_Addr</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Invalid entry. The day entered for the month of February is not valid. --></errorMessage>
+        <name>ucinn_ascendv2__End_February_Day_Check</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Invalid entry. The entry “31” for Day is not valid for this month. --></errorMessage>
+        <name>ucinn_ascendv2__End_Month_Day_31</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Please pick a value for seasonal end day. --></errorMessage>
+        <name>ucinn_ascendv2__Seasonal_End_Day</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Please pick a value for seasonal end month. --></errorMessage>
+        <name>ucinn_ascendv2__Seasonal_End_Month</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Please pick a value for seasonal start day. --></errorMessage>
+        <name>ucinn_ascendv2__Seasonal_Start_Day</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Please pick a value for seasonal start month. --></errorMessage>
+        <name>ucinn_ascendv2__Seasonal_Start_Month</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Invalid entry. The day entered for the month of February is not valid. --></errorMessage>
+        <name>ucinn_ascendv2__Start_February_Day_Check</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Invalid entry. The entry “31” for Day is not valid for this month. --></errorMessage>
+        <name>ucinn_ascendv2__Start_Month_Day_31</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Please input a valid number value for seasonal end year. --></errorMessage>
+        <name>ucinn_ascendv2__Validate_Seasonal_End_Year</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Please input a valid number value for seasonal start year. --></errorMessage>
+        <name>ucinn_ascendv2__Validate_Seasonal_Start_Year</name>
+    </validationRules>
+</CustomObjectTranslation>

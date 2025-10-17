@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObjectTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <caseValues>
+        <plural>false</plural>
+        <value>Promoción de elemento de trabajo</value>
+    </caseValues>
+    <caseValues>
+        <plural>true</plural>
+        <value>Promociones de elementos de trabajo</value>
+    </caseValues>
+    <gender>Feminine</gender>
+    <nameFieldLabel>Nombre de Promoción de Elemento de traba</nameFieldLabel>
+    <validationRules>
+        <errorMessage>No puede promocionar un Work_Item a una canalización inactiva.</errorMessage>
+        <name>sf_devops__No_Promotion_to_Inactive_Pipeline</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Un Work_Item que es miembro de un Change_Bundle no puede promocionarse a una Pipeline_Stage.</errorMessage>
+        <name>sf_devops__Promoted_And_Installed</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Un Work_Item no puede promocionarse a una Pipeline_Stage versionada.</errorMessage>
+        <name>sf_devops__Promoted_To_Versioned</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>No se puede promocionar un Elemento de trabajo si no está Aprobado.</errorMessage>
+        <name>sf_devops__Promoted_Without_Approval</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Solo se puede promocionar un Elemento de trabajo a una etapa dentro del mismo proyecto.</errorMessage>
+        <name>sf_devops__Promoted_Wrong_Project</name>
+    </validationRules>
+</CustomObjectTranslation>

@@ -1,0 +1,871 @@
+{
+  "version" : "63.0",
+  "nodes" : {
+    "EDIT_ATTRIBUTES0_copy0_copy0" : {
+      "action" : "schema",
+      "sources" : [ "LOAD_DATASET5_copy0_copy0" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "ucinn_ascendv2__Number_of_Shares_Formula__c",
+          "newProperties" : {
+            "label" : "Number of Shares",
+            "name" : "ucinn_ascendv2__Number_of_Shares_Formula__c",
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2
+            }
+          }
+        } ]
+      }
+    },
+    "DROP_FIELDS13_copy0" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES0_copy0_copy0" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "SELECT",
+          "ignoreMissingFields" : true,
+          "fields" : [ "OwnerId", "IsDeleted", "Name", "CreatedDate", "ucinn_ascendv2__Payment_Group_ID__c", "ucinn_ascendv2__Payment__c", "ucinn_ascendv2__Receipt_Number__c", "ucinn_ascendv2__Stock_Payment_Name_Auto_Number__c", "ucinn_ascendv2__Stock__c", "ucinn_ascendv2__Company_Name__c", "ucinn_ascendv2__Payment_Amount_Formula__c", "ucinn_ascendv2__Received_Date_Formula__c", "ucinn_ascendv2__Ticker_Symbol_Formula__c", "ucinn_ascendv2__Transaction_Currency_Iso_Code__c", "ucinn_ascendv2__Transaction_Payment_Amount__c", "ucinn_ascendv2__Number_of_Shares_Formula__c" ]
+        }
+      }
+    },
+    "FORMULA0" : {
+      "action" : "formula",
+      "sources" : [ "DROP_FIELDS13_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Fiscal_Year_Received_Date",
+          "label" : "Fiscal Year Received Date",
+          "formulaExpression" : "fiscalYear(ucinn_ascendv2__Received_Date_Formula__c)",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "TO_DIMENSION0" : {
+      "action" : "typeCast",
+      "sources" : [ "FORMULA0" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "Fiscal_Year_Received_Date_to_dimension",
+          "newProperties" : {
+            "name" : "Fiscal_Year_Received_Date"
+          }
+        } ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Fiscal_Year_Received_Date" ]
+        }
+      },
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Fiscal_Year_Received_Date",
+          "newProperties" : {
+            "label" : "Fiscal Year Received Date",
+            "name" : "Fiscal_Year_Received_Date_to_dimension",
+            "typeProperties" : {
+              "type" : "TEXT",
+              "length" : 255
+            }
+          }
+        } ]
+      }
+    },
+    "LOAD_DATASET5_copy0_copy0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Id", "OwnerId", "IsDeleted", "Name", "CreatedDate", "LastModifiedDate", "LastModifiedById", "SystemModstamp", "ucinn_ascendv2__Payment_Group_ID__c", "ucinn_ascendv2__Payment__c", "ucinn_ascendv2__Receipt_Number__c", "ucinn_ascendv2__Stock_Payment_Name_Auto_Number__c", "ucinn_ascendv2__Stock__c", "ucinn_ascendv2__Company_Name__c", "ucinn_ascendv2__High_Value_On_Date_Formula__c", "ucinn_ascendv2__Low_Value_On_Date_Formula__c", "ucinn_ascendv2__Number_of_Shares_Formula__c", "ucinn_ascendv2__Payment_Amount_Formula__c", "ucinn_ascendv2__Received_Date_Formula__c", "ucinn_ascendv2__Ticker_Symbol_Formula__c", "ucinn_ascendv2__Operating_Entity_Currency_Iso_Code__c", "ucinn_ascendv2__Operating_Entity_Payment_Amount__c", "ucinn_ascendv2__Stock_Currency_High_Value_On_Date__c", "ucinn_ascendv2__Stock_Currency_Low_Value_on_Date__c", "ucinn_ascendv2__Transaction_Currency_Iso_Code__c", "ucinn_ascendv2__Transaction_Payment_Amount__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "ucinn_ascendv2__Stock_Payment__c",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "ucinn_ascendv2__Stock_Payment__c"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "OUTPUT0" : {
+      "action" : "save",
+      "sources" : [ "JOIN0" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Stock_990",
+          "name" : "Stock_990",
+          "folderName" : "SharedApp"
+        },
+        "measuresToCurrencies" : [ ]
+      }
+    },
+    "LOAD_DATASET6" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Contact.ucinn_ascendv2__External_System_ID__c", "Organization_or_Contact_External_Id", "ucinn_ascendv2__Credit_Type__c", "HAM_Tender_Type__c", "Contact_or_Account_Name", "Fiscal_Year", "ucinn_ascendv2__Credit_Date_Formula__c", "ucinn_ascendv2__Payment__c", "Object", "Id", "payment.ucinn_ascendv2__Tender_Type_Formula__c", "Constituent_or_Account_Id", "Cash_Amount" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Gift Credit and Payment",
+          "name" : "Gift_Credit_and_Payment"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "FILTER0" : {
+      "action" : "filter",
+      "sources" : [ "LOAD_DATASET6" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "Object",
+          "operator" : "EQUAL",
+          "operands" : [ "Hard and Soft Credit" ]
+        }, {
+          "type" : "TEXT",
+          "field" : "ucinn_ascendv2__Credit_Type__c",
+          "operator" : "EQUAL",
+          "operands" : [ "Hard" ]
+        }, {
+          "type" : "NUMBER",
+          "field" : "Cash_Amount",
+          "operator" : "GREATER_THAN",
+          "operands" : [ "0" ]
+        }, {
+          "type" : "TEXT",
+          "field" : "HAM_Tender_Type__c",
+          "operator" : "EQUAL",
+          "operands" : [ "Stock Gift" ]
+        } ]
+      }
+    },
+    "JOIN0" : {
+      "action" : "join",
+      "sources" : [ "TO_DIMENSION0", "FILTER0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "ucinn_ascendv2__Payment__c" ],
+        "rightQualifier" : "Stock_with_appended_credits",
+        "rightKeys" : [ "ucinn_ascendv2__Payment__c" ]
+      }
+    },
+    "LOAD_DATASET5_copy0_copy0_copy0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Id", "OwnerId", "IsDeleted", "Name", "CreatedDate", "LastModifiedDate", "LastModifiedById", "SystemModstamp", "ucinn_ascendv2__Payment_Group_ID__c", "ucinn_ascendv2__Payment__c", "ucinn_ascendv2__Receipt_Number__c", "ucinn_ascendv2__Stock_Payment_Name_Auto_Number__c", "ucinn_ascendv2__Stock__c", "ucinn_ascendv2__Company_Name__c", "ucinn_ascendv2__High_Value_On_Date_Formula__c", "ucinn_ascendv2__Low_Value_On_Date_Formula__c", "ucinn_ascendv2__Number_of_Shares_Formula__c", "ucinn_ascendv2__Payment_Amount_Formula__c", "ucinn_ascendv2__Received_Date_Formula__c", "ucinn_ascendv2__Ticker_Symbol_Formula__c", "ucinn_ascendv2__Operating_Entity_Currency_Iso_Code__c", "ucinn_ascendv2__Operating_Entity_Payment_Amount__c", "ucinn_ascendv2__Stock_Currency_High_Value_On_Date__c", "ucinn_ascendv2__Stock_Currency_Low_Value_on_Date__c", "ucinn_ascendv2__Transaction_Currency_Iso_Code__c", "ucinn_ascendv2__Transaction_Payment_Amount__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "ucinn_ascendv2__Stock_Payment__c",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "ucinn_ascendv2__Stock_Payment__c"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "OUTPUT1" : {
+      "action" : "save",
+      "sources" : [ "LOAD_DATASET5_copy0_copy0_copy0" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "stock_payment_dump",
+          "name" : "stock_payment_dump"
+        },
+        "measuresToCurrencies" : [ ]
+      }
+    },
+    "EDIT_ATTRIBUTES0_copy0_copy0_copy0" : {
+      "action" : "schema",
+      "sources" : [ "LOAD_DATASET5_copy0_copy0_copy1" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "ucinn_ascendv2__Number_of_Shares_Formula__c",
+          "newProperties" : {
+            "label" : "Number of Shares",
+            "name" : "ucinn_ascendv2__Number_of_Shares_Formula__c",
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2
+            }
+          }
+        } ]
+      }
+    },
+    "DROP_FIELDS13_copy0_copy0" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES0_copy0_copy0_copy0" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "SELECT",
+          "ignoreMissingFields" : true,
+          "fields" : [ "OwnerId", "IsDeleted", "Name", "CreatedDate", "ucinn_ascendv2__Payment_Group_ID__c", "ucinn_ascendv2__Payment__c", "ucinn_ascendv2__Receipt_Number__c", "ucinn_ascendv2__Stock_Payment_Name_Auto_Number__c", "ucinn_ascendv2__Stock__c", "ucinn_ascendv2__Company_Name__c", "ucinn_ascendv2__Payment_Amount_Formula__c", "ucinn_ascendv2__Received_Date_Formula__c", "ucinn_ascendv2__Ticker_Symbol_Formula__c", "ucinn_ascendv2__Transaction_Currency_Iso_Code__c", "ucinn_ascendv2__Transaction_Payment_Amount__c", "ucinn_ascendv2__Number_of_Shares_Formula__c" ]
+        }
+      }
+    },
+    "FORMULA0_copy0" : {
+      "action" : "formula",
+      "sources" : [ "DROP_FIELDS13_copy0_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Fiscal_Year_Received_Date",
+          "label" : "Fiscal Year Received Date",
+          "formulaExpression" : "fiscalYear(ucinn_ascendv2__Received_Date_Formula__c)",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "TO_DIMENSION0_copy0" : {
+      "action" : "typeCast",
+      "sources" : [ "FORMULA0_copy0" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "Fiscal_Year_Received_Date_to_dimension",
+          "newProperties" : {
+            "name" : "Fiscal_Year_Received_Date"
+          }
+        } ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Fiscal_Year_Received_Date" ]
+        }
+      },
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Fiscal_Year_Received_Date",
+          "newProperties" : {
+            "label" : "Fiscal Year Received Date",
+            "name" : "Fiscal_Year_Received_Date_to_dimension",
+            "typeProperties" : {
+              "type" : "TEXT",
+              "length" : 255
+            }
+          }
+        } ]
+      }
+    },
+    "LOAD_DATASET5_copy0_copy0_copy1" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Id", "OwnerId", "IsDeleted", "Name", "CreatedDate", "LastModifiedDate", "LastModifiedById", "SystemModstamp", "ucinn_ascendv2__Payment_Group_ID__c", "ucinn_ascendv2__Payment__c", "ucinn_ascendv2__Receipt_Number__c", "ucinn_ascendv2__Stock_Payment_Name_Auto_Number__c", "ucinn_ascendv2__Stock__c", "ucinn_ascendv2__Company_Name__c", "ucinn_ascendv2__High_Value_On_Date_Formula__c", "ucinn_ascendv2__Low_Value_On_Date_Formula__c", "ucinn_ascendv2__Number_of_Shares_Formula__c", "ucinn_ascendv2__Payment_Amount_Formula__c", "ucinn_ascendv2__Received_Date_Formula__c", "ucinn_ascendv2__Ticker_Symbol_Formula__c", "ucinn_ascendv2__Operating_Entity_Currency_Iso_Code__c", "ucinn_ascendv2__Operating_Entity_Payment_Amount__c", "ucinn_ascendv2__Stock_Currency_High_Value_On_Date__c", "ucinn_ascendv2__Stock_Currency_Low_Value_on_Date__c", "ucinn_ascendv2__Transaction_Currency_Iso_Code__c", "ucinn_ascendv2__Transaction_Payment_Amount__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "ucinn_ascendv2__Stock_Payment__c",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "ucinn_ascendv2__Stock_Payment__c"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "OUTPUT0_copy0" : {
+      "action" : "save",
+      "sources" : [ "FORMULA2" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Stock_qc",
+          "name" : "Stock_qc",
+          "folderName" : "SharedApp"
+        },
+        "measuresToCurrencies" : [ ]
+      }
+    },
+    "LOAD_DATASET6_copy0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Cash_Amount", "payment.ucinn_ascendv2__Payment_Amount__c", "ucinn_ascendv2__Credit_Type__c", "HAM_Tender_Type__c", "Contact_or_Account_Name", "Fiscal_Year", "ucinn_ascendv2__Credit_Date_Formula__c", "payment.ucinn_ascendv2__Adjusted_Payment__c", "ucinn_ascendv2__Payment__c", "Contact.ucinn_ascendv2__External_System_ID__c", "Object", "Id", "payment.ucinn_ascendv2__Tender_Type_Formula__c", "Organization_or_Contact_External_Id", "Constituent_or_Account_Id" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Gift Credit and Payment",
+          "name" : "Gift_Credit_and_Payment"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "FILTER0_copy0" : {
+      "action" : "filter",
+      "sources" : [ "LOAD_DATASET6_copy0" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "Object",
+          "operator" : "EQUAL",
+          "operands" : [ "Payment" ]
+        }, {
+          "type" : "TEXT",
+          "field" : "payment.ucinn_ascendv2__Tender_Type_Formula__c",
+          "operator" : "EQUAL",
+          "operands" : [ "Stock Gift" ]
+        } ]
+      }
+    },
+    "JOIN1" : {
+      "action" : "join",
+      "sources" : [ "FILTER0_copy0", "AGGREGATE1" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "ucinn_ascendv2__Payment__c" ],
+        "rightQualifier" : "stock_aggr",
+        "rightKeys" : [ "ucinn_ascendv2__Payment__c" ]
+      }
+    },
+    "EXTRACT0" : {
+      "action" : "extractGrains",
+      "sources" : [ "TO_DIMENSION0_copy0" ],
+      "parameters" : {
+        "grainExtractions" : [ ]
+      }
+    },
+    "AGGREGATE1" : {
+      "action" : "aggregate",
+      "sources" : [ "EXTRACT0" ],
+      "parameters" : {
+        "aggregations" : [ {
+          "action" : "SUM",
+          "source" : "ucinn_ascendv2__Payment_Amount_Formula__c",
+          "name" : "SUM_ucinn_ascendv2__Payment_Amount_Formula__c",
+          "label" : "Sum of Payment Amount"
+        }, {
+          "action" : "COUNT",
+          "source" : "Name",
+          "name" : "COUNT_Name",
+          "label" : "Count of Stock Payment Name"
+        } ],
+        "groupings" : [ "ucinn_ascendv2__Payment__c" ],
+        "pivots" : [ ],
+        "nodeType" : "STANDARD"
+      }
+    },
+    "FORMULA1" : {
+      "action" : "formula",
+      "sources" : [ "JOIN1" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "is_stock_payment_object",
+          "label" : "is stock payment object",
+          "formulaExpression" : "case \r\n    when \"stock_aggr.COUNT_Name\" is null\r\n    then 'false'\r\n    \r\n    else\r\n    'true'\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA2" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA1" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "amount_diff",
+          "label" : "amount diff",
+          "formulaExpression" : "\"payment.ucinn_ascendv2__Payment_Amount__c\"-\"stock_aggr.SUM_ucinn_ascendv2__Payment_Amount_Formula__c\"",
+          "precision" : 10,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "OUTPUT0_copy1" : {
+      "action" : "save",
+      "sources" : [ "JOIN2" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Stock_990_v2",
+          "name" : "Stock_990_v2",
+          "folderName" : "SharedApp"
+        },
+        "measuresToCurrencies" : [ ]
+      }
+    },
+    "LOAD_DATASET6_copy1" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Opportunity.ucinn_ascendv2__Pledge_Gift_ID_Formula__c", "ucinn_ascendv2__Gift_Type_Formula__c", "ucinn_ascendv2__Credit_Type__c", "HAM_Pledge_Gift_Adjusted_Pledge_Gift__c", "HAM_Tender_Type__c", "Contact_or_Account_Name", "Fiscal_Year", "ucinn_ascendv2__Credit_Date_Formula__c", "ucinn_ascendv2__Payment__c", "Contact.ucinn_ascendv2__External_System_ID__c", "ucinn_ascendv2__Opportunity__c", "Object", "Id", "payment.ucinn_ascendv2__Tender_Type_Formula__c", "Organization_or_Contact_External_Id", "Constituent_or_Account_Id", "Cash_Amount" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Gift Credit and Payment",
+          "name" : "Gift_Credit_and_Payment"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "FILTER0_copy1" : {
+      "action" : "filter",
+      "sources" : [ "LOAD_DATASET6_copy1" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "Object",
+          "operator" : "EQUAL",
+          "operands" : [ "Hard and Soft Credit" ]
+        }, {
+          "type" : "TEXT",
+          "field" : "ucinn_ascendv2__Credit_Type__c",
+          "operator" : "EQUAL",
+          "operands" : [ "Hard" ]
+        }, {
+          "type" : "NUMBER",
+          "field" : "Cash_Amount",
+          "operator" : "GREATER_THAN",
+          "operands" : [ "0" ]
+        }, {
+          "type" : "TEXT",
+          "field" : "HAM_Tender_Type__c",
+          "operator" : "EQUAL",
+          "operands" : [ "Stock Gift" ]
+        } ]
+      }
+    },
+    "LOAD_DATASET7" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Id", "Name", "ucinn_ascendv2__Opportunity__c", "ucinn_ascendv2__Number_of_Shares__c", "ucinn_ascendv2__Payment_Amount__c", "ucinn_ascendv2__Received_Date__c", "ucinn_ascendv2__Stock_Currency_Iso_Code__c", "ucinn_ascendv2__Stock_Currency_Payment_Amount__c", "ucinn_ascendv2__Transaction_Payment_Amount__c", "ucinn_ascendv2__Company_Name__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "ucinn_ascendv2__Stock__c",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "ucinn_ascendv2__Stock__c"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN2" : {
+      "action" : "join",
+      "sources" : [ "TO_DIMENSION1", "FILTER0_copy1" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "ucinn_ascendv2__Opportunity__c" ],
+        "rightQualifier" : "credit",
+        "rightKeys" : [ "ucinn_ascendv2__Opportunity__c" ]
+      }
+    },
+    "FORMULA3" : {
+      "action" : "formula",
+      "sources" : [ "LOAD_DATASET7" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Fiscal_Year_Received_Date",
+          "label" : "Fiscal Year Received Date",
+          "formulaExpression" : "fiscalYear(ucinn_ascendv2__Received_Date__c)",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "TO_DIMENSION1" : {
+      "action" : "typeCast",
+      "sources" : [ "FORMULA3" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "Fiscal_Year_Received_Date_to_dimension",
+          "newProperties" : {
+            "name" : "Fiscal_Year_Received_Date"
+          }
+        } ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Fiscal_Year_Received_Date" ]
+        }
+      },
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Fiscal_Year_Received_Date",
+          "newProperties" : {
+            "label" : "Fiscal Year Received Date",
+            "name" : "Fiscal_Year_Received_Date_to_dimension",
+            "typeProperties" : {
+              "type" : "TEXT",
+              "length" : 255
+            }
+          }
+        } ]
+      }
+    }
+  },
+  "ui" : {
+    "nodes" : {
+      "TRANSFORM7_copy0_copy0" : {
+        "label" : "Transform payment and shares",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 252.2,
+        "left" : 252.3,
+        "graph" : {
+          "EDIT_ATTRIBUTES0_copy0_copy0" : {
+            "label" : "Edit Attributes"
+          },
+          "DROP_FIELDS13_copy0" : {
+            "label" : "Drop Columns"
+          },
+          "FORMULA0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Fiscal Year Received Date"
+          },
+          "TO_DIMENSION0" : {
+            "label" : "To Text"
+          }
+        },
+        "connectors" : [ {
+          "source" : "EDIT_ATTRIBUTES0_copy0_copy0",
+          "target" : "DROP_FIELDS13_copy0"
+        }, {
+          "source" : "DROP_FIELDS13_copy0",
+          "target" : "FORMULA0"
+        }, {
+          "source" : "FORMULA0",
+          "target" : "TO_DIMENSION0"
+        } ]
+      },
+      "LOAD_DATASET5_copy0_copy0" : {
+        "label" : "ucinn_ascendv2__Stock_Payment__c",
+        "type" : "LOAD_DATASET",
+        "top" : 252.10000000000002,
+        "left" : 112,
+        "parameters" : {
+          "sampleSize" : 10000
+        }
+      },
+      "OUTPUT0" : {
+        "label" : "Output 0",
+        "type" : "OUTPUT",
+        "top" : 252.5,
+        "left" : 672.3
+      },
+      "LOAD_DATASET6" : {
+        "label" : "Gift Credit and Payment",
+        "type" : "LOAD_DATASET",
+        "top" : 112,
+        "left" : 112,
+        "parameters" : {
+          "sampleSize" : 10000
+        }
+      },
+      "FILTER0" : {
+        "label" : "Filter to hard credit stock gifts",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 112,
+        "left" : 252
+      },
+      "JOIN0" : {
+        "label" : "Stock_with_appended_credits",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 252,
+        "left" : 392
+      },
+      "LOAD_DATASET5_copy0_copy0_copy0" : {
+        "label" : "ucinn_ascendv2__Stock_Payment__c Copy",
+        "type" : "LOAD_DATASET",
+        "top" : 392,
+        "left" : 112,
+        "parameters" : {
+          "sampleSize" : 10000
+        }
+      },
+      "OUTPUT1" : {
+        "label" : "Output 1",
+        "type" : "OUTPUT",
+        "top" : 392,
+        "left" : 252
+      },
+      "TRANSFORM7_copy0_copy0_copy0" : {
+        "label" : "Transform payment and shares Copy",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 672.2,
+        "left" : 252.3,
+        "graph" : {
+          "EDIT_ATTRIBUTES0_copy0_copy0_copy0" : {
+            "label" : "Edit Attributes"
+          },
+          "DROP_FIELDS13_copy0_copy0" : {
+            "label" : "Drop Columns"
+          },
+          "FORMULA0_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Fiscal Year Received Date"
+          },
+          "TO_DIMENSION0_copy0" : {
+            "label" : "To Text"
+          }
+        },
+        "connectors" : [ {
+          "source" : "EDIT_ATTRIBUTES0_copy0_copy0_copy0",
+          "target" : "DROP_FIELDS13_copy0_copy0"
+        }, {
+          "source" : "DROP_FIELDS13_copy0_copy0",
+          "target" : "FORMULA0_copy0"
+        }, {
+          "source" : "FORMULA0_copy0",
+          "target" : "TO_DIMENSION0_copy0"
+        } ]
+      },
+      "LOAD_DATASET5_copy0_copy0_copy1" : {
+        "label" : "ucinn_ascendv2__Stock_Payment__c Copy1",
+        "type" : "LOAD_DATASET",
+        "top" : 672.1,
+        "left" : 112,
+        "parameters" : {
+          "sampleSize" : 10000
+        }
+      },
+      "OUTPUT0_copy0" : {
+        "label" : "Output 0 Copy",
+        "type" : "OUTPUT",
+        "top" : 672.6,
+        "left" : 952.8
+      },
+      "LOAD_DATASET6_copy0" : {
+        "label" : "Gift Credit and Payment",
+        "type" : "LOAD_DATASET",
+        "top" : 532,
+        "left" : 112,
+        "parameters" : {
+          "sampleSize" : 10000
+        }
+      },
+      "FILTER0_copy0" : {
+        "label" : "Filter to payment object stock gifts",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 532,
+        "left" : 252
+      },
+      "JOIN1" : {
+        "label" : "Join 1",
+        "type" : "JOIN",
+        "top" : 671.8,
+        "left" : 531.8
+      },
+      "AGGREGATE0" : {
+        "label" : "Aggregate 0",
+        "type" : "AGGREGATE",
+        "top" : 672,
+        "left" : 392,
+        "graph" : {
+          "EXTRACT0" : null,
+          "AGGREGATE1" : null
+        },
+        "connectors" : [ {
+          "source" : "EXTRACT0",
+          "target" : "AGGREGATE1"
+        } ]
+      },
+      "TRANSFORM8" : {
+        "label" : "flags",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 672,
+        "left" : 672,
+        "graph" : {
+          "FORMULA1" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "is stock payment object"
+          },
+          "FORMULA2" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "amount diff"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA1",
+          "target" : "FORMULA2"
+        } ]
+      },
+      "OUTPUT0_copy1" : {
+        "label" : "Output 0 Copy1",
+        "type" : "OUTPUT",
+        "top" : 812,
+        "left" : 671.1
+      },
+      "LOAD_DATASET6_copy1" : {
+        "label" : "Gift Credit and Payment",
+        "type" : "LOAD_DATASET",
+        "top" : 812,
+        "left" : 112,
+        "parameters" : {
+          "sampleSize" : 10000
+        }
+      },
+      "FILTER0_copy1" : {
+        "label" : "Filter to hard credit stock gifts Copy",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 812,
+        "left" : 252
+      },
+      "LOAD_DATASET7" : {
+        "label" : "ucinn_ascendv2__Stock__c",
+        "type" : "LOAD_DATASET",
+        "top" : 952,
+        "left" : 112,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN2" : {
+        "label" : "Join 2",
+        "type" : "JOIN",
+        "top" : 812,
+        "left" : 392
+      },
+      "TRANSFORM9" : {
+        "label" : "Transform 9",
+        "type" : "TRANSFORM",
+        "top" : 952,
+        "left" : 252,
+        "graph" : {
+          "FORMULA3" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Fiscal Year Received Date"
+          },
+          "TO_DIMENSION1" : {
+            "label" : "To Text"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA3",
+          "target" : "TO_DIMENSION1"
+        } ]
+      }
+    },
+    "connectors" : [ {
+      "source" : "LOAD_DATASET5_copy0_copy0",
+      "target" : "TRANSFORM7_copy0_copy0"
+    }, {
+      "source" : "LOAD_DATASET6",
+      "target" : "FILTER0"
+    }, {
+      "source" : "TRANSFORM7_copy0_copy0",
+      "target" : "JOIN0"
+    }, {
+      "source" : "FILTER0",
+      "target" : "JOIN0"
+    }, {
+      "source" : "JOIN0",
+      "target" : "OUTPUT0"
+    }, {
+      "source" : "LOAD_DATASET5_copy0_copy0_copy0",
+      "target" : "OUTPUT1"
+    }, {
+      "source" : "LOAD_DATASET5_copy0_copy0_copy1",
+      "target" : "TRANSFORM7_copy0_copy0_copy0"
+    }, {
+      "source" : "LOAD_DATASET6_copy0",
+      "target" : "FILTER0_copy0"
+    }, {
+      "source" : "FILTER0_copy0",
+      "target" : "JOIN1"
+    }, {
+      "source" : "AGGREGATE0",
+      "target" : "JOIN1"
+    }, {
+      "source" : "TRANSFORM7_copy0_copy0_copy0",
+      "target" : "AGGREGATE0"
+    }, {
+      "source" : "JOIN1",
+      "target" : "TRANSFORM8"
+    }, {
+      "source" : "TRANSFORM8",
+      "target" : "OUTPUT0_copy0"
+    }, {
+      "source" : "LOAD_DATASET6_copy1",
+      "target" : "FILTER0_copy1"
+    }, {
+      "source" : "TRANSFORM9",
+      "target" : "JOIN2"
+    }, {
+      "source" : "FILTER0_copy1",
+      "target" : "JOIN2"
+    }, {
+      "source" : "JOIN2",
+      "target" : "OUTPUT0_copy1"
+    }, {
+      "source" : "LOAD_DATASET7",
+      "target" : "TRANSFORM9"
+    } ],
+    "hiddenColumns" : [ ]
+  },
+  "runMode" : "full"
+}

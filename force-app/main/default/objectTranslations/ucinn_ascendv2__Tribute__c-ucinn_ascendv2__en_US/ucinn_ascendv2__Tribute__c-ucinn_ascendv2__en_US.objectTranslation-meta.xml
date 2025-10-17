@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObjectTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <caseValues>
+        <plural>false</plural>
+        <value>Tribute</value>
+    </caseValues>
+    <caseValues>
+        <plural>true</plural>
+        <value>Tributes</value>
+    </caseValues>
+    <layouts>
+        <layout>Tribute Layout</layout>
+        <sections>
+            <label><!-- Custom Links --></label>
+            <section>Custom Links</section>
+        </sections>
+    </layouts>
+    <startsWith>Consonant</startsWith>
+    <validationRules>
+        <errorMessage><!-- Cannot create a Tribute with type &quot;In Honor of&quot; when a constituent is deceased. --></errorMessage>
+        <name>ucinn_ascendv2__Check_In_Honor_Of_Is_Alive</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Constituent must be deceased for a tribute to have status &quot;In Memory Of.&quot; --></errorMessage>
+        <name>ucinn_ascendv2__Check_In_Memory_Of_Is_Deceased</name>
+    </validationRules>
+</CustomObjectTranslation>

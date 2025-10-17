@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObjectTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <caseValues>
+        <plural>false</plural>
+        <value>Table</value>
+    </caseValues>
+    <caseValues>
+        <plural>true</plural>
+        <value>Tables</value>
+    </caseValues>
+    <layouts>
+        <layout>Table Layout</layout>
+        <sections>
+            <label><!-- Custom Links --></label>
+            <section>Custom Links</section>
+        </sections>
+    </layouts>
+    <startsWith>Consonant</startsWith>
+    <validationRules>
+        <errorMessage><!-- Cannot change the number of seats while attendees are assigned to seats. Please remove all attendees from this table before updating seat quantity. --></errorMessage>
+        <name>conference360__Table_Has_Attendee</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Unable to assign a seat: This table is fully occupied. --></errorMessage>
+        <name>conference360__Table_Has_No_Seats_Available</name>
+    </validationRules>
+</CustomObjectTranslation>

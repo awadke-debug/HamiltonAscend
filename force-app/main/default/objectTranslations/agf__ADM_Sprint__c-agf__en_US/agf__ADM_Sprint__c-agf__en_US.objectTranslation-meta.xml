@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObjectTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <caseValues>
+        <plural>false</plural>
+        <value>Sprint</value>
+    </caseValues>
+    <caseValues>
+        <plural>true</plural>
+        <value>Sprints</value>
+    </caseValues>
+    <layouts>
+        <layout>Sprint Layout</layout>
+        <sections>
+            <label><!-- Custom Links --></label>
+            <section>Custom Links</section>
+        </sections>
+        <sections>
+            <label><!-- Other Information --></label>
+            <section>Other Information</section>
+        </sections>
+    </layouts>
+    <startsWith>Consonant</startsWith>
+    <validationRules>
+        <errorMessage><!-- Hours in a work day cannot exceed 24 --></errorMessage>
+        <name>agf__Hours_In_A_Work_Day</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Hours in a work day cannot be a negative number --></errorMessage>
+        <name>agf__Hours_In_A_Work_Day_Neg</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Projected velocity cannot be a negative number --></errorMessage>
+        <name>agf__Projected_Velocity_Neg</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- The scrum team you selected is not active. --></errorMessage>
+        <name>agf__Scrum_Team_Is_Active</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Your End Date must be after your Start Date --></errorMessage>
+        <name>agf__Verify_end_date</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- A sprint can&apos;t be longer than one month (31 days). Please correct your end date and click &apos;Save&apos;. --></errorMessage>
+        <name>agf__Verify_length_of_sprint</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Your sprint should follow the format: YYYY.MM(0-9 or a-f) - &lt;Team Name&gt;4 digit year, 2 digit month, optional (0-9 or a-f) - &lt;your team name&gt; --></errorMessage>
+        <name>agf__Verify_name_format</name>
+    </validationRules>
+</CustomObjectTranslation>

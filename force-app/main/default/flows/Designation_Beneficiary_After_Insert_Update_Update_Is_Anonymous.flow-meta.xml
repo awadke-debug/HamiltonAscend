@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>59.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <decisions>
+        <description>This decision will check if the code formula is equal to value &apos;SP&apos;.</description>
+        <name>Is_code_formula_SP</name>
+        <label>Is code formula SP ?</label>
+        <locationX>182</locationX>
+        <locationY>539</locationY>
+        <defaultConnectorLabel>No</defaultConnectorLabel>
+        <rules>
+            <name>Yes</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_Service_Indicator_record_related_to_this_Contact.ucinn_ascendv2__Code_Formula__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>SP</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>Get_Service_Indicator_record_related_to_this_Contact.ucinn_ascendv2__Contact__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <elementReference>$Record.ucinn_ascendv2__Contact__c</elementReference>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_designation_beneficiary</targetReference>
+            </connector>
+            <label>Yes</label>
+        </rules>
+    </decisions>
+    <description>Student Anonymous Service Indicator Flow to Populate &apos;Is Anonymous&apos; on Designation Beneficiary.</description>
+    <environments>Default</environments>
+    <interviewLabel>Designation Benefici {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Designation Beneficiary - After Insert / Update - Update Is Anonymous</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordLookups>
+        <description>This will fetch the related contact to designation beneficiary.</description>
+        <name>Get_related_contact_to_designation_beneficiary</name>
+        <label>Get related contact to designation beneficiary</label>
+        <locationX>182</locationX>
+        <locationY>323</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Get_Service_Indicator_record_related_to_this_Contact</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.ucinn_ascendv2__Contact__r.Id</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Contact</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <description>This will fetch the service indicators related to the contact.</description>
+        <name>Get_Service_Indicator_record_related_to_this_Contact</name>
+        <label>Get Service Indicator record related to this Contact</label>
+        <locationX>182</locationX>
+        <locationY>431</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Is_code_formula_SP</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>ucinn_ascendv2__Contact__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>Get_related_contact_to_designation_beneficiary.Id</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>ucinn_ascendv2__Service_Indicator__c</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordUpdates>
+        <description>This will update the anonymous field on designation beneficiary to true.</description>
+        <name>Update_designation_beneficiary</name>
+        <label>Update designation beneficiary</label>
+        <locationX>50</locationX>
+        <locationY>647</locationY>
+        <inputAssignments>
+            <field>HAM_Anonymous__c</field>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <start>
+        <locationX>56</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Get_related_contact_to_designation_beneficiary</targetReference>
+        </connector>
+        <object>ucinn_ascendv2__Designation_Beneficiary__c</object>
+        <recordTriggerType>CreateAndUpdate</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Active</status>
+</Flow>

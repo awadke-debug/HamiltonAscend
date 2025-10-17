@@ -1,0 +1,19 @@
+<template>
+    <div class="card">
+        <lightning-accordion active-section-name={activeSection} onsectiontoggle={handleSectionToggle}>
+            <lightning-accordion-section name="My Prospects" label="My Prospects">
+                <div class="slds-p-around_small">
+                    <div class="content table-responsive table-full-width">
+                        <lightning-datatable
+                            key-field="id"
+                            data={prospectRecords}
+                            columns={columns}
+                            hide-checkbox-column="true">
+                        </lightning-datatable>
+                    </div>
+                    
+                </div>
+            </lightning-accordion-section>
+        </lightning-accordion>
+    </div>
+</template>

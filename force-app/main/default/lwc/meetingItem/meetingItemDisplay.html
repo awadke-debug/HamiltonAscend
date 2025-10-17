@@ -1,0 +1,39 @@
+<template>
+    <li>
+        {meeting.name}
+        <ul class="slds-list_dotted slds-m-left_medium">
+            <li>
+                <span class="slds-text-title">Title:&nbsp;</span>
+                <b>{title}</b>
+            </li>
+            <li>
+                <span class="slds-text-title">Start Date:&nbsp;</span>
+                <lightning-formatted-date-time value={startDate} year="2-digit" month="short" day="2-digit"
+                    hour="numeric" weekday="long" era="short">
+                </lightning-formatted-date-time>
+            </li>
+            <li>
+                <span class="slds-text-title">End Date:&nbsp;</span>
+                <lightning-formatted-date-time value={endDate} year="2-digit" month="short" day="2-digit"
+                    hour="numeric" weekday="long" era="short">
+                </lightning-formatted-date-time>
+            </li>
+            <li>
+                <span class="slds-text-title">Location:&nbsp;</span>
+                <!-- <lightning-formatted-address
+                    street={street}
+                    city={city}
+                    country={country}
+                    province={province}
+                    postal-code={postalCode}
+                ></lightning-formatted-address> -->
+                {addressText}
+            </li>
+            <li>
+                <span class="slds-text-title">Status:&nbsp;</span>
+                {status}
+            </li>
+        </ul>
+    </li>
+
+</template>

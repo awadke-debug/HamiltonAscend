@@ -1,0 +1,19 @@
+<apex:page >
+    <apex:includeLightning />
+
+    <div id="lightning"></div>
+
+    <script>
+        $Lightning.use("c:hamGivingOutApp", function() {
+            $Lightning.createComponent(
+                "c:hamGivingPage",
+                {}, // Attributes for your LWC
+                "lightning", // The DOM ID where the component will be rendered
+                function(cmp) {
+                    // Callback function after the component is created
+                    console.log('LWC component created successfully');
+                }
+            );
+        });
+    </script>
+</apex:page>

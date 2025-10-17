@@ -1,0 +1,38 @@
+<aura:component implements="lightning:recordHomeTemplate" access="global">
+    <aura:attribute name="header" type="Aura.Component[]" description="Header region"/>
+    <aura:attribute name="leftSidebar" type="Aura.Component[]" description="Left Sidebar region"/>
+    <aura:attribute name="rightSidebar" type="Aura.Component[]" description="Right Sidebar region"/>
+    <aura:attribute name="footer" type="Aura.Component[]" description="Footer region"/>
+
+    <lightning:layout multipleRows="true" pullToBoundary="small">
+
+        <!-- Header -->
+        <lightning:layoutItem size="12" padding="around-small">
+            <aura:iteration items="{!v.header}" var="hdr">
+                {!hdr}
+            </aura:iteration>
+        </lightning:layoutItem>
+
+        <!-- Left Sidebar -->
+        <lightning:layoutItem size="3" padding="around-small" class="slds-p-around_small">
+            <aura:iteration items="{!v.leftSidebar}" var="left">
+                {!left}
+            </aura:iteration>
+        </lightning:layoutItem>
+
+        <!-- Right Sidebar -->
+        <lightning:layoutItem size="9" padding="around-small" class="slds-p-around_small">
+            <aura:iteration items="{!v.rightSidebar}" var="right">
+                {!right}
+            </aura:iteration>
+        </lightning:layoutItem>
+
+        <!-- Footer -->
+        <lightning:layoutItem size="12" padding="around-small">
+            <aura:iteration items="{!v.footer}" var="ftr">
+                {!ftr}
+            </aura:iteration>
+        </lightning:layoutItem>
+
+    </lightning:layout>
+</aura:component>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObjectTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <caseValues>
+        <plural>false</plural>
+        <value>Fee</value>
+    </caseValues>
+    <caseValues>
+        <plural>true</plural>
+        <value>Fees</value>
+    </caseValues>
+    <layouts>
+        <layout>Fee Layout</layout>
+        <sections>
+            <label><!-- Custom Links --></label>
+            <section>Custom Links</section>
+        </sections>
+    </layouts>
+    <startsWith>Consonant</startsWith>
+    <validationRules>
+        <errorMessage><!-- You must select a tax display method for tax records. --></errorMessage>
+        <name>bt_stripe__TaxTypeRequiresTaxDisplay</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Fee percentage must be greater than 0 and may not exceed 100%. --></errorMessage>
+        <name>bt_stripe__ValidateFeePercentage</name>
+    </validationRules>
+</CustomObjectTranslation>

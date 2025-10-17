@@ -1,0 +1,415 @@
+{
+  "version" : "63.0",
+  "nodes" : {
+    "LOAD_DATASET0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "ucinn_ascendv2__Contact__c", "HAM_Anonymous__c", "ucinn_ascendv2__Type__c", "ucinn_ascendv2__Fiscal_Year__c", "ucinn_ascendv2__Designation__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "ucinn_ascendv2__Designation_Beneficiary__c",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "ucinn_ascendv2__Designation_Beneficiary__c"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "LOAD_DATASET1" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Is_Active", "Preferred_Address.ucinn_ascendv2__Address_State_Formula__c", "ucinn_ascendv2__Preferred_Address_Country__c", "HAM_Name_w_Suffix__c", "All_Student_Programs_Involvements", "FirstName", "Account_or_Contact_Id", "All_Private_Societies_Involvements", "LastName", "Degree.All_Minors", "Preferred_Address.ucinn_ascendv2__Address_City_Formula__c", "All_NCAA_Involvements", "ucinn_ascendv2__External_System_ID__c", "Degree.All_Concentrations", "All_Students_Clubs_Involvement", "HAM_Profile_Picture_URL__c", "HAM_Reunion_Year__c", "ucinn_ascendv2__Primary_Contact_Type__c" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Account and Contact Dataset",
+          "name" : "Account_and_Contact_Dataset"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN0" : {
+      "action" : "join",
+      "sources" : [ "LOAD_DATASET0", "LOAD_DATASET1" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Accountand.Account_or_Contact_Id" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "ucinn_ascendv2__Contact__c" ],
+        "rightQualifier" : "Accountand",
+        "rightKeys" : [ "Account_or_Contact_Id" ]
+      }
+    },
+    "LOAD_DATASET2" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "HAM_Scholarship_Type__c", "Id", "RecordTypeId", "ucinn_ascendv2__Fund_Name__c", "HAM_Fund_Reporting_Status__c", "HAM_Fund_Status__c", "HAM_Reporting_Occasion__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "ucinn_ascendv2__Designation__c",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "ucinn_ascendv2__Designation__c"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN1" : {
+      "action" : "join",
+      "sources" : [ "JOIN0", "EDIT_ATTRIBUTES0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "ucinn_asce.Id" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "ucinn_ascendv2__Designation__c" ],
+        "rightQualifier" : "ucinn_asce",
+        "rightKeys" : [ "Id" ]
+      }
+    },
+    "OUTPUT0" : {
+      "action" : "save",
+      "sources" : [ "JOIN3" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Student Recipient",
+          "name" : "Student_Recipient",
+          "folderName" : "SharedApp"
+        },
+        "dateConfigurationName" : "July_Fiscal_Year",
+        "measuresToCurrencies" : [ ]
+      }
+    },
+    "LOAD_DATASET3" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Id", "Name" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "RecordType",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "RecordType"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN2" : {
+      "action" : "join",
+      "sources" : [ "LOAD_DATASET2", "LOAD_DATASET3" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "RecordTypeId", "RecordType.Id" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "RecordTypeId" ],
+        "rightQualifier" : "RecordType",
+        "rightKeys" : [ "Id" ]
+      }
+    },
+    "EDIT_ATTRIBUTES0" : {
+      "action" : "schema",
+      "sources" : [ "JOIN2" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "RecordType.Name",
+          "newProperties" : {
+            "label" : "Designation Record Type",
+            "name" : "Designation_Record_Type"
+          }
+        } ]
+      }
+    },
+    "LOAD_DATASET4" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "HAM_Reporting_Type__c", "ucinn_ascendv2__Status__c", "ucinn_ascendv2__Designation__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "ucinn_ascendv2__Designation_Stewardship__c",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "ucinn_ascendv2__Designation_Stewardship__c"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "FORMULA0" : {
+      "action" : "formula",
+      "sources" : [ "LOAD_DATASET4" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Designation_Stewardship_Report_Type",
+          "label" : "Designation Stewardship Report Type",
+          "formulaExpression" : "case when HAM_Reporting_Type__c='Comprehensive' or HAM_Reporting_Type__c='Impact Only'\r\nthen 'Comprehensive or Impact Only' \r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES1" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA0" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "ucinn_ascendv2__Status__c",
+          "newProperties" : {
+            "label" : "Designation Stewardship Status",
+            "name" : "ucinn_ascendv2__Status__c"
+          }
+        } ]
+      }
+    },
+    "DROP_FIELDS0" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES1" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "HAM_Reporting_Type__c" ]
+        }
+      }
+    },
+    "FILTER0" : {
+      "action" : "filter",
+      "sources" : [ "DROP_FIELDS0" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "ucinn_ascendv2__Status__c",
+          "operator" : "EQUAL",
+          "operands" : [ "Current" ]
+        }, {
+          "type" : "TEXT",
+          "field" : "Designation_Stewardship_Report_Type",
+          "operator" : "EQUAL",
+          "operands" : [ "Comprehensive or Impact Only" ]
+        } ]
+      }
+    },
+    "JOIN3" : {
+      "action" : "join",
+      "sources" : [ "JOIN1", "FILTER0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "DesigStew.ucinn_ascendv2__Designation__c" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "ucinn_ascendv2__Designation__c" ],
+        "rightQualifier" : "DesigStew",
+        "rightKeys" : [ "ucinn_ascendv2__Designation__c" ]
+      }
+    }
+  },
+  "ui" : {
+    "nodes" : {
+      "LOAD_DATASET0" : {
+        "label" : "ucinn_ascendv2__Designation_Beneficiary__c",
+        "type" : "LOAD_DATASET",
+        "top" : 112,
+        "left" : 112,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "LOAD_DATASET1" : {
+        "label" : "Account and Contact Dataset",
+        "type" : "LOAD_DATASET",
+        "top" : 252.60000000000002,
+        "left" : 252.2,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN0" : {
+        "label" : "Lookup Contact to Designation Beneficiary",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 112,
+        "left" : 252.3
+      },
+      "LOAD_DATASET2" : {
+        "label" : "ucinn_ascendv2__Designation__c",
+        "type" : "LOAD_DATASET",
+        "top" : 531.6,
+        "left" : 392,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN1" : {
+        "label" : "Lookup Designation to Designation Beneficiary",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 112,
+        "left" : 392.2
+      },
+      "OUTPUT0" : {
+        "label" : "Output 0",
+        "type" : "OUTPUT",
+        "top" : 112.19999999999999,
+        "left" : 1092.7
+      },
+      "LOAD_DATASET3" : {
+        "label" : "RecordType",
+        "type" : "LOAD_DATASET",
+        "top" : 391,
+        "left" : 532,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN2" : {
+        "label" : "Lookup RecordType",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 391.6,
+        "left" : 392
+      },
+      "TRANSFORM0" : {
+        "label" : "Enrich Fields",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 251.60000000000002,
+        "left" : 392,
+        "graph" : {
+          "EDIT_ATTRIBUTES0" : {
+            "label" : "Edit Attributes"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "LOAD_DATASET4" : {
+        "label" : "ucinn_ascendv2__Designation_Stewardship__c",
+        "type" : "LOAD_DATASET",
+        "top" : 531.9,
+        "left" : 672.1,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "TRANSFORM1" : {
+        "label" : "Enrich Fields",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 391.9,
+        "left" : 672.1,
+        "graph" : {
+          "FORMULA0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Designation Stewardship Report Type"
+          },
+          "EDIT_ATTRIBUTES1" : {
+            "label" : "Edit Attributes"
+          },
+          "DROP_FIELDS0" : {
+            "label" : "Drop Columns"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA0",
+          "target" : "EDIT_ATTRIBUTES1"
+        }, {
+          "source" : "EDIT_ATTRIBUTES1",
+          "target" : "DROP_FIELDS0"
+        } ]
+      },
+      "FILTER0" : {
+        "label" : "Filter 0",
+        "type" : "FILTER",
+        "top" : 252.10000000000002,
+        "left" : 672
+      },
+      "JOIN3" : {
+        "label" : "Lookup Designation Stewardship",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 112,
+        "left" : 672
+      }
+    },
+    "connectors" : [ {
+      "source" : "LOAD_DATASET0",
+      "target" : "JOIN0"
+    }, {
+      "source" : "LOAD_DATASET1",
+      "target" : "JOIN0"
+    }, {
+      "source" : "JOIN0",
+      "target" : "JOIN1"
+    }, {
+      "source" : "TRANSFORM0",
+      "target" : "JOIN1"
+    }, {
+      "source" : "JOIN3",
+      "target" : "OUTPUT0"
+    }, {
+      "source" : "LOAD_DATASET2",
+      "target" : "JOIN2"
+    }, {
+      "source" : "LOAD_DATASET3",
+      "target" : "JOIN2"
+    }, {
+      "source" : "JOIN2",
+      "target" : "TRANSFORM0"
+    }, {
+      "source" : "LOAD_DATASET4",
+      "target" : "TRANSFORM1"
+    }, {
+      "source" : "TRANSFORM1",
+      "target" : "FILTER0"
+    }, {
+      "source" : "JOIN1",
+      "target" : "JOIN3"
+    }, {
+      "source" : "FILTER0",
+      "target" : "JOIN3"
+    } ],
+    "hiddenColumns" : [ ]
+  },
+  "runMode" : "full"
+}

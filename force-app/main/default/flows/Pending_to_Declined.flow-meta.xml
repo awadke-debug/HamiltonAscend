@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>59.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <environments>Default</environments>
+    <formulas>
+        <name>TimeCriteria</name>
+        <dataType>DateTime</dataType>
+        <expression>NOW() + (-0.04167 * 72)</expression>
+    </formulas>
+    <interviewLabel>Pending to Declined {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Pending to Declined</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordUpdates>
+        <name>Pending_to_Declined</name>
+        <label>Pending to Declined</label>
+        <locationX>176</locationX>
+        <locationY>252</locationY>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Pending_Date_Time__c</field>
+            <operator>GreaterThan</operator>
+            <value>
+                <elementReference>TimeCriteria</elementReference>
+            </value>
+        </filters>
+        <inputAssignments>
+            <field>conference360__Registration_Status__c</field>
+            <value>
+                <stringValue>Declined</stringValue>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <start>
+        <locationX>50</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Pending_to_Declined</targetReference>
+        </connector>
+        <object>conference360__Attendee__c</object>
+        <schedule>
+            <frequency>Daily</frequency>
+            <startDate>2023-10-08</startDate>
+            <startTime>00:00:00.000Z</startTime>
+        </schedule>
+        <triggerType>Scheduled</triggerType>
+    </start>
+    <status>Active</status>
+</Flow>

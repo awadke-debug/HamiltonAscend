@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>59.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <decisions>
+        <description>This decision will check the values of reporting type and status and execute accordingly.</description>
+        <name>Check_reporting_type_status</name>
+        <label>Check reporting type &amp; status</label>
+        <locationX>314</locationX>
+        <locationY>323</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Reporting_type_not_none_status_current</name>
+            <conditionLogic>(1 OR 2) AND 3</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.HAM_Reporting_Type__c</leftValueReference>
+                <operator>NotEqualTo</operator>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.HAM_Reporting_Type__c</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <stringValue>None</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.ucinn_ascendv2__Status__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Current</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_designation_reporting_status</targetReference>
+            </connector>
+            <label>Reporting type not none &amp; status current</label>
+        </rules>
+        <rules>
+            <name>Reporting_type_none_status_former</name>
+            <conditionLogic>1 AND (2 OR 3) AND 4</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Id</leftValueReference>
+                <operator>NotEqualTo</operator>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.HAM_Reporting_Type__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>None</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.HAM_Reporting_Type__c</leftValueReference>
+                <operator>EqualTo</operator>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.ucinn_ascendv2__Status__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Former</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_designation_reporting_status_0</targetReference>
+            </connector>
+            <label>Reporting type none &amp; status former</label>
+        </rules>
+    </decisions>
+    <environments>Default</environments>
+    <interviewLabel>Designation Stewardship - After Insert / Update - Update Designation {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Designation Stewardship - After Insert / Update - Update Designation</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordUpdates>
+        <name>Update_designation_reporting_status</name>
+        <label>Update designation reporting status</label>
+        <locationX>50</locationX>
+        <locationY>431</locationY>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.ucinn_ascendv2__Designation__r.Id</elementReference>
+            </value>
+        </filters>
+        <inputAssignments>
+            <field>HAM_Fund_Reporting_Status__c</field>
+            <value>
+                <stringValue>Yes</stringValue>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record.ucinn_ascendv2__Designation__r</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Update_designation_reporting_status_0</name>
+        <label>Update designation reporting status</label>
+        <locationX>314</locationX>
+        <locationY>431</locationY>
+        <inputAssignments>
+            <field>HAM_Fund_Reporting_Status__c</field>
+            <value>
+                <stringValue>No</stringValue>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record.ucinn_ascendv2__Designation__r</inputReference>
+    </recordUpdates>
+    <start>
+        <locationX>188</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Check_reporting_type_status</targetReference>
+        </connector>
+        <object>ucinn_ascendv2__Designation_Stewardship__c</object>
+        <recordTriggerType>CreateAndUpdate</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Obsolete</status>
+</Flow>

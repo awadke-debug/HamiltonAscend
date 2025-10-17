@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObjectTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <caseValues>
+        <plural>false</plural>
+        <value>Ambiente</value>
+    </caseValues>
+    <caseValues>
+        <plural>true</plural>
+        <value>Ambientes</value>
+    </caseValues>
+    <gender>Masculine</gender>
+    <nameFieldLabel>Nome do ambiente</nameFieldLabel>
+    <validationRules>
+        <errorMessage>Um ambiente não pode ter seu campo Expired__c definido como falso.</errorMessage>
+        <name>sf_devops__Expired_Changed</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Um ambiente não pode ser inserido com Expired__c definido como verdadeiro.</errorMessage>
+        <name>sf_devops__Expired_Insert</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Um ambiente de substituição deve estar expirado.</errorMessage>
+        <name>sf_devops__Expired_Replaces</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Refresh_Source e Refresh_Date estão ambos definidos ou ambos estão vazios.</errorMessage>
+        <name>sf_devops__Refresh_Source_And_Date</name>
+    </validationRules>
+</CustomObjectTranslation>

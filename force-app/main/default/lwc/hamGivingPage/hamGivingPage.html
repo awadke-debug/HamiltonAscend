@@ -1,0 +1,193 @@
+<template>
+    <div style="width: 60vw; justify-self: center; margin-top: 1rem;">
+        <template lwc:if={selectionPage}>
+            <div style="width: 100%; display: flex;" class="slds-var-m-bottom_medium">
+                <div style="flex: 1;"></div>
+                <div style="position: relative; cursor: pointer;" onclick={handleCartClick} >
+                    <lightning-icon 
+                    icon-name="utility:cart" 
+                    alternative-text="Checkout" 
+                    size="xx-large" 
+                    title="large size"
+                    ></lightning-icon>
+                    <lightning-badge lightning-badge label={cartItemsCount} class="slds-theme_error" 
+                        style="position: absolute; top: -15px; right: -15px;"
+                    ></lightning-badge>
+
+                </div>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 5px;">
+                <template for:each={designations} for:item="designation">
+                    <c-designation-tile key={designation.id} designation={designation}>
+                        <lightning-button 
+                            label="Donate"
+                            variant="neutral"
+                            onclick={handleDonate}
+                            data-id={designation.id}
+                            disabled={designation.selected}
+                        ></lightning-button>
+                    </c-designation-tile>
+                </template>
+            </div>
+        </template>
+        <template lwc:elseif={cartPage}>
+            <div style="display: flex;">
+                <lightning-icon 
+                  icon-name="utility:arrow_left" 
+                  alternative-text="Select more" 
+                  size="xx-large"
+                  title="Select more"
+                  onclick={handleBackToSelectClick}
+                  style="cursor: pointer;"
+                ></lightning-icon>
+                <lightning-button 
+                  variant="brand"
+                  label="Proceed to Payment"
+                  class="slds-var-m-top_xx-large" style="margin-left: auto;"
+                ></lightning-button>
+            </div>
+
+            <div class="slds-var-m-top_medium">
+                <div class="slds-text-heading_large slds-var-p-vertical_large">Selected Designations</div>
+                <template for:each={cartItems} for:item="cartItem">
+                    <div key={cartItem.id} class="slds-var-p-vertical_large slds-border_bottom" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
+                        <div class="slds-text-heading_small">{cartItem.name}</div>
+                        <div style="display: flex;">
+                            <lightning-input 
+                                type="number"
+                                variant="label-hidden"
+                                value={cartItem.amount}
+                                onchange={handleAmountChange}
+                                data-id={cartItem.id} style="min-width: 200px; margin-left: auto;"
+                            ></lightning-input>
+                            <lightning-button-icon 
+                              icon-name="utility:close"
+                              title=""
+                              data-id={cartItem.id}
+                              onclick={handleRemoveFromCart}
+                            ></lightning-button-icon>
+                        </div>
+                    </div>
+                </template>
+            </div>
+
+            <div class="slds-var-m-top_xx-large">
+                <div class="slds-text-heading_large slds-var-p-vertical_large">Gift Frequency</div>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                    <div>
+                        <lightning-radio-group 
+                            name="recurringOptions"
+                            label="Gift Frequency"
+                            options={recurringOptions}
+                            value={frequency}
+                            onchange={handleFrequencyChange}
+                        ></lightning-radio-group>
+
+                        <div class="slds-var-p-top_small slds-var-p-left_large" lwc:if={isFrequencyCustom} style="margin-top: auto; display: flex; align-items: center;">
+                            <lightning-input 
+                            type="number"
+                            variant="label-hidden"
+                            ></lightning-input>
+                            <div>&nbsp;Months</div>
+                        </div>
+                    </div>
+                    <div>
+                        <div style="text-align: center;">
+                            <div>Your donation of</div>
+                            <lightning-formatted-number 
+                              value="12.34"
+                              format-style="currency"
+                              currency-code="USD"
+                              currency-display-as="symbol"
+                              class="slds-text-heading_large"
+                            ></lightning-formatted-number>
+                            <div>will be charged to your credit card today.</div>
+
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+
+            <div class="slds-var-m-top_xx-large">
+                <div class="slds-text-heading_large slds-var-p-vertical_large">Your Information</div>
+
+                <lightning-input 
+                  type="text"
+                  label="Name"
+                ></lightning-input>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:1rem;">
+
+                    <lightning-input 
+                      type="email" 
+                      label="Email address"
+                    ></lightning-input>
+                    <lightning-input 
+                      type="tel" 
+                      label="Phone field with pattern matching" 
+                      name="phone1" 
+                      value="343-343-3434" 
+                      pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}}"
+                    ></lightning-input>
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); align-items: center; gap: 1rem;">
+                    <lightning-combobox
+                      name="affiliation"
+                      label="Affiliation with Hamilton College"
+                      placeholder="Select affiliation"
+                      options={affiliationsOptions}
+                    ></lightning-combobox>
+                    <lightning-input 
+                      type="checkbox"
+                      label="Register me for an Alumni Account if I don't already have one"
+                      name="register"
+                    ></lightning-input>
+                </div>
+                <lightning-input-address
+                  address-label="Address"
+                  street-label="Street"
+                  city-label="City"
+                  country-label="Country"
+                  province-label="Province"
+                  postal-code-label="PostalCode"
+                  street="121 Spear St."
+                  city="San Francisco"
+                  country="US"
+                  province="CA"
+                  postal-code="94105"
+                   
+                  field-level-help="Help Text for input-address field" 
+                ></lightning-input-address>
+            </div>
+
+            <div class="slds-var-m-top_large" style="display: flex;">
+                <lightning-button 
+                  variant="brand"
+                  label="Proceed to Payment"
+                  onclick={hanleProceedToPaymentClick}
+                  class="slds-var-m-top_xx-large" style="margin-left: auto;"
+
+                ></lightning-button>
+            </div>
+        </template>
+        <template lwc:elseif={paymentPage}>
+            Payment Page here
+
+            <!-- <div lwc:dom="manual" class="stripe-card-container slds-var-p-vertical_xx-large"></div> -->
+
+            <div lwc:dom="manual" class="stripe-payment-container slds-var-p-vertical_xx-large"></div>
+
+
+            <lightning-button 
+              variant="brand"
+              label="Submit" 
+              onclick={handleSubmit} 
+            ></lightning-button>
+        </template>
+        <!-- <template lwc:else></template> -->
+
+        
+    </div>
+    
+</template>

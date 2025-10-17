@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>HAM_Profile_Picture__c</fullName>
+    <externalId>false</externalId>
+    <formula>IF(ISBLANK(HAM_Profile_Picture_URL__c), null, HYPERLINK(HAM_Profile_Picture_URL__c, IMAGE(HAM_Profile_Picture_URL__c, ucinn_ascendv2__Full_Name_Formula__c , 90, -1)))</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>؜</label>
+    <required>false</required>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObjectTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <caseValues>
+        <plural>false</plural>
+        <value>Out Of Office Log</value>
+    </caseValues>
+    <caseValues>
+        <plural>true</plural>
+        <value>Out Of Office Logs</value>
+    </caseValues>
+    <layouts>
+        <layout>Company Holiday Layout</layout>
+        <sections>
+            <label><!-- Custom Links --></label>
+            <section>Custom Links</section>
+        </sections>
+    </layouts>
+    <layouts>
+        <layout>Out Of Office Layout</layout>
+        <sections>
+            <label><!-- Custom Links --></label>
+            <section>Custom Links</section>
+        </sections>
+    </layouts>
+    <layouts>
+        <layout>PTO Layout</layout>
+        <sections>
+            <label><!-- Custom Links --></label>
+            <section>Custom Links</section>
+        </sections>
+        <sections>
+            <label><!-- Information --></label>
+            <section>Information</section>
+        </sections>
+        <sections>
+            <label><!-- System Information --></label>
+            <section>System Information</section>
+        </sections>
+    </layouts>
+    <layouts>
+        <layout>PTO Layout (Admin)</layout>
+        <sections>
+            <label><!-- Custom Links --></label>
+            <section>Custom Links</section>
+        </sections>
+        <sections>
+            <label><!-- Information --></label>
+            <section>Information</section>
+        </sections>
+        <sections>
+            <label><!-- System Information --></label>
+            <section>System Information</section>
+        </sections>
+    </layouts>
+    <layouts>
+        <layout>Time Off Log Layout</layout>
+        <sections>
+            <label><!-- Custom Links --></label>
+            <section>Custom Links</section>
+        </sections>
+        <sections>
+            <label><!-- Information --></label>
+            <section>Information</section>
+        </sections>
+        <sections>
+            <label><!-- System Information --></label>
+            <section>System Information</section>
+        </sections>
+    </layouts>
+    <layouts>
+        <layout>Time Off Log Layout (Admin)</layout>
+        <sections>
+            <label><!-- Custom Links --></label>
+            <section>Custom Links</section>
+        </sections>
+        <sections>
+            <label><!-- Description --></label>
+            <section>Description</section>
+        </sections>
+        <sections>
+            <label><!-- Information --></label>
+            <section>Information</section>
+        </sections>
+        <sections>
+            <label><!-- System Information --></label>
+            <section>System Information</section>
+        </sections>
+    </layouts>
+    <recordTypes>
+        <description><!-- Use to add company holidays into the system --></description>
+        <label><!-- Company Holiday --></label>
+        <name>agf__CompanyHoliday</name>
+    </recordTypes>
+    <recordTypes>
+        <description><!-- Time out of the office away from the Scrum Team. --></description>
+        <label><!-- Out of Office --></label>
+        <name>agf__OutofOffice</name>
+    </recordTypes>
+    <recordTypes>
+        <description><!-- PTOn (Paid Time ON) time spent working on a project external to the Scrum Team. --></description>
+        <label><!-- PTOn (Paid Time On) --></label>
+        <name>agf__PTOn</name>
+    </recordTypes>
+    <startsWith>Consonant</startsWith>
+    <validationRules>
+        <errorMessage><!-- The start date should always be before or same day as the End date --></errorMessage>
+        <name>agf__Start_Date_before_End_Date</name>
+    </validationRules>
+</CustomObjectTranslation>

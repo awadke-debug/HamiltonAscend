@@ -1,0 +1,1981 @@
+{
+  "version" : "63.0",
+  "nodes" : {
+    "LOAD_DATASET0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "conference360__AttendeeLink_Questions__c", "conference360__Post_Event_Questions__c", "Id", "Name", "conference360__Approval_Status__c", "conference360__Attendance_Status__c", "conference360__Attendee_Group__c", "conference360__Contact__c", "conference360__Email2__c", "conference360__Event_Item__c", "conference360__Event__c", "conference360__First_Name2__c", "conference360__Last_Name2__c", "conference360__Primary_Email__c", "conference360__Registration_DateTime__c", "conference360__Registration_Status__c", "conference360__Attendee_Full_Name__c", "conference360__Event_End_Date__c", "conference360__Event_Name__c", "conference360__Event_Start_Date__c", "HAM_Guest_Of__c", "HAM_Attendee_Group_Name__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "conference360__Attendee__c",
+          "connectionName" : "Updated_Hourly",
+          "sourceObjectName" : "conference360__Attendee__c"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN0" : {
+      "action" : "join",
+      "sources" : [ "JOIN2", "LOAD_DATASET10" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "conference360__Registration_DateTime__c", "Contact.Id" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "conference360__Contact__c" ],
+        "rightQualifier" : "Contact",
+        "rightKeys" : [ "Id" ]
+      }
+    },
+    "OUTPUT0" : {
+      "action" : "save",
+      "sources" : [ "FORMULA12" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Event Guest List",
+          "name" : "Event_Guest_List",
+          "folderName" : "SharedApp"
+        },
+        "dateConfigurationName" : "July_Fiscal_Year",
+        "measuresToCurrencies" : [ ]
+      }
+    },
+    "FORMULA1" : {
+      "action" : "formula",
+      "sources" : [ "LOAD_DATASET0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "DATETIME",
+          "name" : "Registration_Date",
+          "label" : "Registration Date",
+          "formulaExpression" : "conference360__Registration_DateTime__c",
+          "format" : "yyyy-MM-dd",
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA9" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA1" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "DATETIME",
+          "name" : "Updated_Date_In_System",
+          "label" : "Updated Date In System",
+          "formulaExpression" : "now()",
+          "format" : "MM/dd/yyyy hh:mm:ss a",
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA10" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA9" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "DATETIME",
+          "name" : "Updated_Date",
+          "label" : "Updated Date",
+          "formulaExpression" : "Updated_Date_In_System- INTERVAL 5 hour",
+          "format" : "MM/dd/yyyy hh:mm:ss a",
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "DROP_FIELDS1" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA10" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Updated_Date_In_System" ]
+        }
+      }
+    },
+    "LOAD_DATASET3" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Id", "conference360__Bill_To_Contact__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "connectionName" : "Updated_Hourly",
+          "sourceObjectName" : "conference360__Attendee_Group__c"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN2" : {
+      "action" : "join",
+      "sources" : [ "DROP_FIELDS1", "LOAD_DATASET3" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "conference1.Id" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "conference360__Attendee_Group__c" ],
+        "rightQualifier" : "conference1",
+        "rightKeys" : [ "Id" ]
+      }
+    },
+    "EDIT_ATTRIBUTES0" : {
+      "action" : "schema",
+      "sources" : [ "JOIN14" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Accountand.Name",
+          "newProperties" : {
+            "label" : "Main Full Name",
+            "name" : "Accountand.Name"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES2" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES0" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "conference2.conference360__Type__c",
+          "newProperties" : {
+            "label" : "Event Item Type",
+            "name" : "conference2.conference360__Type__c",
+            "typeProperties" : null
+          }
+        } ]
+      }
+    },
+    "JOIN8" : {
+      "action" : "join",
+      "sources" : [ "JOIN0", "DROP_FIELDS2" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Accountand.PhotoUrl", "Accountand.Wealth_Rating.HAM_Wealth_Rating_Number__c", "Accountand.Id", "Accountand.ucinn_ascendv2__External_System_ID__c", "Accountand.Primary_Relationship_Manager.Assigned_User_Name", "Accountand.ucinn_ascendv2__Primary_Contact_Type__c", "Accountand.HAM_Institutional_Suffix__c", "Accountand.Aggregate.SUM_FY00_Collected_Amount_HF" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "conference1.conference360__Bill_To_Contact__c" ],
+        "rightQualifier" : "Accountand",
+        "rightKeys" : [ "Id" ]
+      }
+    },
+    "FORMULA7" : {
+      "action" : "formula",
+      "sources" : [ "EDIT_ATTRIBUTES2" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Main_Registrant",
+          "label" : "Main Registrant",
+          "formulaExpression" : "case \r\nwhen \r\nconference360__Attendee_Full_Name__c is not null\r\nand \"Accountand.Name\" is not null\r\nand conference360__Attendee_Full_Name__c!=\"Accountand.Name\"\r\nthen \"Accountand.Name\"\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "DROP_FIELDS0" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA7" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Accountand.Name" ]
+        }
+      }
+    },
+    "FORMULA12" : {
+      "action" : "formula",
+      "sources" : [ "DROP_FIELDS0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Event_Date_Plus_Event_Name",
+          "label" : "Event Date Plus Event Name",
+          "formulaExpression" : "concat(conference360__Event_Name__c, ' --- ', date_format(conference360__Event_Start_Date__c,'yyyy-MM-dd'))\r\n",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "LOAD_DATASET6" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "conference360__Calendar_Location__c", "conference360__Event_Location__c", "Id", "HAM_Event_Chapter__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "conference360__Event__c",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "conference360__Event__c"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN9" : {
+      "action" : "join",
+      "sources" : [ "JOIN10", "LOAD_DATASET6" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "conference.Id" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "conference360__Event__c" ],
+        "rightQualifier" : "conference",
+        "rightKeys" : [ "Id" ]
+      }
+    },
+    "DROP_FIELDS2" : {
+      "action" : "schema",
+      "sources" : [ "LOAD_DATASET10" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "SELECT",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Id", "Name" ]
+        }
+      }
+    },
+    "JOIN10" : {
+      "action" : "join",
+      "sources" : [ "JOIN8", "EDIT_ATTRIBUTES1" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Contact1.Id" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "conference360__Contact__c" ],
+        "rightQualifier" : "Contact1",
+        "rightKeys" : [ "Id" ]
+      }
+    },
+    "LOAD_DATASET8" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Id", "Name" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "Account",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "Account"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN11" : {
+      "action" : "join",
+      "sources" : [ "LOAD_DATASET9", "LOAD_DATASET8" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Constituent_Employer__c", "Account.Id" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Constituent_Employer__c" ],
+        "rightQualifier" : "Account",
+        "rightKeys" : [ "Id" ]
+      }
+    },
+    "EDIT_ATTRIBUTES1" : {
+      "action" : "schema",
+      "sources" : [ "JOIN11" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Account.Name",
+          "newProperties" : {
+            "label" : "Constituent Employer",
+            "name" : "Constituent_Employer"
+          }
+        } ]
+      }
+    },
+    "LOAD_DATASET9" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "HAM_Preferred_Chapter__c", "HAM_Total_Years_of_Giving__c", "HAM_Consecutive_Years_of_Giving__c", "HAM_Chapel_Bell__c", "Id", "PhotoUrl", "ucinn_ascendv2__Lifetime_Cash__c", "ucinn_ascendv2__Lifetime_Fundraising__c", "ucinn_ascendv2__Wealth_Rating__c", "HAM_Lifetime_Bequest_Intention__c", "Constituent_Employer__c", "HAM_JBA__c", "HAM_Profile_Picture_URL__c", "HAM_Reunion_Year__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "Contact",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "Contact"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "LOAD_DATASET10" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Aggregate.Sum.FY01_Collected_Amount", "Aggregate.SUM_FY00_Collected_Amount_HF", "Aggregate.Sum.FY00_Collected_Amount", "GS1812.Is_GS_1812_1YR", "GS1812.Is_GS_1812_CYR", "Spouse.Name", "Wealth_Rating.HAM_Wealth_Rating_Number__c", "Account.ucinn_ascendv2__Donor_ID__c", "Name", "Id", "ucinn_ascendv2__Donor_ID__c", "ucinn_ascendv2__External_System_ID__c", "Job_Title__c", "Primary_Relationship_Manager.Assigned_User_Name", "ucinn_ascendv2__Primary_Contact_Type__c", "HAM_Institutional_Suffix__c" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Account and Contact Dataset",
+          "name" : "Account_and_Contact_Dataset"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "LOAD_DATASET11" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "conference360__Item_Name__c", "conference360__Type__c", "Id" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "conference360__Event_Item__c",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "conference360__Event_Item__c"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "LOAD_DATASET12" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "conference360__Event__c", "conference360__Answer_Text_Long__c", "conference360__Answer__c", "conference360__Attendee__c", "conference360__Question__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "conference360__Form_Submission_Answer__c",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "conference360__Form_Submission_Answer__c"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN12" : {
+      "action" : "join",
+      "sources" : [ "JOIN9", "LOAD_DATASET11" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "conference2.Id" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "conference360__Event_Item__c" ],
+        "rightQualifier" : "conference2",
+        "rightKeys" : [ "Id" ]
+      }
+    },
+    "FORMULA13" : {
+      "action" : "formula",
+      "sources" : [ "FILTER0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Answer",
+          "label" : "Answer",
+          "formulaExpression" : "case \r\nwhen conference360__Answer__c is not null and conference360__Answer_Text_Long__c is null\r\nthen conference360__Answer__c\r\nwhen conference360__Answer__c is null and conference360__Answer_Text_Long__c is not null\r\nthen conference360__Answer_Text_Long__c\r\nwhen conference360__Answer__c is not null and conference360__Answer_Text_Long__c is not null\r\nthen concat(conference360__Answer__c,', ', conference360__Answer_Text_Long__c)\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "DROP_FIELDS3" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA13" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "conference360__Answer__c", "conference360__Answer_Text_Long__c", "conference360__Event__c" ]
+        }
+      }
+    },
+    "FORMULA14" : {
+      "action" : "formula",
+      "sources" : [ "DROP_FIELDS3" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Direct_my_gift_to",
+          "label" : "Direct my gift to:",
+          "formulaExpression" : "case \r\nwhen contains(conference360__Question__c,'Direct my gift to') \r\nthen Answer\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA15" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA35" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Do_you_or_anyone_in_your_room_have_a_severe_pet_allergy",
+          "label" : "Do you or anyone in your room have a severe pet allergy?",
+          "formulaExpression" : "case \r\nwhen contains(conference360__Question__c,'Do you or anyone in your room have a severe pet allergy')\r\nthen Answer\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA16" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA36" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "IcomingtotheHilltocelebratemypartnerspousesorfriends",
+          "label" : "I'm coming to the Hill to celebrate my partner's, spouse's, or friend's:",
+          "formulaExpression" : "case \r\nwhen contains(conference360__Question__c,'coming to the Hill to celebrate my partner')\r\nthen Answer\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA17" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA37" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "comingtotheHilltocelebratemymypartnerspousesorfriends",
+          "label" : "I'm coming to the Hill to celebrate my/my partner's, spouse's, or friend's: ",
+          "formulaExpression" : "case \r\nwhen contains(conference360__Question__c,'coming to the Hill to celebrate my/my partner') \r\nthen Answer\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA18" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA38" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "ImcomingtotheHilltocelebrate",
+          "label" : "I'm coming to the Hill to celebrate: (select all that apply)",
+          "formulaExpression" : "case \r\nwhen contains(conference360__Question__c,'coming to the Hill to celebrate') \r\nthen Answer\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA19" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA39" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Pleasedescribeanyadditionafoodallergiesordietaryrestrictions",
+          "label" : "Please describe any additional food allergies or dietary restrictions?",
+          "formulaExpression" : "case \r\nwhen contains(conference360__Question__c,'Please describe any additional food allergies') \r\nthen Answer\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA20" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA40" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Anyadditionalinfoyouwouldlikeustoknowregardingyouroncampushousing",
+          "label" : "Any additional info you would like us to know regarding your on-campus housing",
+          "formulaExpression" : "case \r\nwhen contains(conference360__Question__c,'Please include any additional information you would like us') \r\nthen Answer\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA21" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA41" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Pleaseindicateanyfoodallergiesordietaryrestrictions",
+          "label" : "Please indicate any food allergies or dietary restrictions",
+          "formulaExpression" : "case \r\nwhen contains(conference360__Question__c,'Please indicate any food allergies or dietary restrictions') \r\nthen Answer\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA22" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA42" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "PleaseindicateanyroommatesduringyourstayontheHill",
+          "label" : "Please indicate any roommates (including children) during your stay on the Hill",
+          "formulaExpression" : "case \r\nwhen contains(conference360__Question__c,'Please indicate any roommates') \r\nthen Answer\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA23" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA43" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Pleaseindicatethedesignationofyourgift",
+          "label" : "Please indicate the designation of your gift.",
+          "formulaExpression" : "case \r\nwhen contains(conference360__Question__c,'Please indicate the designation of your gift') \r\nthen Answer\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA24" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA44" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Pleaseindicatethenumberofbedsyourwillneedyourfamilyroom",
+          "label" : "Please indicate the number of beds your will need in your family's room",
+          "formulaExpression" : "case \r\nwhen contains(conference360__Question__c,'Please indicate the number of beds your will need') \r\nthen Answer\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA25" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA45" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Pleaselistallfriendswhowillbesharingtheroom",
+          "label" : "Please list all friends who will be sharing the room with you",
+          "formulaExpression" : "case \r\nwhen contains(conference360__Question__c,'Please list all friends who will be sharing the room') \r\nthen Answer\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA26" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA46" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Pleaseprovidetheageofyourchild",
+          "label" : "Please provide the age of your child",
+          "formulaExpression" : "case \r\nwhen contains(conference360__Question__c,'Please provide the age of your child') \r\nthen Answer\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA27" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA47" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "PleaseprovideyouHamiltonKirklandgraduationyear",
+          "label" : "Please provide your Hamilton or Kirkland graduation year",
+          "formulaExpression" : "case \r\nwhen contains(conference360__Question__c,'Please provide your Hamilton or Kirkland graduation year') \r\nthen Answer\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA28" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA48" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Pleaseselectyourdormroompreference",
+          "label" : "Please select your dorm room preference",
+          "formulaExpression" : "case \r\nwhen contains(conference360__Question__c,'Please select your dorm room preference') \r\nthen Answer\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA29" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA49" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Pleaseselectyourdormroomtypepreference",
+          "label" : "Please select your dorm room type preference",
+          "formulaExpression" : "case \r\nwhen contains(conference360__Question__c,'Please select your dorm room type preference') \r\nthen Answer\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA30" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA50" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Whoelsewilbestayinintheroom",
+          "label" : "Who else will be staying in the room",
+          "formulaExpression" : "case \r\nwhen contains(conference360__Question__c,'Who else will be staying in the room') \r\nthen Answer\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA31" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA51" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Wilyoubparticipatinginthe50thReunionoffcampuevents",
+          "label" : "Will you be participating in the 50th Reunion off-campus events on Wednesday",
+          "formulaExpression" : "case \r\nwhen contains(conference360__Question__c,'Will you be participating in the 50th Reunion off') \r\nthen Answer\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA32" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA52" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "WilyoubestayingoncampusduringReunionWeekend",
+          "label" : "Will you be staying on-campus during Reunion Weekend",
+          "formulaExpression" : "case \r\nwhen contains(conference360__Question__c,'Will you be staying on-campus during Reunion Weekend') \r\nthen Answer\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA33" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA53" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "WillyouchildbeparticipatingouFREEchildcare",
+          "label" : "Will you child be participating in our FREE childcare",
+          "formulaExpression" : "case \r\nwhen contains(conference360__Question__c,'Will you child be participating in our FREE childcare') \r\nthen Answer\r\nend\r\n",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA34" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA54" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "WyourchildbeparticipatinginourFREEchildcare",
+          "label" : "Will your child be participating in our FREE childcare",
+          "formulaExpression" : "case \r\nwhen contains(conference360__Question__c,'Will your child be participating in our FREE childcare') \r\nthen Answer\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "DROP_FIELDS4" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA55" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "SELECT",
+          "ignoreMissingFields" : true,
+          "fields" : [ "conference360__Attendee__c", "Direct_my_gift_to_formula", "Do_you_or_anyone_in_your_room_have_a_severe_pet_allergy_formula", "comingtotheHilltocelebratemymypartnerspousesorfriends_formula", "IcomingtotheHilltocelebratemypartnerspousesorfriends_formula", "ImcomingtotheHilltocelebrate_formula", "Pleasedescribeanyadditionafoodallergiesordietaryrestrictions_formula", "Anyadditionalinfoyouwouldlikeustoknowregardingyouroncampushousing_formula", "Pleaseindicateanyfoodallergiesordietaryrestrictions_formula", "PleaseindicateanyroommatesduringyourstayontheHill_formula", "Pleaseindicatethedesignationofyourgift_formula", "Pleaseindicatethenumberofbedsyourwillneedyourfamilyroom_formula", "Pleaselistallfriendswhowillbesharingtheroom_formula", "Pleaseprovidetheageofyourchild_formula", "PleaseprovideyouHamiltonKirklandgraduationyear_formula", "Pleaseselectyourdormroompreference_formula", "Pleaseselectyourdormroomtypepreference_formula", "Whoelsewilbestayinintheroom_formula", "Wilyoubparticipatinginthe50thReunionoffcampuevents_formula", "WilyoubestayingoncampusduringReunionWeekend_formula", "WillyouchildbeparticipatingouFREEchildcare_formula", "WyourchildbeparticipatinginourFREEchildcare_formula" ]
+        }
+      }
+    },
+    "FORMULA35" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA14" ],
+      "parameters" : {
+        "partitionBy" : [ "conference360__Attendee__c" ],
+        "orderBy" : [ {
+          "fieldName" : "Direct_my_gift_to",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Direct_my_gift_to_formula",
+          "label" : "Direct my gift to: Formula",
+          "formulaExpression" : "last_value(Direct_my_gift_to)",
+          "precision" : 10,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA36" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA15" ],
+      "parameters" : {
+        "partitionBy" : [ "conference360__Attendee__c" ],
+        "orderBy" : [ {
+          "fieldName" : "Do_you_or_anyone_in_your_room_have_a_severe_pet_allergy",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Do_you_or_anyone_in_your_room_have_a_severe_pet_allergy_formula",
+          "label" : "Do you or anyone in your room have a severe pet allergy? Formula",
+          "formulaExpression" : "last_value(Do_you_or_anyone_in_your_room_have_a_severe_pet_allergy)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA37" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA16" ],
+      "parameters" : {
+        "partitionBy" : [ "conference360__Attendee__c" ],
+        "orderBy" : [ {
+          "fieldName" : "IcomingtotheHilltocelebratemypartnerspousesorfriends",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "IcomingtotheHilltocelebratemypartnerspousesorfriends_formula",
+          "label" : "I'm coming to the Hill to celebrate my partner's, spouse's, or friend's: Formula",
+          "formulaExpression" : "last_value(IcomingtotheHilltocelebratemypartnerspousesorfriends)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA38" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA17" ],
+      "parameters" : {
+        "partitionBy" : [ "conference360__Attendee__c" ],
+        "orderBy" : [ {
+          "fieldName" : "comingtotheHilltocelebratemymypartnerspousesorfriends",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "comingtotheHilltocelebratemymypartnerspousesorfriends_formula",
+          "label" : "I'm coming to the Hill to celebrate my/my partner's, spouse's, or friend's:  Formula",
+          "formulaExpression" : "last_value(comingtotheHilltocelebratemymypartnerspousesorfriends)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA39" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA18" ],
+      "parameters" : {
+        "partitionBy" : [ "conference360__Attendee__c" ],
+        "orderBy" : [ {
+          "fieldName" : "ImcomingtotheHilltocelebrate",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "ImcomingtotheHilltocelebrate_formula",
+          "label" : "I'm coming to the Hill to celebrate: (select all that apply) Formula",
+          "formulaExpression" : "last_value(ImcomingtotheHilltocelebrate)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA40" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA19" ],
+      "parameters" : {
+        "partitionBy" : [ "conference360__Attendee__c" ],
+        "orderBy" : [ {
+          "fieldName" : "Pleasedescribeanyadditionafoodallergiesordietaryrestrictions",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Pleasedescribeanyadditionafoodallergiesordietaryrestrictions_formula",
+          "label" : "Please describe any additional food allergies or dietary restrictions? Formula",
+          "formulaExpression" : "last_value(Pleasedescribeanyadditionafoodallergiesordietaryrestrictions)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA41" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA20" ],
+      "parameters" : {
+        "partitionBy" : [ "conference360__Attendee__c" ],
+        "orderBy" : [ {
+          "fieldName" : "Anyadditionalinfoyouwouldlikeustoknowregardingyouroncampushousing",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Anyadditionalinfoyouwouldlikeustoknowregardingyouroncampushousing_formula",
+          "label" : "Any additional info you would like us to know regarding your on-campus housing Formula",
+          "formulaExpression" : "last_value(Anyadditionalinfoyouwouldlikeustoknowregardingyouroncampushousing)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA42" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA21" ],
+      "parameters" : {
+        "partitionBy" : [ "conference360__Attendee__c" ],
+        "orderBy" : [ {
+          "fieldName" : "Pleaseindicateanyfoodallergiesordietaryrestrictions",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Pleaseindicateanyfoodallergiesordietaryrestrictions_formula",
+          "label" : "Please indicate any food allergies or dietary restrictions Formula",
+          "formulaExpression" : "last_value(Pleaseindicateanyfoodallergiesordietaryrestrictions)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA43" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA22" ],
+      "parameters" : {
+        "partitionBy" : [ "conference360__Attendee__c" ],
+        "orderBy" : [ {
+          "fieldName" : "PleaseindicateanyroommatesduringyourstayontheHill",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "PleaseindicateanyroommatesduringyourstayontheHill_formula",
+          "label" : "Please indicate any roommates (including children) during your stay on the Hill Formula",
+          "formulaExpression" : "last_value(PleaseindicateanyroommatesduringyourstayontheHill)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA44" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA23" ],
+      "parameters" : {
+        "partitionBy" : [ "conference360__Attendee__c" ],
+        "orderBy" : [ {
+          "fieldName" : "Pleaseindicatethedesignationofyourgift",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Pleaseindicatethedesignationofyourgift_formula",
+          "label" : "Please indicate the designation of your gift. Formula",
+          "formulaExpression" : "last_value(Pleaseindicatethedesignationofyourgift)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA45" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA24" ],
+      "parameters" : {
+        "partitionBy" : [ "conference360__Attendee__c" ],
+        "orderBy" : [ {
+          "fieldName" : "Pleaseindicatethenumberofbedsyourwillneedyourfamilyroom",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Pleaseindicatethenumberofbedsyourwillneedyourfamilyroom_formula",
+          "label" : "Please indicate the number of beds your will need in your family's room Formula",
+          "formulaExpression" : "last_value(Pleaseindicatethenumberofbedsyourwillneedyourfamilyroom)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA46" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA25" ],
+      "parameters" : {
+        "partitionBy" : [ "conference360__Attendee__c" ],
+        "orderBy" : [ {
+          "fieldName" : "Pleaselistallfriendswhowillbesharingtheroom",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Pleaselistallfriendswhowillbesharingtheroom_formula",
+          "label" : "Please list all friends who will be sharing the room with you Formula",
+          "formulaExpression" : "last_value(Pleaselistallfriendswhowillbesharingtheroom)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA47" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA26" ],
+      "parameters" : {
+        "partitionBy" : [ "conference360__Attendee__c" ],
+        "orderBy" : [ {
+          "fieldName" : "Pleaseprovidetheageofyourchild",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Pleaseprovidetheageofyourchild_formula",
+          "label" : "Please provide the age of your child Formula",
+          "formulaExpression" : "last_value(Pleaseprovidetheageofyourchild)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA48" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA27" ],
+      "parameters" : {
+        "partitionBy" : [ "conference360__Attendee__c" ],
+        "orderBy" : [ {
+          "fieldName" : "PleaseprovideyouHamiltonKirklandgraduationyear",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "PleaseprovideyouHamiltonKirklandgraduationyear_formula",
+          "label" : "Please provide your Hamilton or Kirkland graduation year Formula",
+          "formulaExpression" : "last_value(PleaseprovideyouHamiltonKirklandgraduationyear)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA49" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA28" ],
+      "parameters" : {
+        "partitionBy" : [ "conference360__Attendee__c" ],
+        "orderBy" : [ {
+          "fieldName" : "Pleaseselectyourdormroompreference",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Pleaseselectyourdormroompreference_formula",
+          "label" : "Please select your dorm room preference Formula",
+          "formulaExpression" : "last_value(Pleaseselectyourdormroompreference)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA50" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA29" ],
+      "parameters" : {
+        "partitionBy" : [ "conference360__Attendee__c" ],
+        "orderBy" : [ {
+          "fieldName" : "Pleaseselectyourdormroomtypepreference",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Pleaseselectyourdormroomtypepreference_formula",
+          "label" : "Please select your dorm room type preference Formula",
+          "formulaExpression" : "last_value(Pleaseselectyourdormroomtypepreference)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA51" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA30" ],
+      "parameters" : {
+        "partitionBy" : [ "conference360__Attendee__c" ],
+        "orderBy" : [ {
+          "fieldName" : "Whoelsewilbestayinintheroom",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Whoelsewilbestayinintheroom_formula",
+          "label" : "Who else will be staying in the room Formula",
+          "formulaExpression" : "last_value(Whoelsewilbestayinintheroom)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA52" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA31" ],
+      "parameters" : {
+        "partitionBy" : [ "conference360__Attendee__c" ],
+        "orderBy" : [ {
+          "fieldName" : "Wilyoubparticipatinginthe50thReunionoffcampuevents",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Wilyoubparticipatinginthe50thReunionoffcampuevents_formula",
+          "label" : "Will you be participating in the 50th Reunion off-campus events on Wednesday Formula",
+          "formulaExpression" : "last_value(Wilyoubparticipatinginthe50thReunionoffcampuevents)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA53" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA32" ],
+      "parameters" : {
+        "partitionBy" : [ "conference360__Attendee__c" ],
+        "orderBy" : [ {
+          "fieldName" : "WilyoubestayingoncampusduringReunionWeekend",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "WilyoubestayingoncampusduringReunionWeekend_formula",
+          "label" : "Will you be staying on-campus during Reunion Weekend Formula",
+          "formulaExpression" : "last_value(WilyoubestayingoncampusduringReunionWeekend)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA54" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA33" ],
+      "parameters" : {
+        "partitionBy" : [ "conference360__Attendee__c" ],
+        "orderBy" : [ {
+          "fieldName" : "WillyouchildbeparticipatingouFREEchildcare",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "WillyouchildbeparticipatingouFREEchildcare_formula",
+          "label" : "Will you child be participating in our FREE childcare Formula",
+          "formulaExpression" : "last_value(WillyouchildbeparticipatingouFREEchildcare)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA55" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA34" ],
+      "parameters" : {
+        "partitionBy" : [ "conference360__Attendee__c" ],
+        "orderBy" : [ {
+          "fieldName" : "WyourchildbeparticipatinginourFREEchildcare",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "WyourchildbeparticipatinginourFREEchildcare_formula",
+          "label" : "Will your child be participating in our FREE childcare Formula",
+          "formulaExpression" : "last_value(WyourchildbeparticipatinginourFREEchildcare)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FILTER0" : {
+      "action" : "filter",
+      "sources" : [ "LOAD_DATASET12" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "conference360__Event__c",
+          "operator" : "EQUAL",
+          "operands" : [ "Reunions '25" ]
+        } ]
+      }
+    },
+    "EXTRACT0" : {
+      "action" : "extractGrains",
+      "sources" : [ "DROP_FIELDS4" ],
+      "parameters" : {
+        "grainExtractions" : [ ]
+      }
+    },
+    "AGGREGATE1" : {
+      "action" : "aggregate",
+      "sources" : [ "EXTRACT0" ],
+      "parameters" : {
+        "aggregations" : [ {
+          "action" : "COUNT",
+          "name" : "COUNT_Rows",
+          "label" : "Rows"
+        } ],
+        "groupings" : [ "conference360__Attendee__c" ],
+        "pivots" : [ ],
+        "nodeType" : "STANDARD"
+      }
+    },
+    "JOIN13" : {
+      "action" : "join",
+      "sources" : [ "AGGREGATE1", "DROP_FIELDS4" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "COUNT_Rows", "EnrichFiel.conference360__Attendee__c" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "conference360__Attendee__c" ],
+        "rightQualifier" : "EnrichFiel",
+        "rightKeys" : [ "conference360__Attendee__c" ]
+      }
+    },
+    "JOIN14" : {
+      "action" : "join",
+      "sources" : [ "JOIN12", "JOIN13" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Form.conference360__Attendee__c" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Id" ],
+        "rightQualifier" : "Form",
+        "rightKeys" : [ "conference360__Attendee__c" ]
+      }
+    }
+  },
+  "ui" : {
+    "nodes" : {
+      "LOAD_DATASET0" : {
+        "label" : "conference360__Attendee__c",
+        "type" : "LOAD_DATASET",
+        "top" : 112.5,
+        "left" : 252.10000000000002,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN0" : {
+        "label" : "Lookup Contact to Attendee",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 112.5,
+        "left" : 672.1
+      },
+      "OUTPUT0" : {
+        "label" : "Output 0",
+        "type" : "OUTPUT",
+        "top" : 112.4,
+        "left" : 1932.4
+      },
+      "TRANSFORM0" : {
+        "label" : "Date Format",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 112.5,
+        "left" : 392.1,
+        "graph" : {
+          "FORMULA1" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Registration Date"
+          },
+          "FORMULA9" : {
+            "parameters" : {
+              "type" : "DATE_NOW_UI"
+            },
+            "label" : "Updated Date"
+          },
+          "FORMULA10" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Updated Date"
+          },
+          "DROP_FIELDS1" : {
+            "label" : "Drop Columns"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA1",
+          "target" : "FORMULA9"
+        }, {
+          "source" : "FORMULA9",
+          "target" : "FORMULA10"
+        }, {
+          "source" : "FORMULA10",
+          "target" : "DROP_FIELDS1"
+        } ]
+      },
+      "LOAD_DATASET3" : {
+        "label" : "conference360__Attendee_Group__c",
+        "type" : "LOAD_DATASET",
+        "top" : 252.5,
+        "left" : 532.1,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN2" : {
+        "label" : "Lookup Attendee Group to Attendee",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 112.5,
+        "left" : 532.1
+      },
+      "TRANSFORM1" : {
+        "label" : "Rename",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 112.4,
+        "left" : 1652.4,
+        "graph" : {
+          "EDIT_ATTRIBUTES0" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES2" : {
+            "label" : "Edit Attributes"
+          }
+        },
+        "connectors" : [ {
+          "source" : "EDIT_ATTRIBUTES0",
+          "target" : "EDIT_ATTRIBUTES2"
+        } ]
+      },
+      "JOIN8" : {
+        "label" : "Lookup Main Registrant Full Name to Attendee",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 112.5,
+        "left" : 812.1
+      },
+      "TRANSFORM5" : {
+        "label" : "Enrich Fields",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 112.4,
+        "left" : 1792.4,
+        "graph" : {
+          "FORMULA7" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Main Registrant"
+          },
+          "DROP_FIELDS0" : {
+            "label" : "Drop Columns"
+          },
+          "FORMULA12" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Event Date Plus Event Name"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA7",
+          "target" : "DROP_FIELDS0"
+        }, {
+          "source" : "DROP_FIELDS0",
+          "target" : "FORMULA12"
+        } ]
+      },
+      "LOAD_DATASET6" : {
+        "label" : "conference360__Event__c",
+        "type" : "LOAD_DATASET",
+        "top" : 252,
+        "left" : 1232,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN9" : {
+        "label" : "Lookup Event Chapter to Attendee",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 112.5,
+        "left" : 1232.1
+      },
+      "TRANSFORM6" : {
+        "label" : "Transform 6",
+        "type" : "TRANSFORM",
+        "top" : 252.5,
+        "left" : 812.1,
+        "graph" : {
+          "DROP_FIELDS2" : {
+            "label" : "Keep Columns"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "JOIN10" : {
+        "label" : "Lookup Other info to Attendee",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 112.5,
+        "left" : 952.1
+      },
+      "LOAD_DATASET8" : {
+        "label" : "Account",
+        "type" : "LOAD_DATASET",
+        "top" : 392.5,
+        "left" : 1092.1,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN11" : {
+        "label" : "Lookup Employer Name",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 392.5,
+        "left" : 952.1
+      },
+      "TRANSFORM7" : {
+        "label" : "Rename",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 252.5,
+        "left" : 952.1,
+        "graph" : {
+          "EDIT_ATTRIBUTES1" : {
+            "label" : "Edit Attributes"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "LOAD_DATASET9" : {
+        "label" : "Contact",
+        "type" : "LOAD_DATASET",
+        "top" : 532,
+        "left" : 952,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "LOAD_DATASET10" : {
+        "label" : "Account and Contact Dataset",
+        "type" : "LOAD_DATASET",
+        "top" : 252.5,
+        "left" : 672.1,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "LOAD_DATASET11" : {
+        "label" : "conference360__Event_Item__c",
+        "type" : "LOAD_DATASET",
+        "top" : 252.10000000000002,
+        "left" : 1372,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "LOAD_DATASET12" : {
+        "label" : "conference360__Form_Submission_Answer__c",
+        "type" : "LOAD_DATASET",
+        "top" : 672,
+        "left" : 951.9,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN12" : {
+        "label" : "Lookup Event Item to Attendee",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 112.30000000000001,
+        "left" : 1372
+      },
+      "TRANSFORM8" : {
+        "label" : "Enrich Fields",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 672.3,
+        "left" : 1231.9,
+        "graph" : {
+          "FORMULA13" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Answer"
+          },
+          "DROP_FIELDS3" : {
+            "label" : "Drop Columns"
+          },
+          "FORMULA14" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Q1"
+          },
+          "FORMULA15" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Q2"
+          },
+          "FORMULA16" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Q3"
+          },
+          "FORMULA17" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Q4"
+          },
+          "FORMULA18" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Q5"
+          },
+          "FORMULA19" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Q6"
+          },
+          "FORMULA20" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Q7"
+          },
+          "FORMULA21" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Q8"
+          },
+          "FORMULA22" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Q9"
+          },
+          "FORMULA23" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Q10"
+          },
+          "FORMULA24" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Q11"
+          },
+          "FORMULA25" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Q12"
+          },
+          "FORMULA26" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Q13"
+          },
+          "FORMULA27" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Q14"
+          },
+          "FORMULA28" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Q15"
+          },
+          "FORMULA29" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Q16"
+          },
+          "FORMULA30" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Q17"
+          },
+          "FORMULA31" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Q18"
+          },
+          "FORMULA32" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Q19"
+          },
+          "FORMULA33" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Q20"
+          },
+          "FORMULA34" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Q21"
+          },
+          "DROP_FIELDS4" : {
+            "label" : "Drop Columns"
+          },
+          "FORMULA35" : {
+            "label" : "Q1+"
+          },
+          "FORMULA36" : {
+            "label" : "Q2+"
+          },
+          "FORMULA37" : {
+            "label" : "Q3+"
+          },
+          "FORMULA38" : {
+            "label" : "Q4+"
+          },
+          "FORMULA39" : {
+            "label" : "Q5+"
+          },
+          "FORMULA40" : {
+            "label" : "Q6+"
+          },
+          "FORMULA41" : {
+            "label" : "Q7+"
+          },
+          "FORMULA42" : {
+            "label" : "Q8+"
+          },
+          "FORMULA43" : {
+            "label" : "Q9+"
+          },
+          "FORMULA44" : {
+            "label" : "Q10+"
+          },
+          "FORMULA45" : {
+            "label" : "Q11+"
+          },
+          "FORMULA46" : {
+            "label" : "Q12+"
+          },
+          "FORMULA47" : {
+            "label" : "Q13+"
+          },
+          "FORMULA48" : {
+            "label" : "Q14+"
+          },
+          "FORMULA49" : {
+            "label" : "Q15+"
+          },
+          "FORMULA50" : {
+            "label" : "Q16+"
+          },
+          "FORMULA51" : {
+            "label" : "Q17+"
+          },
+          "FORMULA52" : {
+            "label" : "Q18+"
+          },
+          "FORMULA53" : {
+            "label" : "Q19+"
+          },
+          "FORMULA54" : {
+            "label" : "Q20+"
+          },
+          "FORMULA55" : {
+            "label" : "Q21+"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA13",
+          "target" : "DROP_FIELDS3"
+        }, {
+          "source" : "DROP_FIELDS3",
+          "target" : "FORMULA14"
+        }, {
+          "source" : "FORMULA35",
+          "target" : "FORMULA15"
+        }, {
+          "source" : "FORMULA14",
+          "target" : "FORMULA35"
+        }, {
+          "source" : "FORMULA36",
+          "target" : "FORMULA16"
+        }, {
+          "source" : "FORMULA15",
+          "target" : "FORMULA36"
+        }, {
+          "source" : "FORMULA37",
+          "target" : "FORMULA17"
+        }, {
+          "source" : "FORMULA16",
+          "target" : "FORMULA37"
+        }, {
+          "source" : "FORMULA38",
+          "target" : "FORMULA18"
+        }, {
+          "source" : "FORMULA17",
+          "target" : "FORMULA38"
+        }, {
+          "source" : "FORMULA39",
+          "target" : "FORMULA19"
+        }, {
+          "source" : "FORMULA18",
+          "target" : "FORMULA39"
+        }, {
+          "source" : "FORMULA40",
+          "target" : "FORMULA20"
+        }, {
+          "source" : "FORMULA19",
+          "target" : "FORMULA40"
+        }, {
+          "source" : "FORMULA41",
+          "target" : "FORMULA21"
+        }, {
+          "source" : "FORMULA20",
+          "target" : "FORMULA41"
+        }, {
+          "source" : "FORMULA42",
+          "target" : "FORMULA22"
+        }, {
+          "source" : "FORMULA21",
+          "target" : "FORMULA42"
+        }, {
+          "source" : "FORMULA43",
+          "target" : "FORMULA23"
+        }, {
+          "source" : "FORMULA22",
+          "target" : "FORMULA43"
+        }, {
+          "source" : "FORMULA44",
+          "target" : "FORMULA24"
+        }, {
+          "source" : "FORMULA23",
+          "target" : "FORMULA44"
+        }, {
+          "source" : "FORMULA45",
+          "target" : "FORMULA25"
+        }, {
+          "source" : "FORMULA24",
+          "target" : "FORMULA45"
+        }, {
+          "source" : "FORMULA46",
+          "target" : "FORMULA26"
+        }, {
+          "source" : "FORMULA25",
+          "target" : "FORMULA46"
+        }, {
+          "source" : "FORMULA47",
+          "target" : "FORMULA27"
+        }, {
+          "source" : "FORMULA26",
+          "target" : "FORMULA47"
+        }, {
+          "source" : "FORMULA48",
+          "target" : "FORMULA28"
+        }, {
+          "source" : "FORMULA27",
+          "target" : "FORMULA48"
+        }, {
+          "source" : "FORMULA49",
+          "target" : "FORMULA29"
+        }, {
+          "source" : "FORMULA28",
+          "target" : "FORMULA49"
+        }, {
+          "source" : "FORMULA50",
+          "target" : "FORMULA30"
+        }, {
+          "source" : "FORMULA29",
+          "target" : "FORMULA50"
+        }, {
+          "source" : "FORMULA51",
+          "target" : "FORMULA31"
+        }, {
+          "source" : "FORMULA30",
+          "target" : "FORMULA51"
+        }, {
+          "source" : "FORMULA52",
+          "target" : "FORMULA32"
+        }, {
+          "source" : "FORMULA31",
+          "target" : "FORMULA52"
+        }, {
+          "source" : "FORMULA53",
+          "target" : "FORMULA33"
+        }, {
+          "source" : "FORMULA32",
+          "target" : "FORMULA53"
+        }, {
+          "source" : "FORMULA54",
+          "target" : "FORMULA34"
+        }, {
+          "source" : "FORMULA33",
+          "target" : "FORMULA54"
+        }, {
+          "source" : "FORMULA55",
+          "target" : "DROP_FIELDS4"
+        }, {
+          "source" : "FORMULA34",
+          "target" : "FORMULA55"
+        } ]
+      },
+      "FILTER0" : {
+        "label" : "Filter Event",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 672.3,
+        "left" : 1091.9
+      },
+      "AGGREGATE0" : {
+        "label" : "Aggregate 0",
+        "type" : "AGGREGATE",
+        "top" : 672.3,
+        "left" : 1371.9,
+        "graph" : {
+          "EXTRACT0" : null,
+          "AGGREGATE1" : null
+        },
+        "connectors" : [ {
+          "source" : "EXTRACT0",
+          "target" : "AGGREGATE1"
+        } ]
+      },
+      "JOIN13" : {
+        "label" : "Join 13",
+        "type" : "JOIN",
+        "top" : 672.3,
+        "left" : 1511.9
+      },
+      "JOIN14" : {
+        "label" : "Lookup QAs",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 112,
+        "left" : 1512
+      }
+    },
+    "connectors" : [ {
+      "source" : "LOAD_DATASET9",
+      "target" : "JOIN11"
+    }, {
+      "source" : "TRANSFORM0",
+      "target" : "JOIN2"
+    }, {
+      "source" : "JOIN2",
+      "target" : "JOIN0"
+    }, {
+      "source" : "LOAD_DATASET0",
+      "target" : "TRANSFORM0"
+    }, {
+      "source" : "TRANSFORM5",
+      "target" : "OUTPUT0"
+    }, {
+      "source" : "LOAD_DATASET3",
+      "target" : "JOIN2"
+    }, {
+      "source" : "JOIN0",
+      "target" : "JOIN8"
+    }, {
+      "source" : "TRANSFORM1",
+      "target" : "TRANSFORM5"
+    }, {
+      "source" : "JOIN10",
+      "target" : "JOIN9"
+    }, {
+      "source" : "LOAD_DATASET6",
+      "target" : "JOIN9"
+    }, {
+      "source" : "TRANSFORM6",
+      "target" : "JOIN8"
+    }, {
+      "source" : "JOIN8",
+      "target" : "JOIN10"
+    }, {
+      "source" : "TRANSFORM7",
+      "target" : "JOIN10"
+    }, {
+      "source" : "LOAD_DATASET8",
+      "target" : "JOIN11"
+    }, {
+      "source" : "JOIN11",
+      "target" : "TRANSFORM7"
+    }, {
+      "source" : "LOAD_DATASET10",
+      "target" : "JOIN0"
+    }, {
+      "source" : "LOAD_DATASET10",
+      "target" : "TRANSFORM6"
+    }, {
+      "source" : "JOIN9",
+      "target" : "JOIN12"
+    }, {
+      "source" : "LOAD_DATASET11",
+      "target" : "JOIN12"
+    }, {
+      "source" : "FILTER0",
+      "target" : "TRANSFORM8"
+    }, {
+      "source" : "JOIN14",
+      "target" : "TRANSFORM1"
+    }, {
+      "source" : "LOAD_DATASET12",
+      "target" : "FILTER0"
+    }, {
+      "source" : "TRANSFORM8",
+      "target" : "AGGREGATE0"
+    }, {
+      "source" : "AGGREGATE0",
+      "target" : "JOIN13"
+    }, {
+      "source" : "TRANSFORM8",
+      "target" : "JOIN13"
+    }, {
+      "source" : "JOIN12",
+      "target" : "JOIN14"
+    }, {
+      "source" : "JOIN13",
+      "target" : "JOIN14"
+    } ],
+    "hiddenColumns" : [ ]
+  },
+  "runMode" : "full"
+}

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Workflow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fieldUpdates>
+        <fullName>ucinn_ascendv2__Update_Account_Record_Type</fullName>
+        <field>RecordTypeId</field>
+        <lookupValue>ucinn_ascendv2__Corporations_and_Organizations</lookupValue>
+        <lookupValueType>RecordType</lookupValueType>
+        <name>Update Account Record Type</name>
+        <notifyAssignee>false</notifyAssignee>
+        <operation>LookupValue</operation>
+        <protected>false</protected>
+        <reevaluateOnChange>false</reevaluateOnChange>
+    </fieldUpdates>
+    <fieldUpdates>
+        <fullName>ucinn_ascendv2__Update_Stage_of_Readiness_LastModifiedBy</fullName>
+        <description>Update Stage of Readiness LastModifiedBy on Account</description>
+        <field>ucinn_ascendv2__Stage_of_Readiness_LastModifiedById__c</field>
+        <formula>$User.CommunityNickname</formula>
+        <name>Update Stage of Readiness LastModifiedBy</name>
+        <notifyAssignee>false</notifyAssignee>
+        <operation>Formula</operation>
+        <protected>false</protected>
+        <reevaluateOnChange>false</reevaluateOnChange>
+    </fieldUpdates>
+    <fieldUpdates>
+        <fullName>ucinn_ascendv2__Update_Stage_of_Readiness_with_Today</fullName>
+        <field>ucinn_ascendv2__Stage_of_Readiness_LastModifiedDate__c</field>
+        <formula>NOW()</formula>
+        <name>Update Stage of Readiness with Today</name>
+        <notifyAssignee>false</notifyAssignee>
+        <operation>Formula</operation>
+        <protected>false</protected>
+        <reevaluateOnChange>false</reevaluateOnChange>
+    </fieldUpdates>
+    <rules>
+        <fullName>ucinn_ascendv2__Account Change Record Type</fullName>
+        <actions>
+            <name>ucinn_ascendv2__Update_Account_Record_Type</name>
+            <type>FieldUpdate</type>
+        </actions>
+        <active>true</active>
+        <formula>AND( $Setup.ucinn_ascendv2__Bypass_Settings__c.ucinn_ascendv2__Bypass_Workflows__c  &lt;&gt; TRUE,  RecordType.DeveloperName = &quot;New_Corporations_and_Organizations&quot;)</formula>
+        <triggerType>onAllChanges</triggerType>
+    </rules>
+    <rules>
+        <fullName>ucinn_ascendv2__Stage of Readiness has Changed</fullName>
+        <actions>
+            <name>ucinn_ascendv2__Update_Stage_of_Readiness_LastModifiedBy</name>
+            <type>FieldUpdate</type>
+        </actions>
+        <actions>
+            <name>ucinn_ascendv2__Update_Stage_of_Readiness_with_Today</name>
+            <type>FieldUpdate</type>
+        </actions>
+        <active>true</active>
+        <description>Stage of Readiness has Changed for Account</description>
+        <formula>AND( $Setup.ucinn_ascendv2__Bypass_Settings__c.ucinn_ascendv2__Bypass_Workflows__c  &lt;&gt; TRUE , ISCHANGED( ucinn_ascendv2__Stage_of_Readiness__c ) )</formula>
+        <triggerType>onAllChanges</triggerType>
+    </rules>
+</Workflow>

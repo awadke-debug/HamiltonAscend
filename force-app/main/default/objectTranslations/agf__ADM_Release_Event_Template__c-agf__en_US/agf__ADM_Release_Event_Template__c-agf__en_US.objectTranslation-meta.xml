@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObjectTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <caseValues>
+        <plural>false</plural>
+        <value>Release Event Template</value>
+    </caseValues>
+    <caseValues>
+        <plural>true</plural>
+        <value>Release Event Templates</value>
+    </caseValues>
+    <startsWith>Consonant</startsWith>
+    <validationRules>
+        <errorMessage><!-- Application must be specified. --></errorMessage>
+        <name>agf__Application_required</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Day Offset cannot be blank when Start Time is set. Either set Day Offset to zero (if event is for the same day) or another value. --></errorMessage>
+        <name>agf__Day_Offset_required_with_Start_Time</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Event Duration cannot be less than zero. --></errorMessage>
+        <name>agf__Event_Duration_must_be_nonnegative</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- When Start Time is being used, Hour Offset cannot be specified. Either clear Start Time or set  Hours Offset  to blank. --></errorMessage>
+        <name>agf__No_Hour_Offset_when_using_Start_Time</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- When Start Time is being used, Minute Offset cannot be specified. Either clear Start Time and set Day of Week to blank or set  Minute Offset  to blank. --></errorMessage>
+        <name>agf__No_Minute_Offset_when_using_Start_Time</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- When an offset is set for either hours or minutes, Start Time cannot be specified. Either clear both Hours Offset and Minutes Offset or set Start Time to blank. --></errorMessage>
+        <name>agf__No_Start_Time_when_using_offset</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- An Offset must be specified. If the Release Event is to occur at the Release&apos;s Schedule Release Date, set the Day Offset field to 0 (zero). --></errorMessage>
+        <name>agf__Offset_must_be_specified</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Either Hours/Minutes Offset must be specified or Start Time must be specified. --></errorMessage>
+        <name>agf__Offset_or_StartTime_must_be_specified</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Time value must be formatted HH:MM AM or HH:MM PM (based on as 12 hour clock). --></errorMessage>
+        <name>agf__Start_Time_must_be_in_12h_time_format</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Time value must be formatted HH:MM (based on a 24 hour clock), or HH:MM AM or HH:MM PM (based on as 12 hour clock). --></errorMessage>
+        <name>agf__Start_Time_must_be_in_time_format</name>
+    </validationRules>
+    <webLinks>
+        <label><!-- Regular_Expressions --></label>
+        <name>agf__Regular_Expressions</name>
+    </webLinks>
+</CustomObjectTranslation>

@@ -1,0 +1,45 @@
+<template>
+    <!-- Search and Filters -->
+    <template if:true={isLoading}>
+        <div class="slds-is-relative slds-align_absolute-center" style="height: 15rem">
+            <lightning-spinner alternative-text="Loading" size="medium" variant="brand"></lightning-spinner>
+        </div>
+    </template>
+    <template if:false={isLoading}>
+        <div class="search-filter">
+            <div class="search-box">
+                <input type="text" class="search-input" onchange={handleSearchChange}
+                    placeholder={label.alumnisearchplaceholder} />
+                <button class="search-button" onclick={handleSearchClick}>
+                    <span><img src={images.searchImage} alt="" width="20px" height="20px"></img></span>
+                    <span class="label desktop-only">{label.search}</span>
+                </button>
+                <button class={bookmarkBtnCssMobile} title={label.save} onclick={handleBookmarkClick}>
+                    <lightning-icon icon-name="utility:bookmark" size="small" alternative-text="Save"></lightning-icon>
+                </button>
+            </div>
+            <div class="filters">
+                <template for:each={filterOptions} for:item="filter">
+                    <div key={filter.placeholder} class="filter-box">
+                        <select class="filter-select" onchange={handleFilterChange}
+                            data-placeholder={filter.placeholder} value={filter.selectedValue}>
+                            <option value="">{filter.placeholder}</option>
+                            <template for:each={filter.values} for:item="option">
+                                <option key={option} value={option}>{option}</option>
+                            </template>
+                        </select>
+                        <lightning-icon icon-name="utility:down" size="xx-small" alternative-text="Dropdown"
+                            class="dropdown-icon"></lightning-icon>
+                    </div>
+                </template>
+                <button class={bookmarkBtnCssDesktop} title={label.save} onclick={handleBookmarkClick}>
+                    <lightning-icon icon-name="utility:bookmark" size="small" alternative-text="Save"></lightning-icon>
+                </button>
+                <button class="reset-btn" title={label.resetFilters} onclick={handleResetFilters}>
+                    <lightning-icon icon-name="utility:change_record_type" size="small"
+                        alternative-text="Reset Filters"></lightning-icon>
+                </button>
+            </div>
+        </div>
+    </template>
+</template>

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObjectTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <caseValues>
+        <plural>false</plural>
+        <value>eRelease Request</value>
+    </caseValues>
+    <caseValues>
+        <plural>true</plural>
+        <value>eRelease Requests</value>
+    </caseValues>
+    <layouts>
+        <layout>eRelease Request Layout</layout>
+        <sections>
+            <label><!-- Approval and Checkin --></label>
+            <section>Approval and Checkin</section>
+        </sections>
+        <sections>
+            <label><!-- Defect Details --></label>
+            <section>Defect Details</section>
+        </sections>
+        <sections>
+            <label><!-- Deployment --></label>
+            <section>Deployment</section>
+        </sections>
+        <sections>
+            <label><!-- eRelease Justification --></label>
+            <section>eRelease Justification</section>
+        </sections>
+        <sections>
+            <label><!-- eRelease Process Information (Links) --></label>
+            <section>eRelease Process Information (Links)</section>
+        </sections>
+    </layouts>
+    <startsWith>Vowel</startsWith>
+    <validationRules>
+        <errorMessage><!-- You must remove the default text in the Checkin Details field and specify the checkin location and scheduled build. --></errorMessage>
+        <name>agf__Checkin_Location_Must_Be_Specified</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Verification instances must be specified when &quot;No&quot; selected for the &quot;Default Verification Instance?&quot; field. --></errorMessage>
+        <name>agf__Instances_must_be_specified</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Release must be specified when eRelease Status is &quot;Released&quot; --></errorMessage>
+        <name>agf__Release_required_when_ERR_is_Released</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- You must specify target instances for this fix as a comma-separated list when not all instances are to receive this fix. --></errorMessage>
+        <name>agf__Specify_Target_Instances</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- eRelease Status must be &apos;Released&apos; or &apos;Approved&apos; when Released In is specified. Please clear the Released In field or set the eRelease Status to &apos;Released&apos; or &apos;Approved&apos;. --></errorMessage>
+        <name>agf__Status_must_be_Released_when_Released_In</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- You must specify testing details if &quot;None Required&quot; or &quot;Other&quot; selected for Testing Required. --></errorMessage>
+        <name>agf__Testing_Notes_required_if_Other_or_None</name>
+    </validationRules>
+    <webLinks>
+        <label><!-- Defect_Priority_Matrix --></label>
+        <name>agf__Defect_Priority_Matrix</name>
+    </webLinks>
+    <webLinks>
+        <label><!-- Emergency_Release_Process --></label>
+        <name>agf__Emergency_Release_Process</name>
+    </webLinks>
+    <webLinks>
+        <label><!-- Guide_to_Investigation_Severity --></label>
+        <name>agf__Guide_to_Investigation_Severity</name>
+    </webLinks>
+    <webLinks>
+        <label><!-- Set_ERR_Status_To_Released --></label>
+        <name>agf__Set_ERR_Status_To_Released</name>
+    </webLinks>
+</CustomObjectTranslation>

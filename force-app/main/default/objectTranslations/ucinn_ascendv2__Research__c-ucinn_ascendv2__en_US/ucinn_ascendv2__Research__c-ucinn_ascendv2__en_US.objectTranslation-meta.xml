@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObjectTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <caseValues>
+        <plural>false</plural>
+        <value>Research</value>
+    </caseValues>
+    <caseValues>
+        <plural>true</plural>
+        <value>Research</value>
+    </caseValues>
+    <layouts>
+        <layout>Account Research Layout</layout>
+        <sections>
+            <label><!-- Custom Links --></label>
+            <section>Custom Links</section>
+        </sections>
+    </layouts>
+    <layouts>
+        <layout>Contact Research Layout</layout>
+        <sections>
+            <label><!-- Custom Links --></label>
+            <section>Custom Links</section>
+        </sections>
+    </layouts>
+    <recordTypes>
+        <description><!-- Research about a specific organization/corporation. --></description>
+        <label><!-- Organization Research --></label>
+        <name>ucinn_ascendv2__Account_Research</name>
+    </recordTypes>
+    <recordTypes>
+        <description><!-- Research about a specific constituent. --></description>
+        <label><!-- Constituent Research --></label>
+        <name>ucinn_ascendv2__Contact_Research</name>
+    </recordTypes>
+    <startsWith>Consonant</startsWith>
+    <validationRules>
+        <errorMessage><!-- Date completed must be on or after date requested. --></errorMessage>
+        <name>ucinn_ascendv2__Completed_Date_On_or_After_Request_Date</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Hours spent must be entered when date completed is entered. --></errorMessage>
+        <name>ucinn_ascendv2__Date_Completed_and_Hours</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Once hours spent is entered, it can only be changed by a system administrator or RMATS team member. --></errorMessage>
+        <name>ucinn_ascendv2__Hours_Cannot_be_Changed</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Hours spent cannot be zero. --></errorMessage>
+        <name>ucinn_ascendv2__Hours_Spent_Cannot_Be_Zero</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Either proactive ID or reactive research type must be populated, but they cannot be populated together. --></errorMessage>
+        <name>ucinn_ascendv2__Proactive_ID_and_Research_Type</name>
+    </validationRules>
+</CustomObjectTranslation>

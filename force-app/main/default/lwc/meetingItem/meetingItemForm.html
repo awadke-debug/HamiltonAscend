@@ -1,0 +1,52 @@
+<template>
+    <lightning-card variant="Narrow" title={name} icon-name="standard:contact" class="slds-var-m-bottom_medium">
+        <div slot="actions">
+            <slot></slot>
+        </div>
+        <div class="slds-p-horizontal_small">
+            <div class="slds-p-around_medium">
+                <div class="slds-grid slds-wrap slds-gutters">
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                        <div class="slds-form-element">
+                            <lightning-input type="text" name="title" label="Enter Meeting title"
+                                onchange={handleInputChange} value={title} required="true"></lightning-input>
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                        <div class="slds-form-element">
+                            <lightning-input type="text" name="talkingPoints" label="Enter some talking Points"
+                                onchange={handleInputChange}></lightning-input>
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                        <div class="slds-form-element">
+                            <lightning-combobox name="status" label="Meeting Status" placeholder="Select Status"
+                                options={statusOptions} onchange={handleInputChange} value={status}></lightning-combobox>
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2"></div>
+                    <div class="slds-p-around_medium slds-col slds-size_1-of-1 slds-medium-size_1-of-1">
+                        <div class="slds-grid slds-wrap slds-gutters">
+
+                            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                                <div class="slds-form-element">
+                                    <lightning-input type="datetime" name="startDate" label="Start Date/Time:"
+                                        class="slds-input" onchange={handleInputChange} value={startDate} required="true">
+                                    </lightning-input>
+                                </div>
+                            </div>
+                            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                                <div class="slds-form-element">
+                                    <lightning-input type="datetime" name="endDate" label="End Date/Time:" class="slds-input"
+                                        onchange={handleInputChange} value={endDate} required="true">
+                                    </lightning-input>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </lightning-card>
+</template>

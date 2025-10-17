@@ -1,0 +1,2121 @@
+{
+  "version" : "62.0",
+  "nodes" : {
+    "FORMULA0" : {
+      "action" : "formula",
+      "sources" : [ "JOIN6" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Is_Current_Senior",
+          "label" : "Is Current Senior",
+          "formulaExpression" : "case \r\n    when ucinn_ascendv2__Primary_Contact_Type__c='Student' and HAM_Institutional_Suffix__c='24' then 'true' \r\n        else\r\n    'false'\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA2" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA13" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "ISB_Potential_Universe_v2",
+          "label" : "ISB Potential Universe v2-delete",
+          "formulaExpression" : "case \r\n    when HAM_Reunion_Year__c>Current_Class_Year\r\n    then 'false'\r\n    when array_contains(ucinn_ascendv2__Contact_Type__c, 'Hamilton Alumni') \r\n    or array_contains(ucinn_ascendv2__Contact_Type__c,'Kirkland Alumnae')\r\n    or array_contains(ucinn_ascendv2__Contact_Type__c, 'Hamilton Withdrawn') \r\n    then 'true'    \r\n        else\r\n    'false'\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA13" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA24" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Lives_with_Parents_Flag",
+          "label" : "Lives with Parents Flag",
+          "formulaExpression" : "case \r\n    when \"Append_Lives_with_parents.Lives_with_Parents_Flag_Temp\"='true'\r\n    then 'true'\r\n    else\r\n    'false'\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA14" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA20" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Cannot_be_Lost_Flag",
+          "label" : "1 Cannot be Lost Flag",
+          "formulaExpression" : "case \r\n    when Pure_Donor_Status_for_Recipe_user_input<=1\r\n    then 'Cannot be Lost'\r\n    when Years_since_last_event_attendance <=1 then 'Cannot be Lost'\r\n    when HAM_Reunion_Year__c=User_Defined_Fiscal_Year    then 'Cannot be Lost'    \r\n    else\r\n    'Can be Lost'\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA15" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA2" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Years_since_last_event_attendance",
+          "label" : "Years since last event attendance",
+          "formulaExpression" : "case \r\nwhen\r\n    \"LastEventD.Last_Event_Date\" is null\r\nthen\r\n    9999\r\nelse\r\n    User_Defined_Fiscal_Year - fiscalyear(\"LastEventD.Last_Event_Date\")\r\nend",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA16" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA18" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "GOLD_LOST",
+          "label" : "3 GOLD LOST",
+          "formulaExpression" : "case  \r\n    when User_Defined_Fiscal_Year-  HAM_Reunion_Year__c<10 and Lives_with_Parents_Flag='true' and (Is_Contactable_By_Phone='false' or Is_Contactable_By_Email='false')\r\n    then 'Lost'    \r\n    else\r\n    'Not Lost'\r\nend",
+          "precision" : 10,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA17" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA28" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "ISB_Potential_Universe",
+          "label" : "ISB Potential Universe",
+          "formulaExpression" : "case \r\n     \r\n    when \r\n    HAM_Reunion_Year__c>User_Defined_Fiscal_Year then 'false' \r\n    when HAM_Reunion_Year__c=User_Defined_Fiscal_Year and ucinn_ascendv2__Primary_Contact_Type__c='Student' then 'true'\r\n    when  ( contains(Constituent_Type_String, 'Hamilton Alumni') \r\n    or contains(Constituent_Type_String, 'Kirkland Alumnae') ) and Is_Solicitable='true'\r\n    then 'true'\r\n    when (contains(Constituent_Type_String, 'Hamilton Alumni') \r\n    or contains(Constituent_Type_String, 'Kirkland Alumnae')\r\n    or contains(Constituent_Type_String, 'Hamilton Withdrawn')) and Pure_Donor_Status_for_Recipe_user_input<=0 \r\n    then 'true'    \r\n        else\r\n    'false'\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA18" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA14" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Lost_All_Alumni",
+          "label" : "2 Lost All Alumni",
+          "formulaExpression" : "case \r\n    when \r\n    Pure_Donor_Status_for_Recipe_user_input>1 and\r\n    Years_since_last_event_attendance>1 and\r\n    \"DWH.Advancement_Volunteer_Cyr\"='false' and\r\n    \"DWH.Advancement_Volunteer_1_Yr\"='false' and\r\n    \"DWH.Connect_Cyr\"='false' and\r\n    \"DWH.Connect_1_Yr\"='false' and\r\n    Years_since_last_connect>1 and\r\n    Is_Contactable='false'  \r\n    then 'Lost'\r\n     \r\n    else\r\n    'Not Lost'\r\nend",
+          "precision" : 10,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA19" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA16" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Non_Gold_Lost",
+          "label" : "4 Non Gold Lost",
+          "formulaExpression" : "case \r\n    when \r\n    User_Defined_Fiscal_Year-  HAM_Reunion_Year__c>=10 and \r\n    Pure_Donor_Status_for_Recipe_user_input>10 and\r\n    Years_since_last_event_attendance>10 and\r\n    \"DWH.Advancement_Volunteer_Cyr\"='false' and\r\n    \"DWH.Advancement_Volunteer_1_Yr\"='false' and\r\n    \"DWH.Advancement_Volunteer_2_Yr\"='false' and\r\n    \"DWH.Advancement_Volunteer_3_Yr\"='false' and\r\n    \"DWH.Advancement_Volunteer_4_Yr\"='false' and\r\n    \"DWH.Advancement_Volunteer_5_Yr\"='false' and\r\n    \"DWH.Connect_Cyr\"='false' and\r\n    \"DWH.Connect_1_Yr\"='false' and\r\n    \"DWH.Connect_2_Yr\"='false' and\r\n    \"DWH.Connect_3_Yr\"='false' and\r\n    \"DWH.Connect_4_Yr\"='false' and\r\n    \"DWH.Connect_5_Yr\"='false' and\r\n    Years_since_last_connect>5 and\r\n\r\nNumber_of_Contact_Channels_for_Lost<2\r\n    then 'Lost'\r\n     \r\n    else\r\n    'Not Lost'\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA20" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA23" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Number_of_Contact_Channels_for_Lost",
+          "label" : "Number of Contact Channels for Lost",
+          "formulaExpression" : "case when Is_Contactable_By_Mail='true' then 1 else 0 end \r\n+\r\ncase when Is_Contactable_By_Email='true' then 1 else 0 end \r\n+\r\ncase when Is_Contactable_By_Phone='true' then 1 else 0 end \r\n",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA22" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA19" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Base_Lost_Status",
+          "label" : "Base Lost Status",
+          "formulaExpression" : "case  \r\n    when Cannot_be_Lost_Flag='Cannot be Lost'\r\n    then 'Not Lost'\r\nwhen Lost_All_Alumni='Lost' then 'Lost'\r\nwhen GOLD_LOST='Lost' then 'Lost'\r\nwhen Non_Gold_Lost='Lost' then 'Lost'\r\n     else\r\n    'Not Lost'\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA23" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA15" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Years_since_last_connect",
+          "label" : "Years since last connect",
+          "formulaExpression" : "case \r\nwhen\r\n    \"CONNECT.Last_Marketing_Activity_Date\" is null\r\nthen\r\n    9999\r\nelse\r\n    User_Defined_Fiscal_Year - fiscalyear(\"CONNECT.Last_Marketing_Activity_Date\")\r\nend",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES1" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA27" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "CONNECT.Max_of_Activity_Date",
+          "newProperties" : {
+            "label" : "Last Marketing Activity Date",
+            "name" : "CONNECT.Last_Marketing_Activity_Date"
+          }
+        } ]
+      }
+    },
+    "FORMULA24" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA29" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "VSE_Potential_Universe",
+          "label" : "VSE Potential Universe",
+          "formulaExpression" : "case \r\n     \r\n    when \r\n    HAM_Reunion_Year__c>User_Defined_Fiscal_Year then 'false' \r\n    when contains(ucinn_ascendv2__Full_Name_Formula__c, 'Anonymous') then 'false'\r\n    when (contains(Constituent_Type_String, 'Hamilton Alumni') \r\n    or contains(Constituent_Type_String, 'Hamilton Withdrawn')) and Is_Contactable='true'  then 'true'    \r\n    when (contains(Constituent_Type_String, 'Hamilton Alumni') \r\n    or contains(Constituent_Type_String, 'Hamilton Withdrawn')) and Pure_Donor_Status_for_Recipe_user_input<=0   then 'true'\r\n    else\r\n    'false'\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA27" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Pure_Donor_Status_1YR",
+          "label" : "Pure Donor Status 1YR",
+          "formulaExpression" : "case \r\nwhen \"Pure_Donor_of_Last_Fiscal_Year.Status_Date\" is null\r\nthen\r\n    9999\r\nelse\r\n    User_Defined_Fiscal_Year - fiscalyear(\"Pure_Donor_of_Last_Fiscal_Year.Status_Date\")\r\nend",
+          "precision" : 18,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA28" : {
+      "action" : "formula",
+      "sources" : [ "EDIT_ATTRIBUTES1" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Pure_Donor_Status_for_Recipe_user_input",
+          "label" : "Pure Donor Status for Recipe-user input",
+          "formulaExpression" : "Pure_Donor_Status_1YR",
+          "precision" : 18,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA29" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA17" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "ISB_Potential_Universe_v3_remove_student",
+          "label" : "ISB Potential Universe v3 remove student reference",
+          "formulaExpression" : "case \r\n     \r\n    when \r\n    HAM_Reunion_Year__c>User_Defined_Fiscal_Year then 'false' \r\n     when  ( contains(Constituent_Type_String, 'Hamilton Alumni') \r\n    or contains(Constituent_Type_String, 'Kirkland Alumnae') ) and Is_Solicitable='true'\r\n    then 'true'\r\n    when (contains(Constituent_Type_String, 'Hamilton Alumni') \r\n    or contains(Constituent_Type_String, 'Kirkland Alumnae')\r\n    or contains(Constituent_Type_String, 'Hamilton Withdrawn')) and Pure_Donor_Status_for_Recipe_user_input<=0 \r\n    then 'true'    \r\n        else\r\n    'false'\r\nend",
+          "precision" : 10,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA1" : {
+      "action" : "formula",
+      "sources" : [ "LOAD_DATASET5" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Current_Class_Year",
+          "label" : "Current Class Year",
+          "formulaExpression" : "2024",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "OUTPUT0" : {
+      "action" : "save",
+      "sources" : [ "FORMULA22" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "temp isb",
+          "name" : "temp_isb",
+          "folderName" : "SharedApp"
+        },
+        "dateConfigurationName" : "July_Fiscal_Year",
+        "measuresToCurrencies" : [ ]
+      }
+    },
+    "LOAD_DATASET0_copy0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "conference360__Event_End_Date__c", "conference360__Event_Name__c", "conference360__Event_Start_Date__c", "Id", "Name", "conference360__Attendee_Group__c", "conference360__Contact__c", "conference360__Email2__c", "conference360__First_Name2__c", "conference360__Last_Name2__c", "conference360__Primary_Email__c", "conference360__Registration_DateTime__c", "conference360__Registration_Status__c", "conference360__Attendee_Full_Name__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "conference360__Attendee__c",
+          "connectionName" : "Updated_Hourly",
+          "sourceObjectName" : "conference360__Attendee__c"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "FORMULA1_copy0" : {
+      "action" : "formula",
+      "sources" : [ "LOAD_DATASET0_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "DATETIME",
+          "name" : "Registration_Date",
+          "label" : "Registration Date",
+          "formulaExpression" : "conference360__Registration_DateTime__c",
+          "format" : "yyyy-MM-dd",
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA9_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA1_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "DATETIME",
+          "name" : "Updated_Date_In_System",
+          "label" : "Updated Date In System",
+          "formulaExpression" : "now()",
+          "format" : "MM/dd/yyyy hh:mm:ss a",
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA10_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA9_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "DATETIME",
+          "name" : "Updated_Date",
+          "label" : "Updated Date",
+          "formulaExpression" : "Updated_Date_In_System- INTERVAL 4 hour",
+          "format" : "MM/dd/yyyy hh:mm:ss a",
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "DROP_FIELDS1_copy0" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA10_copy0" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Updated_Date_In_System" ]
+        }
+      }
+    },
+    "DROP_FIELDS2" : {
+      "action" : "schema",
+      "sources" : [ "DROP_FIELDS1_copy0" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "SELECT",
+          "ignoreMissingFields" : true,
+          "fields" : [ "conference360__Event_Start_Date__c", "conference360__Contact__c", "conference360__Registration_DateTime__c", "conference360__Registration_Status__c", "conference360__Attendee_Full_Name__c", "Registration_Date", "Updated_Date" ]
+        }
+      }
+    },
+    "FORMULA11" : {
+      "action" : "computeRelative",
+      "sources" : [ "DROP_FIELDS2" ],
+      "parameters" : {
+        "partitionBy" : [ "conference360__Contact__c" ],
+        "orderBy" : [ {
+          "fieldName" : "conference360__Event_Start_Date__c",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "DATETIME",
+          "name" : "Last_Event_Date",
+          "label" : "Last Event Date",
+          "formulaExpression" : "last_value(conference360__Event_Start_Date__c)",
+          "format" : "MM-dd-yyyy",
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "DROP_FIELDS3" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA11" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "SELECT",
+          "ignoreMissingFields" : true,
+          "fields" : [ "conference360__Contact__c", "Last_Event_Date" ]
+        }
+      }
+    },
+    "LOAD_DATASET0_copy1" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Id", "Preferred_Address.ucinn_ascendv2__Full_Address_Formula__c" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Account and Contact Dataset",
+          "name" : "Account_and_Contact_Dataset"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "LOAD_DATASET1" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Id", "Name", "ucinn_ascendv2__Contact__c", "ucinn_ascendv2__Related_Contact_Role__c", "ucinn_ascendv2__Related_Contact__c", "ucinn_ascendv2__Contact_Role_Formula__c", "ucinn_ascendv2__Related_Contact_Donor_ID_Formula__c", "ucinn_ascendv2__Related_Contact_Name_Formula__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "ucinn_ascendv2__Relationship__c",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "ucinn_ascendv2__Relationship__c"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "FILTER0" : {
+      "action" : "filter",
+      "sources" : [ "LOAD_DATASET1" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "ucinn_ascendv2__Related_Contact_Role__c",
+          "operator" : "EQUAL",
+          "operands" : [ "Parent" ]
+        } ]
+      }
+    },
+    "JOIN1" : {
+      "action" : "join",
+      "sources" : [ "FILTER0", "LOAD_DATASET0_copy1" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "ucinn_ascendv2__Related_Contact__c" ],
+        "rightQualifier" : "Parent_Address",
+        "rightKeys" : [ "Id" ]
+      }
+    },
+    "EDIT_ATTRIBUTES0" : {
+      "action" : "schema",
+      "sources" : [ "JOIN1" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Parent_Address.Preferred_Address.ucinn_ascendv2__Full_Address_Formula__c",
+          "newProperties" : {
+            "label" : "Parent Preferred Address",
+            "name" : "Parent_Address.Preferred_Address.ucinn_ascendv2__Full_Address_Formula__c"
+          }
+        } ]
+      }
+    },
+    "DROP_FIELDS4" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES0" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "SELECT",
+          "ignoreMissingFields" : true,
+          "fields" : [ "ucinn_ascendv2__Related_Contact__c", "Parent_Address.Preferred_Address.ucinn_ascendv2__Full_Address_Formula__c", "ucinn_ascendv2__Contact__c" ]
+        }
+      }
+    },
+    "JOIN2" : {
+      "action" : "join",
+      "sources" : [ "DROP_FIELDS4", "LOAD_DATASET0_copy1" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "ucinn_ascendv2__Contact__c" ],
+        "rightQualifier" : "Append_Contact_Address",
+        "rightKeys" : [ "Id" ]
+      }
+    },
+    "FORMULA12" : {
+      "action" : "formula",
+      "sources" : [ "JOIN2" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Lives_with_Parents_Flag_Temp",
+          "label" : "Lives with Parents Flag Temp",
+          "formulaExpression" : "case  \r\n    when \"Parent_Address.Preferred_Address.ucinn_ascendv2__Full_Address_Formula__c\"=\"Append_Contact_Address.Preferred_Address.ucinn_ascendv2__Full_Address_Formula__c\"\r\n    then 'true'\r\n    else\r\n    'false'\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "DROP_FIELDS5" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA12" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "SELECT",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Lives_with_Parents_Flag_Temp", "ucinn_ascendv2__Contact__c" ]
+        }
+      }
+    },
+    "FILTER1" : {
+      "action" : "filter",
+      "sources" : [ "DROP_FIELDS5" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "Lives_with_Parents_Flag_Temp",
+          "operator" : "EQUAL",
+          "operands" : [ "true" ]
+        } ]
+      }
+    },
+    "JOIN3" : {
+      "action" : "join",
+      "sources" : [ "JOIN4", "FILTER1" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Id" ],
+        "rightQualifier" : "Append_Lives_with_parents",
+        "rightKeys" : [ "ucinn_ascendv2__Contact__c" ]
+      }
+    },
+    "JOIN4" : {
+      "action" : "join",
+      "sources" : [ "FORMULA1", "DROP_FIELDS3" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Account_or_Contact_Id" ],
+        "rightQualifier" : "LastEventD",
+        "rightKeys" : [ "conference360__Contact__c" ]
+      }
+    },
+    "LOAD_DATASET2" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Giving_3_Yr", "Connect_Cyr", "Event_Attendance_4_Yr", "Giving_5_Yr", "Giving_1_Yr", "Event_Attendance_2_Yr", "Advancement_Volunteer_5_Yr", "Advancement_Volunteer_1_Yr", "Connect_3_Yr", "Advancement_Volunteer_3_Yr", "Connect_5_Yr", "Connect_1_Yr", "Event_Attendance_Cyr", "Event_Attendance_1_Yr", "Giving_2_Yr", "Giving_4_Yr", "Sort_Name", "Advancement_Volunteer_Cyr", "Event_Attendance_5_Yr", "Event_Attendance_3_Yr", "Advancement_Volunteer_2_Yr", "Connect_2_Yr", "Connect_4_Yr", "Id", "Advancement_Volunteer_4_Yr", "Giving_Cyr", "Engagement_Score_4_Yr", "Engagement_Score_2_Yr", "Engagement_Score_5_Yr", "Engagement_Score_3_Yr", "Engagement_Score_Cyr", "Engagement_Score_1_Yr" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "CONSTITUENT_DATA_GVAC_STATIC",
+          "name" : "CONSTITUENT_DATA_GVAC_STATIC"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN5" : {
+      "action" : "join",
+      "sources" : [ "JOIN3", "LOAD_DATASET2" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Account_or_Contact_External_Id" ],
+        "rightQualifier" : "DWH",
+        "rightKeys" : [ "Id" ]
+      }
+    },
+    "LOAD_DATASET3" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Max_of_Activity_Date", "Person_Id" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "MARKETING_ACTIVITY_Max Activity date",
+          "name" : "MARKETING_ACTIVITY_Max_Activity_date"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN6" : {
+      "action" : "join",
+      "sources" : [ "JOIN5", "LOAD_DATASET3" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Account_or_Contact_External_Id" ],
+        "rightQualifier" : "CONNECT",
+        "rightKeys" : [ "Person_Id" ]
+      }
+    },
+    "LOAD_DATASET4" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "FY23 ISB VSE workbook for ascend",
+          "name" : "FY23_ISB_VSE_workbook_for_ascend"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN7" : {
+      "action" : "join",
+      "sources" : [ "FORMULA26", "FILTER2" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Account_or_Contact_External_Id_string" ],
+        "rightQualifier" : "FY23ISBVSE",
+        "rightKeys" : [ "Person" ]
+      }
+    },
+    "FILTER2" : {
+      "action" : "filter",
+      "sources" : [ "LOAD_DATASET4" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "Internal_Sol_Base",
+          "operator" : "EQUAL",
+          "operands" : [ "yes" ]
+        } ]
+      }
+    },
+    "OUTPUT1" : {
+      "action" : "save",
+      "sources" : [ "JOIN7" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "ISB with FY23 detail for validation",
+          "name" : "ISB_with_FY23_detail_for_validation",
+          "folderName" : "SharedApp"
+        },
+        "measuresToCurrencies" : [ ]
+      }
+    },
+    "FORMULA25" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA22" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Account_or_Contact_External_Id_numeric",
+          "label" : "Account_or_Contact_External_Id_numeric",
+          "formulaExpression" : "Account_or_Contact_External_Id*1",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA26" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA25" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Account_or_Contact_External_Id_string",
+          "label" : "Account_or_Contact_External_Id_string",
+          "formulaExpression" : "string(Account_or_Contact_External_Id_numeric)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "LOAD_DATASET5" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Is_ISB_2YR.Is_ISB_Campaign_Member", "Is_Contactable", "Is_Contactable_By_Text", "FiltertoLe.ucinn_ascendv2__Middle_Name__c", "Preferred_Address.ucinn_ascendv2__Address_State_Formula__c", "ucinn_ascendv2__Ethnicity__c", "Is_Solicitable_By_Phone", "Spouse_Include_Widow", "FiltertoLe.ucinn_ascendv2__Nickname__c", "Spouse.HAM_Institutional_Suffix__c", "FiltertoLe.ucinn_ascendv2__Constructed_Name_Formula__c", "Spouse.FiltertoLe.ucinn_ascendv2__Suffix__c", "Is_Active", "Spouse.AccountId", "Spouse.Name", "Has_Same_Preferred_Decade_As_Spouse", "Is_Past_Parent_Inactive", "Primary_Relationship_Manager.HAM_Role__c", "ucinn_ascendv2__Preferred_Address_Country__c", "Largest_Pledge.Largest_Pledge_Date", "Fundraising_Match_Flag", "ucinn_ascendv2__Is_Deceased__c", "Is_Contactable_By_Email", "Largest_Gift_Designation", "EnrichHami.Max_HF_Cash_Date_1YR", "Residence_Address.ucinn_ascendv2__Type__c", "Current_Employer.Organization.Name", "HAM_JBA__c", "Is_Trustee_Derived", "TransformT2.Tiered_1812_3YR", "HAM_Name_w_Suffix__c", "Largest_Pledge_Designation", "Philanthropic_Donor_LY.Status_Date", "Account.Id", "Wealth_Rating.HAM_Wealth_Rating_Number__c", "FiltertoLe.ucinn_ascendv2__First_Name__c", "Largest_Cash_Gift_Type", "dwh.Volunteered_CYR_5YR_DWH", "Substantive_meeting.Last_Substantive_Meeting_Date", "Hamilton_Fund_CYR_Solicitable_Status", "Has_Same_Preferred_Year_As_Spouse", "Account.ucinn_ascendv2__Donor_ID__c", "FirstName", "HF_Model.HF_Decile_String", "Name_and_Suffix", "ML_fundraising.First_Fundraising_Date", "EnrichJBA.Is_JBA_Will_Provision", "EnrichJBA.JBA_Anniversary_Date", "TransformT4.Tiered_1812_5YR", "Spouse.LastName", "Cash_Greater_than_Fundraising_OOB", "Is_Ever_Trustee", "Is_EFOD_LY", "FiltertoLe.ucinn_ascendv2__Suffix__c", "Spouse.FiltertoLe.ucinn_ascendv2__First_Name__c", "Filteroutn.Last_Contact_Report", "Pure_Donor.Last_Gift_Designation", "Is_ISB_LFY_or_2YR.Is_ISB_Campaign_Member", "Account.Type", "Account_or_Contact_Id", "GS1812.Is_GS_1812_1YR", "Spouse.FiltertoLe.ucinn_ascendv2__Prefix__c", "Name", "Service_Indicators.All_Service_Indicator_Codes", "ucinn_ascendv2__Contact_Type__c", "ucinn_ascendv2__Date_of_Most_Recent_Pledge_Payment__c", "Residence_Address.Most_Recent_Residence_Address", "Spouse.FiltertoLe.ucinn_ascendv2__Middle_Name__c", "Account.ucinn_ascendv2__External_System_ID__c", "Account_Id_for_Lightning", "Private_Society_Spouse.All_Private_Societies_Involvements_Spouse", "Pure_Donor_2YR.Status_Date", "Society_Membership.All_Active_Giving_Societies", "ucinn_ascendv2__Date_of_Most_Recent_Gift__c", "ucinn_ascendv2__Date_Marked_Deceased__c", "Is_Former_Trustee", "ML_cash.Largest_Cash_Date", "Account_or_Contact_Donor_Id", "Spouse.HAM_Reunion_Year__c", "Hamilton_Fund.Status_Date", "Preferred_Address.ucinn_ascendv2__Address_Street_Formula__c", "Student_Housing_Involvements.All_Student_Housing_Involvements", "ucinn_ascendv2__Recognition_Name__c", "HAM_1812__c", "Largest_Gift.Largest_Gift_Date", "LastName", "ucinn_ascendv2__Preferred_Spouse__c", "all_children.All_Children", "HAM_Secondary_Chapter__c", "HAM_Preferred_Chapter__c", "Is_Founders_Circle", "ML_fundraising.Largest_Fundraising_Date", "Private_Society_Involvements.All_Private_Societies_Involvements", "Trustee_Involvements.All_Trustee_Involvements", "Preferred_Email.ucinn_ascendv2__Type__c", "Preferred_Address.ucinn_ascendv2__Type__c", "EnrichJBA.JBA_Membership_Status", "Largest_HFPledge.Largest_HF_Pledge_Date", "ML_cash.Date", "ucinn_ascendv2__Full_Name_Formula__c", "Title", "TransformT3.Tiered_1812_4YR", "Largest_HF_Pledge_Designation", "Is_ISB_CFY_or_LFY.Is_ISB_Campaign_Member", "Largest_HFGift.Largest_HF_Gift_Date", "Is_FY25_1812_List", "Pure_Donor_of_Last_Fiscal_Year.Status_Date", "Degree.All_Degree_Codes", "Current_Employer.HAM_Industry__c", "Cash_Match_Flag", "ML_fundraising.Date", "FiltertoLe.ucinn_ascendv2__Last_Name__c", "ucinn_ascendv2__Gender__c", "ChildReuni.Earliest_Reunion_Year_Child", "All_Affiliations.All_Active_Organization_Names", "Is_Ten_to_the_Fifth_1YR", "GS1812.Is_GS_1812_CYR", "Largest_Cash.Largest_Cash_Date", "Philanthropic_Donor.Status_Date", "TransformT.Tiered_1812_1YR", "ucinn_ascendv2__Is_Anonymous__c", "Ask_Expected.ucinn_ascendv2__Wealth_Rating_Comment__c", "EnrichJBA.JBA_Expiration_Date", "TransformT1.Tiered_1812_2YR", "Is_Contactable_By_Phone", "Preferred_Address.ucinn_ascendv2__Address_City_Formula__c", "Spouse.ucinn_ascendv2__Primary_Contact_Type__c", "HAM_Privacy_Flag__c", "Is_EFOD", "Is_Ten_to_the_Fifth", "Multicultural_Affinity", "Id", "ucinn_ascendv2__Donor_ID__c", "ChildReuni.Is_Hamilton_Parent", "Preferred_Phone.ucinn_ascendv2__Phone_Number__c", "All_Involvement_Except_Student_Involvement.All_Involvement_Except_Student_Involvement", "HAM_CareerArea__c", "Record_Type.Name", "Is_Solicitable_By_Mail", "FiltertoLe.ucinn_ascendv2__Prefix__c", "Is_Chapel_Bell_Society", "Salutation", "All_Current_Involvements.All_Current_Involvements", "Service_Indicators.All_Service_Indicators", "Account.ucinn_ascendv2__Primary_Contact__c", "Is_Solicitable_By_Email", "Contact_Id_for_Lightning", "Secondary_Relationship_Manager.Assigned_User_Name", "Is_Primary_Contact", "Current_Cell.ucinn_ascendv2__Phone_Number__c", "ML_Majordonor.First_Fundraising_Major_Gift_Date", "Is_Life_Trustee", "Preferred_Phone.ucinn_ascendv2__Type__c", "ucinn_ascendv2__External_System_ID__c", "HAM_JBA_Anonymous__c", "ucinn_ascendv2__Deceased_Date__c", "Calculated.All_Surviving_Relatives_Except_Spouse", "ML_fundraising.Last_Fundraising_Date", "Account_or_Contact_External_Id", "RenametoNC.All_NCAA_Involvements_Spouse", "ucinn_ascendv2__Date_of_Most_Recent_Pledge__c", "Account_or_Contact_Id_for_Lightning", "Preferred_Address.ucinn_ascendv2__Full_Address_Formula__c", "All_Society.All_Giving_Societies", "Constituent_Type_String", "Is_Alumni", "Degree.All_Concentrations", "Is_Solicitable", "Is_Tribute_Giver_Only", "Pure_Donor.Status_Date", "ucinn_ascendv2__Preferred_Class_Year__c", "Preferred_Address.ucinn_ascendv2__Address_Postal_Code_Formula__c", "Student_Clubs_Involvements.All_Students_Clubs_Involvement", "Account.Record_Type.Name", "Birthdate", "Class_Decade", "Spouse.FirstName", "All_Involvements.All_Involvements", "NCAA_Involvements.All_NCAA_Involvements", "Is_ISB.Is_ISB_Campaign_Member", "Spouse.FiltertoLe.ucinn_ascendv2__Last_Name__c", "Largest_HF_Gift_Designation", "Largest_Cash_Designation", "ChildReuni.Latest_Reunion_Year_Child", "Is_Solicitable_By_Text", "Spouse.FiltertoLe.ucinn_ascendv2__Nickname__c", "Job_Title__c", "Spouse.FiltertoLe.ucinn_ascendv2__Constructed_Name_Formula__c", "Primary_Relationship_Manager.Assigned_User_Name", "HAM_Reunion_Year__c", "Spouse.ucinn_ascendv2__Preferred_Class_Year__c", "TransformTC.Tiered_1812_CYR", "Volunteer_Involvements.All_Volunteer_Involvements", "EnrichJBA.Is_JBA_Planned_Gift", "ML_cash.Last_Cash_Date", "Is_ISB_LFY.Is_ISB_Campaign_Member", "ML_cash.First_Cash_Date", "ucinn_ascendv2__Primary_Contact_Type__c", "HAM_Institutional_Suffix__c", "Account.Name", "Preferred_Email.ucinn_ascendv2__Email_Address__c", "Is_Contactable_By_Mail", "HF_Model.HAM_Probability__c", "Account_or_Contact_Because_Hamilton_Fundraising", "Aggregate.SUM_FY00_Collected_Amount_HF", "Number_of_Solicitable_Channels", "Aggregate.SUM_FY00_Cash_Amount_CYR_Solicitable", "Aggregate.SUM_FY05_Collected_Amount", "Lifetime_Cash_Amount", "Aggregate.SUM_Tribute_Fundraising", "ucinn_ascendv2__Lifetime_Cash__c", "ucinn_ascendv2__Amount_of_Most_Recent_Gift__c", "ML_fundraising.Number_of_Bequest_Intention_Transaction_Days", "Lifetime_Fundraising_Amount", "EnrichCBIn.If_CB_Current_FY", "ML_fundraising.Last_Fundraising_Amount", "Account.ucinn_ascendv2__Lifetime_Cash__c", "ML_fundraising.Number_of_Fundraising_Days", "EnrichHami.Max_HF_Daily_Cash_1YR", "Largest_Pledge.Largest_Pledge_Amount", "HF_Model.HAM_Decile_Number__c", "Pure_Donor.Last_Gift_Amount", "Aggregate.Sum.FY03_Committed_Amount", "HAM_Consecutive_Years_of_Giving__c", "Pure_Donor.Count_Unique.Fiscal_Years", "Aggregate.SUM_FY00_Fundraising_Amount_CYR_Solicitable", "Aggregate.SUM_FY00_Hamilton_Fund_Fundraising_Amount_Temp", "Projected_HF_CYR_Collected", "GVAC.HAM_Attend__c", "Philanthropic_Donor_Status_LY", "ML_fundraising.SUM_Bequest_Intention", "Outstanding_Commitment_Amount", "AggregateC.SUM_Cash_Amount", "Ask_Expected.MAX_HAM_Expected_Amount__c", "ucinn_ascendv2__Last_FY_Giving__c", "ucinn_ascendv2__Current_FY_Giving__c", "Aggregate.SUM_Bequest_Intention_50th_Reunion", "ucinn_ascendv2__Amount_of_Most_Recent_Pledge_Payment__c", "Aggregate.SUM_FY01_Collected_Amount_Restricted", "Aggregate.SUM_Lifetime_Cash_Amount_Endowment", "Aggregate.Sum.FY02_Committed_Amount", "Expected_Minus_CYR_HF_Collected", "ML_cash.First_Cash_Amount", "Aggregate.SUM_FY00_Collected_Amount_No_Event_Fee_Gifts", "Aggregate.SUM_Fundraising_Amount_50th_Reunion", "Aggregate.Sum.FY03_Collected_Amount", "EnrichCBIn.If_CB_Last_FY", "Outstanding_Balance_Excluding_Bequest_Intentions", "Pure_Donor_Status", "GVAC.HAM_Connect__c", "CYR_Pure_Donor_Giving_Flag", "ML_cash.Number_of_Cash_Days", "ML_fundraising.Largest_Fundraising_Amount", "Hamilton_Fund_Donor_Status", "Largest_HFPledge.Largest_HF_Pledge_Amount", "Number_of_Contactable_Channels", "Aggregate.SUM_FY00_Committed_Amount_HF", "User_Defined_Fiscal_Year", "Aggregate.SUM_FY00_thru_Apr2_Collected_Amount", "ucinn_ascendv2__Age_Formula__c", "Aggregate.SUM_Lifetime_Fundraising_Amount_Endowment", "Aggregate.Sum.Lifetime_Committed_Amount", "Pure_Donor_Status_2YR", "Aggregate.Sum.FY00_Collected_Amount", "ML_cash.Daily_Cash_Amount", "ML_fundraising.Daily_Fundraising_Amount", "Aggregate.SUM_FY00_Collect_Amount_Restricted", "Philanthropic_Donor_Status", "Aggregate.Sum.FY04_Collected_Amount", "GVAC.HAM_Give__c", "Hamilton_Fund.Last_HF_Gift_Amount", "Ask_Expected.MAX_HAM_Ask_Amount__c", "Aggregate.Sum.FY00_Committed_Amount", "Aggregate.Sum.FY01_Collected_Amount", "Aggregate.Sum.Lifetime_Collected_Amount", "Aggregate_02.Sum.Is_Consecutive_Year", "Aggregate.Sum.FY00_Hamilton_Fund_Cash_Amount", "Aggregate.SUM_Bequest_Intention", "Largest_HFGift.Largest_HF_Gift_Amount", "ML_fundraising.First_Fundraising_Amount", "ucinn_ascendv2__Lifetime_Fundraising__c", "ucinn_ascendv2__Amount_of_Most_Recent_Pledge__c", "Aggregate.SUM_FY05_Collected_Amount_HF", "Largest_Cash.Largest_Cash_Amount", "Aggregate.Sum.FY00_Hamilton_Fund_Fundraising_Amount", "Account.ucinn_ascendv2__Lifetime_Fundraising__c", "Aggregate.SUM_FY04_Collected_Amount_HF", "Aggregate.Sum.FY04_Committed_Amount", "Largest_Gift.Largest_Gift_Amount", "COUNT_Rows", "Aggregate.Sum.FY01_Committed_Amount", "Aggregate.Sum.FY02_Collected_Amount", "Aggregate.SUM_FY03_Collected_Amount_HF", "GVAC.HAM_Volunteer__c", "Aggregate.SUM_FY01_Collected_Amount_HF", "ML_cash.Last_Cash_Amount", "ML_cash.Largest_Cash_Amount", "Aggregate.SUM_FY02_Collected_Amount_HF", "Aggregate.SUM_Cash_Amount_50th_Reunion", "ML_fundraising.Daily_Bequest_Intention_Flag", "Aggregate.SUM_FY01_Collected_Amount_No_Event_Fee_Gifts", "Pure_Donor_Status_of_Last_Fiscal_Year" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Account and Contact Dataset",
+          "name" : "Account_and_Contact_Dataset"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    }
+  },
+  "ui" : {
+    "nodes" : {
+      "TRANSFORM0" : {
+        "label" : "Identify ISB Universe",
+        "description" : "change references to pure donor status to pure donor status 1yr as needed",
+        "type" : "TRANSFORM",
+        "top" : 112.30000000000001,
+        "left" : 1090.7,
+        "graph" : {
+          "FORMULA0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Is Current Senior-delete"
+          },
+          "FORMULA2" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "ISB Potential Universe v2-delete"
+          },
+          "FORMULA13" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Lives with Parents Flag"
+          },
+          "FORMULA14" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "1 Cannot be Lost"
+          },
+          "FORMULA15" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Years since last event attendance"
+          },
+          "FORMULA16" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "3 GOLD LOST"
+          },
+          "FORMULA17" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "ISB Potential Universe"
+          },
+          "FORMULA18" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "2 Lost All Alumni"
+          },
+          "FORMULA19" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "4 Non Gold Lost"
+          },
+          "FORMULA20" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Number of Contact Channels for Lost"
+          },
+          "FORMULA22" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Base Lost Status"
+          },
+          "FORMULA23" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Years since last connect"
+          },
+          "EDIT_ATTRIBUTES1" : {
+            "label" : "Edit Attributes"
+          },
+          "FORMULA24" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "VSE Potential Universe"
+          },
+          "FORMULA27" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Pure Donor Status 1YR"
+          },
+          "FORMULA28" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Pure Donor Status for Recipe-user input"
+          },
+          "FORMULA29" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "ISB Potential Universe v3"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA13",
+          "target" : "FORMULA2"
+        }, {
+          "source" : "FORMULA2",
+          "target" : "FORMULA15"
+        }, {
+          "source" : "FORMULA18",
+          "target" : "FORMULA16"
+        }, {
+          "source" : "FORMULA16",
+          "target" : "FORMULA19"
+        }, {
+          "source" : "FORMULA20",
+          "target" : "FORMULA14"
+        }, {
+          "source" : "FORMULA19",
+          "target" : "FORMULA22"
+        }, {
+          "source" : "FORMULA14",
+          "target" : "FORMULA18"
+        }, {
+          "source" : "FORMULA23",
+          "target" : "FORMULA20"
+        }, {
+          "source" : "FORMULA15",
+          "target" : "FORMULA23"
+        }, {
+          "source" : "FORMULA24",
+          "target" : "FORMULA13"
+        }, {
+          "source" : "FORMULA27",
+          "target" : "EDIT_ATTRIBUTES1"
+        }, {
+          "source" : "FORMULA0",
+          "target" : "FORMULA27"
+        }, {
+          "source" : "FORMULA28",
+          "target" : "FORMULA17"
+        }, {
+          "source" : "EDIT_ATTRIBUTES1",
+          "target" : "FORMULA28"
+        }, {
+          "source" : "FORMULA29",
+          "target" : "FORMULA24"
+        }, {
+          "source" : "FORMULA17",
+          "target" : "FORMULA29"
+        } ]
+      },
+      "TRANSFORM1" : {
+        "label" : "Current Senior Class Year",
+        "description" : "Change Annually",
+        "type" : "TRANSFORM",
+        "top" : 112,
+        "left" : 252,
+        "graph" : {
+          "FORMULA1" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Current Class Year"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "OUTPUT0" : {
+        "label" : "Output 0",
+        "type" : "OUTPUT",
+        "top" : 112,
+        "left" : 1372
+      },
+      "LOAD_DATASET0_copy0" : {
+        "label" : "conference360__Attendee__c",
+        "type" : "LOAD_DATASET",
+        "top" : 672,
+        "left" : 392,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "TRANSFORM0_copy0" : {
+        "label" : "Date Format",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 532.1,
+        "left" : 392.1,
+        "graph" : {
+          "FORMULA1_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Registration Date"
+          },
+          "FORMULA9_copy0" : {
+            "parameters" : {
+              "type" : "DATE_NOW_UI"
+            },
+            "label" : "Updated Date"
+          },
+          "FORMULA10_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Updated Date"
+          },
+          "DROP_FIELDS1_copy0" : {
+            "label" : "Drop Columns"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA1_copy0",
+          "target" : "FORMULA9_copy0"
+        }, {
+          "source" : "FORMULA9_copy0",
+          "target" : "FORMULA10_copy0"
+        }, {
+          "source" : "FORMULA10_copy0",
+          "target" : "DROP_FIELDS1_copy0"
+        } ]
+      },
+      "TRANSFORM2" : {
+        "label" : "Keep needed columns",
+        "description" : "do we need to do anything w reg status?",
+        "type" : "TRANSFORM",
+        "top" : 392.1,
+        "left" : 392.2,
+        "graph" : {
+          "DROP_FIELDS2" : {
+            "label" : "Drop Columns"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "TRANSFORM3" : {
+        "label" : "Last Event Date",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 252.10000000000002,
+        "left" : 392,
+        "graph" : {
+          "FORMULA11" : {
+            "label" : "Last Event Date"
+          },
+          "DROP_FIELDS3" : {
+            "label" : "Drop Columns"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA11",
+          "target" : "DROP_FIELDS3"
+        } ]
+      },
+      "LOAD_DATASET0_copy1" : {
+        "label" : "Account and Contact Dataset",
+        "description" : "",
+        "type" : "LOAD_DATASET",
+        "top" : 951.5,
+        "left" : 671.9,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "LOAD_DATASET1" : {
+        "label" : "ucinn_ascendv2__Relationship__c",
+        "type" : "LOAD_DATASET",
+        "top" : 1231.5,
+        "left" : 531.9,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "FILTER0" : {
+        "label" : "Filter to parents",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 1091.5,
+        "left" : 531.9
+      },
+      "JOIN1" : {
+        "label" : "Parent Address",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 951.5,
+        "left" : 531.9
+      },
+      "TRANSFORM4" : {
+        "label" : "Keep ID Parent ID and Address",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 811.5,
+        "left" : 531.9,
+        "graph" : {
+          "EDIT_ATTRIBUTES0" : {
+            "label" : "Edit Attributes"
+          },
+          "DROP_FIELDS4" : {
+            "label" : "Drop Columns"
+          }
+        },
+        "connectors" : [ {
+          "source" : "EDIT_ATTRIBUTES0",
+          "target" : "DROP_FIELDS4"
+        } ]
+      },
+      "JOIN2" : {
+        "label" : "Lookup Contact Address",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 671.5,
+        "left" : 531.9
+      },
+      "TRANSFORM5" : {
+        "label" : "Lives with Parents Flag",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 531.5,
+        "left" : 532,
+        "graph" : {
+          "FORMULA12" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Lives with Parents Flag-temp"
+          },
+          "DROP_FIELDS5" : {
+            "label" : "Drop Columns"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA12",
+          "target" : "DROP_FIELDS5"
+        } ]
+      },
+      "FILTER1" : {
+        "label" : "Filter to Lives with Parents",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 392.1,
+        "left" : 532
+      },
+      "JOIN3" : {
+        "label" : "Lookup Lives with parents",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 112.30000000000001,
+        "left" : 532
+      },
+      "JOIN4" : {
+        "label" : "Lookup Last Event Date",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 112.1,
+        "left" : 392
+      },
+      "LOAD_DATASET2" : {
+        "label" : "CONSTITUENT_DATA_GVAC_STATIC",
+        "type" : "LOAD_DATASET",
+        "top" : 252,
+        "left" : 672,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN5" : {
+        "label" : "Lookup GVAC",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 112.19999999999999,
+        "left" : 672
+      },
+      "LOAD_DATASET3" : {
+        "label" : "MARKETING_ACTIVITY_Max Activity date",
+        "type" : "LOAD_DATASET",
+        "top" : 252.10000000000002,
+        "left" : 812,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN6" : {
+        "label" : "Lookup Marketing Activities",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 112.1,
+        "left" : 812
+      },
+      "LOAD_DATASET4" : {
+        "label" : "FY23 ISB VSE workbook for ascend",
+        "type" : "LOAD_DATASET",
+        "top" : 672.3,
+        "left" : 1091.9,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN7" : {
+        "label" : "Join 7",
+        "type" : "JOIN",
+        "top" : 392.3,
+        "left" : 1092
+      },
+      "FILTER2" : {
+        "label" : "Filter to ISB",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 532.3,
+        "left" : 1092
+      },
+      "OUTPUT1" : {
+        "label" : "for fy23 and 24 comparison",
+        "description" : "",
+        "type" : "OUTPUT",
+        "top" : 392.5,
+        "left" : 1372
+      },
+      "TRANSFORM6" : {
+        "label" : "new keys",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 252,
+        "left" : 1092,
+        "graph" : {
+          "FORMULA25" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Formula"
+          },
+          "FORMULA26" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Account_or_Contact_External_Id_string"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA25",
+          "target" : "FORMULA26"
+        } ]
+      },
+      "LOAD_DATASET5" : {
+        "label" : "Account and Contact Dataset",
+        "type" : "LOAD_DATASET",
+        "top" : 112,
+        "left" : 112,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      }
+    },
+    "connectors" : [ {
+      "source" : "JOIN4",
+      "target" : "JOIN3"
+    }, {
+      "source" : "LOAD_DATASET0_copy0",
+      "target" : "TRANSFORM0_copy0"
+    }, {
+      "source" : "TRANSFORM0_copy0",
+      "target" : "TRANSFORM2"
+    }, {
+      "source" : "TRANSFORM2",
+      "target" : "TRANSFORM3"
+    }, {
+      "source" : "LOAD_DATASET1",
+      "target" : "FILTER0"
+    }, {
+      "source" : "FILTER0",
+      "target" : "JOIN1"
+    }, {
+      "source" : "LOAD_DATASET0_copy1",
+      "target" : "JOIN1"
+    }, {
+      "source" : "JOIN1",
+      "target" : "TRANSFORM4"
+    }, {
+      "source" : "TRANSFORM4",
+      "target" : "JOIN2"
+    }, {
+      "source" : "LOAD_DATASET0_copy1",
+      "target" : "JOIN2"
+    }, {
+      "source" : "JOIN2",
+      "target" : "TRANSFORM5"
+    }, {
+      "source" : "TRANSFORM5",
+      "target" : "FILTER1"
+    }, {
+      "source" : "FILTER1",
+      "target" : "JOIN3"
+    }, {
+      "source" : "JOIN6",
+      "target" : "TRANSFORM0"
+    }, {
+      "source" : "TRANSFORM1",
+      "target" : "JOIN4"
+    }, {
+      "source" : "TRANSFORM3",
+      "target" : "JOIN4"
+    }, {
+      "source" : "JOIN3",
+      "target" : "JOIN5"
+    }, {
+      "source" : "LOAD_DATASET2",
+      "target" : "JOIN5"
+    }, {
+      "source" : "JOIN5",
+      "target" : "JOIN6"
+    }, {
+      "source" : "LOAD_DATASET3",
+      "target" : "JOIN6"
+    }, {
+      "source" : "TRANSFORM6",
+      "target" : "JOIN7"
+    }, {
+      "source" : "FILTER2",
+      "target" : "JOIN7"
+    }, {
+      "source" : "LOAD_DATASET4",
+      "target" : "FILTER2"
+    }, {
+      "source" : "TRANSFORM0",
+      "target" : "OUTPUT0"
+    }, {
+      "source" : "JOIN7",
+      "target" : "OUTPUT1"
+    }, {
+      "source" : "TRANSFORM0",
+      "target" : "TRANSFORM6"
+    }, {
+      "source" : "LOAD_DATASET5",
+      "target" : "TRANSFORM1"
+    } ],
+    "hiddenColumns" : [ {
+      "fieldName" : "Title",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "TransformT3.Tiered_1812_4YR",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Largest_HF_Pledge_Designation",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Is_ISB_CFY_or_LFY.Is_ISB_Campaign_Member",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Largest_HFGift.Largest_HF_Gift_Date",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Is_FY25_1812_List",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Pure_Donor_of_Last_Fiscal_Year.Status_Date",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Degree.All_Degree_Codes",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Current_Employer.HAM_Industry__c",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Cash_Match_Flag",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "ML_fundraising.Date",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "FiltertoLe.ucinn_ascendv2__Last_Name__c",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "ucinn_ascendv2__Gender__c",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "ChildReuni.Earliest_Reunion_Year_Child",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "All_Affiliations.All_Active_Organization_Names",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Is_Ten_to_the_Fifth_1YR",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "GS1812.Is_GS_1812_CYR",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Largest_Cash.Largest_Cash_Date",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Philanthropic_Donor.Status_Date",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "TransformT.Tiered_1812_1YR",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "ucinn_ascendv2__Is_Anonymous__c",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Ask_Expected.ucinn_ascendv2__Wealth_Rating_Comment__c",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "EnrichJBA.JBA_Expiration_Date",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "TransformT1.Tiered_1812_2YR",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Is_Contactable_By_Phone",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Preferred_Address.ucinn_ascendv2__Address_City_Formula__c",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Spouse.ucinn_ascendv2__Primary_Contact_Type__c",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "HAM_Privacy_Flag__c",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Is_EFOD",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Is_Ten_to_the_Fifth",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Multicultural_Affinity",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Id",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "ucinn_ascendv2__Donor_ID__c",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "ChildReuni.Is_Hamilton_Parent",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Preferred_Phone.ucinn_ascendv2__Phone_Number__c",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "All_Involvement_Except_Student_Involvement.All_Involvement_Except_Student_Involvement",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "HAM_CareerArea__c",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Record_Type.Name",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Is_Solicitable_By_Mail",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "FiltertoLe.ucinn_ascendv2__Prefix__c",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Is_Chapel_Bell_Society",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Salutation",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "All_Current_Involvements.All_Current_Involvements",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Service_Indicators.All_Service_Indicators",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Account.ucinn_ascendv2__Primary_Contact__c",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Is_Solicitable_By_Email",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Contact_Id_for_Lightning",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Secondary_Relationship_Manager.Assigned_User_Name",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Is_Primary_Contact",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Current_Cell.ucinn_ascendv2__Phone_Number__c",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "ML_Majordonor.First_Fundraising_Major_Gift_Date",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Is_Life_Trustee",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Preferred_Phone.ucinn_ascendv2__Type__c",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "ucinn_ascendv2__External_System_ID__c",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "HAM_JBA_Anonymous__c",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "ucinn_ascendv2__Deceased_Date__c",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Calculated.All_Surviving_Relatives_Except_Spouse",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "ML_fundraising.Last_Fundraising_Date",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Account_or_Contact_External_Id",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "RenametoNC.All_NCAA_Involvements_Spouse",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "ucinn_ascendv2__Date_of_Most_Recent_Pledge__c",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Account_or_Contact_Id_for_Lightning",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Preferred_Address.ucinn_ascendv2__Full_Address_Formula__c",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "All_Society.All_Giving_Societies",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Constituent_Type_String",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Is_Alumni",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Degree.All_Concentrations",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Is_Solicitable",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Is_Tribute_Giver_Only",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Pure_Donor.Status_Date",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "ucinn_ascendv2__Preferred_Class_Year__c",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Preferred_Address.ucinn_ascendv2__Address_Postal_Code_Formula__c",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Student_Clubs_Involvements.All_Students_Clubs_Involvement",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Account.Record_Type.Name",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Birthdate",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Class_Decade",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Spouse.FirstName",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "All_Involvements.All_Involvements",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "NCAA_Involvements.All_NCAA_Involvements",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Is_ISB.Is_ISB_Campaign_Member",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Spouse.FiltertoLe.ucinn_ascendv2__Last_Name__c",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Largest_HF_Gift_Designation",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Largest_Cash_Designation",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "ChildReuni.Latest_Reunion_Year_Child",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Is_Solicitable_By_Text",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Spouse.FiltertoLe.ucinn_ascendv2__Nickname__c",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Job_Title__c",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Spouse.FiltertoLe.ucinn_ascendv2__Constructed_Name_Formula__c",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Primary_Relationship_Manager.Assigned_User_Name",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "HAM_Reunion_Year__c",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Spouse.ucinn_ascendv2__Preferred_Class_Year__c",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "TransformTC.Tiered_1812_CYR",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Volunteer_Involvements.All_Volunteer_Involvements",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "EnrichJBA.Is_JBA_Planned_Gift",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "ML_cash.Last_Cash_Date",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Is_ISB_LFY.Is_ISB_Campaign_Member",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "ML_cash.First_Cash_Date",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "ucinn_ascendv2__Primary_Contact_Type__c",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "HAM_Institutional_Suffix__c",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Account.Name",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Preferred_Email.ucinn_ascendv2__Email_Address__c",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Is_Contactable_By_Mail",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "HF_Model.HAM_Probability__c",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Account_or_Contact_Because_Hamilton_Fundraising",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Aggregate.SUM_FY00_Collected_Amount_HF",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Number_of_Solicitable_Channels",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Aggregate.SUM_FY00_Cash_Amount_CYR_Solicitable",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Aggregate.SUM_FY05_Collected_Amount",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Lifetime_Cash_Amount",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Aggregate.SUM_Tribute_Fundraising",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "ucinn_ascendv2__Lifetime_Cash__c",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "ucinn_ascendv2__Amount_of_Most_Recent_Gift__c",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "ML_fundraising.Number_of_Bequest_Intention_Transaction_Days",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Lifetime_Fundraising_Amount",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "EnrichCBIn.If_CB_Current_FY",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "ML_fundraising.Last_Fundraising_Amount",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Account.ucinn_ascendv2__Lifetime_Cash__c",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "ML_fundraising.Number_of_Fundraising_Days",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "EnrichHami.Max_HF_Daily_Cash_1YR",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Largest_Pledge.Largest_Pledge_Amount",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "HF_Model.HAM_Decile_Number__c",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Pure_Donor.Last_Gift_Amount",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Aggregate.Sum.FY03_Committed_Amount",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "HAM_Consecutive_Years_of_Giving__c",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Pure_Donor.Count_Unique.Fiscal_Years",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Aggregate.SUM_FY00_Fundraising_Amount_CYR_Solicitable",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Aggregate.SUM_FY00_Hamilton_Fund_Fundraising_Amount_Temp",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Projected_HF_CYR_Collected",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "GVAC.HAM_Attend__c",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Philanthropic_Donor_Status_LY",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "ML_fundraising.SUM_Bequest_Intention",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Outstanding_Commitment_Amount",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "AggregateC.SUM_Cash_Amount",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Ask_Expected.MAX_HAM_Expected_Amount__c",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "ucinn_ascendv2__Last_FY_Giving__c",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "ucinn_ascendv2__Current_FY_Giving__c",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Aggregate.SUM_Bequest_Intention_50th_Reunion",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "ucinn_ascendv2__Amount_of_Most_Recent_Pledge_Payment__c",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Aggregate.SUM_FY01_Collected_Amount_Restricted",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Aggregate.SUM_Lifetime_Cash_Amount_Endowment",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Aggregate.Sum.FY02_Committed_Amount",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Expected_Minus_CYR_HF_Collected",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "ML_cash.First_Cash_Amount",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Aggregate.SUM_FY00_Collected_Amount_No_Event_Fee_Gifts",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Aggregate.SUM_Fundraising_Amount_50th_Reunion",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Aggregate.Sum.FY03_Collected_Amount",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "EnrichCBIn.If_CB_Last_FY",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Outstanding_Balance_Excluding_Bequest_Intentions",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Pure_Donor_Status",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "GVAC.HAM_Connect__c",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "CYR_Pure_Donor_Giving_Flag",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "ML_cash.Number_of_Cash_Days",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "ML_fundraising.Largest_Fundraising_Amount",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Hamilton_Fund_Donor_Status",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Largest_HFPledge.Largest_HF_Pledge_Amount",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Number_of_Contactable_Channels",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Aggregate.SUM_FY00_Committed_Amount_HF",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "User_Defined_Fiscal_Year",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Aggregate.SUM_FY00_thru_Apr2_Collected_Amount",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "ucinn_ascendv2__Age_Formula__c",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Aggregate.SUM_Lifetime_Fundraising_Amount_Endowment",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Aggregate.Sum.Lifetime_Committed_Amount",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Pure_Donor_Status_2YR",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Aggregate.Sum.FY00_Collected_Amount",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "ML_cash.Daily_Cash_Amount",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "ML_fundraising.Daily_Fundraising_Amount",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Aggregate.SUM_FY00_Collect_Amount_Restricted",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Philanthropic_Donor_Status",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Aggregate.Sum.FY04_Collected_Amount",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "GVAC.HAM_Give__c",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Hamilton_Fund.Last_HF_Gift_Amount",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Ask_Expected.MAX_HAM_Ask_Amount__c",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Aggregate.Sum.FY00_Committed_Amount",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Aggregate.Sum.FY01_Collected_Amount",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Aggregate.Sum.Lifetime_Collected_Amount",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Aggregate_02.Sum.Is_Consecutive_Year",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Aggregate.Sum.FY00_Hamilton_Fund_Cash_Amount",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Aggregate.SUM_Bequest_Intention",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Largest_HFGift.Largest_HF_Gift_Amount",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "ML_fundraising.First_Fundraising_Amount",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "ucinn_ascendv2__Lifetime_Fundraising__c",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "ucinn_ascendv2__Amount_of_Most_Recent_Pledge__c",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Aggregate.SUM_FY05_Collected_Amount_HF",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Largest_Cash.Largest_Cash_Amount",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Aggregate.Sum.FY00_Hamilton_Fund_Fundraising_Amount",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Account.ucinn_ascendv2__Lifetime_Fundraising__c",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Aggregate.SUM_FY04_Collected_Amount_HF",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Aggregate.Sum.FY04_Committed_Amount",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Largest_Gift.Largest_Gift_Amount",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "COUNT_Rows",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Aggregate.Sum.FY01_Committed_Amount",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Aggregate.Sum.FY02_Collected_Amount",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Aggregate.SUM_FY03_Collected_Amount_HF",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "GVAC.HAM_Volunteer__c",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Aggregate.SUM_FY01_Collected_Amount_HF",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "ML_cash.Last_Cash_Amount",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "ML_cash.Largest_Cash_Amount",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Aggregate.SUM_FY02_Collected_Amount_HF",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Aggregate.SUM_Cash_Amount_50th_Reunion",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "ML_fundraising.Daily_Bequest_Intention_Flag",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Aggregate.SUM_FY01_Collected_Amount_No_Event_Fee_Gifts",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    }, {
+      "fieldName" : "Pure_Donor_Status_of_Last_Fiscal_Year",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    } ]
+  },
+  "runMode" : "full"
+}

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObjectTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <caseValues>
+        <plural>false</plural>
+        <value>Work Item Promote</value>
+    </caseValues>
+    <caseValues>
+        <plural>true</plural>
+        <value>Work Item Promotes</value>
+    </caseValues>
+    <startsWith>Consonant</startsWith>
+    <validationRules>
+        <errorMessage><!-- You cannot promote a Work_Item to an inactive Pipeline. --></errorMessage>
+        <name>sf_devops__No_Promotion_to_Inactive_Pipeline</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- A Work_Item that is a member of a Change_Bundle can not be promoted into a Pipeline_Stage. --></errorMessage>
+        <name>sf_devops__Promoted_And_Installed</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- A Work_Item cannot be promoted into a versioned Pipeline_Stage. --></errorMessage>
+        <name>sf_devops__Promoted_To_Versioned</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- A WorkItem cannot be promoted if it is not Approved. --></errorMessage>
+        <name>sf_devops__Promoted_Without_Approval</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- A WorkItem can only be promoted to a stage within the same Project. --></errorMessage>
+        <name>sf_devops__Promoted_Wrong_Project</name>
+    </validationRules>
+</CustomObjectTranslation>

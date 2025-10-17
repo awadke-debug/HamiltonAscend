@@ -1,0 +1,784 @@
+{
+  "version" : "61.0",
+  "nodes" : {
+    "LOAD_DATASET7_copy0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "ucinn_ascendv2__End_Date__c", "ucinn_ascendv2__Start_Date__c", "ucinn_ascendv2__Is_End_Date_Before_Start_Formula__c", "RecordTypeId", "ucinn_ascendv2__Account__c", "ucinn_ascendv2__Contact__c", "ucinn_ascendv2__Involvement_Code__c", "ucinn_ascendv2__Status__c", "ucinn_ascendv2__Involvement_Code_Description_Formula__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "ucinn_ascendv2__Involvement__c",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "ucinn_ascendv2__Involvement__c"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "LOAD_DATASET8_copy0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Id", "Name" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "RecordType",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "RecordType"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN15_copy0" : {
+      "action" : "join",
+      "sources" : [ "LOAD_DATASET7_copy0", "LOAD_DATASET8_copy0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "RecordTypeId", "Record_Type.Id" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "RecordTypeId" ],
+        "rightQualifier" : "Record_Type",
+        "rightKeys" : [ "Id" ]
+      }
+    },
+    "LOAD_DATASET19_copy0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Id", "HAM_Category__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "ucinn_ascendv2__Involvement_Value__c",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "ucinn_ascendv2__Involvement_Value__c"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN27_copy0" : {
+      "action" : "join",
+      "sources" : [ "JOIN15_copy0", "LOAD_DATASET19_copy0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Involvement_Code.Id", "ucinn_ascendv2__Involvement_Code__c" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "ucinn_ascendv2__Involvement_Code__c" ],
+        "rightQualifier" : "Involvement_Code",
+        "rightKeys" : [ "Id" ]
+      }
+    },
+    "OUTPUT1_copy0" : {
+      "action" : "save",
+      "sources" : [ "AGGREGATE3" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "involvement trustees_temp",
+          "name" : "involvement_trustees_temp"
+        },
+        "measuresToCurrencies" : [ ]
+      }
+    },
+    "FILTER0" : {
+      "action" : "filter",
+      "sources" : [ "JOIN27_copy0" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "Record_Type.Name",
+          "operator" : "CONTAINS",
+          "operands" : [ "Trustee" ]
+        }, {
+          "type" : "TEXT",
+          "field" : "Involvement_Code.HAM_Category__c",
+          "operator" : "EQUAL",
+          "operands" : [ "Board of Trustees" ]
+        } ]
+      }
+    },
+    "FORMULA0" : {
+      "action" : "formula",
+      "sources" : [ "AGGREGATE1" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "FY2013",
+          "label" : "FY2013",
+          "formulaExpression" : "case \r\n    when \r\n    ucinn_ascendv2__Start_Date__c_FISCAL_YEAR<=2013\r\n    and (\r\n    ucinn_ascendv2__End_Date__c_FISCAL_YEAR>=2013 or ucinn_ascendv2__End_Date__c_FISCAL_YEAR IS NULL)\r\n    then 1\r\n    else\r\n    0\r\nend",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA1" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "FY2014",
+          "label" : "FY2014 ",
+          "formulaExpression" : "case \r\n    when \r\n    ucinn_ascendv2__Start_Date__c_FISCAL_YEAR<=2014\r\n    and (\r\n    ucinn_ascendv2__End_Date__c_FISCAL_YEAR>=2014 or ucinn_ascendv2__End_Date__c_FISCAL_YEAR IS NULL)\r\n    then 1\r\n    else\r\n    0\r\nend",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA2" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA1" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "FY2015",
+          "label" : "FY2015",
+          "formulaExpression" : "case \r\n    when \r\n    ucinn_ascendv2__Start_Date__c_FISCAL_YEAR<=2015\r\n    and (\r\n    ucinn_ascendv2__End_Date__c_FISCAL_YEAR>=2015 or ucinn_ascendv2__End_Date__c_FISCAL_YEAR IS NULL)\r\n    then 1\r\n    else\r\n    0\r\nend",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA3" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA2" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "FY2016",
+          "label" : "FY2016",
+          "formulaExpression" : "case \r\n    when \r\n    ucinn_ascendv2__Start_Date__c_FISCAL_YEAR<=2016\r\n    and (\r\n    ucinn_ascendv2__End_Date__c_FISCAL_YEAR>=2016 or ucinn_ascendv2__End_Date__c_FISCAL_YEAR IS NULL)\r\n    then 1\r\n    else\r\n    0\r\nend",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA4" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA3" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "FY2017",
+          "label" : "FY2017",
+          "formulaExpression" : "case \r\n    when \r\n    ucinn_ascendv2__Start_Date__c_FISCAL_YEAR<=2017\r\n    and (\r\n    ucinn_ascendv2__End_Date__c_FISCAL_YEAR>=2017 or ucinn_ascendv2__End_Date__c_FISCAL_YEAR IS NULL)\r\n    then 1\r\n    else\r\n    0\r\nend",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA5" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA4" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "FY2018",
+          "label" : "FY2018",
+          "formulaExpression" : "case \r\n    when \r\n    ucinn_ascendv2__Start_Date__c_FISCAL_YEAR<=2018\r\n    and (\r\n    ucinn_ascendv2__End_Date__c_FISCAL_YEAR>=2018 or ucinn_ascendv2__End_Date__c_FISCAL_YEAR IS NULL)\r\n    then 1\r\n    else\r\n    0\r\nend",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA6" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA5" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "FY2019",
+          "label" : "FY2019",
+          "formulaExpression" : "case \r\n    when \r\n    ucinn_ascendv2__Start_Date__c_FISCAL_YEAR<=2019\r\n    and (\r\n    ucinn_ascendv2__End_Date__c_FISCAL_YEAR>=2019 or ucinn_ascendv2__End_Date__c_FISCAL_YEAR IS NULL)\r\n    then 1\r\n    else\r\n    0\r\nend",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA7" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA6" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "FY2020",
+          "label" : "FY2020",
+          "formulaExpression" : "case \r\n    when \r\n    ucinn_ascendv2__Start_Date__c_FISCAL_YEAR<=2020\r\n    and (\r\n    ucinn_ascendv2__End_Date__c_FISCAL_YEAR>=2020 or ucinn_ascendv2__End_Date__c_FISCAL_YEAR IS NULL)\r\n    then 1\r\n    else\r\n    0\r\nend",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA8" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA7" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "FY2021",
+          "label" : "FY2021",
+          "formulaExpression" : "case \r\n    when \r\n    ucinn_ascendv2__Start_Date__c_FISCAL_YEAR<=2021\r\n    and (\r\n    ucinn_ascendv2__End_Date__c_FISCAL_YEAR>=2021 or ucinn_ascendv2__End_Date__c_FISCAL_YEAR IS NULL)\r\n    then 1\r\n    else\r\n    0\r\nend",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA9" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA8" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "FY2022",
+          "label" : "FY2022",
+          "formulaExpression" : "case \r\n    when \r\n    ucinn_ascendv2__Start_Date__c_FISCAL_YEAR<=2022\r\n    and (\r\n    ucinn_ascendv2__End_Date__c_FISCAL_YEAR>=2022 or ucinn_ascendv2__End_Date__c_FISCAL_YEAR IS NULL)\r\n    then 1\r\n    else\r\n    0\r\nend",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA10" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA9" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "FY2023",
+          "label" : "FY2023",
+          "formulaExpression" : "case \r\n    when \r\n    ucinn_ascendv2__Start_Date__c_FISCAL_YEAR<=2023\r\n    and (\r\n    ucinn_ascendv2__End_Date__c_FISCAL_YEAR>=2023 or ucinn_ascendv2__End_Date__c_FISCAL_YEAR IS NULL)\r\n    then 1\r\n    else\r\n    0\r\nend",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA11" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA10" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "FY2024",
+          "label" : "FY2024",
+          "formulaExpression" : "case \r\n    when \r\n    ucinn_ascendv2__Start_Date__c_FISCAL_YEAR<=2024\r\n    and (\r\n    ucinn_ascendv2__End_Date__c_FISCAL_YEAR>=2024 or ucinn_ascendv2__End_Date__c_FISCAL_YEAR IS NULL)\r\n    then 1\r\n    else\r\n    0\r\nend",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "EXTRACT0" : {
+      "action" : "extractGrains",
+      "sources" : [ "FILTER0" ],
+      "parameters" : {
+        "grainExtractions" : [ {
+          "source" : "ucinn_ascendv2__Start_Date__c",
+          "targets" : [ {
+            "name" : "ucinn_ascendv2__Start_Date__c_FISCAL_YEAR",
+            "label" : "Start Date Fiscal Year",
+            "grainType" : "FISCAL_YEAR"
+          } ]
+        }, {
+          "source" : "ucinn_ascendv2__End_Date__c",
+          "targets" : [ {
+            "name" : "ucinn_ascendv2__End_Date__c_FISCAL_YEAR",
+            "label" : "End Date Fiscal Year",
+            "grainType" : "FISCAL_YEAR"
+          } ]
+        } ]
+      }
+    },
+    "AGGREGATE1" : {
+      "action" : "aggregate",
+      "sources" : [ "EXTRACT0" ],
+      "parameters" : {
+        "aggregations" : [ {
+          "action" : "UNIQUE",
+          "source" : "Involvement_Code.HAM_Category__c",
+          "name" : "UNIQUE_Involvement_Code.HAM_Category__c",
+          "label" : "Unique Category"
+        } ],
+        "groupings" : [ "ucinn_ascendv2__Contact__c", "ucinn_ascendv2__Start_Date__c_FISCAL_YEAR", "ucinn_ascendv2__End_Date__c_FISCAL_YEAR", "Involvement_Code.HAM_Category__c", "ucinn_ascendv2__Status__c", "ucinn_ascendv2__Involvement_Code_Description_Formula__c", "Record_Type.Name" ],
+        "pivots" : [ ],
+        "nodeType" : "STANDARD"
+      }
+    },
+    "LOAD_DATASET20" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Id", "Name" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "Contact",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "Contact"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN28" : {
+      "action" : "join",
+      "sources" : [ "FORMULA11", "LOAD_DATASET20" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "ucinn_ascendv2__Contact__c" ],
+        "rightQualifier" : "Contact",
+        "rightKeys" : [ "Id" ]
+      }
+    },
+    "EXTRACT1" : {
+      "action" : "extractGrains",
+      "sources" : [ "JOIN28" ],
+      "parameters" : {
+        "grainExtractions" : [ ]
+      }
+    },
+    "AGGREGATE3" : {
+      "action" : "aggregate",
+      "sources" : [ "EXTRACT1" ],
+      "parameters" : {
+        "aggregations" : [ {
+          "action" : "MAX",
+          "source" : "FY2013",
+          "name" : "MAX_FY2013",
+          "label" : "Maximum FY2013"
+        }, {
+          "action" : "MAX",
+          "source" : "FY2014",
+          "name" : "MAX_FY2014",
+          "label" : "Maximum FY2014 "
+        }, {
+          "action" : "MAX",
+          "source" : "FY2015",
+          "name" : "MAX_FY2015",
+          "label" : "Maximum FY2015"
+        }, {
+          "action" : "MAX",
+          "source" : "FY2016",
+          "name" : "MAX_FY2016",
+          "label" : "Maximum FY2016"
+        }, {
+          "action" : "MAX",
+          "source" : "FY2017",
+          "name" : "MAX_FY2017",
+          "label" : "Maximum FY2017"
+        }, {
+          "action" : "MAX",
+          "source" : "FY2018",
+          "name" : "MAX_FY2018",
+          "label" : "Maximum FY2018"
+        }, {
+          "action" : "MAX",
+          "source" : "FY2019",
+          "name" : "MAX_FY2019",
+          "label" : "Maximum FY2019"
+        }, {
+          "action" : "MAX",
+          "source" : "FY2020",
+          "name" : "MAX_FY2020",
+          "label" : "Maximum FY2020"
+        }, {
+          "action" : "MAX",
+          "source" : "FY2021",
+          "name" : "MAX_FY2021",
+          "label" : "Maximum FY2021"
+        }, {
+          "action" : "MAX",
+          "source" : "FY2022",
+          "name" : "MAX_FY2022",
+          "label" : "Maximum FY2022"
+        }, {
+          "action" : "MAX",
+          "source" : "FY2023",
+          "name" : "MAX_FY2023",
+          "label" : "Maximum FY2023"
+        }, {
+          "action" : "MAX",
+          "source" : "FY2024",
+          "name" : "MAX_FY2024",
+          "label" : "Maximum FY2024"
+        } ],
+        "groupings" : [ "Contact.Id", "Contact.Name" ],
+        "pivots" : [ ],
+        "nodeType" : "STANDARD"
+      }
+    },
+    "OUTPUT2" : {
+      "action" : "save",
+      "sources" : [ "FILTER0" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "temp1",
+          "name" : "temp1"
+        },
+        "measuresToCurrencies" : [ ]
+      }
+    },
+    "OUTPUT3" : {
+      "action" : "save",
+      "sources" : [ "FORMULA11" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "temp2",
+          "name" : "temp2"
+        },
+        "measuresToCurrencies" : [ ]
+      }
+    },
+    "OUTPUT4" : {
+      "action" : "save",
+      "sources" : [ "JOIN28" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "temp3",
+          "name" : "temp3"
+        },
+        "measuresToCurrencies" : [ ]
+      }
+    }
+  },
+  "ui" : {
+    "nodes" : {
+      "LOAD_DATASET7_copy0" : {
+        "label" : "ucinn_ascendv2__Involvement__c",
+        "type" : "LOAD_DATASET",
+        "top" : 112,
+        "left" : 112,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "LOAD_DATASET8_copy0" : {
+        "label" : "RecordType",
+        "type" : "LOAD_DATASET",
+        "top" : 252,
+        "left" : 112,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN15_copy0" : {
+        "label" : "Join Record Type To Involvement",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 112,
+        "left" : 252
+      },
+      "LOAD_DATASET19_copy0" : {
+        "label" : "ucinn_ascendv2__Involvement_Value__c",
+        "type" : "LOAD_DATASET",
+        "top" : 252,
+        "left" : 252,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN27_copy0" : {
+        "label" : "Lookup Involvement Code To Involvement",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 112,
+        "left" : 392
+      },
+      "OUTPUT1_copy0" : {
+        "label" : "Output involvements-test code",
+        "description" : "",
+        "type" : "OUTPUT",
+        "top" : 112,
+        "left" : 1232
+      },
+      "FILTER0" : {
+        "label" : "Filter to Trustees",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 112,
+        "left" : 532
+      },
+      "TRANSFORM0" : {
+        "label" : "FY membership",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 112,
+        "left" : 812,
+        "graph" : {
+          "FORMULA0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "FY2013"
+          },
+          "FORMULA1" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "FY2014"
+          },
+          "FORMULA2" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "FY2015"
+          },
+          "FORMULA3" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "FY2016"
+          },
+          "FORMULA4" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "FY2017"
+          },
+          "FORMULA5" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "FY2018"
+          },
+          "FORMULA6" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "FY2019"
+          },
+          "FORMULA7" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "FY2020"
+          },
+          "FORMULA8" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "FY2021"
+          },
+          "FORMULA9" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "FY2022"
+          },
+          "FORMULA10" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "FY2023"
+          },
+          "FORMULA11" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "FY2024"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA0",
+          "target" : "FORMULA1"
+        }, {
+          "source" : "FORMULA1",
+          "target" : "FORMULA2"
+        }, {
+          "source" : "FORMULA2",
+          "target" : "FORMULA3"
+        }, {
+          "source" : "FORMULA3",
+          "target" : "FORMULA4"
+        }, {
+          "source" : "FORMULA4",
+          "target" : "FORMULA5"
+        }, {
+          "source" : "FORMULA5",
+          "target" : "FORMULA6"
+        }, {
+          "source" : "FORMULA6",
+          "target" : "FORMULA7"
+        }, {
+          "source" : "FORMULA7",
+          "target" : "FORMULA8"
+        }, {
+          "source" : "FORMULA8",
+          "target" : "FORMULA9"
+        }, {
+          "source" : "FORMULA9",
+          "target" : "FORMULA10"
+        }, {
+          "source" : "FORMULA10",
+          "target" : "FORMULA11"
+        } ]
+      },
+      "AGGREGATE0" : {
+        "label" : "Aggregate to constituent",
+        "description" : "",
+        "type" : "AGGREGATE",
+        "top" : 112,
+        "left" : 672,
+        "graph" : {
+          "EXTRACT0" : null,
+          "AGGREGATE1" : null
+        },
+        "connectors" : [ {
+          "source" : "EXTRACT0",
+          "target" : "AGGREGATE1"
+        } ]
+      },
+      "LOAD_DATASET20" : {
+        "label" : "Contact",
+        "type" : "LOAD_DATASET",
+        "top" : 252.10000000000002,
+        "left" : 952,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN28" : {
+        "label" : "Look up Name",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 112,
+        "left" : 952
+      },
+      "AGGREGATE2" : {
+        "label" : "Aggregate to contact",
+        "description" : "",
+        "type" : "AGGREGATE",
+        "top" : 112,
+        "left" : 1092,
+        "graph" : {
+          "EXTRACT1" : null,
+          "AGGREGATE3" : null
+        },
+        "connectors" : [ {
+          "source" : "EXTRACT1",
+          "target" : "AGGREGATE3"
+        } ]
+      },
+      "OUTPUT2" : {
+        "label" : "Output 2",
+        "type" : "OUTPUT",
+        "top" : 251.89999999999998,
+        "left" : 532
+      },
+      "OUTPUT3" : {
+        "label" : "Output 3",
+        "type" : "OUTPUT",
+        "top" : 252.2,
+        "left" : 812
+      },
+      "OUTPUT4" : {
+        "label" : "Output 4",
+        "type" : "OUTPUT",
+        "top" : 252.3,
+        "left" : 1092
+      }
+    },
+    "connectors" : [ {
+      "source" : "JOIN15_copy0",
+      "target" : "JOIN27_copy0"
+    }, {
+      "source" : "LOAD_DATASET7_copy0",
+      "target" : "JOIN15_copy0"
+    }, {
+      "source" : "LOAD_DATASET8_copy0",
+      "target" : "JOIN15_copy0"
+    }, {
+      "source" : "LOAD_DATASET19_copy0",
+      "target" : "JOIN27_copy0"
+    }, {
+      "source" : "AGGREGATE2",
+      "target" : "OUTPUT1_copy0"
+    }, {
+      "source" : "JOIN27_copy0",
+      "target" : "FILTER0"
+    }, {
+      "source" : "AGGREGATE0",
+      "target" : "TRANSFORM0"
+    }, {
+      "source" : "FILTER0",
+      "target" : "AGGREGATE0"
+    }, {
+      "source" : "TRANSFORM0",
+      "target" : "JOIN28"
+    }, {
+      "source" : "LOAD_DATASET20",
+      "target" : "JOIN28"
+    }, {
+      "source" : "JOIN28",
+      "target" : "AGGREGATE2"
+    }, {
+      "source" : "FILTER0",
+      "target" : "OUTPUT2"
+    }, {
+      "source" : "TRANSFORM0",
+      "target" : "OUTPUT3"
+    }, {
+      "source" : "JOIN28",
+      "target" : "OUTPUT4"
+    } ],
+    "hiddenColumns" : [ ]
+  },
+  "runMode" : "full"
+}

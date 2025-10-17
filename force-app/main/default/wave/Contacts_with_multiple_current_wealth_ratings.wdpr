@@ -1,0 +1,573 @@
+{
+  "version" : "62.0",
+  "nodes" : {
+    "LOAD_DATASET16_copy0_copy0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "RecordTypeId", "ucinn_ascendv2__Account__c", "ucinn_ascendv2__Contact__c", "ucinn_ascendv2__Wealth_Rating_Comment__c", "ucinn_ascendv2__Type__c", "ucinn_ascendv2__Wealth_Rating__c", "HAM_Wealth_Rating_Number__c", "HAM_Status__c", "Id" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "ucinn_ascendv2__Wealth_Rating__c",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "ucinn_ascendv2__Wealth_Rating__c"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "LOAD_DATASET17_copy0_copy0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Id", "Name" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "RecordType",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "RecordType"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN25_copy0_copy0" : {
+      "action" : "join",
+      "sources" : [ "LOAD_DATASET16_copy0_copy0", "LOAD_DATASET17_copy0_copy0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "RecordTypeId", "Record_Type.Id" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "RecordTypeId" ],
+        "rightQualifier" : "Record_Type",
+        "rightKeys" : [ "Id" ]
+      }
+    },
+    "FILTER7_copy0_copy0" : {
+      "action" : "filter",
+      "sources" : [ "DROP_FIELDS0" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "Record_Type.Name",
+          "operator" : "EQUAL",
+          "operands" : [ "Wealth Rating" ]
+        }, {
+          "type" : "TEXT",
+          "field" : "HAM_Status__c",
+          "operator" : "EQUAL",
+          "operands" : [ "Current" ]
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES0" : {
+      "action" : "schema",
+      "sources" : [ "FILTER7_copy0_copy0" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "ucinn_ascendv2__Contact__c",
+          "newProperties" : {
+            "label" : "Constituent2",
+            "name" : "ucinn_ascendv2__Contact__c2"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES1" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES0" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "HAM_Wealth_Rating_Number__c",
+          "newProperties" : {
+            "label" : "Wealth Rating Number2",
+            "name" : "HAM_Wealth_Rating_Number__c2"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES2" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES1" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Id",
+          "newProperties" : {
+            "label" : "Record ID2",
+            "name" : "Id2"
+          }
+        } ]
+      }
+    },
+    "DROP_FIELDS0" : {
+      "action" : "schema",
+      "sources" : [ "JOIN25_copy0_copy0" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "SELECT",
+          "ignoreMissingFields" : true,
+          "fields" : [ "ucinn_ascendv2__Contact__c", "HAM_Wealth_Rating_Number__c", "ucinn_ascendv2__Account__c", "HAM_Status__c", "Record_Type.Name", "Id" ]
+        }
+      }
+    },
+    "JOIN26" : {
+      "action" : "join",
+      "sources" : [ "FILTER7_copy0_copy0", "EDIT_ATTRIBUTES2" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "OUTER",
+        "leftKeys" : [ "ucinn_ascendv2__Account__c" ],
+        "rightQualifier" : "fulljoin",
+        "rightKeys" : [ "ucinn_ascendv2__Account__c" ]
+      }
+    },
+    "FORMULA0" : {
+      "action" : "formula",
+      "sources" : [ "JOIN26" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "rating_match",
+          "label" : "rating match",
+          "formulaExpression" : "case \r\n    when HAM_Wealth_Rating_Number__c=\"fulljoin.HAM_Wealth_Rating_Number__c2\"\r\n    then 'true'\r\n    when\r\n    HAM_Wealth_Rating_Number__c is null and \"fulljoin.HAM_Wealth_Rating_Number__c2\" is null then 'true'\r\n  \r\n    else\r\n    'false'\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "DROP_FIELDS1" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA0" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "SELECT",
+          "ignoreMissingFields" : true,
+          "fields" : [ "ucinn_ascendv2__Contact__c", "HAM_Wealth_Rating_Number__c", "fulljoin.ucinn_ascendv2__Account__c", "fulljoin.ucinn_ascendv2__Contact__c2", "fulljoin.HAM_Wealth_Rating_Number__c2", "rating_match", "ucinn_ascendv2__Account__c", "Id", "fulljoin.Id2" ]
+        }
+      }
+    },
+    "TO_MEASURE0" : {
+      "action" : "typeCast",
+      "sources" : [ "REPLACE2" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "HAM_Wealth_Rating_Number__c_to_measure",
+          "newProperties" : {
+            "name" : "HAM_Wealth_Rating_Number__c"
+          }
+        } ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "HAM_Wealth_Rating_Number__c" ]
+        }
+      },
+      "parameters" : {
+        "fields" : [ {
+          "name" : "HAM_Wealth_Rating_Number__c",
+          "newProperties" : {
+            "label" : "Wealth Rating Number",
+            "name" : "HAM_Wealth_Rating_Number__c_to_measure",
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        } ]
+      }
+    },
+    "TO_MEASURE1" : {
+      "action" : "typeCast",
+      "sources" : [ "TO_MEASURE0" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "fulljoin.HAM_Wealth_Rating_Number__c2_to_measure",
+          "newProperties" : {
+            "name" : "fulljoin.HAM_Wealth_Rating_Number__c2"
+          }
+        } ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "fulljoin.HAM_Wealth_Rating_Number__c2" ]
+        }
+      },
+      "parameters" : {
+        "fields" : [ {
+          "name" : "fulljoin.HAM_Wealth_Rating_Number__c2",
+          "newProperties" : {
+            "label" : "Wealth Rating Number2",
+            "name" : "fulljoin.HAM_Wealth_Rating_Number__c2_to_measure",
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        } ]
+      }
+    },
+    "FORMULA1" : {
+      "action" : "formula",
+      "sources" : [ "TO_MEASURE1" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "is_bigger_rating_number",
+          "label" : "is bigger rating number",
+          "formulaExpression" : "case \r\n    when coalesce(HAM_Wealth_Rating_Number__c, 9999)>coalesce(\"fulljoin.HAM_Wealth_Rating_Number__c2\", 9999)\r\n    then 'true'\r\n    \r\n    else\r\n    'false'\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "REPLACE0" : {
+      "action" : "formula",
+      "sources" : [ "DROP_FIELDS1" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "HAM_Wealth_Rating_Number__c_replace",
+          "newProperties" : {
+            "name" : "HAM_Wealth_Rating_Number__c"
+          }
+        } ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "HAM_Wealth_Rating_Number__c" ]
+        }
+      },
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "HAM_Wealth_Rating_Number__c_replace",
+          "label" : "Wealth Rating Number",
+          "formulaExpression" : "coalesce(HAM_Wealth_Rating_Number__c, null, '99999')",
+          "precision" : 255
+        } ]
+      }
+    },
+    "REPLACE2" : {
+      "action" : "formula",
+      "sources" : [ "REPLACE0" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "fulljoin.HAM_Wealth_Rating_Number__c2_replace",
+          "newProperties" : {
+            "name" : "fulljoin.HAM_Wealth_Rating_Number__c2"
+          }
+        } ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "fulljoin.HAM_Wealth_Rating_Number__c2" ]
+        }
+      },
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "fulljoin.HAM_Wealth_Rating_Number__c2_replace",
+          "label" : "Wealth Rating Number2",
+          "formulaExpression" : "coalesce(\"fulljoin.HAM_Wealth_Rating_Number__c2\", null, '99999')",
+          "precision" : 255
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES3" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA1" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Id",
+          "newProperties" : {
+            "label" : "Record ID1",
+            "name" : "Id",
+            "typeProperties" : null
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES4" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES3" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "ucinn_ascendv2__Contact__c",
+          "newProperties" : {
+            "label" : "Constituent1",
+            "name" : "ucinn_ascendv2__Contact__c",
+            "typeProperties" : null
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES5" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES4" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "HAM_Wealth_Rating_Number__c",
+          "newProperties" : {
+            "label" : "Wealth Rating Number1",
+            "name" : "HAM_Wealth_Rating_Number__c",
+            "typeProperties" : null
+          }
+        } ]
+      }
+    },
+    "FILTER8" : {
+      "action" : "filter",
+      "sources" : [ "EDIT_ATTRIBUTES5" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "rating_match",
+          "operator" : "EQUAL",
+          "operands" : [ "false" ]
+        } ]
+      }
+    },
+    "OUTPUT0" : {
+      "action" : "save",
+      "sources" : [ "FILTER8" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "accounts_with_multiple_wealth_ratings",
+          "name" : "accounts_with_multiple_wealth_ratings",
+          "folderName" : "AIS_Ad_Hoc"
+        },
+        "measuresToCurrencies" : [ ]
+      }
+    }
+  },
+  "ui" : {
+    "nodes" : {
+      "LOAD_DATASET16_copy0_copy0" : {
+        "label" : "ucinn_ascendv2__Wealth_Rating__c",
+        "description" : "",
+        "type" : "LOAD_DATASET",
+        "top" : 531.9,
+        "left" : 112,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "LOAD_DATASET17_copy0_copy0" : {
+        "label" : "RecordType",
+        "description" : "",
+        "type" : "LOAD_DATASET",
+        "top" : 391.9,
+        "left" : 252,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN25_copy0_copy0" : {
+        "label" : "Lookup Record Type To Wealth Rating Copy",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 391.9,
+        "left" : 112
+      },
+      "FILTER7_copy0_copy0" : {
+        "label" : "Filter Record Type To Wealth Rating",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 112.80000000000001,
+        "left" : 112.1
+      },
+      "TRANSFORM1" : {
+        "label" : "Copy of filtered DS",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 112.30000000000001,
+        "left" : 390.8,
+        "graph" : {
+          "EDIT_ATTRIBUTES0" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES1" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES2" : {
+            "label" : "Edit Attributes"
+          }
+        },
+        "connectors" : [ {
+          "source" : "EDIT_ATTRIBUTES0",
+          "target" : "EDIT_ATTRIBUTES1"
+        }, {
+          "source" : "EDIT_ATTRIBUTES1",
+          "target" : "EDIT_ATTRIBUTES2"
+        } ]
+      },
+      "TRANSFORM2" : {
+        "label" : "Transform 2",
+        "type" : "TRANSFORM",
+        "top" : 252,
+        "left" : 112,
+        "graph" : {
+          "DROP_FIELDS0" : {
+            "label" : "Drop Columns"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "JOIN26" : {
+        "label" : "Join 26",
+        "type" : "JOIN",
+        "top" : 113.30000000000001,
+        "left" : 532
+      },
+      "TRANSFORM3" : {
+        "label" : "Transform 3",
+        "type" : "TRANSFORM",
+        "top" : 112.80000000000001,
+        "left" : 811.7,
+        "graph" : {
+          "FORMULA0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "rating match"
+          },
+          "DROP_FIELDS1" : {
+            "label" : "Drop Columns"
+          },
+          "TO_MEASURE0" : {
+            "label" : "To Number"
+          },
+          "TO_MEASURE1" : {
+            "label" : "To Number"
+          },
+          "FORMULA1" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "is bigger rating number"
+          },
+          "REPLACE0" : {
+            "parameters" : {
+              "type" : "REPLACE_UI"
+            },
+            "label" : "Replace"
+          },
+          "REPLACE2" : {
+            "parameters" : {
+              "type" : "REPLACE_UI"
+            },
+            "label" : "Replace"
+          },
+          "EDIT_ATTRIBUTES3" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES4" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES5" : {
+            "label" : "Edit Attributes"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA0",
+          "target" : "DROP_FIELDS1"
+        }, {
+          "source" : "TO_MEASURE0",
+          "target" : "TO_MEASURE1"
+        }, {
+          "source" : "TO_MEASURE1",
+          "target" : "FORMULA1"
+        }, {
+          "source" : "DROP_FIELDS1",
+          "target" : "REPLACE0"
+        }, {
+          "source" : "REPLACE0",
+          "target" : "REPLACE2"
+        }, {
+          "source" : "REPLACE2",
+          "target" : "TO_MEASURE0"
+        }, {
+          "source" : "FORMULA1",
+          "target" : "EDIT_ATTRIBUTES3"
+        }, {
+          "source" : "EDIT_ATTRIBUTES3",
+          "target" : "EDIT_ATTRIBUTES4"
+        }, {
+          "source" : "EDIT_ATTRIBUTES4",
+          "target" : "EDIT_ATTRIBUTES5"
+        } ]
+      },
+      "FILTER8" : {
+        "label" : "Filter 8",
+        "type" : "FILTER",
+        "top" : 112.30000000000001,
+        "left" : 951.8
+      },
+      "OUTPUT0" : {
+        "label" : "Output 0",
+        "type" : "OUTPUT",
+        "top" : 112.1,
+        "left" : 1092.9
+      }
+    },
+    "connectors" : [ {
+      "source" : "LOAD_DATASET16_copy0_copy0",
+      "target" : "JOIN25_copy0_copy0"
+    }, {
+      "source" : "LOAD_DATASET17_copy0_copy0",
+      "target" : "JOIN25_copy0_copy0"
+    }, {
+      "source" : "TRANSFORM2",
+      "target" : "FILTER7_copy0_copy0"
+    }, {
+      "source" : "FILTER7_copy0_copy0",
+      "target" : "TRANSFORM1"
+    }, {
+      "source" : "JOIN25_copy0_copy0",
+      "target" : "TRANSFORM2"
+    }, {
+      "source" : "FILTER7_copy0_copy0",
+      "target" : "JOIN26"
+    }, {
+      "source" : "TRANSFORM1",
+      "target" : "JOIN26"
+    }, {
+      "source" : "JOIN26",
+      "target" : "TRANSFORM3"
+    }, {
+      "source" : "TRANSFORM3",
+      "target" : "FILTER8"
+    }, {
+      "source" : "FILTER8",
+      "target" : "OUTPUT0"
+    } ],
+    "hiddenColumns" : [ ]
+  },
+  "runMode" : "full"
+}

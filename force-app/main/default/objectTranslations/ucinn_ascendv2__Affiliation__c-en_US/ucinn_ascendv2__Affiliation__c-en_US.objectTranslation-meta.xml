@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObjectTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <caseValues>
+        <plural>false</plural>
+        <value>Affiliation</value>
+    </caseValues>
+    <caseValues>
+        <plural>true</plural>
+        <value>Affiliations</value>
+    </caseValues>
+    <layouts>
+        <layout>Affiliation Layout</layout>
+        <sections>
+            <label><!-- Custom Links --></label>
+            <section>Custom Links</section>
+        </sections>
+        <sections>
+            <label><!-- Job Information --></label>
+            <section>Job Information</section>
+        </sections>
+    </layouts>
+    <layouts>
+        <layout>HAM Affiliation Layout v1</layout>
+        <sections>
+            <label><!-- Assistant Info --></label>
+            <section>Assistant Info</section>
+        </sections>
+        <sections>
+            <label><!-- Custom Links --></label>
+            <section>Custom Links</section>
+        </sections>
+        <sections>
+            <label><!-- Hamilton Job Information --></label>
+            <section>Hamilton Job Information</section>
+        </sections>
+    </layouts>
+    <nameFieldLabel>Affiliation ID</nameFieldLabel>
+    <startsWith>Vowel</startsWith>
+    <validationRules>
+        <errorMessage><!-- There is already an affiliation for this record marked &quot;Primary Employer&quot;. Please update that affiliation before marking this one as Primary. --></errorMessage>
+        <name>Only_One_Primary_Employer</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Invalid start and end dates. Start date should be less than the end date. --></errorMessage>
+        <name>ucinn_ascendv2__End_Date_Greater_Than_Start_Date</name>
+    </validationRules>
+</CustomObjectTranslation>

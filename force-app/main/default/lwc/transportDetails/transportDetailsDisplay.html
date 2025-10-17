@@ -1,0 +1,66 @@
+<template>
+    <lightning-card  variant="Narrow"  title="Travel Details" icon-name="custom:custom20">
+                            
+        <div class="slds-p-horizontal_small">
+            <div class="slds-p-around_medium">
+                <div class="slds-grid slds-wrap slds-gutters">
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-1">
+                        <div class="slds-form-element">
+                            <h2 class="header">Mode:</h2>
+                            <lightning-formatted-text value={mode} ></lightning-formatted-text>
+
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                        <div class="slds-form-element">
+                            <h2 class="header">Start Date:</h2>
+                            <lightning-formatted-date-time value={travelStartDate} year="2-digit" month="short" day="2-digit" hour="numeric"
+                    weekday="long" era="short"></lightning-formatted-date-time>
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                        <div class="slds-form-element">
+                            <h2 class="header">End Date:</h2>
+                            <lightning-formatted-date-time value={travelEndDate} year="2-digit" month="short" day="2-digit" hour="numeric"
+                    weekday="long" era="short"></lightning-formatted-date-time>
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                        <div class="slds-form-element">
+                            <h2 class="header">Source Address:</h2>
+                            <!-- <lightning-formatted-address
+                                street={sourceStreet}
+                                city={sourceCity}
+                                country={sourceCountry}
+                                province={sourceProvince}
+                                postal-code={sourcePostalCode}
+                            ></lightning-formatted-address> -->
+                            {sourceAddress}
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                        <div class="slds-form-element">
+                            <h2 class="header">Destination Address:</h2>
+                            <!-- <lightning-formatted-address
+                                street={destinationStreet}
+                                city={destinationCity}
+                                country={destinationCountry}
+                                province={destinationProvince}
+                                postal-code={destinationPostalCode}
+                            ></lightning-formatted-address> -->
+                            {destinationAddress}
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-1">
+                        <div class="slds-form-element">
+                            <h2 class="header">Flight Number:</h2>
+                            <lightning-formatted-text value={flightNumber}></lightning-formatted-text>
+
+                        </div>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+    </lightning-card>
+</template>

@@ -1,0 +1,2145 @@
+{
+  "version" : "61.0",
+  "nodes" : {
+    "LOAD_DATASET0_copy0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "ucinn_ascendv2__Is_Ready_for_G_L_Formula__c", "ucinn_ascendv2__G_L_Account_Formula__c", "Id", "CreatedById", "LastModifiedDate", "ucinn_ascendv2__Designation_Detail__c", "ucinn_ascendv2__Account__c", "ucinn_ascendv2__Contact__c", "ucinn_ascendv2__Credit_Amount__c", "ucinn_ascendv2__Credit_Type__c", "ucinn_ascendv2__Designation__c", "ucinn_ascendv2__External_System_ID__c", "ucinn_ascendv2__Opportunity__c", "ucinn_ascendv2__Payment__c", "ucinn_ascendv2__Session__c", "ucinn_ascendv2__Credit_Date_Formula__c", "ucinn_ascendv2__Gift_Type_Formula__c", "HAM_Constituent_Type__c", "HAM_GOLD_Flag__c", "HAM_Reunion_Milestone_Year__c", "HAM_Reunion_Milestone__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "ucinn_ascendv2__Hard_and_Soft_Credit__c",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "ucinn_ascendv2__Hard_and_Soft_Credit__c"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "LOAD_DATASET1_copy0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "ucinn_ascendv2__Constituent_Type__c", "ucinn_ascendv2__Opportunity_Record_Type__c", "ucinn_ascendv2__Transaction_Type__c", "ucinn_ascendv2__Status__c", "Id", "CreatedById", "LastModifiedDate", "ucinn_ascendv2__Designation_Detail__c", "ucinn_ascendv2__Account__c", "ucinn_ascendv2__Amount_Paid_to_Date_Same_Designation__c", "ucinn_ascendv2__Amount_Paid_to_Date__c", "ucinn_ascendv2__Contact__c", "ucinn_ascendv2__Credit_Date__c", "ucinn_ascendv2__Designation__c", "ucinn_ascendv2__External_System_ID__c", "ucinn_ascendv2__Opportunity__c", "ucinn_ascendv2__Payment_Amount__c", "ucinn_ascendv2__Transaction_ID__c", "HAM_Campaign_Priority__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "ucinn_ascendv2__Payment__c",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "ucinn_ascendv2__Payment__c"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "LOAD_DATASET2_copy0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "ucinn_ascendv2__Pledge_Gift_ID_Formula__c", "Id", "AccountId", "RecordTypeId", "Amount", "CreatedById", "LastModifiedDate", "ucinn_ascendv2__Constituent_Type__c", "ucinn_ascendv2__Contact__c", "ucinn_ascendv2__Credit_Date__c", "ucinn_ascendv2__Designation__c", "ucinn_ascendv2__External_System_ID__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "Opportunity",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "Opportunity"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "FORMULA0_copy0" : {
+      "action" : "formula",
+      "sources" : [ "JOIN41_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Object",
+          "label" : "Object",
+          "formulaExpression" : "'Hard and Soft Credit'",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA38_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA41_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Formatted_External_Id",
+          "label" : "Formatted External Id",
+          "formulaExpression" : "case \r\nwhen ucinn_ascendv2__Gift_Type_Formula__c\r\n    = ('Pledge')\r\nthen\r\n    element_at(External_System_Id_Multivalue, 1)\r\nwhen ucinn_ascendv2__Gift_Type_Formula__c\r\n    = ('Pledge Payment')\r\nthen\r\n    element_at(External_System_Id_Multivalue, 1)\r\nwhen ucinn_ascendv2__Gift_Type_Formula__c\r\n    = ('Matching Gift Payment')\r\nthen\r\n    element_at(External_System_Id_Multivalue, 1)    \r\nwhen ucinn_ascendv2__Gift_Type_Formula__c\r\n    = ('Recurring Gift Payment')\r\nthen\r\n    element_at(External_System_Id_Multivalue, 1)        \r\nwhen ucinn_ascendv2__Gift_Type_Formula__c\r\n    = ('Outright Gift')\r\nthen\r\n    element_at(External_System_Id_Multivalue, 1) else\r\n    ucinn_ascendv2__Gift_Type_Formula__c \r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA41_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA0_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "MULTIVALUE",
+          "name" : "External_System_Id_Multivalue",
+          "label" : "External System Id Multivalue",
+          "formulaExpression" : "split(ucinn_ascendv2__External_System_ID__c, '-')"
+        } ]
+      }
+    },
+    "FORMULA50_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA38_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Designation_test",
+          "label" : "Designation test",
+          "formulaExpression" : "ucinn_ascendv2__Designation__c",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA73_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA50_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Constituent_or_Constituent_Desig",
+          "label" : "Constituent or Constituent Desig",
+          "formulaExpression" : "ucinn_ascendv2__Contact__c",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES51_copy0" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES52_copy0" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Constituent_or_Constituent_Desig",
+          "newProperties" : {
+            "label" : "Constituent",
+            "name" : "ucinn_ascendv2__Contact__c"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES52_copy0" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA73_copy0" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "ucinn_ascendv2__Contact__c",
+          "newProperties" : {
+            "label" : "Hard and Soft Credit Constituent",
+            "name" : "hard_soft_credit.ucinn_ascendv2__Contact__c"
+          }
+        } ]
+      }
+    },
+    "FORMULA1_copy0" : {
+      "action" : "formula",
+      "sources" : [ "JOIN17_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Object",
+          "label" : "Object",
+          "formulaExpression" : "'Gift Pledge'",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA44_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA1_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "MULTIVALUE",
+          "name" : "External_System_Id_Multivalue",
+          "label" : "External System Id Multivalue",
+          "formulaExpression" : "split(ucinn_ascendv2__External_System_ID__c, '-')"
+        } ]
+      }
+    },
+    "FORMULA45_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA44_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Formatted_External_Id",
+          "label" : "Formatted External Id",
+          "formulaExpression" : "case \r\nwhen \"Record_Type.Name\"\r\n    in ('Pledge')\r\nthen\r\n    element_at(External_System_Id_Multivalue, 2)\r\nwhen\r\n    \"Record_Type.Name\" in ('Gift')\r\nthen\r\n    element_at(External_System_Id_Multivalue, 2)    \r\nwhen\r\n    \"Record_Type.Name\" in ('Matching Gift')\r\nthen\r\n    element_at(External_System_Id_Multivalue, 3)    \r\nwhen\r\n    \"Record_Type.Name\" in ('Recurring Gift')\r\nthen\r\n    element_at(External_System_Id_Multivalue, 3)    \r\nelse\r\n    \"Record_Type.Name\" \r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA2_copy0" : {
+      "action" : "formula",
+      "sources" : [ "JOIN10_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Object",
+          "label" : "Object",
+          "formulaExpression" : "'Payment'",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA42_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA2_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "MULTIVALUE",
+          "name" : "External_System_Id_Multivalue",
+          "label" : "External System Id Multivalue",
+          "formulaExpression" : "split(ucinn_ascendv2__External_System_ID__c, '-')"
+        } ]
+      }
+    },
+    "FORMULA43_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA42_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Formatted_External_Id",
+          "label" : "Formatted External Id",
+          "formulaExpression" : "case \r\nwhen\r\n    ucinn_ascendv2__Opportunity_Record_Type__c in ('Pledge')\r\nthen\r\n    element_at(External_System_Id_Multivalue, 3)\r\nwhen\r\n    ucinn_ascendv2__Opportunity_Record_Type__c in ('Gift')\r\nthen\r\n    element_at(External_System_Id_Multivalue, 4)    \r\nwhen\r\n    ucinn_ascendv2__Opportunity_Record_Type__c in ('Matching Gift')\r\nthen\r\n    element_at(External_System_Id_Multivalue, 3)    \r\nwhen\r\n    ucinn_ascendv2__Opportunity_Record_Type__c in ('Recurring Gift')\r\nthen\r\n    element_at(External_System_Id_Multivalue, 3)    \r\nelse\r\n    ucinn_ascendv2__External_System_ID__c\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "APPEND0_copy0" : {
+      "action" : "appendV2",
+      "sources" : [ "EDIT_ATTRIBUTES51_copy0", "FORMULA45_copy0" ],
+      "parameters" : {
+        "fieldMappings" : [ {
+          "top" : "Id",
+          "bottom" : "Id"
+        }, {
+          "top" : "CreatedById",
+          "bottom" : "CreatedById"
+        }, {
+          "top" : "LastModifiedDate",
+          "bottom" : "LastModifiedDate"
+        }, {
+          "top" : "ucinn_ascendv2__Designation_Detail__c",
+          "bottom" : "Designation_Detail.Id"
+        }, {
+          "top" : "ucinn_ascendv2__Account__c",
+          "bottom" : "AccountId"
+        }, {
+          "top" : "ucinn_ascendv2__Credit_Amount__c",
+          "bottom" : "Amount"
+        }, {
+          "top" : "ucinn_ascendv2__Designation__c",
+          "bottom" : "ucinn_ascendv2__Designation__c"
+        }, {
+          "top" : "ucinn_ascendv2__External_System_ID__c",
+          "bottom" : "ucinn_ascendv2__External_System_ID__c"
+        }, {
+          "top" : "ucinn_ascendv2__Opportunity__c",
+          "bottom" : "Id"
+        }, {
+          "top" : "ucinn_ascendv2__Credit_Date_Formula__c",
+          "bottom" : "ucinn_ascendv2__Credit_Date__c"
+        }, {
+          "top" : "ucinn_ascendv2__Gift_Type_Formula__c",
+          "bottom" : "Record_Type.Name"
+        }, {
+          "top" : "HAM_Constituent_Type__c",
+          "bottom" : "ucinn_ascendv2__Constituent_Type__c"
+        }, {
+          "top" : "Designation.ucinn_ascendv2__Pledge_Status_Formula__c",
+          "bottom" : "Designation_Detail.ucinn_ascendv2__Pledge_Status_Formula__c"
+        }, {
+          "top" : "Designation.ucinn_ascendv2__Campaign__c",
+          "bottom" : "Designation_Detail.ucinn_ascendv2__Campaign__c"
+        }, {
+          "top" : "Designation.HAM_Campaign_Priority__c",
+          "bottom" : "Designation_Detail.HAM_Campaign_Priority__c"
+        }, {
+          "top" : "Object",
+          "bottom" : "Object"
+        }, {
+          "top" : "External_System_Id_Multivalue",
+          "bottom" : "External_System_Id_Multivalue"
+        }, {
+          "top" : "Formatted_External_Id",
+          "bottom" : "Formatted_External_Id"
+        }, {
+          "top" : "ucinn_ascendv2__Contact__c",
+          "bottom" : "ucinn_ascendv2__Contact__c"
+        }, {
+          "top" : "Designation.ucinn_ascendv2__Designation__c",
+          "bottom" : "ucinn_ascendv2__Designation__c"
+        } ]
+      }
+    },
+    "APPEND1_copy0" : {
+      "action" : "appendV2",
+      "sources" : [ "APPEND0_copy0", "FORMULA43_copy0" ],
+      "parameters" : {
+        "fieldMappings" : [ {
+          "top" : "Id",
+          "bottom" : "Id"
+        }, {
+          "top" : "CreatedById",
+          "bottom" : "CreatedById"
+        }, {
+          "top" : "LastModifiedDate",
+          "bottom" : "LastModifiedDate"
+        }, {
+          "top" : "ucinn_ascendv2__Designation_Detail__c",
+          "bottom" : "ucinn_ascendv2__Designation_Detail__c"
+        }, {
+          "top" : "ucinn_ascendv2__Account__c",
+          "bottom" : "ucinn_ascendv2__Account__c"
+        }, {
+          "top" : "ucinn_ascendv2__Credit_Amount__c",
+          "bottom" : "ucinn_ascendv2__Payment_Amount__c"
+        }, {
+          "top" : "ucinn_ascendv2__Designation__c",
+          "bottom" : "ucinn_ascendv2__Designation__c"
+        }, {
+          "top" : "ucinn_ascendv2__External_System_ID__c",
+          "bottom" : "ucinn_ascendv2__External_System_ID__c"
+        }, {
+          "top" : "ucinn_ascendv2__Opportunity__c",
+          "bottom" : "ucinn_ascendv2__Opportunity__c"
+        }, {
+          "top" : "ucinn_ascendv2__Credit_Date_Formula__c",
+          "bottom" : "ucinn_ascendv2__Credit_Date__c"
+        }, {
+          "top" : "ucinn_ascendv2__Gift_Type_Formula__c",
+          "bottom" : "ucinn_ascendv2__Opportunity_Record_Type__c"
+        }, {
+          "top" : "HAM_Constituent_Type__c",
+          "bottom" : "ucinn_ascendv2__Constituent_Type__c"
+        }, {
+          "top" : "Designation.ucinn_ascendv2__Pledge_Status_Formula__c",
+          "bottom" : "Designation_Detail.ucinn_ascendv2__Pledge_Status_Formula__c"
+        }, {
+          "top" : "Designation.ucinn_ascendv2__Campaign__c",
+          "bottom" : "Designation_Detail.ucinn_ascendv2__Campaign__c"
+        }, {
+          "top" : "Designation.HAM_Campaign_Priority__c",
+          "bottom" : "HAM_Campaign_Priority__c"
+        }, {
+          "top" : "Object",
+          "bottom" : "Object"
+        }, {
+          "top" : "External_System_Id_Multivalue",
+          "bottom" : "External_System_Id_Multivalue"
+        }, {
+          "top" : "Formatted_External_Id",
+          "bottom" : "Formatted_External_Id"
+        }, {
+          "top" : "ucinn_ascendv2__Contact__c",
+          "bottom" : "ucinn_ascendv2__Contact__c"
+        }, {
+          "top" : "Designation.ucinn_ascendv2__Designation__c",
+          "bottom" : "ucinn_ascendv2__Designation__c"
+        }, {
+          "top" : null,
+          "bottom" : "ucinn_ascendv2__Amount_Paid_to_Date_Same_Designation__c"
+        }, {
+          "top" : null,
+          "bottom" : "ucinn_ascendv2__Amount_Paid_to_Date__c"
+        }, {
+          "top" : null,
+          "bottom" : "ucinn_ascendv2__Transaction_Type__c"
+        }, {
+          "top" : null,
+          "bottom" : "ucinn_ascendv2__Status__c"
+        } ]
+      }
+    },
+    "LOAD_DATASET3_copy0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "ucinn_ascendv2__Is_Anonymous__c", "Id", "AccountId", "Name", "ucinn_ascendv2__Current_FY_Giving__c", "ucinn_ascendv2__Date_of_Most_Recent_Gift__c", "ucinn_ascendv2__Donor_ID__c", "ucinn_ascendv2__External_System_ID__c", "ucinn_ascendv2__Full_Name_Formula__c", "ucinn_ascendv2__Is_Deceased__c", "ucinn_ascendv2__Last_FY_Giving__c", "ucinn_ascendv2__Lifetime_Cash__c", "ucinn_ascendv2__Lifetime_Fundraising__c", "ucinn_ascendv2__Preferred_Class_Year__c", "ucinn_ascendv2__Preferred_Spouse__c", "ucinn_ascendv2__Primary_Contact_Type__c", "ucinn_ascendv2__Age_Formula__c", "ucinn_ascendv2__Preferred_Class_Year_Integer_Formula__c", "HAM_Consecutive_Years_of_Giving__c", "HAM_Reunion_Year__c", "HAM_Institutional_Suffix__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "Contact",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "Contact"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN0_copy0" : {
+      "action" : "join",
+      "sources" : [ "APPEND1_copy0", "EDIT_ATTRIBUTES27_copy0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Contact.Id" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "ucinn_ascendv2__Contact__c" ],
+        "rightQualifier" : "Contact",
+        "rightKeys" : [ "Id" ]
+      }
+    },
+    "LOAD_DATASET4_copy0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "ucinn_ascendv2__Areas_of_Giving_CASE_Type__c", "ucinn_ascendv2__G_L_Account__c", "Id", "Name", "RecordTypeId", "ucinn_ascendv2__CASE_Purpose_v1__c", "ucinn_ascendv2__CASE_Type__c", "ucinn_ascendv2__Designation_Name__c", "ucinn_ascendv2__Fund_Name__c", "ucinn_ascendv2__Fund_Purpose__c", "ucinn_ascendv2__Fund_Type__c", "ucinn_ascendv2__Parent_Designation__c", "HAM_Fund_Short_Name__c", "HAM_Match_Type__c", "HAM_Match__c", "HAM_Maximum_Match__c", "HAM_Match_Eligible__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "ucinn_ascendv2__Designation__c",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "ucinn_ascendv2__Designation__c"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN1_copy0" : {
+      "action" : "join",
+      "sources" : [ "JOIN38_copy0", "EDIT_ATTRIBUTES55_copy0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Designation.ucinn_ascendv2__Designation__c" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "ucinn_ascendv2__Designation__c" ],
+        "rightQualifier" : "Designation",
+        "rightKeys" : [ "Id" ]
+      }
+    },
+    "LOAD_DATASET5_copy0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "ucinn_ascendv2__Pledge_Status_Formula__c", "Id", "ucinn_ascendv2__Opportunity__c", "ucinn_ascendv2__Campaign__c", "HAM_Campaign_Priority__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "ucinn_ascendv2__Designation_Detail__c",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "ucinn_ascendv2__Designation_Detail__c"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN2_copy0" : {
+      "action" : "join",
+      "sources" : [ "LOAD_DATASET0_copy0", "LOAD_DATASET5_copy0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Designation.Id", "Designation.ucinn_ascendv2__Opportunity__c" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "ucinn_ascendv2__Designation_Detail__c" ],
+        "rightQualifier" : "Designation",
+        "rightKeys" : [ "Id" ]
+      }
+    },
+    "LOAD_DATASET6_copy0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "ucinn_ascendv2__Pledge_Status_Formula__c", "Id", "ucinn_ascendv2__Opportunity__c", "ucinn_ascendv2__Campaign__c", "HAM_Campaign_Priority__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "ucinn_ascendv2__Designation_Detail__c",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "ucinn_ascendv2__Designation_Detail__c"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN3_copy0" : {
+      "action" : "join",
+      "sources" : [ "LOAD_DATASET2_copy0", "LOAD_DATASET6_copy0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Designation_Detail.ucinn_ascendv2__Opportunity__c" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Id" ],
+        "rightQualifier" : "Designation_Detail",
+        "rightKeys" : [ "ucinn_ascendv2__Opportunity__c" ]
+      }
+    },
+    "LOAD_DATASET7_copy0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Id", "Name", "Type", "RecordTypeId", "ucinn_ascendv2__External_System_ID__c", "ucinn_ascendv2__Primary_Contact__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "Account",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "Account"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN4_copy0" : {
+      "action" : "join",
+      "sources" : [ "JOIN43_copy0", "EDIT_ATTRIBUTES29_copy0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Contact.AccountId", "ucinn_ascendv2__Account__c" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Organization_or_Constituent_Account_Id" ],
+        "rightQualifier" : "Account",
+        "rightKeys" : [ "Id" ]
+      }
+    },
+    "FORMULA4_copy0" : {
+      "action" : "formula",
+      "sources" : [ "JOIN0_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Organization_or_Constituent_Account_Id",
+          "label" : "Organization or Constituent Account Id",
+          "formulaExpression" : "coalesce(\"Contact.AccountId\", ucinn_ascendv2__Account__c, 'Other')",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA5_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA4_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Constituent_or_Account_Id",
+          "label" : "Constituent or Account Id",
+          "formulaExpression" : "coalesce(ucinn_ascendv2__Contact__c, ucinn_ascendv2__Account__c, 'Other')",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA13_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA5_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Contact_Retention_Id",
+          "label" : "Contact Retention Id",
+          "formulaExpression" : "case when\r\nucinn_ascendv2__Credit_Date_Formula__c is not null then\r\nconcat(ucinn_ascendv2__Contact__c,'-',Object,'-',fiscalYear(ucinn_ascendv2__Credit_Date_Formula__c))\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA14_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA13_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Fiscal_Year",
+          "label" : "Fiscal Year",
+          "formulaExpression" : "case \r\nwhen ucinn_ascendv2__Credit_Date_Formula__c is not null\r\nthen\r\nstring(fiscalYear(ucinn_ascendv2__Credit_Date_Formula__c))\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA24_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA14_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Constituent_Fiscal_Year_Key",
+          "label" : "Constituent Fiscal Year Key",
+          "formulaExpression" : "case \r\nwhen ucinn_ascendv2__Credit_Date_Formula__c is null then null\r\nelse\r\nconcat(ucinn_ascendv2__Contact__c, '-', fiscalyear(ucinn_ascendv2__Credit_Date_Formula__c))\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA37_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA24_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Constituent_Date_Key",
+          "label" : "Constituent Date Key",
+          "formulaExpression" : "case when ucinn_ascendv2__Credit_Date_Formula__c is not null then\r\nconcat(ucinn_ascendv2__Contact__c,' - ', date_format(ucinn_ascendv2__Credit_Date_Formula__c, 'yyyy-MM-dd'))\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "DROP_FIELDS6_copy0" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA37_copy0" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "External_System_Id_Multivalue" ]
+        }
+      }
+    },
+    "LOAD_DATASET8_copy0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Id", "Name" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "RecordType",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "RecordType"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN5_copy0" : {
+      "action" : "join",
+      "sources" : [ "LOAD_DATASET7_copy0", "LOAD_DATASET8_copy0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "RecordTypeId", "Record_Type.Id" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "RecordTypeId" ],
+        "rightQualifier" : "Record_Type",
+        "rightKeys" : [ "Id" ]
+      }
+    },
+    "LOAD_DATASET12_copy0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "ucinn_ascendv2__Pledge_Status_Formula__c", "Id", "ucinn_ascendv2__Opportunity__c", "ucinn_ascendv2__Campaign__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "ucinn_ascendv2__Designation_Detail__c",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "ucinn_ascendv2__Designation_Detail__c"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN10_copy0" : {
+      "action" : "join",
+      "sources" : [ "LOAD_DATASET1_copy0", "LOAD_DATASET12_copy0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Designation_Detail.Id", "Designation_Detail.ucinn_ascendv2__Opportunity__c" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "ucinn_ascendv2__Designation_Detail__c" ],
+        "rightQualifier" : "Designation_Detail",
+        "rightKeys" : [ "Id" ]
+      }
+    },
+    "LOAD_DATASET18_copy0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Id", "Name" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "RecordType",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "RecordType"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN17_copy0" : {
+      "action" : "join",
+      "sources" : [ "JOIN3_copy0", "LOAD_DATASET18_copy0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "RecordTypeId", "Record_Type.Id" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "RecordTypeId" ],
+        "rightQualifier" : "Record_Type",
+        "rightKeys" : [ "Id" ]
+      }
+    },
+    "LOAD_DATASET19_copy0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "ucinn_ascendv2__Notes__c", "ucinn_ascendv2__Pledge_Receivable_Notes__c", "Id", "RecordTypeId", "Name", "StageName", "ExpectedRevenue", "Type", "ucinn_ascendv2__Adjustment_Session__c", "ucinn_ascendv2__Credit_Date__c", "ucinn_ascendv2__External_System_ID__c", "ucinn_ascendv2__Submitted_Amount__c", "ucinn_ascendv2__Amount_Paid_to_Date_Roll_Up__c", "ucinn_ascendv2__Amount_Paid_to_Date_Same_Desig_Roll_Up__c", "ucinn_ascendv2__Pledge_Gift_ID_Formula__c", "ucinn_ascendv2__Remaining_Amount_Due_Formula__c", "HAM_CFY_Ask__c", "HAM_Copy_of_Will_Received__c", "HAM_MOU_Received__c", "HAM_Vice_President_Override__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "Opportunity",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "Opportunity"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN19_copy0" : {
+      "action" : "join",
+      "sources" : [ "DROP_FIELDS6_copy0", "FORMULA47_copy0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Opportunity.External_System_Id_Multivalue", "Opportunity.Id" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "ucinn_ascendv2__Opportunity__c" ],
+        "rightQualifier" : "Opportunity",
+        "rightKeys" : [ "Id" ]
+      }
+    },
+    "LOAD_DATASET25_copy0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Id", "Name" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "RecordType",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "RecordType"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN25_copy0" : {
+      "action" : "join",
+      "sources" : [ "LOAD_DATASET19_copy0", "LOAD_DATASET25_copy0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "RecordTypeId", "RecordType.Id" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "RecordTypeId" ],
+        "rightQualifier" : "RecordType",
+        "rightKeys" : [ "Id" ]
+      }
+    },
+    "LOAD_DATASET26_copy0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "ucinn_ascendv2__Designation_Detail__c", "ucinn_ascendv2__Amount_Paid_to_Date_Same_Designation__c", "ucinn_ascendv2__Opportunity__c", "ucinn_ascendv2__Post_to_G_L_Date__c", "ucinn_ascendv2__Opportunity_Stage__c", "ucinn_ascendv2__G_L_Account__c", "Id", "ucinn_ascendv2__Amount_Paid_to_Date__c", "ucinn_ascendv2__Payment_Amount__c", "ucinn_ascendv2__Transaction_ID__c", "ucinn_ascendv2__Session_Approved_Date_Formula__c", "ucinn_ascendv2__Tender_Type_Formula__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "ucinn_ascendv2__Payment__c",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "ucinn_ascendv2__Payment__c"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "FORMULA28_copy0" : {
+      "action" : "formula",
+      "sources" : [ "LOAD_DATASET26_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Opportunity_Collected_Amount",
+          "label" : "Opportunity Collected Amount",
+          "formulaExpression" : "case\r\nwhen\r\n    ucinn_ascendv2__Opportunity_Stage__c != 'Adjusted'\r\n    then \r\n    ucinn_ascendv2__Payment_Amount__c\r\nend",
+          "precision" : 18,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "EXTRACT1_copy0" : {
+      "action" : "extractGrains",
+      "sources" : [ "FORMULA28_copy0" ],
+      "parameters" : {
+        "grainExtractions" : [ ]
+      }
+    },
+    "AGGREGATE3_copy0" : {
+      "action" : "aggregate",
+      "sources" : [ "EXTRACT1_copy0" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "Sum.Opportunity_Collected_Amount",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        } ]
+      },
+      "parameters" : {
+        "aggregations" : [ {
+          "action" : "SUM",
+          "source" : "Opportunity_Collected_Amount",
+          "name" : "Sum.Opportunity_Collected_Amount",
+          "label" : "Opportunity Collected Amount"
+        } ],
+        "groupings" : [ "ucinn_ascendv2__Opportunity__c" ],
+        "pivots" : [ ],
+        "nodeType" : "STANDARD"
+      }
+    },
+    "JOIN27_copy0" : {
+      "action" : "join",
+      "sources" : [ "JOIN19_copy0", "AGGREGATE3_copy0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Payment_Aggregate.ucinn_ascendv2__Opportunity__c" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Id" ],
+        "rightQualifier" : "Payment_Aggregate",
+        "rightKeys" : [ "ucinn_ascendv2__Opportunity__c" ]
+      }
+    },
+    "EDIT_ATTRIBUTES27_copy0" : {
+      "action" : "schema",
+      "sources" : [ "LOAD_DATASET3_copy0" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "ucinn_ascendv2__External_System_ID__c",
+          "newProperties" : {
+            "label" : "Contact External System ID",
+            "name" : "ucinn_ascendv2__External_System_ID__c"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES29_copy0" : {
+      "action" : "schema",
+      "sources" : [ "JOIN5_copy0" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "ucinn_ascendv2__External_System_ID__c",
+          "newProperties" : {
+            "label" : "Account External System ID",
+            "name" : "ucinn_ascendv2__External_System_ID__c"
+          }
+        } ]
+      }
+    },
+    "FORMULA46_copy0" : {
+      "action" : "formula",
+      "sources" : [ "JOIN44_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "MULTIVALUE",
+          "name" : "External_System_Id_Multivalue",
+          "label" : "External System Id Multivalue",
+          "formulaExpression" : "split(ucinn_ascendv2__External_System_ID__c, '-')"
+        } ]
+      }
+    },
+    "FORMULA47_copy0" : {
+      "action" : "formula",
+      "sources" : [ "EDIT_ATTRIBUTES46_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Gift_Pledge_Id",
+          "label" : "Gift Pledge Id",
+          "formulaExpression" : "case \r\nwhen \"RecordType.Name\"\r\n    in ('Pledge')\r\nthen\r\n    element_at(External_System_Id_Multivalue, 2)\r\nwhen\r\n    \"RecordType.Name\" in ('Gift')\r\nthen\r\n    element_at(External_System_Id_Multivalue, 2)    \r\nwhen\r\n    \"RecordType.Name\" in ('Matching Gift')\r\nthen\r\n    element_at(External_System_Id_Multivalue, 3)    \r\nwhen\r\n    \"RecordType.Name\" in ('Recurring Gift')\r\nthen\r\n    element_at(External_System_Id_Multivalue, 3)    \r\nelse\r\n    \"RecordType.Name\" \r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES46_copy0" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA46_copy0" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Name",
+          "newProperties" : {
+            "label" : "Opportunity Name",
+            "name" : "Name"
+          }
+        } ]
+      }
+    },
+    "LOAD_DATASET34_copy0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Id", "Name", "ucinn_ascendv2__Preferred_Class_Year__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "Contact",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "Contact"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN38_copy0" : {
+      "action" : "join",
+      "sources" : [ "JOIN4_copy0", "LOAD_DATASET34_copy0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Spouse.Id" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Contact.ucinn_ascendv2__Preferred_Spouse__c" ],
+        "rightQualifier" : "Spouse",
+        "rightKeys" : [ "Id" ]
+      }
+    },
+    "LOAD_DATASET35_copy0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "ucinn_ascendv2__Is_Ready_for_G_L__c", "Id" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "ucinn_ascendv2__Session__c",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "ucinn_ascendv2__Session__c"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN39_copy0" : {
+      "action" : "join",
+      "sources" : [ "JOIN25_copy0", "LOAD_DATASET35_copy0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Adjustment_Session.Id" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "ucinn_ascendv2__Adjustment_Session__c" ],
+        "rightQualifier" : "Adjustment_Session",
+        "rightKeys" : [ "Id" ]
+      }
+    },
+    "JOIN40_copy0" : {
+      "action" : "join",
+      "sources" : [ "JOIN27_copy0", "FORMULA28_copy0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Payment_Aggregate.Sum.Opportunity_Collected_Amount", "Hard_And_Soft_Credit_Payment.ucinn_ascendv2__Opportunity_Stage__c", "Hard_And_Soft_Credit_Payment.ucinn_ascendv2__Opportunity__c", "Hard_And_Soft_Credit_Payment.Id", "Hard_And_Soft_Credit_Payment.ucinn_ascendv2__Payment_Amount__c", "Hard_And_Soft_Credit_Payment.Designation_Detail.ucinn_ascendv2__Opportunity__c", "Hard_And_Soft_Credit_Payment.Opportunity_Collected_Amount" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "ucinn_ascendv2__Opportunity__c" ],
+        "rightQualifier" : "Hard_And_Soft_Credit_Payment",
+        "rightKeys" : [ "ucinn_ascendv2__Opportunity__c" ]
+      }
+    },
+    "LOAD_DATASET36_copy0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Id", "HAM_Status__c", "Name" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "ucinn_ascendv2__Session__c",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "ucinn_ascendv2__Session__c"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN41_copy0" : {
+      "action" : "join",
+      "sources" : [ "JOIN2_copy0", "LOAD_DATASET36_copy0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "ucinn_ascendv2__Session__c" ],
+        "rightQualifier" : "ucinn_asce",
+        "rightKeys" : [ "Id" ]
+      }
+    },
+    "LOAD_DATASET21_copy0_copy0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Id", "Name" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "RecordType",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "RecordType"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN42_copy0" : {
+      "action" : "join",
+      "sources" : [ "LOAD_DATASET4_copy0", "LOAD_DATASET21_copy0_copy0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "RecordTypeId" ],
+        "rightQualifier" : "desig_recordtype",
+        "rightKeys" : [ "Id" ]
+      }
+    },
+    "EDIT_ATTRIBUTES47_copy0" : {
+      "action" : "schema",
+      "sources" : [ "JOIN42_copy0" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "desig_recordtype.Name",
+          "newProperties" : {
+            "label" : "Designation Record Type Name",
+            "name" : "desig_recordtype.Name"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES55_copy0" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES47_copy0" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "ucinn_ascendv2__G_L_Account__c",
+          "newProperties" : {
+            "label" : "G / L Account Designation Object",
+            "name" : "ucinn_ascendv2__G_L_Account__c"
+          }
+        } ]
+      }
+    },
+    "DROP_FIELDS8_copy0" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA28_copy0" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "SELECT",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Id", "ucinn_ascendv2__Post_to_G_L_Date__c", "ucinn_ascendv2__Session_Approved_Date_Formula__c", "ucinn_ascendv2__G_L_Account__c" ]
+        }
+      }
+    },
+    "EDIT_ATTRIBUTES48_copy0" : {
+      "action" : "schema",
+      "sources" : [ "DROP_FIELDS8_copy0" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "ucinn_ascendv2__Post_to_G_L_Date__c",
+          "newProperties" : {
+            "label" : "Payment Post to G / L Date",
+            "name" : "ucinn_ascendv2__Post_to_G_L_Date__c_payment"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES49_copy0" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES48_copy0" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "ucinn_ascendv2__Session_Approved_Date_Formula__c",
+          "newProperties" : {
+            "label" : "Payment Session Approved Date",
+            "name" : "ucinn_ascendv2__Session_Approved_Date_Formula__c_payment"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES50_copy0" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES49_copy0" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "ucinn_ascendv2__G_L_Account__c",
+          "newProperties" : {
+            "label" : "Payment G / L Account",
+            "name" : "ucinn_ascendv2__G_L_Account__c_payment"
+          }
+        } ]
+      }
+    },
+    "JOIN43_copy0" : {
+      "action" : "join",
+      "sources" : [ "JOIN40_copy0", "EDIT_ATTRIBUTES50_copy0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "ucinn_ascendv2__Payment__c" ],
+        "rightQualifier" : "PaymentGL",
+        "rightKeys" : [ "Id" ]
+      }
+    },
+    "LOAD_DATASET37_copy0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "ucinn_ascendv2__Tribute_Type__c", "ucinn_ascendv2__Tributee__c", "ucinn_ascendv2__Opportunity__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "ucinn_ascendv2__Tribute__c",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "ucinn_ascendv2__Tribute__c"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN44_copy0" : {
+      "action" : "join",
+      "sources" : [ "JOIN39_copy0", "LOAD_DATASET37_copy0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "ucinn_asce.ucinn_ascendv2__Opportunity__c" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Id" ],
+        "rightQualifier" : "ucinn_asce",
+        "rightKeys" : [ "ucinn_ascendv2__Opportunity__c" ]
+      }
+    },
+    "OUTPUT0" : {
+      "action" : "save",
+      "sources" : [ "FILTER0" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "ASC-5432 Endowment",
+          "name" : "ASC_5432_Endowment",
+          "folderName" : "SharedApp"
+        },
+        "measuresToCurrencies" : [ ]
+      }
+    },
+    "FILTER0" : {
+      "action" : "filter",
+      "sources" : [ "JOIN1_copy0" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "Designation.ucinn_ascendv2__Areas_of_Giving_CASE_Type__c",
+          "operator" : "EQUAL",
+          "operands" : [ "Endowment" ]
+        }, {
+          "type" : "DATETIME",
+          "field" : "ucinn_ascendv2__Credit_Date_Formula__c",
+          "operator" : "IN_RANGE",
+          "operands" : [ "1719792000000", "1727049600000" ]
+        } ]
+      }
+    }
+  },
+  "ui" : {
+    "nodes" : {
+      "LOAD_DATASET0_copy0" : {
+        "label" : "ucinn_ascendv2__Hard_and_Soft_Credit__c",
+        "description" : "",
+        "type" : "LOAD_DATASET",
+        "top" : 112.09999999999997,
+        "left" : 112,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "LOAD_DATASET1_copy0" : {
+        "label" : "ucinn_ascendv2__Payment__c",
+        "description" : "",
+        "type" : "LOAD_DATASET",
+        "top" : 672.7,
+        "left" : 112.19999999999999,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "LOAD_DATASET2_copy0" : {
+        "label" : "Opportunity",
+        "type" : "LOAD_DATASET",
+        "top" : 390.40000000000003,
+        "left" : 112.19999999999999,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "TRANSFORM0_copy0" : {
+        "label" : "Object Name and Constituent",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 112.19999999999999,
+        "left" : 532.2,
+        "graph" : {
+          "FORMULA0_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Object"
+          },
+          "FORMULA38_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Formatted External Id"
+          },
+          "FORMULA41_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "External System Id Multivalue"
+          },
+          "FORMULA50_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "designation test"
+          },
+          "FORMULA73_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Constituent or Constituent Desig-remove desig detail reference"
+          },
+          "EDIT_ATTRIBUTES51_copy0" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES52_copy0" : {
+            "label" : "Edit Attributes"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA41_copy0",
+          "target" : "FORMULA38_copy0"
+        }, {
+          "source" : "FORMULA0_copy0",
+          "target" : "FORMULA41_copy0"
+        }, {
+          "source" : "FORMULA38_copy0",
+          "target" : "FORMULA50_copy0"
+        }, {
+          "source" : "FORMULA50_copy0",
+          "target" : "FORMULA73_copy0"
+        }, {
+          "source" : "FORMULA73_copy0",
+          "target" : "EDIT_ATTRIBUTES52_copy0"
+        }, {
+          "source" : "EDIT_ATTRIBUTES52_copy0",
+          "target" : "EDIT_ATTRIBUTES51_copy0"
+        } ]
+      },
+      "TRANSFORM1_copy0" : {
+        "label" : "Object Name",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 392.40000000000003,
+        "left" : 672.5999999999999,
+        "graph" : {
+          "FORMULA1_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Object"
+          },
+          "FORMULA44_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "External System Id Multivalue"
+          },
+          "FORMULA45_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Formatted External Id"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA1_copy0",
+          "target" : "FORMULA44_copy0"
+        }, {
+          "source" : "FORMULA44_copy0",
+          "target" : "FORMULA45_copy0"
+        } ]
+      },
+      "TRANSFORM2_copy0" : {
+        "label" : "Object Name Copy",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 672.4000000000001,
+        "left" : 812.5999999999999,
+        "graph" : {
+          "FORMULA2_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Object"
+          },
+          "FORMULA42_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "External System Id Multivalue"
+          },
+          "FORMULA43_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Formatted External Id"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA2_copy0",
+          "target" : "FORMULA42_copy0"
+        }, {
+          "source" : "FORMULA42_copy0",
+          "target" : "FORMULA43_copy0"
+        } ]
+      },
+      "APPEND0_copy0" : {
+        "label" : "Append Credit To Gift",
+        "description" : "Map same fields together",
+        "type" : "APPEND",
+        "top" : 112.39999999999998,
+        "left" : 672.5999999999999
+      },
+      "APPEND1_copy0" : {
+        "label" : "Append Payment To Credit and Gift",
+        "description" : "Map same fields together",
+        "type" : "APPEND",
+        "top" : 112.39999999999998,
+        "left" : 812.5999999999999
+      },
+      "LOAD_DATASET3_copy0" : {
+        "label" : "Contact",
+        "type" : "LOAD_DATASET",
+        "top" : 532.4000000000001,
+        "left" : 952.5999999999999,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN0_copy0" : {
+        "label" : "Lookup Contact To Credit Gift Payment",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 112.39999999999998,
+        "left" : 952.5999999999999
+      },
+      "LOAD_DATASET4_copy0" : {
+        "label" : "ucinn_ascendv2__Designation__c",
+        "description" : "",
+        "type" : "LOAD_DATASET",
+        "top" : 672.2,
+        "left" : 2212.2,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN1_copy0" : {
+        "label" : "Lookup Designation To Credit Gift Payment",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 112.39999999999998,
+        "left" : 2212.6
+      },
+      "LOAD_DATASET5_copy0" : {
+        "label" : "ucinn_ascendv2__Designation_Detail__c",
+        "description" : "",
+        "type" : "LOAD_DATASET",
+        "top" : 252.2,
+        "left" : 252.2,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN2_copy0" : {
+        "label" : "Lookup Designation Id To Credit",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 112.09999999999997,
+        "left" : 252
+      },
+      "LOAD_DATASET6_copy0" : {
+        "label" : "ucinn_ascendv2__Designation_Detail__c Copy",
+        "description" : "",
+        "type" : "LOAD_DATASET",
+        "top" : 532.2,
+        "left" : 252.2,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN3_copy0" : {
+        "label" : "Join Designation Detail To Gift Pledge",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 390.40000000000003,
+        "left" : 252.2
+      },
+      "LOAD_DATASET7_copy0" : {
+        "label" : "Account",
+        "description" : "",
+        "type" : "LOAD_DATASET",
+        "top" : 672.3,
+        "left" : 1932.1000000000001,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN4_copy0" : {
+        "label" : "Lookup Account To Credit Gift Payment",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 112.30000000000001,
+        "left" : 1932.1000000000001
+      },
+      "TRANSFORM5_copy0" : {
+        "label" : "Organization or Constituent Account Id",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 112.39999999999998,
+        "left" : 1092.6000000000001,
+        "graph" : {
+          "FORMULA4_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Organization or Constituent Account Id"
+          },
+          "FORMULA5_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Constituent or Account Id"
+          },
+          "FORMULA13_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Contact Retention Id"
+          },
+          "FORMULA14_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Fiscal Year"
+          },
+          "FORMULA24_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Constituent Fiscal Year Key"
+          },
+          "FORMULA37_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Constituent Date Key"
+          },
+          "DROP_FIELDS6_copy0" : {
+            "label" : "Drop External System Id Multivalue"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA4_copy0",
+          "target" : "FORMULA5_copy0"
+        }, {
+          "source" : "FORMULA5_copy0",
+          "target" : "FORMULA13_copy0"
+        }, {
+          "source" : "FORMULA13_copy0",
+          "target" : "FORMULA14_copy0"
+        }, {
+          "source" : "FORMULA14_copy0",
+          "target" : "FORMULA24_copy0"
+        }, {
+          "source" : "FORMULA24_copy0",
+          "target" : "FORMULA37_copy0"
+        }, {
+          "source" : "FORMULA37_copy0",
+          "target" : "DROP_FIELDS6_copy0"
+        } ]
+      },
+      "LOAD_DATASET8_copy0" : {
+        "label" : "RecordType",
+        "type" : "LOAD_DATASET",
+        "top" : 392.3,
+        "left" : 1792.3,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN5_copy0" : {
+        "label" : "Lookup Record Type To Account",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 392.3,
+        "left" : 1932.1000000000001
+      },
+      "LOAD_DATASET12_copy0" : {
+        "label" : "ucinn_ascendv2__Designation_Detail__c Copy1",
+        "type" : "LOAD_DATASET",
+        "top" : 812.3,
+        "left" : 252.3,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN10_copy0" : {
+        "label" : "Loopup Designation Id to Payment",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 672.3,
+        "left" : 252.2
+      },
+      "LOAD_DATASET18_copy0" : {
+        "label" : "RecordType Copy",
+        "type" : "LOAD_DATASET",
+        "top" : 530.4000000000001,
+        "left" : 392.2,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN17_copy0" : {
+        "label" : "Lookup Record Type To Opportunity",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 390.40000000000003,
+        "left" : 392.2
+      },
+      "LOAD_DATASET19_copy0" : {
+        "label" : "Opportunity Copy",
+        "type" : "LOAD_DATASET",
+        "top" : 812.9000000000001,
+        "left" : 1232.2,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN19_copy0" : {
+        "label" : "Lookup Opportunity To Gift Credit and Payments",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 112.39999999999998,
+        "left" : 1232.6000000000001
+      },
+      "LOAD_DATASET25_copy0" : {
+        "label" : "RecordType Copy1",
+        "type" : "LOAD_DATASET",
+        "top" : 672.8,
+        "left" : 1092.2,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN25_copy0" : {
+        "label" : "Lookup Record Type To Opportunity Copy",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 672.9000000000001,
+        "left" : 1232.2
+      },
+      "LOAD_DATASET26_copy0" : {
+        "label" : "ucinn_ascendv2__Payment__c Copy",
+        "type" : "LOAD_DATASET",
+        "top" : 672.4000000000001,
+        "left" : 1512.6000000000001,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "TRANSFORM12_copy0" : {
+        "label" : "Enrich Payments",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 532.4000000000001,
+        "left" : 1512.6000000000001,
+        "graph" : {
+          "FORMULA28_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Collected Amount"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "AGGREGATE2_copy0" : {
+        "label" : "Aggregate Payments By Opportunity Collected Amount",
+        "description" : "",
+        "type" : "AGGREGATE",
+        "top" : 252.40000000000003,
+        "left" : 1512.6000000000001,
+        "graph" : {
+          "EXTRACT1_copy0" : null,
+          "AGGREGATE3_copy0" : null
+        },
+        "connectors" : [ {
+          "source" : "EXTRACT1_copy0",
+          "target" : "AGGREGATE3_copy0"
+        } ]
+      },
+      "JOIN27_copy0" : {
+        "label" : "Lookup Collected Amount To Opportunity",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 112.39999999999998,
+        "left" : 1512.6000000000001
+      },
+      "TRANSFORM19_copy0" : {
+        "label" : "Enrich Contacts",
+        "description" : "rename colleague id",
+        "type" : "TRANSFORM",
+        "top" : 252.40000000000003,
+        "left" : 952.5999999999999,
+        "graph" : {
+          "EDIT_ATTRIBUTES27_copy0" : {
+            "label" : "Edit Attributes"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "TRANSFORM20_copy0" : {
+        "label" : "Enrich Accounts",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 252.3,
+        "left" : 1932.1000000000001,
+        "graph" : {
+          "EDIT_ATTRIBUTES29_copy0" : {
+            "label" : "Edit Attributes"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "TRANSFORM21_copy0" : {
+        "label" : "Enrich Gift Pledge Object",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 252.40000000000003,
+        "left" : 1232.6000000000001,
+        "graph" : {
+          "FORMULA46_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "External System Id Multivalue"
+          },
+          "FORMULA47_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Gift Pledge Id"
+          },
+          "EDIT_ATTRIBUTES46_copy0" : {
+            "label" : "Edit Attributes"
+          }
+        },
+        "connectors" : [ {
+          "source" : "EDIT_ATTRIBUTES46_copy0",
+          "target" : "FORMULA47_copy0"
+        }, {
+          "source" : "FORMULA46_copy0",
+          "target" : "EDIT_ATTRIBUTES46_copy0"
+        } ]
+      },
+      "LOAD_DATASET34_copy0" : {
+        "label" : "Spouse",
+        "description" : "",
+        "type" : "LOAD_DATASET",
+        "top" : 532.4000000000001,
+        "left" : 2072.6,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN38_copy0" : {
+        "label" : "Lookup Spouse To Contact",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 112.39999999999998,
+        "left" : 2072.6
+      },
+      "LOAD_DATASET35_copy0" : {
+        "label" : "ucinn_ascendv2__Session__c",
+        "type" : "LOAD_DATASET",
+        "top" : 532.8,
+        "left" : 1092.2,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN39_copy0" : {
+        "label" : "Lookup Adjustment Session To Gift",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 532.8,
+        "left" : 1232.2
+      },
+      "JOIN40_copy0" : {
+        "label" : "Lookup Payment Object To Gift Credit Payment",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 112.39999999999998,
+        "left" : 1652.6000000000001
+      },
+      "LOAD_DATASET36_copy0" : {
+        "label" : "ucinn_ascendv2__Session__c Copy",
+        "type" : "LOAD_DATASET",
+        "top" : 252.2,
+        "left" : 392.2,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN41_copy0" : {
+        "label" : "Add HAM Session status",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 112,
+        "left" : 392
+      },
+      "LOAD_DATASET21_copy0_copy0" : {
+        "label" : "RecordType Copy2",
+        "description" : "",
+        "type" : "LOAD_DATASET",
+        "top" : 812.2,
+        "left" : 2212.2,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN42_copy0" : {
+        "label" : "lookup record type to designation",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 532.2,
+        "left" : 2212.2999999999997
+      },
+      "TRANSFORM23_copy0" : {
+        "label" : "Rename Record Type Name",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 392.2,
+        "left" : 2212.2,
+        "graph" : {
+          "EDIT_ATTRIBUTES47_copy0" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES55_copy0" : {
+            "label" : "Edit Attributes"
+          }
+        },
+        "connectors" : [ {
+          "source" : "EDIT_ATTRIBUTES47_copy0",
+          "target" : "EDIT_ATTRIBUTES55_copy0"
+        } ]
+      },
+      "TRANSFORM24_copy0" : {
+        "label" : "Payment GL",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 532.2,
+        "left" : 1792.1000000000001,
+        "graph" : {
+          "DROP_FIELDS8_copy0" : {
+            "label" : "Drop Columns"
+          },
+          "EDIT_ATTRIBUTES48_copy0" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES49_copy0" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES50_copy0" : {
+            "label" : "Edit Attributes"
+          }
+        },
+        "connectors" : [ {
+          "source" : "DROP_FIELDS8_copy0",
+          "target" : "EDIT_ATTRIBUTES48_copy0"
+        }, {
+          "source" : "EDIT_ATTRIBUTES48_copy0",
+          "target" : "EDIT_ATTRIBUTES49_copy0"
+        }, {
+          "source" : "EDIT_ATTRIBUTES49_copy0",
+          "target" : "EDIT_ATTRIBUTES50_copy0"
+        } ]
+      },
+      "JOIN43_copy0" : {
+        "label" : "Lookup Payment GL Date",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 112.19999999999999,
+        "left" : 1792.2
+      },
+      "LOAD_DATASET37_copy0" : {
+        "label" : "ucinn_ascendv2__Tribute__c",
+        "type" : "LOAD_DATASET",
+        "top" : 392.2,
+        "left" : 1092.2,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN44_copy0" : {
+        "label" : "Lookup Tribute Type to Opportunity",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 392.2,
+        "left" : 1232.2
+      },
+      "OUTPUT0" : {
+        "label" : "Output 0",
+        "type" : "OUTPUT",
+        "top" : 112.19999999999999,
+        "left" : 2489.8
+      },
+      "FILTER0" : {
+        "label" : "Filter to Endowment 7/1/24-9/23/24",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 112,
+        "left" : 2352
+      }
+    },
+    "connectors" : [ {
+      "source" : "LOAD_DATASET19_copy0",
+      "target" : "JOIN25_copy0"
+    }, {
+      "source" : "JOIN38_copy0",
+      "target" : "JOIN1_copy0"
+    }, {
+      "source" : "JOIN41_copy0",
+      "target" : "TRANSFORM0_copy0"
+    }, {
+      "source" : "JOIN17_copy0",
+      "target" : "TRANSFORM1_copy0"
+    }, {
+      "source" : "TRANSFORM0_copy0",
+      "target" : "APPEND0_copy0"
+    }, {
+      "source" : "TRANSFORM1_copy0",
+      "target" : "APPEND0_copy0"
+    }, {
+      "source" : "APPEND0_copy0",
+      "target" : "APPEND1_copy0"
+    }, {
+      "source" : "TRANSFORM2_copy0",
+      "target" : "APPEND1_copy0"
+    }, {
+      "source" : "APPEND1_copy0",
+      "target" : "JOIN0_copy0"
+    }, {
+      "source" : "TRANSFORM19_copy0",
+      "target" : "JOIN0_copy0"
+    }, {
+      "source" : "TRANSFORM23_copy0",
+      "target" : "JOIN1_copy0"
+    }, {
+      "source" : "LOAD_DATASET0_copy0",
+      "target" : "JOIN2_copy0"
+    }, {
+      "source" : "LOAD_DATASET5_copy0",
+      "target" : "JOIN2_copy0"
+    }, {
+      "source" : "LOAD_DATASET2_copy0",
+      "target" : "JOIN3_copy0"
+    }, {
+      "source" : "LOAD_DATASET6_copy0",
+      "target" : "JOIN3_copy0"
+    }, {
+      "source" : "JOIN43_copy0",
+      "target" : "JOIN4_copy0"
+    }, {
+      "source" : "TRANSFORM20_copy0",
+      "target" : "JOIN4_copy0"
+    }, {
+      "source" : "JOIN0_copy0",
+      "target" : "TRANSFORM5_copy0"
+    }, {
+      "source" : "LOAD_DATASET7_copy0",
+      "target" : "JOIN5_copy0"
+    }, {
+      "source" : "LOAD_DATASET8_copy0",
+      "target" : "JOIN5_copy0"
+    }, {
+      "source" : "LOAD_DATASET1_copy0",
+      "target" : "JOIN10_copy0"
+    }, {
+      "source" : "LOAD_DATASET12_copy0",
+      "target" : "JOIN10_copy0"
+    }, {
+      "source" : "JOIN3_copy0",
+      "target" : "JOIN17_copy0"
+    }, {
+      "source" : "LOAD_DATASET18_copy0",
+      "target" : "JOIN17_copy0"
+    }, {
+      "source" : "TRANSFORM5_copy0",
+      "target" : "JOIN19_copy0"
+    }, {
+      "source" : "LOAD_DATASET25_copy0",
+      "target" : "JOIN25_copy0"
+    }, {
+      "source" : "TRANSFORM12_copy0",
+      "target" : "AGGREGATE2_copy0"
+    }, {
+      "source" : "JOIN19_copy0",
+      "target" : "JOIN27_copy0"
+    }, {
+      "source" : "AGGREGATE2_copy0",
+      "target" : "JOIN27_copy0"
+    }, {
+      "source" : "LOAD_DATASET3_copy0",
+      "target" : "TRANSFORM19_copy0"
+    }, {
+      "source" : "JOIN5_copy0",
+      "target" : "TRANSFORM20_copy0"
+    }, {
+      "source" : "JOIN44_copy0",
+      "target" : "TRANSFORM21_copy0"
+    }, {
+      "source" : "TRANSFORM21_copy0",
+      "target" : "JOIN19_copy0"
+    }, {
+      "source" : "JOIN4_copy0",
+      "target" : "JOIN38_copy0"
+    }, {
+      "source" : "LOAD_DATASET34_copy0",
+      "target" : "JOIN38_copy0"
+    }, {
+      "source" : "JOIN25_copy0",
+      "target" : "JOIN39_copy0"
+    }, {
+      "source" : "LOAD_DATASET35_copy0",
+      "target" : "JOIN39_copy0"
+    }, {
+      "source" : "JOIN27_copy0",
+      "target" : "JOIN40_copy0"
+    }, {
+      "source" : "TRANSFORM12_copy0",
+      "target" : "JOIN40_copy0"
+    }, {
+      "source" : "LOAD_DATASET26_copy0",
+      "target" : "TRANSFORM12_copy0"
+    }, {
+      "source" : "JOIN10_copy0",
+      "target" : "TRANSFORM2_copy0"
+    }, {
+      "source" : "JOIN2_copy0",
+      "target" : "JOIN41_copy0"
+    }, {
+      "source" : "LOAD_DATASET36_copy0",
+      "target" : "JOIN41_copy0"
+    }, {
+      "source" : "LOAD_DATASET4_copy0",
+      "target" : "JOIN42_copy0"
+    }, {
+      "source" : "LOAD_DATASET21_copy0_copy0",
+      "target" : "JOIN42_copy0"
+    }, {
+      "source" : "JOIN42_copy0",
+      "target" : "TRANSFORM23_copy0"
+    }, {
+      "source" : "TRANSFORM12_copy0",
+      "target" : "TRANSFORM24_copy0"
+    }, {
+      "source" : "JOIN40_copy0",
+      "target" : "JOIN43_copy0"
+    }, {
+      "source" : "TRANSFORM24_copy0",
+      "target" : "JOIN43_copy0"
+    }, {
+      "source" : "JOIN39_copy0",
+      "target" : "JOIN44_copy0"
+    }, {
+      "source" : "LOAD_DATASET37_copy0",
+      "target" : "JOIN44_copy0"
+    }, {
+      "source" : "FILTER0",
+      "target" : "OUTPUT0"
+    }, {
+      "source" : "JOIN1_copy0",
+      "target" : "FILTER0"
+    } ],
+    "hiddenColumns" : [ ]
+  },
+  "runMode" : "full"
+}

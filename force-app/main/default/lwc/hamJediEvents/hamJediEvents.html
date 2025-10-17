@@ -1,0 +1,42 @@
+<template>
+    <div class="backgroundWhite">
+       <lightning-accordion allow-multiple-sections-open="true" active-section-name={activeEventSection} onsectiontoggle={handleEventSectionToggle}>
+            <lightning-accordion-section name="Events" label="Events">
+                <template if:true={loading}>
+                    <lightning-spinner
+                        alternative-text="Loading..."
+                        size="medium"
+                        variant="brand">
+                    </lightning-spinner>
+                </template>
+                <template lwc:if={pageEvents}>
+                    <!-- Events Record Table -->
+                    <div class="slds-p-around_small" style="width: 100%;">
+                        <div class="label slds-text-title_caps slds-text-color_brand">Events Registered / Attended</div>
+                        <div style="overflow-x: auto;">
+                            <lightning-datatable
+                                key-field="Id" 
+                                data={pageEvents} 
+                                columns={eventsColumns} 
+                                hide-checkbox-column 
+                                sorted-by={sortedBy}
+                                sorted-direction={sortedDirection}
+                                onsort={handleEventSort}>
+                            </lightning-datatable>
+                        </div>
+                        
+                        <!-- Updated Pagination Controls to Match Working Component -->
+                        <div class="slds-m-top_small slds-grid slds-grid_align-spread slds-align_absolute-center">
+                            <lightning-button label="Prev" onclick={prevPage} disabled={isFirstPage}></lightning-button>
+                            <div class="slds-m-horizontal_small">
+                                Page {pageNumber} of {totalPages} · {totalRecords} total
+                            </div>
+                            <lightning-button label="Next" onclick={nextPage} disabled={isLastPage}></lightning-button>
+                        </div>
+                    </div>
+                </template>
+                <template lwc:else> No Events Found </template>
+            </lightning-accordion-section>
+        </lightning-accordion>
+    </div>
+</template>

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObjectTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <caseValues>
+        <plural>false</plural>
+        <value>Utility Lookup Setting</value>
+    </caseValues>
+    <caseValues>
+        <plural>true</plural>
+        <value>Utility Lookup Settings</value>
+    </caseValues>
+    <layouts>
+        <layout>Utility Lookup Setting Layout</layout>
+        <sections>
+            <label><!-- Create New Record Settings --></label>
+            <section>Create New Record Settings</section>
+        </sections>
+        <sections>
+            <label><!-- Custom Links --></label>
+            <section>Custom Links</section>
+        </sections>
+        <sections>
+            <label><!-- Lookup Settngs --></label>
+            <section>Lookup Settngs</section>
+        </sections>
+        <sections>
+            <label><!-- Search Modal Table Settings --></label>
+            <section>Search Modal Table Settings</section>
+        </sections>
+    </layouts>
+    <startsWith>Consonant</startsWith>
+    <validationRules>
+        <errorMessage><!-- Fields with number input must be greater than 0. --></errorMessage>
+        <name>ucinn_ascendv2__Fields_with_number_input_must_be_greater</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>
+            <!-- Number fields cannot be less than 0.
+Number of Records Per Page cannot be greater than 500.
+Number of Records Per Load cannot be greater than 1000. -->
+        </errorMessage>
+        <name>ucinn_ascendv2__Fields_with_number_validation</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Number of Records Per Load is not a multiple of  Number of Records Per Page. --></errorMessage>
+        <name>ucinn_ascendv2__Page_Load_Mod_of_Record_Load_Not_Zero</name>
+    </validationRules>
+</CustomObjectTranslation>

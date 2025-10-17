@@ -1,0 +1,428 @@
+{
+  "version" : "63.0",
+  "nodes" : {
+    "LOAD_DATASET0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "ChildReuni.Is_Hamilton_Parent", "Aggregate.SUM_FY01_Collected_Amount_No_Event_Fee_Gifts", "COUNT_Rows", "All_NCAA_Involvements", "All_Private_Societies_Involvements", "Is_Contactable", "Preferred_Address.ucinn_ascendv2__Address_State_Formula__c", "ucinn_ascendv2__Ethnicity__c", "Is_Active", "All_Degree_Codes", "ucinn_ascendv2__Preferred_Address_Country__c", "Largest_Pledge.Largest_Pledge_Date", "HAM_Is_Primary_Constituent__c", "ucinn_ascendv2__Is_Deceased__c", "Largest_Gift_Designation", "Residence_Address.ucinn_ascendv2__Type__c", "HAM_Name_w_Suffix__c", "Largest_Pledge_Designation", "All_Student_Programs_Involvements", "Account.Id", "Wealth_Rating.HAM_Wealth_Rating_Number__c", "Largest_Cash_Gift_Type", "Hamilton_Fund_CYR_Solicitable_Status", "All_Student_Housing_Involvements", "HAM_LiveAlumni_Employer__c", "Degree.All_Minors", "All_Active_Organization_Names", "Oppo_Prog.Opportunity_Programs_Flag", "ucinn_ascendv2__Gender__c", "All_Current_Involvements", "ucinn_ascendv2__Is_Anonymous__c", "Multicultural_Affinity", "HAM_Not_a_Prospect__c", "Is_Alumni", "Is_Solicitable", "ucinn_ascendv2__Preferred_Class_Year__c", "All_Involvements", "Lifetime_Fundraising_Range", "Largest_HF_Gift_Designation", "Largest_Cash_Designation", "Job_Title__c", "All_Volunteer_Involvements", "ActiveCB.Is_Active_Chapel_Bell", "ucinn_ascendv2__Primary_Contact_Type__c", "Aggregate.SUM_FY00_Collected_Amount_HF", "Number_of_Solicitable_Channels", "ucinn_ascendv2__Lifetime_Cash__c", "ML_fundraising.Last_Fundraising_Amount", "Account.ucinn_ascendv2__Lifetime_Cash__c", "Aggregate.SUM_Current_Calendar_Year_Total_Cash_HF", "Aggregate.SUM_FY00_Hamilton_Fund_Cash_Amount", "Aggregate.SUM_Committed_Excluding_BQI", "Aggregate.SUM_HF_Calendar_Year_Total_Cash_1YR", "ucinn_ascendv2__Age_Formula__c", "Aggregate.Sum.FY01_Collected_Amount", "Aggregate.Sum.Lifetime_Collected_Amount", "Aggregate.SUM_FY01_Collected_Amount_HF" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Account and Contact Dataset",
+          "name" : "Account_and_Contact_Dataset"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "FILTER0" : {
+      "action" : "filter",
+      "sources" : [ "LOAD_DATASET0" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "ucinn_ascendv2__Is_Deceased__c",
+          "operator" : "EQUAL",
+          "operands" : [ "false" ]
+        }, {
+          "type" : "TEXT",
+          "field" : "Is_Alumni",
+          "operator" : "EQUAL",
+          "operands" : [ "true" ]
+        }, {
+          "type" : "TEXT",
+          "field" : "Is_Active",
+          "operator" : "EQUAL",
+          "operands" : [ "true" ]
+        }, {
+          "type" : "TEXT",
+          "field" : "ucinn_ascendv2__Primary_Contact_Type__c",
+          "operator" : "EQUAL",
+          "operands" : [ "Hamilton Alumni", "Hamilton Withdrawn", "Kirkland Alumnae", "Trustee" ]
+        } ],
+        "filterBooleanLogic" : "1 AND 2 AND 3 AND 4"
+      }
+    },
+    "FORMULA0" : {
+      "action" : "formula",
+      "sources" : [ "FILTER0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Is_5K_HF_Donor_CYR",
+          "label" : "Is 5K HF Donor CYR",
+          "formulaExpression" : "case \r\n    when \"Aggregate.SUM_FY00_Collected_Amount_HF\">=5000\r\n    then 'true'\r\n    else\r\n    'false'\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "DROP_FIELDS0" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA0" ],
+      "parameters" : {
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Aggregate.SUM_FY01_Collected_Amount_No_Event_Fee_Gifts", "Residence_Address.ucinn_ascendv2__Type__c", "Largest_Pledge.Largest_Pledge_Date", "Largest_Cash_Gift_Type", "HAM_LiveAlumni_Employer__c", "ML_fundraising.Last_Fundraising_Amount", "Aggregate.SUM_Committed_Excluding_BQI" ]
+        }
+      }
+    },
+    "FORMULA1" : {
+      "action" : "formula",
+      "sources" : [ "DROP_FIELDS0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Lifetime_Cash_Collected_as_of_1YR",
+          "label" : "Lifetime Cash Collected as of 1YR",
+          "formulaExpression" : "\"Aggregate.Sum.Lifetime_Collected_Amount\"-\"Aggregate.Sum.FY01_Collected_Amount\"",
+          "precision" : 10,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "DROP_FIELDS1" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA1" ],
+      "parameters" : {
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Is_Active", "Largest_Pledge.Largest_Pledge_Date", "ucinn_ascendv2__Is_Deceased__c", "Is_Former_Trustee", "Largest_Cash_Gift_Type", "Is_Founders_Circle", "ML_cash.Largest_Cash_Date", "Is_Ever_Trustee", "Account.ucinn_ascendv2__Primary_Contact__c", "ML_fundraising.SUM_Bequest_Intention", "Aggregate.SUM_Bequest_Intention_50th_Reunion", "Aggregate.SUM_Bequest_Intention", "ML_fundraising.Daily_Bequest_Intention_Flag", "ucinn_ascendv2__Date_of_Most_Recent_Gift__c", "Account_or_Contact_Donor_Id", "HAM_Profile_Picture_URL__c", "EnrichJBA.JBA_Expiration_Date", "HAM_Preferred_Chapter__c", "HAM_Secondary_Chapter__c", "Aggregate.SUM_Calendar_Chapel_Bell_Cash_1YR", "Aggregate.SUM_Current_Calendar_Year_Chapel_Bell_Cash", "ucinn_ascendv2__Primary_Contact_Type__c", "Residence_Address.ucinn_ascendv2__Type__c", "Number_of_Solicitable_Channels", "Cash_Greater_than_Fundraising_OOB", "Largest_Cash.Largest_Cash_Date", "Largest_Cash_Designation", "Account.ucinn_ascendv2__Lifetime_Cash__c", "Aggregate.SUM_Lifetime_Cash_Amount_Endowment", "Aggregate.SUM_Current_Calendar_Year_Total_Cash_HF", "EnrichHami.Max_HF_Daily_Cash_1YR", "ML_cash.Number_of_Cash_Days", "Aggregate.SUM_Current_Calendar_Year_Total_Cash", "Aggregate.SUM_FY05_Collected_Amount", "ML_cash.Date", "ML_cash.Daily_Cash_Amount", "Aggregate.Sum.FY04_Collected_Amount", "ML_cash.First_Cash_Amount", "Largest_Cash.Largest_Cash_Amount", "ML_cash.Last_Cash_Amount", "Lifetime_Cash_Collected_as_of_1YR", "ML_cash.Largest_Cash_Amount", "Aggregate.Sum.FY02_Collected_Amount", "Aggregate.SUM_FY05_Collected_Amount_HF", "Aggregate.SUM_FY04_Collected_Amount_HF", "Aggregate.SUM_FY03_Collected_Amount_HF", "Aggregate.SUM_FY02_Collected_Amount_HF", "Is_Alumni", "Is_Contactable", "Is_ISB_2YR.Is_ISB_Campaign_Member", "Largest_Gift_Designation", "Largest_Gift.Largest_Gift_Date", "Largest_Gift.Largest_Gift_Amount", "Largest_HF_Gift_Designation", "Largest_HFGift.Largest_HF_Gift_Date", "Largest_Pledge.Largest_Pledge_Amount", "ML_fundraising.Largest_Fundraising_Amount", "Largest_HFPledge.Largest_HF_Pledge_Amount", "Largest_HFGift.Largest_HF_Gift_Amount", "Largest_HFPledge.Largest_HF_Pledge_Date", "Largest_HF_Pledge_Designation", "Lifetime_Fundraising_Amount", "Aggregate.SUM_Lifetime_Fundraising_Amount_Endowment", "ucinn_ascendv2__Lifetime_Fundraising__c", "Account.ucinn_ascendv2__Lifetime_Fundraising__c", "HAM_JBA__c", "Account_or_Contact_Id", "Account.Id", "ML_fundraising.Last_Fundraising_Date", "ML_fundraising.Last_Fundraising_Amount", "Aggregate.Sum.FY03_Committed_Amount", "Aggregate.Sum.FY02_Committed_Amount", "ML_fundraising.First_Fundraising_Amount", "Aggregate.Sum.FY04_Committed_Amount", "ML_fundraising.Number_of_Fundraising_Days", "APAnniD.All_Purposes_Anniversary_Date_1YR", "Fundraising_Match_Flag", "Philanthropic_Donor_LY.Status_Date", "ucinn_ascendv2__Date_of_Most_Recent_Pledge_Payment__c", "HAM_1812__c", "TransformT1.Tiered_1812_2YR", "Is_Ten_to_the_Fifth", "Class_Decade", "ChildReuni.Latest_Reunion_Year_Child", "HAM_LiveAlumni_Job_Title__c", "HAM_Institutional_Suffix__c", "HF_Model.HAM_Probability__c", "Aggregate.SUM_FY00_Collected_Amount_HF", "ucinn_ascendv2__Amount_of_Most_Recent_Gift__c", "GVAC.HAM_Attend__c", "ucinn_ascendv2__Current_FY_Giving__c", "ucinn_ascendv2__Amount_of_Most_Recent_Pledge__c", "Ask_Expected.MAX_HAM_Ask_Amount__c", "User_Defined_Fiscal_Year", "Hamilton_Fund_Donor_Status", "All_Trustee_Involvements", "Philanthropic_Donor_Status", "Hamilton_Fund.Status_Date", "HF_Model.HAM_Decile_Number__c", "Pure_Donor.Count_Unique.Fiscal_Years", "AggregateA.SUM_Annual_Recurring_Payment", "Philanthropic_Donor_Status_LY", "EnrichJBA.JBA_Membership_Status", "Aggregate_02.Sum.Is_Consecutive_Year", "Aggregate.SUM_Committed_Excluding_BQI", "Largest_Pledge_Designation" ]
+        }
+      }
+    },
+    "FORMULA2" : {
+      "action" : "formula",
+      "sources" : [ "DROP_FIELDS1" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Wealth_Rating_Number_Ed",
+          "label" : "Wealth Rating Number Ed",
+          "formulaExpression" : "coalesce(\"Wealth_Rating.HAM_Wealth_Rating_Number__c\", '999')",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA3" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA2" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Active_Organization_Names",
+          "label" : "Active Organization Names",
+          "formulaExpression" : "coalesce(\"All_Active_Organization_Names\", 'Missing Active Organization Names')",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA4" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA3" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "All_Minors_Codes_Ed",
+          "label" : "All Minors Codes Ed",
+          "formulaExpression" : "coalesce(\"Degree.All_Minors\", 'Missing Minors')",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA5" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA4" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Current_Involvements",
+          "label" : "Current Involvements",
+          "formulaExpression" : "coalesce(\"All_Current_Involvements\", 'Missing Involvements')",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA6" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA5" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "NCAA_Involvements",
+          "label" : "NCAA Involvements",
+          "formulaExpression" : "coalesce(\"All_NCAA_Involvements\", 'Missing NCAA Involvements')",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA7" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA6" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Private_Societies_Involvements",
+          "label" : "Private Societies Involvements",
+          "formulaExpression" : "coalesce(\"All_Private_Societies_Involvements\", 'Missing Private Societies Involvements')",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "BUCKET0" : {
+      "action" : "bucket",
+      "sources" : [ "FORMULA7" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Preferred_Address_Region",
+          "label" : "Region",
+          "type" : "TEXT",
+          "bucketsSetup" : {
+            "defaultBucketValue" : "International/Missing",
+            "isPassthroughEnabled" : false,
+            "sourceField" : {
+              "name" : "Preferred_Address.ucinn_ascendv2__Address_State_Formula__c",
+              "type" : "TEXT"
+            },
+            "buckets" : [ {
+              "value" : "Northeast",
+              "sourceValues" : [ "CT", "MA", "ME", "NH", "NJ", "NY", "PA", "RI", "VT", "Vermont", "ri" ]
+            }, {
+              "value" : "Midwest",
+              "sourceValues" : [ "IA", "IL", "IN", "KS", "MI", "MN", "MO", "ND", "NE", "OH", "SD", "WI" ]
+            }, {
+              "value" : "South",
+              "sourceValues" : [ "AL", "AR", "DC", "DE", "FL", "Fl", "GA", "KY", "LA", "MD", "MS", "NC", "OK", "SC", "TN", "TX", "VA", "WV" ]
+            }, {
+              "value" : "West",
+              "sourceValues" : [ "AK", "AZ", "CA", "CO", "HI", "ID", "MT", "NM", "NV", "OR", "UT", "WA", "WY" ]
+            }, {
+              "value" : "US Territories",
+              "sourceValues" : [ "AS", "GU", "MP", "PR", "VI" ]
+            } ]
+          }
+        } ]
+      }
+    },
+    "FORMULA8" : {
+      "action" : "formula",
+      "sources" : [ "BUCKET0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Multicultural_Affinity_Ed",
+          "label" : "Multicultural Affinity Ed",
+          "formulaExpression" : "coalesce(\"Multicultural_Affinity\", 'Missing Multicultural Affinity')",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA9" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA8" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Lifetime_Cash_1YR",
+          "label" : "Lifetime Cash 1YR ",
+          "formulaExpression" : "\"Aggregate.Sum.Lifetime_Collected_Amount\"- \"Aggregate.SUM_FY00_Hamilton_Fund_Cash_Amount\"",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "OUTPUT0" : {
+      "action" : "save",
+      "sources" : [ "FORMULA9" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Model 5K HF Donors Recent",
+          "name" : "Model_5K_HF_Donors_Recent",
+          "folderName" : "SharedApp"
+        },
+        "measuresToCurrencies" : [ ]
+      }
+    }
+  },
+  "ui" : {
+    "nodes" : {
+      "LOAD_DATASET0" : {
+        "label" : "Account and Contact Dataset",
+        "type" : "LOAD_DATASET",
+        "top" : 112.30000000000001,
+        "left" : 111.9,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "FILTER0" : {
+        "label" : "Filter to Living Alumni",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 112,
+        "left" : 252
+      },
+      "TRANSFORM0" : {
+        "label" : "Transform 0",
+        "type" : "TRANSFORM",
+        "top" : 112,
+        "left" : 392,
+        "graph" : {
+          "FORMULA0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Is 5K HF Donor CYR"
+          },
+          "DROP_FIELDS0" : {
+            "label" : "Drop Columns"
+          },
+          "FORMULA1" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Lifetime Cash Collected as of 1YR"
+          },
+          "DROP_FIELDS1" : {
+            "label" : "Drop Columns"
+          },
+          "FORMULA2" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Formula"
+          },
+          "FORMULA3" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Formula"
+          },
+          "FORMULA4" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Formula"
+          },
+          "FORMULA5" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Formula"
+          },
+          "FORMULA6" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Formula"
+          },
+          "FORMULA7" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Formula"
+          },
+          "BUCKET0" : {
+            "label" : "Bucket"
+          },
+          "FORMULA8" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Formula"
+          },
+          "FORMULA9" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Formula"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA0",
+          "target" : "DROP_FIELDS0"
+        }, {
+          "source" : "DROP_FIELDS0",
+          "target" : "FORMULA1"
+        }, {
+          "source" : "FORMULA1",
+          "target" : "DROP_FIELDS1"
+        }, {
+          "source" : "DROP_FIELDS1",
+          "target" : "FORMULA2"
+        }, {
+          "source" : "FORMULA2",
+          "target" : "FORMULA3"
+        }, {
+          "source" : "FORMULA3",
+          "target" : "FORMULA4"
+        }, {
+          "source" : "FORMULA4",
+          "target" : "FORMULA5"
+        }, {
+          "source" : "FORMULA5",
+          "target" : "FORMULA6"
+        }, {
+          "source" : "FORMULA6",
+          "target" : "FORMULA7"
+        }, {
+          "source" : "FORMULA7",
+          "target" : "BUCKET0"
+        }, {
+          "source" : "BUCKET0",
+          "target" : "FORMULA8"
+        }, {
+          "source" : "FORMULA8",
+          "target" : "FORMULA9"
+        } ]
+      },
+      "OUTPUT0" : {
+        "label" : "Output 0",
+        "type" : "OUTPUT",
+        "top" : 112,
+        "left" : 532
+      }
+    },
+    "connectors" : [ {
+      "source" : "LOAD_DATASET0",
+      "target" : "FILTER0"
+    }, {
+      "source" : "FILTER0",
+      "target" : "TRANSFORM0"
+    }, {
+      "source" : "TRANSFORM0",
+      "target" : "OUTPUT0"
+    } ],
+    "hiddenColumns" : [ {
+      "fieldName" : "ucinn_ascendv2__Age_Formula__c",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Account_and_Contact_Dataset"
+    } ]
+  },
+  "runMode" : "full"
+}

@@ -1,0 +1,308 @@
+{
+  "version" : "61.0",
+  "nodes" : {
+    "LOAD_DATASET0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Full_Name", "Guests", "Grandchild_s_Hamilton_Class_Year", "Registration_Type", "Guest_Source_ID_College_use_only", "Primary_Registrant_Guest_of", "Email_Address", "Source_ID", "Child_s_Hamilton_Class_Year", "Class_Year" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "RE24 Reg list IDs",
+          "name" : "RE24_Reg_list_IDs"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "LOAD_DATASET1" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Primary_Relationship_Manager.Assigned_User_Name", "Is_Contactable", "Is_Contactable_By_Text", "Is_Contactable_By_Email", "Name", "HAM_Preferred_Chapter__c", "Is_Contactable_By_Phone", "Preferred_Phone.ucinn_ascendv2__Phone_Number__c", "Account_or_Contact_External_Id", "Preferred_Address.ucinn_ascendv2__Full_Address_Formula__c", "HAM_Reunion_Year__c", "Preferred_Email.ucinn_ascendv2__Email_Address__c", "Is_Contactable_By_Mail" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Account and Contact Dataset",
+          "name" : "Account_and_Contact_Dataset"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "FORMULA0" : {
+      "action" : "formula",
+      "sources" : [ "LOAD_DATASET0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Guest_Source_ID_Without_NA",
+          "label" : "Guest Source ID Without NA",
+          "formulaExpression" : "replace(Guest_Source_ID_College_use_only, 'NA', '')",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA1" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Source_ID_Without_NA",
+          "label" : "Source ID Without NA",
+          "formulaExpression" : "replace(Source_ID, 'NA', '')",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA2" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA1" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Merged_Id",
+          "label" : "Merged Id",
+          "formulaExpression" : "coalesce(Guest_Source_ID_Without_NA,Source_ID_Without_NA)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA3" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA2" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Adding_Zero_Id",
+          "label" : "Adding Zero Id",
+          "formulaExpression" : "concat('0000000',Merged_Id)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA4" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA3" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Id",
+          "label" : "Id",
+          "formulaExpression" : "substr(Adding_Zero_Id, -7)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "DROP_FIELDS0" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA4" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "SELECT",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Id" ]
+        }
+      }
+    },
+    "FILTER0" : {
+      "action" : "filter",
+      "sources" : [ "DROP_FIELDS0" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "Id",
+          "operator" : "NOT",
+          "operands" : [ "0000000" ]
+        } ]
+      }
+    },
+    "JOIN0" : {
+      "action" : "join",
+      "sources" : [ "FILTER0", "LOAD_DATASET1" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "FilterCont.Account_or_Contact_External_Id" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Id" ],
+        "rightQualifier" : "FilterCont",
+        "rightKeys" : [ "Account_or_Contact_External_Id" ]
+      }
+    },
+    "OUTPUT0" : {
+      "action" : "save",
+      "sources" : [ "FILTER1" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "ASC-4305",
+          "name" : "ASC_4305"
+        },
+        "dateConfigurationName" : "July_Fiscal_Year",
+        "measuresToCurrencies" : [ ]
+      }
+    },
+    "FILTER1" : {
+      "action" : "filter",
+      "sources" : [ "JOIN0" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "FilterCont.Is_Contactable",
+          "operator" : "EQUAL",
+          "operands" : [ "true" ]
+        } ]
+      }
+    }
+  },
+  "ui" : {
+    "nodes" : {
+      "LOAD_DATASET0" : {
+        "label" : "RE24 Reg list IDs",
+        "type" : "LOAD_DATASET",
+        "top" : 112,
+        "left" : 112,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "LOAD_DATASET1" : {
+        "label" : "Account and Contact Dataset",
+        "type" : "LOAD_DATASET",
+        "top" : 251.8,
+        "left" : 532.2,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "TRANSFORM0" : {
+        "label" : "Enrich Fields",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 112,
+        "left" : 252,
+        "graph" : {
+          "FORMULA0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Guest Source ID Without NA"
+          },
+          "FORMULA1" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Source ID Without NA"
+          },
+          "FORMULA2" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Merged Id"
+          },
+          "FORMULA3" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Adding Zero Id"
+          },
+          "FORMULA4" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Id"
+          },
+          "DROP_FIELDS0" : {
+            "label" : "Keep Columns"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA0",
+          "target" : "FORMULA1"
+        }, {
+          "source" : "FORMULA1",
+          "target" : "FORMULA2"
+        }, {
+          "source" : "FORMULA2",
+          "target" : "FORMULA3"
+        }, {
+          "source" : "FORMULA3",
+          "target" : "FORMULA4"
+        }, {
+          "source" : "FORMULA4",
+          "target" : "DROP_FIELDS0"
+        } ]
+      },
+      "FILTER0" : {
+        "label" : "Filter Out NA",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 112,
+        "left" : 392
+      },
+      "JOIN0" : {
+        "label" : "Lookup Person Info",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 112,
+        "left" : 532.1
+      },
+      "OUTPUT0" : {
+        "label" : "Output 0",
+        "type" : "OUTPUT",
+        "top" : 112.30000000000001,
+        "left" : 810.9
+      },
+      "FILTER1" : {
+        "label" : "Filter Contactable",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 112,
+        "left" : 672
+      }
+    },
+    "connectors" : [ {
+      "source" : "LOAD_DATASET0",
+      "target" : "TRANSFORM0"
+    }, {
+      "source" : "TRANSFORM0",
+      "target" : "FILTER0"
+    }, {
+      "source" : "FILTER0",
+      "target" : "JOIN0"
+    }, {
+      "source" : "LOAD_DATASET1",
+      "target" : "JOIN0"
+    }, {
+      "source" : "FILTER1",
+      "target" : "OUTPUT0"
+    }, {
+      "source" : "JOIN0",
+      "target" : "FILTER1"
+    } ],
+    "hiddenColumns" : [ ]
+  },
+  "runMode" : "full"
+}

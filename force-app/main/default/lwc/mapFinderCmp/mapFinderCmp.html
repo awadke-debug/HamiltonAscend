@@ -1,0 +1,91 @@
+<template>
+    <div class="main-container slds-is-relative">
+        <div class="search-container">
+            <div style="align-self: start;">
+                <lightning-input type="text" label="ADDRESS OR ZIP" class="address-zip" value={addressText}
+                    onchange={handleChange} data-prop="addressText"></lightning-input>
+            </div>
+            <div style="align-self: start;">
+                <lightning-combobox name="radius" label="RADIUS" options={radius} value={selectedRadius}
+                    onchange={handleChange} placeholder="Select Radius" class="radius-select"
+                    data-prop="selectedRadius"></lightning-combobox>
+            </div>
+        </div>
+
+        <div style="display: flex; padding-top: 1rem; padding-bottom: 1 rem;">
+
+            <lightning-button-stateful label-when-off="Advance Search" label-when-on="Hide Advance Search"
+                style="margin-left: auto;" selected={showAdvanceFilter} onclick={handleToggleChange}
+                disabled={advanceFilterdisabled} class="slds-var-m-bottom_small" variant="text"
+                data-prop="showAdvanceFilter"></lightning-button-stateful>
+
+            <template lwc:if={showAdvanceFilter}>
+                <lightning-button-menu alternative-text="Show menu" icon-name="utility:settings" icon-size="medium"
+                    variant="border-filled" menu-alignment="auto" class="slds-var-m-left_small"
+                    onselect={handleOnFilterMenu}>
+                    <lightning-menu-item value="load" label="Load Saved Filter"></lightning-menu-item>
+                    <lightning-menu-item value="save" label="Save Filter"></lightning-menu-item>
+                    <lightning-menu-item value="delete" label="Delete Saved Filter"></lightning-menu-item>
+                </lightning-button-menu>
+            </template>
+        </div>
+
+        <template lwc:if={showAdvanceFilter}>
+            <div
+                style="display: grid; grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); gap: 1rem; margin-bottom: 1rem;">
+
+                <template for:each={advanceSearchFilters} for:item="fld">
+                    <template lwc:if={fld.isMultiRow}>
+                        <div key={fld.key} style={fld.style}>
+                            <c-map-filter-item field={fld}></c-map-filter-item>
+                        </div>
+                    </template>
+                </template>
+
+                <template for:each={advanceSearchFilters} for:item="fld">
+                    <template if:false={fld.isMultiRow}>
+                        <div key={fld.key}>
+                            <c-map-filter-item field={fld}></c-map-filter-item>
+                        </div>
+                    </template>
+                </template>
+            </div>
+        </template>
+
+        <div style="display: flex;" class="slds-var-m-bottom_xx-large">
+      <div style="margin-right: auto;">
+
+        <lightning-button-stateful
+          label-when-off="Show Map"
+          label-when-on="Hide Map"
+          label-when-hover="Toggle Map"
+          icon-name-when-off="utility:expand"
+          icon-name-when-on="utility:hide"
+          variant="neutral"
+          selected={showMap}
+          onclick={handleToggleChange}
+          data-prop="showMap"
+        ></lightning-button-stateful>
+    
+        <lightning-button-stateful
+            label-when-off="Show pins"
+            label-when-on="Hide pins"
+            icon-name-when-off="utility:checkin"
+            icon-name-when-on="utility:hide"
+            selected={showPins}
+            onclick={handleToggleChange}
+            variant="neutral"
+            class="slds-var-m-left_small slds-var-m-right_small"
+            disabled={disableShowPinsBtn}
+            data-prop="showPins"
+        ></lightning-button-stateful>
+        <lightning-helptext content="Toggle to show/hide pins."></lightning-helptext>
+        
+      </div>
+      <div style="margin-left: auto;">
+        <lightning-button class="search-btn slds-var-m-right_small" label="Search" variant="brand" icon-name="utility:search"></lightning-button>
+        <lightning-button label="Clear" icon-name="utility:refresh" variant="brand-outline"></lightning-button>
+      </div>
+    </div>
+    </div>
+</template>

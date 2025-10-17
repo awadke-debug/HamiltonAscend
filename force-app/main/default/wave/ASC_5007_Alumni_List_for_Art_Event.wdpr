@@ -1,0 +1,507 @@
+{
+  "version" : "61.0",
+  "nodes" : {
+    "LOAD_DATASET0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Constituent_Type_String", "Is_Active", "Is_Contactable_By_Email", "Account_or_Contact_Id", "Name", "Degree.All_Concentrations", "Primary_Relationship_Manager.Assigned_User_Name", "Preferred_Email.ucinn_ascendv2__Email_Address__c" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Account and Contact Dataset",
+          "name" : "Account_and_Contact_Dataset"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "LOAD_DATASET1" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "ucinn_ascendv2__Contact__c", "ucinn_ascendv2__Foundation_Funding_Interest_Name_Formula__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "ucinn_ascendv2__Funding_Interest__c",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "ucinn_ascendv2__Funding_Interest__c"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN0" : {
+      "action" : "join",
+      "sources" : [ "LOAD_DATASET0", "FILTER0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "ucinn_asce.ucinn_ascendv2__Contact__c" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Account_or_Contact_Id" ],
+        "rightQualifier" : "ucinn_asce",
+        "rightKeys" : [ "ucinn_ascendv2__Contact__c" ]
+      }
+    },
+    "FILTER0" : {
+      "action" : "filter",
+      "sources" : [ "LOAD_DATASET1" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "ucinn_ascendv2__Foundation_Funding_Interest_Name_Formula__c",
+          "operator" : "EQUAL",
+          "operands" : [ "Wellin" ]
+        } ]
+      }
+    },
+    "LOAD_DATASET3_copy0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "ucinn_ascendv2__Degree_Institution__c", "RecordTypeId", "ucinn_ascendv2__Contact__c", "ucinn_ascendv2__Major_Formula__c", "ucinn_ascendv2__Minor_Formula__c", "ucinn_ascendv2__Second_Major_Formula__c", "Second_Minor__c", "Third_Concentration_Formula__c", "Third_Minor__c", "HAM_First_Major__c", "HAM_Second_Major__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "ucinn_ascendv2__Degree_Information__c",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "ucinn_ascendv2__Degree_Information__c"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "FILTER0_copy0" : {
+      "action" : "filter",
+      "sources" : [ "JOIN18_copy0" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "Record_Type.Name",
+          "operator" : "EQUAL",
+          "operands" : [ "School Degree Information" ]
+        }, {
+          "type" : "TEXT",
+          "field" : "ucinn_ascendv2__Major_Formula__c",
+          "operator" : "EQUAL",
+          "operands" : [ "Art" ]
+        }, {
+          "type" : "TEXT",
+          "field" : "HAM_First_Major__c",
+          "operator" : "EQUAL",
+          "operands" : [ "Art" ]
+        }, {
+          "type" : "TEXT",
+          "field" : "ucinn_ascendv2__Minor_Formula__c",
+          "operator" : "EQUAL",
+          "operands" : [ "Art" ]
+        }, {
+          "type" : "TEXT",
+          "field" : "ucinn_ascendv2__Second_Major_Formula__c",
+          "operator" : "EQUAL",
+          "operands" : [ "Art" ]
+        }, {
+          "type" : "TEXT",
+          "field" : "HAM_Second_Major__c",
+          "operator" : "EQUAL",
+          "operands" : [ "Art" ]
+        }, {
+          "type" : "TEXT",
+          "field" : "Second_Minor__c",
+          "operator" : "EQUAL",
+          "operands" : [ "Art" ]
+        }, {
+          "type" : "TEXT",
+          "field" : "Third_Concentration_Formula__c",
+          "operator" : "EQUAL",
+          "operands" : [ "Art" ]
+        }, {
+          "type" : "TEXT",
+          "field" : "Third_Minor__c",
+          "operator" : "EQUAL",
+          "operands" : [ "Art" ]
+        } ],
+        "filterBooleanLogic" : "1 AND (2 or 3 or 4 or 5 or 6 or 7 or 8 or 9)"
+      }
+    },
+    "LOAD_DATASET10_copy0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Id", "Name" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "Account",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "Account"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN18_copy0" : {
+      "action" : "join",
+      "sources" : [ "JOIN41_copy0", "LOAD_DATASET10_copy0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "ucinn_ascendv2__Degree_Institution__c", "Institution.Id" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "ucinn_ascendv2__Degree_Institution__c" ],
+        "rightQualifier" : "Institution",
+        "rightKeys" : [ "Id" ]
+      }
+    },
+    "LOAD_DATASET28_copy0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Id", "Name" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "RecordType",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "RecordType"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN41_copy0" : {
+      "action" : "join",
+      "sources" : [ "LOAD_DATASET3_copy0", "LOAD_DATASET28_copy0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "RecordTypeId", "Record_Type.Id" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "RecordTypeId" ],
+        "rightQualifier" : "Record_Type",
+        "rightKeys" : [ "Id" ]
+      }
+    },
+    "FORMULA0" : {
+      "action" : "formula",
+      "sources" : [ "AGGREGATE1" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Major_or_Minor_is_Art",
+          "label" : "Major or Minor is Art",
+          "formulaExpression" : "'Major or Minor is Art'",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "DROP_FIELDS0" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA0" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "UNIQUE_ucinn_ascendv2__Major_Formula__c" ]
+        }
+      }
+    },
+    "EXTRACT0" : {
+      "action" : "extractGrains",
+      "sources" : [ "FILTER0_copy0" ],
+      "parameters" : {
+        "grainExtractions" : [ ]
+      }
+    },
+    "AGGREGATE1" : {
+      "action" : "aggregate",
+      "sources" : [ "EXTRACT0" ],
+      "parameters" : {
+        "aggregations" : [ {
+          "action" : "UNIQUE",
+          "source" : "ucinn_ascendv2__Major_Formula__c",
+          "name" : "UNIQUE_ucinn_ascendv2__Major_Formula__c",
+          "label" : "Unique Concentration"
+        } ],
+        "groupings" : [ "ucinn_ascendv2__Contact__c" ],
+        "pivots" : [ ],
+        "nodeType" : "STANDARD"
+      }
+    },
+    "JOIN42" : {
+      "action" : "join",
+      "sources" : [ "JOIN0", "DROP_FIELDS0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "EnrichFiel.ucinn_ascendv2__Contact__c" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Account_or_Contact_Id" ],
+        "rightQualifier" : "EnrichFiel",
+        "rightKeys" : [ "ucinn_ascendv2__Contact__c" ]
+      }
+    },
+    "OUTPUT0" : {
+      "action" : "save",
+      "sources" : [ "FILTER1" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Alumni List for Art Event",
+          "name" : "Alumni_List_for_Art_Event"
+        },
+        "dateConfigurationName" : "July_Fiscal_Year",
+        "measuresToCurrencies" : [ ]
+      }
+    },
+    "FILTER1" : {
+      "action" : "filter",
+      "sources" : [ "JOIN42" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "Constituent_Type_String",
+          "operator" : "CONTAINS",
+          "operands" : [ "Hamilton Alumni", "Kirkland Alumnae" ]
+        }, {
+          "type" : "TEXT",
+          "field" : "EnrichFiel.Major_or_Minor_is_Art",
+          "operator" : "EQUAL",
+          "operands" : [ "Major or Minor is Art" ]
+        }, {
+          "type" : "TEXT",
+          "field" : "ucinn_asce.ucinn_ascendv2__Foundation_Funding_Interest_Name_Formula__c",
+          "operator" : "EQUAL",
+          "operands" : [ "Wellin" ]
+        }, {
+          "type" : "TEXT",
+          "field" : "Is_Active",
+          "operator" : "EQUAL",
+          "operands" : [ "true" ]
+        }, {
+          "type" : "TEXT",
+          "field" : "Is_Contactable_By_Email",
+          "operator" : "EQUAL",
+          "operands" : [ "true" ]
+        } ],
+        "filterBooleanLogic" : "1 AND (2 OR 3) AND 4 AND 5"
+      }
+    }
+  },
+  "ui" : {
+    "nodes" : {
+      "LOAD_DATASET0" : {
+        "label" : "Account and Contact Dataset",
+        "type" : "LOAD_DATASET",
+        "top" : 112,
+        "left" : 112,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "LOAD_DATASET1" : {
+        "label" : "ucinn_ascendv2__Funding_Interest__c",
+        "type" : "LOAD_DATASET",
+        "top" : 392.8,
+        "left" : 391.7,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN0" : {
+        "label" : "Lookup Interest to Contact",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 112,
+        "left" : 391.7
+      },
+      "FILTER0" : {
+        "label" : "Filter Wellin",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 252,
+        "left" : 392
+      },
+      "LOAD_DATASET3_copy0" : {
+        "label" : "ucinn_ascendv2__Degree_Information__c",
+        "type" : "LOAD_DATASET",
+        "top" : 531.5,
+        "left" : 113.5,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "FILTER0_copy0" : {
+        "label" : "Filter School Degree and Art Only",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 532,
+        "left" : 532.2
+      },
+      "LOAD_DATASET10_copy0" : {
+        "label" : "Account",
+        "type" : "LOAD_DATASET",
+        "top" : 672,
+        "left" : 392,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN18_copy0" : {
+        "label" : "Lookup Institution to Degree",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 532,
+        "left" : 392
+      },
+      "LOAD_DATASET28_copy0" : {
+        "label" : "RecordType",
+        "type" : "LOAD_DATASET",
+        "top" : 671.9,
+        "left" : 252,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN41_copy0" : {
+        "label" : "Lookup Record Type To Degree",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 532,
+        "left" : 252.7
+      },
+      "TRANSFORM0" : {
+        "label" : "Enrich Fields",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 252,
+        "left" : 532.1,
+        "graph" : {
+          "FORMULA0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Major or Minor is Art"
+          },
+          "DROP_FIELDS0" : {
+            "label" : "Drop Columns"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA0",
+          "target" : "DROP_FIELDS0"
+        } ]
+      },
+      "AGGREGATE0" : {
+        "label" : "Aggregate by Id",
+        "description" : "",
+        "type" : "AGGREGATE",
+        "top" : 392.1,
+        "left" : 532.1,
+        "graph" : {
+          "EXTRACT0" : null,
+          "AGGREGATE1" : null
+        },
+        "connectors" : [ {
+          "source" : "EXTRACT0",
+          "target" : "AGGREGATE1"
+        } ]
+      },
+      "JOIN42" : {
+        "label" : "Lookup Art to Contact",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 112.1,
+        "left" : 532.1
+      },
+      "OUTPUT0" : {
+        "label" : "Output 0",
+        "type" : "OUTPUT",
+        "top" : 111.9,
+        "left" : 952
+      },
+      "FILTER1" : {
+        "label" : "Filter 1",
+        "type" : "FILTER",
+        "top" : 112,
+        "left" : 672
+      }
+    },
+    "connectors" : [ {
+      "source" : "LOAD_DATASET3_copy0",
+      "target" : "JOIN41_copy0"
+    }, {
+      "source" : "LOAD_DATASET0",
+      "target" : "JOIN0"
+    }, {
+      "source" : "FILTER0",
+      "target" : "JOIN0"
+    }, {
+      "source" : "LOAD_DATASET1",
+      "target" : "FILTER0"
+    }, {
+      "source" : "JOIN41_copy0",
+      "target" : "JOIN18_copy0"
+    }, {
+      "source" : "LOAD_DATASET10_copy0",
+      "target" : "JOIN18_copy0"
+    }, {
+      "source" : "JOIN18_copy0",
+      "target" : "FILTER0_copy0"
+    }, {
+      "source" : "LOAD_DATASET28_copy0",
+      "target" : "JOIN41_copy0"
+    }, {
+      "source" : "AGGREGATE0",
+      "target" : "TRANSFORM0"
+    }, {
+      "source" : "FILTER0_copy0",
+      "target" : "AGGREGATE0"
+    }, {
+      "source" : "JOIN0",
+      "target" : "JOIN42"
+    }, {
+      "source" : "TRANSFORM0",
+      "target" : "JOIN42"
+    }, {
+      "source" : "FILTER1",
+      "target" : "OUTPUT0"
+    }, {
+      "source" : "JOIN42",
+      "target" : "FILTER1"
+    } ],
+    "hiddenColumns" : [ ]
+  },
+  "runMode" : "full"
+}

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObjectTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <caseValues>
+        <plural>false</plural>
+        <value>Promozione voce su cui lavorare</value>
+    </caseValues>
+    <caseValues>
+        <plural>true</plural>
+        <value>Promozioni voci su cui lavorare</value>
+    </caseValues>
+    <gender>Feminine</gender>
+    <nameFieldLabel>Nome promozione voce su cui lavorare</nameFieldLabel>
+    <startsWith>Consonant</startsWith>
+    <validationRules>
+        <errorMessage>Impossibile promuovere una Work_Item a una pipeline non attiva.</errorMessage>
+        <name>sf_devops__No_Promotion_to_Inactive_Pipeline</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Una Work_Item membro di un Change_Bundle non può essere promossa in una Pipeline_Stage.</errorMessage>
+        <name>sf_devops__Promoted_And_Installed</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Una Work_Item non può essere promossa in una Pipeline_Stage con versione.</errorMessage>
+        <name>sf_devops__Promoted_To_Versioned</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Impossibile promuovere una WorkItem se non è approvata.</errorMessage>
+        <name>sf_devops__Promoted_Without_Approval</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Una WorkItem può essere promossa solo a una fase interna allo stesso progetto.</errorMessage>
+        <name>sf_devops__Promoted_Wrong_Project</name>
+    </validationRules>
+</CustomObjectTranslation>

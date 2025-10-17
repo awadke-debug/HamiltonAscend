@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObjectTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <caseValues>
+        <plural>false</plural>
+        <value>Omgeving</value>
+    </caseValues>
+    <caseValues>
+        <plural>true</plural>
+        <value>Omgevingen</value>
+    </caseValues>
+    <gender>Feminine</gender>
+    <nameFieldLabel>Omgevingsnaam</nameFieldLabel>
+    <validationRules>
+        <errorMessage>Het veld Expired__c van een omgeving kan niet worden ingesteld op onwaar.</errorMessage>
+        <name>sf_devops__Expired_Changed</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Een omgeving kan niet worden ingevoegd met Expired__c ingesteld op waar.</errorMessage>
+        <name>sf_devops__Expired_Insert</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Een vervangende omgeving moet verlopen zijn.</errorMessage>
+        <name>sf_devops__Expired_Replaces</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Refresh_Source en Refresh_Date moeten beide zijn ingesteld of beide leeg zijn.</errorMessage>
+        <name>sf_devops__Refresh_Source_And_Date</name>
+    </validationRules>
+</CustomObjectTranslation>

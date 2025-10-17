@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObjectTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <caseValues>
+        <plural>false</plural>
+        <value>Gateway</value>
+    </caseValues>
+    <caseValues>
+        <plural>true</plural>
+        <value>Gateways</value>
+    </caseValues>
+    <layouts>
+        <layout>Telnyx layout</layout>
+        <sections>
+            <label><!-- Custom Links --></label>
+            <section>Custom Links</section>
+        </sections>
+        <sections>
+            <label><!-- SMS Subscriptions --></label>
+            <section>SMS Subscriptions</section>
+        </sections>
+        <sections>
+            <label><!-- Telnyx --></label>
+            <section>Telnyx</section>
+        </sections>
+    </layouts>
+    <layouts>
+        <layout>Twilio Layout</layout>
+        <sections>
+            <label><!-- Custom Links --></label>
+            <section>Custom Links</section>
+        </sections>
+        <sections>
+            <label><!-- SMS Subscriptions --></label>
+            <section>SMS Subscriptions</section>
+        </sections>
+        <sections>
+            <label><!-- Twilio --></label>
+            <section>Twilio</section>
+        </sections>
+    </layouts>
+    <layouts>
+        <layout>Twilio Voice Layout</layout>
+        <sections>
+            <label><!-- Custom Links --></label>
+            <section>Custom Links</section>
+        </sections>
+        <sections>
+            <label><!-- SMS Subscriptions --></label>
+            <section>SMS Subscriptions</section>
+        </sections>
+        <sections>
+            <label><!-- Twilio --></label>
+            <section>Twilio</section>
+        </sections>
+    </layouts>
+    <quickActions>
+        <label><!-- Update Gateway Webhook --></label>
+        <name>Mogli_SMS__Update_Gateway_Webhook</name>
+    </quickActions>
+    <recordTypes>
+        <label><!-- Custom --></label>
+        <name>Mogli_SMS__Custom</name>
+    </recordTypes>
+    <recordTypes>
+        <label><!-- Telerivet --></label>
+        <name>Mogli_SMS__Telerivet</name>
+    </recordTypes>
+    <recordTypes>
+        <label><!-- Telnyx --></label>
+        <name>Mogli_SMS__Telnyx</name>
+    </recordTypes>
+    <recordTypes>
+        <label><!-- Textwire --></label>
+        <name>Mogli_SMS__Textwire</name>
+    </recordTypes>
+    <recordTypes>
+        <label><!-- Twilio --></label>
+        <name>Mogli_SMS__Twilio</name>
+    </recordTypes>
+    <recordTypes>
+        <label><!-- Twilio Voice --></label>
+        <name>Mogli_SMS__Twilio_Voice</name>
+    </recordTypes>
+    <recordTypes>
+        <label><!-- WhatsApp --></label>
+        <name>Mogli_SMS__WhatsApp</name>
+    </recordTypes>
+    <startsWith>Consonant</startsWith>
+    <validationRules>
+        <errorMessage><!-- Only one service can be selected at a time: either Notify Service or Messaging Service. --></errorMessage>
+        <name>Mogli_SMS__Prevent_Dual_Service_Selection</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- You must enter a Twilio Messaging Service SID in order to use Twilio Messaging Service. --></errorMessage>
+        <name>Mogli_SMS__TwilioMessagingServiceSIDExists</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- You must enter a Twilio Notify Service SID in order to use Twilio Notify Service. --></errorMessage>
+        <name>Mogli_SMS__TwilioNotifyServiceSIDExists</name>
+    </validationRules>
+</CustomObjectTranslation>

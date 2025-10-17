@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Workflow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fieldUpdates>
+        <fullName>Mogli_SMS__UpdateMogliNumber</fullName>
+        <description>Update Mogli Number based on value in Mobile field (remove all non-numerical values)</description>
+        <field>Mogli_SMS__Mogli_Number__c</field>
+        <formula>SUBSTITUTE(
+SUBSTITUTE(
+SUBSTITUTE(
+SUBSTITUTE(MobilePhone, &quot;(&quot;, &quot;&quot;), &quot;)&quot;, &quot;&quot;), &quot; &quot;, &quot;&quot;), &quot;-&quot;, &quot;&quot;)</formula>
+        <name>Update Mogli Number</name>
+        <notifyAssignee>false</notifyAssignee>
+        <operation>Formula</operation>
+        <protected>false</protected>
+        <reevaluateOnChange>false</reevaluateOnChange>
+    </fieldUpdates>
+    <fieldUpdates>
+        <fullName>Mogli_SMS__Update_Mogli_Number_with_WITH_PLUS</fullName>
+        <description>Update Mogli Number based on value in Mobile field (remove all non-numerical values) WITH PLUS added to front of Mogli Number</description>
+        <field>Mogli_SMS__Mogli_Number__c</field>
+        <formula>IF(ISBLANK(TRIM(MobilePhone)),&quot;&quot;,
+IF(REGEX(TRIM(MobilePhone),&quot;[\\s\\S\\w\\W]*[a-zA-Z@#$%^&amp;*&lt;&gt;!?\\[\\]_{};:&apos;/~`]+[\\s\\S\\w\\W]*&quot;),&quot;&quot;,
+&quot;+1&quot; &amp; SUBSTITUTE( SUBSTITUTE( SUBSTITUTE( SUBSTITUTE( SUBSTITUTE( SUBSTITUTE( SUBSTITUTE( SUBSTITUTE( 
+(&quot;+&quot;&amp; TRIM(MobilePhone)),&quot;++1&quot;,&quot;&quot;),&quot;+1&quot;,&quot;&quot;),&quot;+&quot;,&quot;&quot;),&quot;(&quot;,&quot;&quot;),&quot;)&quot;,&quot;&quot;),&quot; &quot;,&quot;&quot;),&quot;-&quot;,&quot;&quot;),&quot;.&quot;,&quot;&quot;)))</formula>
+        <name>Update Mogli Number with WITH PLUS</name>
+        <notifyAssignee>false</notifyAssignee>
+        <operation>Formula</operation>
+        <protected>false</protected>
+        <reevaluateOnChange>false</reevaluateOnChange>
+    </fieldUpdates>
+    <fieldUpdates>
+        <fullName>ucinn_ascendv2__Clear_Marital_Status</fullName>
+        <description>Clear the marital status when there is no preferred spouse name.</description>
+        <field>ucinn_ascendv2__Marital_Status__c</field>
+        <name>Clear Marital Status</name>
+        <notifyAssignee>false</notifyAssignee>
+        <operation>Literal</operation>
+        <protected>false</protected>
+        <reevaluateOnChange>false</reevaluateOnChange>
+    </fieldUpdates>
+    <fieldUpdates>
+        <fullName>ucinn_ascendv2__Update_Business_Unit_Field</fullName>
+        <field>ucinn_ascendv2__Business_Unit__c</field>
+        <formula>TEXT(ucinn_ascendv2__Unit__c)</formula>
+        <name>Update Business Unit Field</name>
+        <notifyAssignee>false</notifyAssignee>
+        <operation>Formula</operation>
+        <protected>false</protected>
+        <reevaluateOnChange>false</reevaluateOnChange>
+    </fieldUpdates>
+    <fieldUpdates>
+        <fullName>ucinn_ascendv2__Update_Contact_Record_Type</fullName>
+        <description>This update will change the record from New to Edit.</description>
+        <field>RecordTypeId</field>
+        <lookupValue>ucinn_ascendv2__Edit_Contact</lookupValue>
+        <lookupValueType>RecordType</lookupValueType>
+        <name>Update Contact Record Type</name>
+        <notifyAssignee>false</notifyAssignee>
+        <operation>LookupValue</operation>
+        <protected>false</protected>
+        <reevaluateOnChange>false</reevaluateOnChange>
+    </fieldUpdates>
+    <fieldUpdates>
+        <fullName>ucinn_ascendv2__Update_Marital_Status</fullName>
+        <field>ucinn_ascendv2__Marital_Status__c</field>
+        <literalValue>Married</literalValue>
+        <name>Update Marital Status</name>
+        <notifyAssignee>false</notifyAssignee>
+        <operation>Literal</operation>
+        <protected>false</protected>
+        <reevaluateOnChange>false</reevaluateOnChange>
+    </fieldUpdates>
+    <fieldUpdates>
+        <fullName>ucinn_ascendv2__Update_Salucation_Preference</fullName>
+        <field>ucinn_ascendv2__Salutation_Preference__c</field>
+        <literalValue>Joint</literalValue>
+        <name>Update Salucation Preference</name>
+        <notifyAssignee>false</notifyAssignee>
+        <operation>Literal</operation>
+        <protected>false</protected>
+        <reevaluateOnChange>false</reevaluateOnChange>
+    </fieldUpdates>
+    <fieldUpdates>
+        <fullName>ucinn_ascendv2__Update_Salutation_Preference_If_no_spous</fullName>
+        <description>Update the salutation when there is no spouse</description>
+        <field>ucinn_ascendv2__Salutation_Preference__c</field>
+        <literalValue>Individual</literalValue>
+        <name>Update Salutation Preference If no spous</name>
+        <notifyAssignee>false</notifyAssignee>
+        <operation>Literal</operation>
+        <protected>false</protected>
+        <reevaluateOnChange>false</reevaluateOnChange>
+    </fieldUpdates>
+    <fieldUpdates>
+        <fullName>ucinn_ascendv2__Update_Stage_of_Readiness_LastModifiedBy</fullName>
+        <description>Update Last Modified By Id</description>
+        <field>ucinn_ascendv2__Stage_of_Readiness_Last_Modified_By__c</field>
+        <formula>$User.CommunityNickname</formula>
+        <name>Update Stage of Readiness LastModifiedBy</name>
+        <notifyAssignee>false</notifyAssignee>
+        <operation>Formula</operation>
+        <protected>false</protected>
+        <reevaluateOnChange>false</reevaluateOnChange>
+    </fieldUpdates>
+    <fieldUpdates>
+        <fullName>ucinn_ascendv2__Update_Stage_of_Readiness_with_Today</fullName>
+        <field>ucinn_ascendv2__Stage_of_Readiness_Last_Modified_Date__c</field>
+        <formula>NOW()</formula>
+        <name>Update Stage of Readiness with Today</name>
+        <notifyAssignee>false</notifyAssignee>
+        <operation>Formula</operation>
+        <protected>false</protected>
+        <reevaluateOnChange>false</reevaluateOnChange>
+    </fieldUpdates>
+    <rules>
+        <fullName>Mogli_SMS__WITH PLUS - onCreateEditWhenMobileNotNull</fullName>
+        <actions>
+            <name>Mogli_SMS__Update_Mogli_Number_with_WITH_PLUS</name>
+            <type>FieldUpdate</type>
+        </actions>
+        <active>true</active>
+        <description>Update Mogli Number based on value in Mobile field (remove all non-numerical values) WITH PLUS added to front of Mogli Number</description>
+        <formula>ISBLANK(Mogli_SMS__Mogli_Number__c) || ISCHANGED(MobilePhone)</formula>
+        <triggerType>onAllChanges</triggerType>
+    </rules>
+    <rules>
+        <fullName>Mogli_SMS__onCreateEditWhenMobileNotNull</fullName>
+        <actions>
+            <name>Mogli_SMS__UpdateMogliNumber</name>
+            <type>FieldUpdate</type>
+        </actions>
+        <active>false</active>
+        <criteriaItems>
+            <field>Contact.MobilePhone</field>
+            <operation>notEqual</operation>
+        </criteriaItems>
+        <description>Update Mogli Number based on value in Mobile field (and remove all non-numerical values)</description>
+        <triggerType>onAllChanges</triggerType>
+    </rules>
+    <rules>
+        <fullName>ucinn_ascendv2__Contact Change Record Type</fullName>
+        <actions>
+            <name>ucinn_ascendv2__Update_Contact_Record_Type</name>
+            <type>FieldUpdate</type>
+        </actions>
+        <active>true</active>
+        <description>Changes the record type of the contact from &quot;New&quot; to &quot;Edit&quot;</description>
+        <formula>AND($Setup.ucinn_ascendv2__Bypass_Settings__c.ucinn_ascendv2__Bypass_Workflows__c  &lt;&gt; TRUE,  RecordType.DeveloperName  = &quot;New_Contact&quot;)&amp;&amp; RecordType.NamespacePrefix = &apos;ucinn_ascendv2&apos;</formula>
+        <triggerType>onAllChanges</triggerType>
+    </rules>
+    <rules>
+        <fullName>ucinn_ascendv2__Stage of Readiness has Changed</fullName>
+        <actions>
+            <name>ucinn_ascendv2__Update_Stage_of_Readiness_LastModifiedBy</name>
+            <type>FieldUpdate</type>
+        </actions>
+        <actions>
+            <name>ucinn_ascendv2__Update_Stage_of_Readiness_with_Today</name>
+            <type>FieldUpdate</type>
+        </actions>
+        <active>true</active>
+        <description>Stage of Readiness has Changed for Contact</description>
+        <formula>$Setup.ucinn_ascendv2__Bypass_Settings__c.ucinn_ascendv2__Bypass_Workflows__c &lt;&gt; TRUE &amp;&amp; ISCHANGED( ucinn_ascendv2__Stage_of_Readiness__c ) &amp;&amp; OR( RecordType.DeveloperName = &quot;Edit_Contact&quot;, RecordType.DeveloperName = &quot;New_Contact&quot; ) &amp;&amp; RecordType.NamespacePrefix = &apos;ucinn_ascendv2&apos;</formula>
+        <triggerType>onAllChanges</triggerType>
+    </rules>
+    <rules>
+        <fullName>ucinn_ascendv2__Update Business Unit for Constituent</fullName>
+        <actions>
+            <name>ucinn_ascendv2__Update_Business_Unit_Field</name>
+            <type>FieldUpdate</type>
+        </actions>
+        <active>true</active>
+        <description>Update the Business Unit field that is used for Integration, based on what picklist value is selected by the user.</description>
+        <formula>$Setup.ucinn_ascendv2__Bypass_Settings__c.ucinn_ascendv2__Bypass_Workflows__c &lt;&gt; TRUE  &amp;&amp; !ISPICKVAL( ucinn_ascendv2__Unit__c, &quot;&quot;) &amp;&amp; OR( RecordType.DeveloperName = &quot;Edit_Contact&quot;, RecordType.DeveloperName = &quot;New_Contact&quot; )&amp;&amp; RecordType.NamespacePrefix = &apos;ucinn_ascendv2&apos;</formula>
+        <triggerType>onAllChanges</triggerType>
+    </rules>
+    <rules>
+        <fullName>ucinn_ascendv2__Update Fields if there is a spouse</fullName>
+        <actions>
+            <name>ucinn_ascendv2__Update_Marital_Status</name>
+            <type>FieldUpdate</type>
+        </actions>
+        <actions>
+            <name>ucinn_ascendv2__Update_Salucation_Preference</name>
+            <type>FieldUpdate</type>
+        </actions>
+        <active>true</active>
+        <description>Update various fields if there is a spouse.</description>
+        <formula>$Setup.ucinn_ascendv2__Bypass_Settings__c.ucinn_ascendv2__Bypass_Workflows__c &lt;&gt; TRUE &amp;&amp; !ISBLANK(ucinn_ascendv2__Preferred_Spouse__c) &amp;&amp; OR( RecordType.DeveloperName = &quot;Edit_Contact&quot;, RecordType.DeveloperName = &quot;New_Contact&quot; )&amp;&amp; RecordType.NamespacePrefix = &apos;ucinn_ascendv2&apos;</formula>
+        <triggerType>onCreateOrTriggeringUpdate</triggerType>
+    </rules>
+    <rules>
+        <fullName>ucinn_ascendv2__Update Fields if there is no spouse</fullName>
+        <actions>
+            <name>ucinn_ascendv2__Clear_Marital_Status</name>
+            <type>FieldUpdate</type>
+        </actions>
+        <actions>
+            <name>ucinn_ascendv2__Update_Salutation_Preference_If_no_spous</name>
+            <type>FieldUpdate</type>
+        </actions>
+        <active>true</active>
+        <formula>$Setup.ucinn_ascendv2__Bypass_Settings__c.ucinn_ascendv2__Bypass_Workflows__c &lt;&gt; TRUE &amp;&amp; ISBLANK(ucinn_ascendv2__Preferred_Spouse__c) &amp;&amp; !(TEXT(ucinn_ascendv2__Marital_Status__c) == &apos;Widowed&apos;) &amp;&amp; OR( RecordType.DeveloperName = &quot;Edit_Contact&quot;, RecordType.DeveloperName = &quot;New_Contact&quot; )&amp;&amp; RecordType.NamespacePrefix = &apos;ucinn_ascendv2&apos;</formula>
+        <triggerType>onCreateOrTriggeringUpdate</triggerType>
+    </rules>
+</Workflow>

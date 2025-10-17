@@ -1,0 +1,60 @@
+{
+  "version" : "62.0",
+  "nodes" : {
+    "LOAD_DATASET0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Id", "AccountId", "RecordTypeId", "Name", "StageName", "Amount", "ExpectedRevenue", "CloseDate", "Type", "IsClosed", "IsWon", "CampaignId", "CreatedById", "LastModifiedDate", "LastModifiedById", "ContactId", "ucinn_ascendv2__Adjustment_Session__c", "ucinn_ascendv2__Commitment_Type__c", "ucinn_ascendv2__Constituent_Type__c", "ucinn_ascendv2__Contact__c", "ucinn_ascendv2__Credit_Date__c", "ucinn_ascendv2__Designation__c", "ucinn_ascendv2__External_System_ID__c", "ucinn_ascendv2__Frequency__c", "ucinn_ascendv2__Is_Anonymous__c", "ucinn_ascendv2__Last_Payment_Amount__c", "ucinn_ascendv2__Notes__c", "ucinn_ascendv2__Pledge_Receivable_Notes__c", "ucinn_ascendv2__Post_to_G_L_Date__c", "ucinn_ascendv2__Proposal_ID__c", "ucinn_ascendv2__Proposal__c", "ucinn_ascendv2__Send_to_G_L__c", "ucinn_ascendv2__Session__c", "ucinn_ascendv2__Submitted_Amount__c", "ucinn_ascendv2__Tender_Type_for_Gifts__c", "ucinn_ascendv2__Tribute__c", "ucinn_ascendv2__Amount_Paid_to_Date_Roll_Up__c", "ucinn_ascendv2__Amount_Paid_to_Date_Same_Desig_Roll_Up__c", "ucinn_ascendv2__Designation_Detail_Amount_Roll_Up__c", "ucinn_ascendv2__Last_Payment_Date_Roll_Up__c", "ucinn_ascendv2__Pledge_Gift_ID_Formula__c", "ucinn_ascendv2__Remaining_Amount_Due_Formula__c", "ucinn_ascendv2__Session_Approval_Date_Formula__c", "HAM_CFY_Ask__c", "HAM_Copy_of_Will_Received__c", "HAM_Expected_Amount__c", "HAM_MOU_Received__c", "HAM_Primary_Resp_Person__c", "HAM_Vice_President_Override__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "Opportunity",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "Opportunity"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "OUTPUT0" : {
+      "action" : "save",
+      "sources" : [ "LOAD_DATASET0" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "test_opp",
+          "name" : "test_opp",
+          "folderName" : "SharedApp"
+        }
+      }
+    }
+  },
+  "ui" : {
+    "nodes" : {
+      "LOAD_DATASET0" : {
+        "label" : "Opportunity",
+        "type" : "LOAD_DATASET",
+        "top" : 112,
+        "left" : 112,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "OUTPUT0" : {
+        "label" : "Output 0",
+        "type" : "OUTPUT",
+        "top" : 112,
+        "left" : 252
+      }
+    },
+    "connectors" : [ {
+      "source" : "LOAD_DATASET0",
+      "target" : "OUTPUT0"
+    } ],
+    "hiddenColumns" : [ ]
+  },
+  "runMode" : "full"
+}

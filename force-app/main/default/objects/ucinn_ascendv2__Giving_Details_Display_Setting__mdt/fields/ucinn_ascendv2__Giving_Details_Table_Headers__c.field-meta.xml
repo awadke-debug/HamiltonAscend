@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>ucinn_ascendv2__Giving_Details_Table_Headers__c</fullName>
+    <deprecated>false</deprecated>
+    <description>Row and column headers for each of the tables in the giving details tab. The form is:
+{
+&quot;giving_totals&quot;:{&quot;columns&quot;:[&quot;col1&quot;,&quot;col2&quot;], &quot;rows&quot;: [&quot;row1&quot;,&quot;row2&quot;]},
+&quot;pledge_recurring&quot;:{&quot;columns&quot;:[&quot;col1&quot;,&quot;col2&quot;,&quot;col3&quot;], &quot;rows&quot;: [&quot;row1&quot;,&quot;row2&quot;,&quot;row3&quot;]},
+&quot;pledges&quot;:{&quot;columns&quot;:[&quot;col1&quot;,&quot;col2&quot;,&quot;col3&quot;], &quot;rows&quot;: [&quot;row1&quot;,&quot;row2&quot;,&quot;row3&quot;]},
+&quot;pledge_payments&quot;:{&quot;columns&quot;:[&quot;col1&quot;,&quot;col2&quot;,&quot;col3&quot;], &quot;rows&quot;: [&quot;row1&quot;,&quot;row2&quot;,&quot;row3&quot;]},
+&quot;gifts&quot;:{&quot;columns&quot;:[&quot;col1&quot;,&quot;col2&quot;,&quot;col3&quot;], &quot;rows&quot;: [&quot;row1&quot;,&quot;row2&quot;,&quot;row3&quot;]}
+}
+
+If any tables are not defined by this object it will use the defaults instead.</description>
+    <fieldManageability>SubscriberControlled</fieldManageability>
+    <inlineHelpText>Row and column headers for giving details tables. Ex:{&quot;giving_totals&quot;:{&quot;columns&quot;:[&quot;col1&quot;,&quot;col2&quot;], &quot;rows&quot;: [&quot;row1&quot;,&quot;row2&quot;]}} The four table names are: giving_totals, pledge_recurring, pledges, pledge_payments, gifts</inlineHelpText>
+    <label>Giving Details Table Headers</label>
+    <length>32768</length>
+    <type>LongTextArea</type>
+    <visibleLines>3</visibleLines>
+</CustomField>

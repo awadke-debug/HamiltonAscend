@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObjectTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <caseValues>
+        <plural>false</plural>
+        <value>オブジェクト活動</value>
+    </caseValues>
+    <nameFieldLabel>オブジェクト活動名</nameFieldLabel>
+    <validationRules>
+        <errorMessage>参照されている Change_Submission__c は同じ Work_Item からのものである必要があります。</errorMessage>
+        <name>sf_devops__Change_Submission_Work_Item</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>参照されている Environment__c は Object_Activity__c と同じプロジェクトからのものである必要があります。</errorMessage>
+        <name>sf_devops__Environment_Project</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>参照されている Parent_Activity__c は Object_Activity__c と同じプロジェクトからのものである必要があります。</errorMessage>
+        <name>sf_devops__Parent_Activity_Project</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>参照されている Pipeline__c は Object_Activity__c と同じプロジェクトからのものである必要があります。</errorMessage>
+        <name>sf_devops__Pipeline_Project</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>参照されている Target_Pipeline_Stage__c は同じパイプラインからのものである必要があります。</errorMessage>
+        <name>sf_devops__Target_Stage_Pipeline</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>参照されている Work_Item__c は Object_Activity__c と同じプロジェクトからのものである必要があります。</errorMessage>
+        <name>sf_devops__Work_Item_Project</name>
+    </validationRules>
+</CustomObjectTranslation>

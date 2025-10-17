@@ -1,0 +1,1552 @@
+{
+  "version" : "59.0",
+  "nodes" : {
+    "LOAD_DATASET0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Is_Reunion_Year", "Rollup_Degree.ucinn_ascendv2__Reunion_Year__c", "Account.Type", "ISB.Campaign.Name", "Designation.HAM_Campaign_Priority__c", "Designation.ucinn_ascendv2__Areas_of_Giving_CASE_Type__c", "Designation.ucinn_ascendv2__Opportunity__c", "Is_Gold", "Secondary_Relationship_Manager.Assigned_User", "Designation.ucinn_ascendv2__CASE_Type__c", "Opportunity.RecordType.Name", "Amount_Band", "Maximum_Date.Is_Constituent_Maximum_Total_Date", "Account.ucinn_ascendv2__External_System_ID__c", "Opportunity.StageName", "Reunion_Year_Flag", "Designation.ucinn_ascendv2__Campaign__c", "Appeal.Name", "Wealth_Rating.ucinn_ascendv2__Wealth_Rating__c", "Designation.ucinn_ascendv2__Designation_Name__c", "Opportunity.HAM_MOU_Received__c", "ucinn_ascendv2__Credit_Date_Formula__c", "Designation.ucinn_ascendv2__Fund_Purpose__c", "Opportunity_Team.Opportunity_Team_List", "Account.Record_Type.Name", "Primary_Relationship_Manager.Assigned_User", "Designation.Name", "Object", "Id", "Rollup_Degree.Major_Degree_List", "Contact.ucinn_ascendv2__Preferred_Class_Year__c", "Retained_Contact.ucinn_ascendv2__Contact__c", "Amount_Band_Sort", "Contact.ucinn_ascendv2__Primary_Contact_Type__c", "Designation.ucinn_ascendv2__Fund_Type__c", "Formatted_External_Id", "Is_In_Period", "Constituent_Fiscal_Year_Key", "Organization_or_Constituent_Account_Id", "Opportunity.Type", "Account.Id", "Campaign_Priority.HAM_Fiscal_Year__c", "Opportunity_Team.OpportunityId", "Contact.ucinn_ascendv2__External_System_ID__c", "Constituent_Date_Key", "Opportunity.HAM_Copy_of_Will_Received__c", "Contact_Retention_Id", "HAM_Constituent_Type__c", "Campaign_Priority.Name", "Constituent_or_Account_Id", "Rollup_Degree.ucinn_ascendv2__Major_Degree_Formula__c", "Designation.ucinn_ascendv2__CASE_Purpose_v1__c", "Appeal.HAM_Fiscal_Year__c", "ucinn_ascendv2__Designation_Detail__c", "Contact.Name", "ucinn_ascendv2__Contact__c", "Contact.ucinn_ascendv2__Date_of_Most_Recent_Gift__c", "ucinn_ascendv2__External_System_ID__c", "ucinn_ascendv2__Gift_Type_Formula__c", "Designation.Id", "Organization_or_Contact_External_Id", "Account.Name", "Fiscal_Year", "ISB.Is_ISB_Particpant", "Opportunity.HAM_CFY_Ask__c", "Opportunity.HAM_Vice_President_Override__c", "Opportunity_Team.Opportunity_Team_Multivalue", "GVAC.HAM_Attend__c", "Opportunity.ExpectedRevenue", "Contact.ucinn_ascendv2__Current_FY_Giving__c", "Contact.ucinn_ascendv2__Number_of_Consecutive_Giving__c", "Contact.ucinn_ascendv2__Preferred_Class_Year_Integer_Formula__c", "Collected_Amount", "ucinn_ascendv2__Credit_Amount__c", "GVAC.HAM_Give__c", "Contact.ucinn_ascendv2__Last_FY_Giving__c", "GVAC.HAM_Volunteer__c", "Payment_Aggregate.Sum.Opportunity_Collected_Amount", "GVAC.HAM_Connect__c", "Committed_Amount", "Number_of_Payments.Count.Fiscal_Years_Given", "Opportunity.ucinn_ascendv2__Submitted_Amount__c", "Outstanding_Committed_Amount" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Gift Credit and Payment",
+          "name" : "Gift_Credit_and_Payment"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "FORMULA0" : {
+      "action" : "formula",
+      "sources" : [ "LOAD_DATASET0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Contact_or_Org_Type",
+          "label" : "Contact or Org Type",
+          "formulaExpression" : "case \r\n    when \"Account.Record_Type.Name\"='Household' then \"Contact.ucinn_ascendv2__Primary_Contact_Type__c\"\r\n    else \"Account.Type\"\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA1" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Constituent_Group_ascend",
+          "label" : "Constituent Group ascend",
+          "formulaExpression" : "CASE\r\nWHEN \"Contact_or_Org_Type\"='Academic Organization' then 'Founds & Corps'\r\nWHEN \"Contact_or_Org_Type\"='Campus Organization' then 'Founds & Corps'\r\nWHEN \"Contact_or_Org_Type\"='Corporation' then 'Founds & Corps'\r\n\r\nWHEN \"Contact_or_Org_Type\"='Current Parent' then 'Parent'\r\nWHEN \"Contact_or_Org_Type\"='Donor-Advised Fund' then 'Founds & Corps'\r\nWHEN \"Contact_or_Org_Type\"='Employee' then 'Other'\r\n\r\nWHEN \"Contact_or_Org_Type\"='Estate - Alumnus' then 'Estate'\r\nWHEN \"Contact_or_Org_Type\"='Estate - Other' then 'Estate'\r\nWHEN \"Contact_or_Org_Type\"='Estate - Parent' then 'Estate'\r\nWHEN \"Contact_or_Org_Type\"='Former Employee' then 'Other'\r\n\r\nWHEN \"Contact_or_Org_Type\"='Foundation - Corporate' then 'Founds & Corps'\r\nWHEN \"Contact_or_Org_Type\"='Foundation - Independent' then 'Founds & Corps'\r\nWHEN \"Contact_or_Org_Type\"='Foundation - Personal/Family' then 'Founds & Corps'\r\n\r\nWHEN \"Contact_or_Org_Type\"='Friend' then 'Other'\r\n\r\nWHEN \"Contact_or_Org_Type\"='Grandparent' then 'Parent'\r\nWHEN \"Contact_or_Org_Type\"='Hamilton Alumni' then 'Alumni'\r\n\r\nWHEN \"Contact_or_Org_Type\"='Hamilton Withdrawn' then 'Alumni'\r\nWHEN \"Contact_or_Org_Type\"='Kirkland Alumnae' then 'Alumni'\r\nWHEN \"Contact_or_Org_Type\"='Organization' then 'Founds & Corps'\r\nWHEN \"Contact_or_Org_Type\"='Parent of Hamilton Withdrawn' then 'Parent'\r\nWHEN \"Contact_or_Org_Type\"='Past Parent' then 'Parent'\r\nWHEN \"Contact_or_Org_Type\"='Retiree' then 'Other'\r\n\r\nWHEN \"Contact_or_Org_Type\"='Spouse of Alumni or Trustee' then 'Other'\r\nWHEN \"Contact_or_Org_Type\"='Student' then 'Alumni'\r\nWHEN \"Contact_or_Org_Type\"='Surviving Spouse' then 'Other'\r\n\r\nWHEN \"Contact_or_Org_Type\"='Trust - Alumni' then 'Founds & Corps'\r\nWHEN \"Contact_or_Org_Type\"='Trustee' then 'Trustee'\r\nELSE 'xMissing'\r\nEnd\r\n",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "LOAD_DATASET1" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Giving_Area", "Designation", "Sort_Name", "Person_Id", "Contrib_Donor_Desig_Id", "Constituent_Group", "Hamilton_Fund_Date", "Contribution_Id", "Amount_SUM" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "DWH Recurring Gift Dump",
+          "name" : "DWH_Recurring_Gift_Dump"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "LOAD_DATASET2" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Giving_Area", "Designation", "Sort_Name", "Person_Id", "Contrib_Donor_Desig_Id", "Constituent_Group", "Hamilton_Fund_Date", "Contribution_Id", "Amount_SUM" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "DWH Gift Dump",
+          "name" : "DWH_Gift_Dump"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "FORMULA2" : {
+      "action" : "formula",
+      "sources" : [ "LOAD_DATASET1" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "DWH_Gift_Type",
+          "label" : "DWH Gift Type",
+          "formulaExpression" : "'Recurring Gift'",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA3" : {
+      "action" : "formula",
+      "sources" : [ "LOAD_DATASET2" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "DWH_Gift_Type",
+          "label" : "DWH Gift Type",
+          "formulaExpression" : "'Gift Received'",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "APPEND0" : {
+      "action" : "appendV2",
+      "sources" : [ "FORMULA3", "FORMULA2" ],
+      "parameters" : {
+        "fieldMappings" : [ {
+          "top" : "Giving_Area",
+          "bottom" : "Giving_Area"
+        }, {
+          "top" : "Designation",
+          "bottom" : "Designation"
+        }, {
+          "top" : "Sort_Name",
+          "bottom" : "Sort_Name"
+        }, {
+          "top" : "Person_Id",
+          "bottom" : "Person_Id"
+        }, {
+          "top" : "Contrib_Donor_Desig_Id",
+          "bottom" : "Contrib_Donor_Desig_Id"
+        }, {
+          "top" : "Constituent_Group",
+          "bottom" : "Constituent_Group"
+        }, {
+          "top" : "Hamilton_Fund_Date",
+          "bottom" : "Hamilton_Fund_Date"
+        }, {
+          "top" : "Contribution_Id",
+          "bottom" : "Contribution_Id"
+        }, {
+          "top" : "Amount_SUM",
+          "bottom" : "Amount_SUM"
+        }, {
+          "top" : "DWH_Gift_Type",
+          "bottom" : "DWH_Gift_Type"
+        } ]
+      }
+    },
+    "EXTRACT0" : {
+      "action" : "extractGrains",
+      "sources" : [ "APPEND1" ],
+      "parameters" : {
+        "grainExtractions" : [ {
+          "source" : "Hamilton_Fund_Date",
+          "targets" : [ {
+            "name" : "Hamilton_Fund_Date_DAY",
+            "label" : "Hamilton Fund Date Day",
+            "grainType" : "DAY"
+          }, {
+            "name" : "Hamilton_Fund_Date_MONTH",
+            "label" : "Hamilton Fund Date Month",
+            "grainType" : "MONTH"
+          }, {
+            "name" : "Hamilton_Fund_Date_YEAR",
+            "label" : "Hamilton Fund Date Year",
+            "grainType" : "YEAR"
+          } ]
+        } ]
+      }
+    },
+    "AGGREGATE1" : {
+      "action" : "aggregate",
+      "sources" : [ "EXTRACT0" ],
+      "parameters" : {
+        "aggregations" : [ {
+          "action" : "SUM",
+          "source" : "Amount_SUM",
+          "name" : "SUM_Amount_SUM",
+          "label" : "Sum of Amount (SUM)"
+        } ],
+        "groupings" : [ "Contribution_Id", "Constituent_Group", "Designation", "DWH_Gift_Type", "Giving_Area", "Person_Id", "Sort_Name", "Hamilton_Fund_Date_DAY", "Hamilton_Fund_Date_MONTH", "Hamilton_Fund_Date_YEAR" ],
+        "pivots" : [ ],
+        "nodeType" : "STANDARD"
+      }
+    },
+    "JOIN0" : {
+      "action" : "join",
+      "sources" : [ "AGGREGATE1", "FILTER0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "OUTER",
+        "leftKeys" : [ "Contribution_Id" ],
+        "rightQualifier" : "Transform0",
+        "rightKeys" : [ "Formatted_External_Id" ]
+      }
+    },
+    "FORMULA4" : {
+      "action" : "formula",
+      "sources" : [ "APPEND4" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "File_Source",
+          "label" : "File Source",
+          "formulaExpression" : "case  \r\n    when \"Transform0.Formatted_External_Id\" is not null and \"Contribution_Id\" is not null\r\n    then 'Both' \r\n    when \"Transform0.Formatted_External_Id\" is not null  then 'Opp' \r\n    when \"Contribution_Id\" is not null  then 'Opp'     \r\n    \r\n    else 'neither'\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA5" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA4" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Person_ID_Match_Flag",
+          "label" : "Person ID Match Flag",
+          "formulaExpression" : "case  \r\n    when \"Person_Id\"=\"Transform0.Organization_or_Contact_External_Id\"\r\n    then 'Match'\r\n    else\r\n    'Not Match'\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA6" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA9" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Constituent_Group_Match_Flag",
+          "label" : "Constituent Group Match Flag",
+          "formulaExpression" : "case  \r\n    when \"Constituent_Group\"=\"Transform0.Constituent_Group_ascend\"\r\n    then 'Match'\r\n    else\r\n    'Not Match'\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA7" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA6" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Designation_Match_Flag",
+          "label" : "Designation Match Flag",
+          "formulaExpression" : "case  \r\n    when Designation=\"Transform0.Designation.Name\"\r\n    then 'Match'\r\n    else\r\n    'Not Match'\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA8" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA7" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Amount_Match_Flag",
+          "label" : "Amount Match Flag",
+          "formulaExpression" : "case  \r\n    when SUM_Amount_SUM=\"Transform0.Committed_Amount\"\r\n    then 'Match'\r\n    else\r\n    'Not Match'\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA9" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA5" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Date_Match_Flag",
+          "label" : "Date Match Flag",
+          "formulaExpression" : "case  \r\n    when Hamilton_Fund_Date_YEAR=year(\"Transform0.ucinn_ascendv2__Credit_Date_Formula__c\") and  Hamilton_Fund_Date_MONTH=month(\"Transform0.ucinn_ascendv2__Credit_Date_Formula__c\") and  Hamilton_Fund_Date_DAY=day(\"Transform0.ucinn_ascendv2__Credit_Date_Formula__c\") \r\n    then 'Match'\r\n    else\r\n    'Not Match'\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA10" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA8" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Overall_Match_Flag",
+          "label" : "Overall Match Flag",
+          "formulaExpression" : "case\r\n    when \"Date_Match_Flag\"!='Match' then 'Not Match' \r\n    when \"Amount_Match_Flag\"!='Match' then 'Not Match' \r\n    when \"Person_ID_Match_Flag\"!='Match' then 'Not Match' \r\n    when \"Constituent_Group_Match_Flag\"!='Match' then 'Not Match' \r\n        when Designation_Match_Flag !='Match' then 'Not Match' \r\n    else\r\n    'Match' \r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "OUTPUT0" : {
+      "action" : "save",
+      "sources" : [ "FORMULA10" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Gift Pledge Contribution Pledge Level Validation",
+          "name" : "Gift_Pledge_Contribution_Pledge_Level_Validation",
+          "folderName" : "SharedApp"
+        },
+        "measuresToCurrencies" : [ ]
+      }
+    },
+    "LOAD_DATASET3" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Giving_Area", "Designation", "Sort_Name", "Person_Id", "Contrib_Donor_Desig_Id", "Constituent_Group", "Hamilton_Fund_Date", "Contribution_Id", "Amount_SUM" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "DWH Matching Gift Received Dump",
+          "name" : "DWH_Matching_Gift_Received_Dump"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "LOAD_DATASET4" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Giving_Area", "Designation", "Sort_Name", "Person_Id", "Contrib_Donor_Desig_Id", "Constituent_Group", "Hamilton_Fund_Date", "Contribution_Id", "Amount_SUM" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "DWH Pledge Payment Dump",
+          "name" : "DWH_Pledge_Payment_Dump"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "FORMULA3_copy0" : {
+      "action" : "formula",
+      "sources" : [ "LOAD_DATASET3" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "DWH_Gift_Type",
+          "label" : "DWH Gift Type",
+          "formulaExpression" : "'Matching Gift Received'",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA3_copy0_copy0" : {
+      "action" : "formula",
+      "sources" : [ "LOAD_DATASET4" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "DWH_Gift_Type",
+          "label" : "DWH Gift Type",
+          "formulaExpression" : "'Pledge Payment'",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "APPEND1" : {
+      "action" : "appendV2",
+      "sources" : [ "APPEND6", "FORMULA3_copy0" ],
+      "parameters" : {
+        "fieldMappings" : [ {
+          "top" : "Giving_Area",
+          "bottom" : "Giving_Area"
+        }, {
+          "top" : "Designation",
+          "bottom" : "Designation"
+        }, {
+          "top" : "Sort_Name",
+          "bottom" : "Sort_Name"
+        }, {
+          "top" : "Person_Id",
+          "bottom" : "Person_Id"
+        }, {
+          "top" : "Contrib_Donor_Desig_Id",
+          "bottom" : "Contrib_Donor_Desig_Id"
+        }, {
+          "top" : "Constituent_Group",
+          "bottom" : "Constituent_Group"
+        }, {
+          "top" : "Hamilton_Fund_Date",
+          "bottom" : "Hamilton_Fund_Date"
+        }, {
+          "top" : "Contribution_Id",
+          "bottom" : "Contribution_Id"
+        }, {
+          "top" : "Amount_SUM",
+          "bottom" : "Amount_SUM"
+        }, {
+          "top" : "DWH_Gift_Type",
+          "bottom" : "DWH_Gift_Type"
+        } ]
+      }
+    },
+    "APPEND2" : {
+      "action" : "appendV2",
+      "sources" : [ "APPEND0", "FORMULA3_copy0_copy0" ],
+      "parameters" : {
+        "fieldMappings" : [ {
+          "top" : "Giving_Area",
+          "bottom" : "Giving_Area"
+        }, {
+          "top" : "Designation",
+          "bottom" : "Designation"
+        }, {
+          "top" : "Sort_Name",
+          "bottom" : "Sort_Name"
+        }, {
+          "top" : "Person_Id",
+          "bottom" : "Person_Id"
+        }, {
+          "top" : "Contrib_Donor_Desig_Id",
+          "bottom" : "Contrib_Donor_Desig_Id"
+        }, {
+          "top" : "Constituent_Group",
+          "bottom" : "Constituent_Group"
+        }, {
+          "top" : "Hamilton_Fund_Date",
+          "bottom" : "Hamilton_Fund_Date"
+        }, {
+          "top" : "Contribution_Id",
+          "bottom" : "Contribution_Id"
+        }, {
+          "top" : "Amount_SUM",
+          "bottom" : "Amount_SUM"
+        }, {
+          "top" : "DWH_Gift_Type",
+          "bottom" : "DWH_Gift_Type"
+        } ]
+      }
+    },
+    "FILTER0" : {
+      "action" : "filter",
+      "sources" : [ "FORMULA1" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "Object",
+          "operator" : "EQUAL",
+          "operands" : [ "Gift Pledge" ]
+        }, {
+          "type" : "TEXT",
+          "field" : "Opportunity.RecordType.Name",
+          "operator" : "EQUAL",
+          "operands" : [ "Gift", "Matching Gift", "Planned Gift" ]
+        } ]
+      }
+    },
+    "LOAD_DATASET5" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Giving_Area", "Designation", "Sort_Name", "Pledge_Id", "Person_Id", "Contrib_Donor_Desig_Id", "Constituent_Group", "Hamilton_Fund_Date", "Contribution_Id", "Amount_SUM" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "DWH BI Dump",
+          "name" : "DWH_BI_Dump"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "LOAD_DATASET6" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Giving_Area", "Designation", "Sort_Name", "Pledge_Id", "Person_Id", "Contrib_Donor_Desig_Id", "Constituent_Group", "Hamilton_Fund_Date", "Contribution_Id", "Amount_SUM" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "DWH Pledge Dump",
+          "name" : "DWH_Pledge_Dump"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "FORMULA3_copy0_copy0_copy0" : {
+      "action" : "formula",
+      "sources" : [ "LOAD_DATASET5" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "DWH_Gift_Type",
+          "label" : "DWH Gift Type",
+          "formulaExpression" : "'Bequest Intention'",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA3_copy0_copy0_copy0_copy0" : {
+      "action" : "formula",
+      "sources" : [ "LOAD_DATASET6" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "DWH_Gift_Type",
+          "label" : "DWH Gift Type",
+          "formulaExpression" : "'Pledge'",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "EXTRACT0_copy0" : {
+      "action" : "extractGrains",
+      "sources" : [ "FORMULA3_copy0_copy0_copy0_copy0" ],
+      "parameters" : {
+        "grainExtractions" : [ {
+          "source" : "Hamilton_Fund_Date",
+          "targets" : [ {
+            "name" : "Hamilton_Fund_Date_DAY",
+            "label" : "Hamilton Fund Date Day",
+            "grainType" : "DAY"
+          }, {
+            "name" : "Hamilton_Fund_Date_MONTH",
+            "label" : "Hamilton Fund Date Month",
+            "grainType" : "MONTH"
+          }, {
+            "name" : "Hamilton_Fund_Date_YEAR",
+            "label" : "Hamilton Fund Date Year",
+            "grainType" : "YEAR"
+          } ]
+        } ]
+      }
+    },
+    "AGGREGATE1_copy0" : {
+      "action" : "aggregate",
+      "sources" : [ "EXTRACT0_copy0" ],
+      "parameters" : {
+        "aggregations" : [ {
+          "action" : "SUM",
+          "source" : "Amount_SUM",
+          "name" : "SUM_Amount_SUM",
+          "label" : "Sum of Amount (SUM)"
+        } ],
+        "groupings" : [ "Constituent_Group", "Designation", "DWH_Gift_Type", "Giving_Area", "Person_Id", "Sort_Name", "Hamilton_Fund_Date_DAY", "Hamilton_Fund_Date_MONTH", "Hamilton_Fund_Date_YEAR", "Pledge_Id", "Contribution_Id" ],
+        "pivots" : [ ],
+        "nodeType" : "STANDARD"
+      }
+    },
+    "FILTER1" : {
+      "action" : "filter",
+      "sources" : [ "FORMULA1" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "Opportunity.RecordType.Name",
+          "operator" : "EQUAL",
+          "operands" : [ "Pledge" ]
+        }, {
+          "type" : "TEXT",
+          "field" : "Object",
+          "operator" : "EQUAL",
+          "operands" : [ "Gift Pledge" ]
+        } ]
+      }
+    },
+    "JOIN1" : {
+      "action" : "join",
+      "sources" : [ "FILTER1", "APPEND5" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "OUTER",
+        "leftKeys" : [ "Formatted_External_Id" ],
+        "rightQualifier" : "pledgedump",
+        "rightKeys" : [ "Contribution_Id" ]
+      }
+    },
+    "APPEND4" : {
+      "action" : "appendV2",
+      "sources" : [ "JOIN0", "JOIN1" ],
+      "parameters" : {
+        "fieldMappings" : [ {
+          "top" : "Contribution_Id",
+          "bottom" : "pledgedump.Contribution_Id"
+        }, {
+          "top" : "Constituent_Group",
+          "bottom" : "pledgedump.Constituent_Group"
+        }, {
+          "top" : "Designation",
+          "bottom" : "pledgedump.Designation"
+        }, {
+          "top" : "DWH_Gift_Type",
+          "bottom" : "pledgedump.DWH_Gift_Type"
+        }, {
+          "top" : "Giving_Area",
+          "bottom" : "pledgedump.Giving_Area"
+        }, {
+          "top" : "Person_Id",
+          "bottom" : "pledgedump.Person_Id"
+        }, {
+          "top" : "Sort_Name",
+          "bottom" : "pledgedump.Sort_Name"
+        }, {
+          "top" : "Hamilton_Fund_Date_DAY",
+          "bottom" : "pledgedump.Hamilton_Fund_Date_DAY"
+        }, {
+          "top" : "Hamilton_Fund_Date_MONTH",
+          "bottom" : "pledgedump.Hamilton_Fund_Date_MONTH"
+        }, {
+          "top" : "Hamilton_Fund_Date_YEAR",
+          "bottom" : "pledgedump.Hamilton_Fund_Date_YEAR"
+        }, {
+          "top" : "SUM_Amount_SUM",
+          "bottom" : "pledgedump.SUM_Amount_SUM"
+        }, {
+          "top" : "Transform0.Is_Reunion_Year",
+          "bottom" : "Is_Reunion_Year"
+        }, {
+          "top" : "Transform0.Rollup_Degree.ucinn_ascendv2__Reunion_Year__c",
+          "bottom" : "Rollup_Degree.ucinn_ascendv2__Reunion_Year__c"
+        }, {
+          "top" : "Transform0.Account.Type",
+          "bottom" : "Account.Type"
+        }, {
+          "top" : "Transform0.ISB.Campaign.Name",
+          "bottom" : "ISB.Campaign.Name"
+        }, {
+          "top" : "Transform0.Designation.HAM_Campaign_Priority__c",
+          "bottom" : "Designation.HAM_Campaign_Priority__c"
+        }, {
+          "top" : "Transform0.Designation.ucinn_ascendv2__Areas_of_Giving_CASE_Type__c",
+          "bottom" : "Designation.ucinn_ascendv2__Areas_of_Giving_CASE_Type__c"
+        }, {
+          "top" : "Transform0.Designation.ucinn_ascendv2__Opportunity__c",
+          "bottom" : "Designation.ucinn_ascendv2__Opportunity__c"
+        }, {
+          "top" : "Transform0.Is_Gold",
+          "bottom" : "Is_Gold"
+        }, {
+          "top" : "Transform0.Secondary_Relationship_Manager.Assigned_User",
+          "bottom" : "Secondary_Relationship_Manager.Assigned_User"
+        }, {
+          "top" : "Transform0.Designation.ucinn_ascendv2__CASE_Type__c",
+          "bottom" : "Designation.ucinn_ascendv2__CASE_Type__c"
+        }, {
+          "top" : "Transform0.Opportunity.RecordType.Name",
+          "bottom" : "Opportunity.RecordType.Name"
+        }, {
+          "top" : "Transform0.Amount_Band",
+          "bottom" : "Amount_Band"
+        }, {
+          "top" : "Transform0.Maximum_Date.Is_Constituent_Maximum_Total_Date",
+          "bottom" : "Maximum_Date.Is_Constituent_Maximum_Total_Date"
+        }, {
+          "top" : "Transform0.Account.ucinn_ascendv2__External_System_ID__c",
+          "bottom" : "Account.ucinn_ascendv2__External_System_ID__c"
+        }, {
+          "top" : "Transform0.Opportunity.StageName",
+          "bottom" : "Opportunity.StageName"
+        }, {
+          "top" : "Transform0.Reunion_Year_Flag",
+          "bottom" : "Reunion_Year_Flag"
+        }, {
+          "top" : "Transform0.Designation.ucinn_ascendv2__Campaign__c",
+          "bottom" : "Designation.ucinn_ascendv2__Campaign__c"
+        }, {
+          "top" : "Transform0.Appeal.Name",
+          "bottom" : "Appeal.Name"
+        }, {
+          "top" : "Transform0.Wealth_Rating.ucinn_ascendv2__Wealth_Rating__c",
+          "bottom" : "Wealth_Rating.ucinn_ascendv2__Wealth_Rating__c"
+        }, {
+          "top" : "Transform0.Designation.ucinn_ascendv2__Designation_Name__c",
+          "bottom" : "Designation.ucinn_ascendv2__Designation_Name__c"
+        }, {
+          "top" : "Transform0.Opportunity.HAM_MOU_Received__c",
+          "bottom" : "Opportunity.HAM_MOU_Received__c"
+        }, {
+          "top" : "Transform0.ucinn_ascendv2__Credit_Date_Formula__c",
+          "bottom" : "ucinn_ascendv2__Credit_Date_Formula__c"
+        }, {
+          "top" : "Transform0.Designation.ucinn_ascendv2__Fund_Purpose__c",
+          "bottom" : "Designation.ucinn_ascendv2__Fund_Purpose__c"
+        }, {
+          "top" : "Transform0.Opportunity_Team.Opportunity_Team_List",
+          "bottom" : "Opportunity_Team.Opportunity_Team_List"
+        }, {
+          "top" : "Transform0.Account.Record_Type.Name",
+          "bottom" : "Account.Record_Type.Name"
+        }, {
+          "top" : "Transform0.Primary_Relationship_Manager.Assigned_User",
+          "bottom" : "Primary_Relationship_Manager.Assigned_User"
+        }, {
+          "top" : "Transform0.Designation.Name",
+          "bottom" : "Designation.Name"
+        }, {
+          "top" : "Transform0.Object",
+          "bottom" : "Object"
+        }, {
+          "top" : "Transform0.Id",
+          "bottom" : "Id"
+        }, {
+          "top" : "Transform0.Rollup_Degree.Major_Degree_List",
+          "bottom" : "Rollup_Degree.Major_Degree_List"
+        }, {
+          "top" : "Transform0.Contact.ucinn_ascendv2__Preferred_Class_Year__c",
+          "bottom" : "Contact.ucinn_ascendv2__Preferred_Class_Year__c"
+        }, {
+          "top" : "Transform0.Retained_Contact.ucinn_ascendv2__Contact__c",
+          "bottom" : "Retained_Contact.ucinn_ascendv2__Contact__c"
+        }, {
+          "top" : "Transform0.Amount_Band_Sort",
+          "bottom" : "Amount_Band_Sort"
+        }, {
+          "top" : "Transform0.Contact.ucinn_ascendv2__Primary_Contact_Type__c",
+          "bottom" : "Contact.ucinn_ascendv2__Primary_Contact_Type__c"
+        }, {
+          "top" : "Transform0.Designation.ucinn_ascendv2__Fund_Type__c",
+          "bottom" : "Designation.ucinn_ascendv2__Fund_Type__c"
+        }, {
+          "top" : "Transform0.Formatted_External_Id",
+          "bottom" : "Formatted_External_Id"
+        }, {
+          "top" : "Transform0.Is_In_Period",
+          "bottom" : "Is_In_Period"
+        }, {
+          "top" : "Transform0.Constituent_Fiscal_Year_Key",
+          "bottom" : "Constituent_Fiscal_Year_Key"
+        }, {
+          "top" : "Transform0.Organization_or_Constituent_Account_Id",
+          "bottom" : "Organization_or_Constituent_Account_Id"
+        }, {
+          "top" : "Transform0.Opportunity.Type",
+          "bottom" : "Opportunity.Type"
+        }, {
+          "top" : "Transform0.Account.Id",
+          "bottom" : "Account.Id"
+        }, {
+          "top" : "Transform0.Campaign_Priority.HAM_Fiscal_Year__c",
+          "bottom" : "Campaign_Priority.HAM_Fiscal_Year__c"
+        }, {
+          "top" : "Transform0.Opportunity_Team.OpportunityId",
+          "bottom" : "Opportunity_Team.OpportunityId"
+        }, {
+          "top" : "Transform0.Contact.ucinn_ascendv2__External_System_ID__c",
+          "bottom" : "Contact.ucinn_ascendv2__External_System_ID__c"
+        }, {
+          "top" : "Transform0.Constituent_Date_Key",
+          "bottom" : "Constituent_Date_Key"
+        }, {
+          "top" : "Transform0.Opportunity.HAM_Copy_of_Will_Received__c",
+          "bottom" : "Opportunity.HAM_Copy_of_Will_Received__c"
+        }, {
+          "top" : "Transform0.Contact_Retention_Id",
+          "bottom" : "Contact_Retention_Id"
+        }, {
+          "top" : "Transform0.HAM_Constituent_Type__c",
+          "bottom" : "HAM_Constituent_Type__c"
+        }, {
+          "top" : "Transform0.Campaign_Priority.Name",
+          "bottom" : "Campaign_Priority.Name"
+        }, {
+          "top" : "Transform0.Constituent_or_Account_Id",
+          "bottom" : "Constituent_or_Account_Id"
+        }, {
+          "top" : "Transform0.Rollup_Degree.ucinn_ascendv2__Major_Degree_Formula__c",
+          "bottom" : "Rollup_Degree.ucinn_ascendv2__Major_Degree_Formula__c"
+        }, {
+          "top" : "Transform0.Designation.ucinn_ascendv2__CASE_Purpose_v1__c",
+          "bottom" : "Designation.ucinn_ascendv2__CASE_Purpose_v1__c"
+        }, {
+          "top" : "Transform0.Appeal.HAM_Fiscal_Year__c",
+          "bottom" : "Appeal.HAM_Fiscal_Year__c"
+        }, {
+          "top" : "Transform0.ucinn_ascendv2__Designation_Detail__c",
+          "bottom" : "ucinn_ascendv2__Designation_Detail__c"
+        }, {
+          "top" : "Transform0.Contact.Name",
+          "bottom" : "Contact.Name"
+        }, {
+          "top" : "Transform0.ucinn_ascendv2__Contact__c",
+          "bottom" : "ucinn_ascendv2__Contact__c"
+        }, {
+          "top" : "Transform0.Contact.ucinn_ascendv2__Date_of_Most_Recent_Gift__c",
+          "bottom" : "Contact.ucinn_ascendv2__Date_of_Most_Recent_Gift__c"
+        }, {
+          "top" : "Transform0.ucinn_ascendv2__External_System_ID__c",
+          "bottom" : "ucinn_ascendv2__External_System_ID__c"
+        }, {
+          "top" : "Transform0.ucinn_ascendv2__Gift_Type_Formula__c",
+          "bottom" : "ucinn_ascendv2__Gift_Type_Formula__c"
+        }, {
+          "top" : "Transform0.Designation.Id",
+          "bottom" : "Designation.Id"
+        }, {
+          "top" : "Transform0.Organization_or_Contact_External_Id",
+          "bottom" : "Organization_or_Contact_External_Id"
+        }, {
+          "top" : "Transform0.Account.Name",
+          "bottom" : "Account.Name"
+        }, {
+          "top" : "Transform0.Fiscal_Year",
+          "bottom" : "Fiscal_Year"
+        }, {
+          "top" : "Transform0.ISB.Is_ISB_Particpant",
+          "bottom" : "ISB.Is_ISB_Particpant"
+        }, {
+          "top" : "Transform0.Opportunity.HAM_CFY_Ask__c",
+          "bottom" : "Opportunity.HAM_CFY_Ask__c"
+        }, {
+          "top" : "Transform0.Opportunity.HAM_Vice_President_Override__c",
+          "bottom" : "Opportunity.HAM_Vice_President_Override__c"
+        }, {
+          "top" : "Transform0.Opportunity_Team.Opportunity_Team_Multivalue",
+          "bottom" : "Opportunity_Team.Opportunity_Team_Multivalue"
+        }, {
+          "top" : "Transform0.GVAC.HAM_Attend__c",
+          "bottom" : "GVAC.HAM_Attend__c"
+        }, {
+          "top" : "Transform0.Opportunity.ExpectedRevenue",
+          "bottom" : "Opportunity.ExpectedRevenue"
+        }, {
+          "top" : "Transform0.Contact.ucinn_ascendv2__Current_FY_Giving__c",
+          "bottom" : "Contact.ucinn_ascendv2__Current_FY_Giving__c"
+        }, {
+          "top" : "Transform0.Contact.ucinn_ascendv2__Number_of_Consecutive_Giving__c",
+          "bottom" : "Contact.ucinn_ascendv2__Number_of_Consecutive_Giving__c"
+        }, {
+          "top" : "Transform0.Contact.ucinn_ascendv2__Preferred_Class_Year_Integer_Formula__c",
+          "bottom" : "Contact.ucinn_ascendv2__Preferred_Class_Year_Integer_Formula__c"
+        }, {
+          "top" : "Transform0.Collected_Amount",
+          "bottom" : "Collected_Amount"
+        }, {
+          "top" : "Transform0.ucinn_ascendv2__Credit_Amount__c",
+          "bottom" : "ucinn_ascendv2__Credit_Amount__c"
+        }, {
+          "top" : "Transform0.GVAC.HAM_Give__c",
+          "bottom" : "GVAC.HAM_Give__c"
+        }, {
+          "top" : "Transform0.Contact.ucinn_ascendv2__Last_FY_Giving__c",
+          "bottom" : "Contact.ucinn_ascendv2__Last_FY_Giving__c"
+        }, {
+          "top" : "Transform0.GVAC.HAM_Volunteer__c",
+          "bottom" : "GVAC.HAM_Volunteer__c"
+        }, {
+          "top" : "Transform0.Payment_Aggregate.Sum.Opportunity_Collected_Amount",
+          "bottom" : "Payment_Aggregate.Sum.Opportunity_Collected_Amount"
+        }, {
+          "top" : "Transform0.GVAC.HAM_Connect__c",
+          "bottom" : "GVAC.HAM_Connect__c"
+        }, {
+          "top" : "Transform0.Committed_Amount",
+          "bottom" : "Committed_Amount"
+        }, {
+          "top" : "Transform0.Number_of_Payments.Count.Fiscal_Years_Given",
+          "bottom" : "Number_of_Payments.Count.Fiscal_Years_Given"
+        }, {
+          "top" : "Transform0.Opportunity.ucinn_ascendv2__Submitted_Amount__c",
+          "bottom" : "Opportunity.ucinn_ascendv2__Submitted_Amount__c"
+        }, {
+          "top" : "Transform0.Outstanding_Committed_Amount",
+          "bottom" : "Outstanding_Committed_Amount"
+        }, {
+          "top" : "Transform0.Contact_or_Org_Type",
+          "bottom" : "Contact_or_Org_Type"
+        }, {
+          "top" : "Transform0.Constituent_Group_ascend",
+          "bottom" : "Constituent_Group_ascend"
+        } ]
+      }
+    },
+    "EXTRACT0_copy1" : {
+      "action" : "extractGrains",
+      "sources" : [ "FORMULA3_copy0_copy0_copy0" ],
+      "parameters" : {
+        "grainExtractions" : [ {
+          "source" : "Hamilton_Fund_Date",
+          "targets" : [ {
+            "name" : "Hamilton_Fund_Date_DAY",
+            "label" : "Hamilton Fund Date Day",
+            "grainType" : "DAY"
+          }, {
+            "name" : "Hamilton_Fund_Date_MONTH",
+            "label" : "Hamilton Fund Date Month",
+            "grainType" : "MONTH"
+          }, {
+            "name" : "Hamilton_Fund_Date_YEAR",
+            "label" : "Hamilton Fund Date Year",
+            "grainType" : "YEAR"
+          } ]
+        } ]
+      }
+    },
+    "AGGREGATE1_copy1" : {
+      "action" : "aggregate",
+      "sources" : [ "EXTRACT0_copy1" ],
+      "parameters" : {
+        "aggregations" : [ {
+          "action" : "SUM",
+          "source" : "Amount_SUM",
+          "name" : "SUM_Amount_SUM",
+          "label" : "Sum of Amount (SUM)"
+        } ],
+        "groupings" : [ "Contribution_Id", "Constituent_Group", "Designation", "DWH_Gift_Type", "Giving_Area", "Person_Id", "Sort_Name", "Hamilton_Fund_Date_DAY", "Hamilton_Fund_Date_MONTH", "Hamilton_Fund_Date_YEAR" ],
+        "pivots" : [ ],
+        "nodeType" : "STANDARD"
+      }
+    },
+    "APPEND5" : {
+      "action" : "appendV2",
+      "sources" : [ "AGGREGATE1_copy0", "AGGREGATE1_copy1" ],
+      "parameters" : {
+        "fieldMappings" : [ {
+          "top" : "Constituent_Group",
+          "bottom" : "Constituent_Group"
+        }, {
+          "top" : "Designation",
+          "bottom" : "Designation"
+        }, {
+          "top" : "DWH_Gift_Type",
+          "bottom" : "DWH_Gift_Type"
+        }, {
+          "top" : "Giving_Area",
+          "bottom" : "Giving_Area"
+        }, {
+          "top" : "Person_Id",
+          "bottom" : "Person_Id"
+        }, {
+          "top" : "Sort_Name",
+          "bottom" : "Sort_Name"
+        }, {
+          "top" : "Hamilton_Fund_Date_DAY",
+          "bottom" : "Hamilton_Fund_Date_DAY"
+        }, {
+          "top" : "Hamilton_Fund_Date_MONTH",
+          "bottom" : "Hamilton_Fund_Date_MONTH"
+        }, {
+          "top" : "Hamilton_Fund_Date_YEAR",
+          "bottom" : "Hamilton_Fund_Date_YEAR"
+        }, {
+          "top" : "Contribution_Id",
+          "bottom" : "Contribution_Id"
+        }, {
+          "top" : "SUM_Amount_SUM",
+          "bottom" : "SUM_Amount_SUM"
+        }, {
+          "top" : "MAX_Amount_SUM",
+          "bottom" : "SUM_Amount_SUM"
+        } ]
+      }
+    },
+    "LOAD_DATASET7" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Giving_Area", "Designation", "Sort_Name", "Person_Id", "Contrib_Donor_Desig_Id", "Amount_SUM", "Hamilton_Fund_Date", "Contrib_Match_Id", "Contribution_Id", "Pledge_Id", "Constituent_Group", "Contrib_Match_Desig_Id", "Expected_Amount_SUM" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "DWH Expected Matching Gift Dump",
+          "name" : "DWH_Expected_Matching_Gift_Dump"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "FORMULA3_copy0_copy0_copy0_copy1" : {
+      "action" : "formula",
+      "sources" : [ "LOAD_DATASET7" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "DWH_Gift_Type",
+          "label" : "DWH Gift Type",
+          "formulaExpression" : "'Expected Matching Gift'",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "APPEND6" : {
+      "action" : "appendV2",
+      "sources" : [ "APPEND2", "FORMULA3_copy0_copy0_copy0_copy1" ],
+      "parameters" : {
+        "fieldMappings" : [ {
+          "top" : "Giving_Area",
+          "bottom" : "Giving_Area"
+        }, {
+          "top" : "Designation",
+          "bottom" : "Designation"
+        }, {
+          "top" : "Sort_Name",
+          "bottom" : "Sort_Name"
+        }, {
+          "top" : "Person_Id",
+          "bottom" : "Person_Id"
+        }, {
+          "top" : "Contrib_Donor_Desig_Id",
+          "bottom" : "Contrib_Donor_Desig_Id"
+        }, {
+          "top" : "Constituent_Group",
+          "bottom" : "Constituent_Group"
+        }, {
+          "top" : "Hamilton_Fund_Date",
+          "bottom" : "Hamilton_Fund_Date"
+        }, {
+          "top" : "Contribution_Id",
+          "bottom" : "Contribution_Id"
+        }, {
+          "top" : "Amount_SUM",
+          "bottom" : "Expected_Amount_SUM"
+        }, {
+          "top" : "DWH_Gift_Type",
+          "bottom" : "DWH_Gift_Type"
+        } ]
+      }
+    }
+  },
+  "ui" : {
+    "nodes" : {
+      "LOAD_DATASET0" : {
+        "label" : "Gift Credit and Payment",
+        "type" : "LOAD_DATASET",
+        "top" : 951.8,
+        "left" : 112.1,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "TRANSFORM0" : {
+        "label" : "Transform 0",
+        "type" : "TRANSFORM",
+        "top" : 951.8,
+        "left" : 812.1,
+        "graph" : {
+          "FORMULA0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Contact or Org Type"
+          },
+          "FORMULA1" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Constituent Group ascend"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA0",
+          "target" : "FORMULA1"
+        } ]
+      },
+      "LOAD_DATASET1" : {
+        "label" : "DWH Recurring Gift Dump",
+        "type" : "LOAD_DATASET",
+        "top" : 112.9,
+        "left" : 112.5,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "LOAD_DATASET2" : {
+        "label" : "DWH Gift Dump",
+        "type" : "LOAD_DATASET",
+        "top" : 252.89999999999998,
+        "left" : 112.5,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "TRANSFORM1" : {
+        "label" : "Transform 1",
+        "type" : "TRANSFORM",
+        "top" : 112.9,
+        "left" : 252.5,
+        "graph" : {
+          "FORMULA2" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "DWH Gift Type"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "TRANSFORM2" : {
+        "label" : "Transform 2",
+        "type" : "TRANSFORM",
+        "top" : 252.89999999999998,
+        "left" : 252.5,
+        "graph" : {
+          "FORMULA3" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "DWH Gift Type"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "APPEND0" : {
+        "label" : "Append 0",
+        "type" : "APPEND",
+        "top" : 252.89999999999998,
+        "left" : 392.5
+      },
+      "AGGREGATE0" : {
+        "label" : "Aggregate 0",
+        "type" : "AGGREGATE",
+        "top" : 392,
+        "left" : 532.1,
+        "graph" : {
+          "EXTRACT0" : null,
+          "AGGREGATE1" : null
+        },
+        "connectors" : [ {
+          "source" : "EXTRACT0",
+          "target" : "AGGREGATE1"
+        } ]
+      },
+      "TRANSFORM3" : {
+        "label" : "Transform 3",
+        "type" : "TRANSFORM",
+        "top" : 392,
+        "left" : 672.1,
+        "graph" : { },
+        "connectors" : [ ]
+      },
+      "JOIN0" : {
+        "label" : "Join 0",
+        "type" : "JOIN",
+        "top" : 392.5,
+        "left" : 812
+      },
+      "TRANSFORM4" : {
+        "label" : "match flags",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 951.8,
+        "left" : 1092.1,
+        "graph" : {
+          "FORMULA4" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "File Source"
+          },
+          "FORMULA5" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Person ID Match Flag"
+          },
+          "FORMULA6" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Constituent Group Match Flag"
+          },
+          "FORMULA7" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Designation Match Flag"
+          },
+          "FORMULA8" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Amount Match Flag"
+          },
+          "FORMULA9" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Date Match Flag"
+          },
+          "FORMULA10" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Overall Match Flag"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA4",
+          "target" : "FORMULA5"
+        }, {
+          "source" : "FORMULA6",
+          "target" : "FORMULA7"
+        }, {
+          "source" : "FORMULA7",
+          "target" : "FORMULA8"
+        }, {
+          "source" : "FORMULA9",
+          "target" : "FORMULA6"
+        }, {
+          "source" : "FORMULA5",
+          "target" : "FORMULA9"
+        }, {
+          "source" : "FORMULA8",
+          "target" : "FORMULA10"
+        } ]
+      },
+      "OUTPUT0" : {
+        "label" : "Output 0",
+        "type" : "OUTPUT",
+        "top" : 951.8,
+        "left" : 1232.1
+      },
+      "LOAD_DATASET3" : {
+        "label" : "DWH Matching Gift Received Dump",
+        "type" : "LOAD_DATASET",
+        "top" : 392,
+        "left" : 112.1,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "LOAD_DATASET4" : {
+        "label" : "DWH Pledge Payment Dump",
+        "type" : "LOAD_DATASET",
+        "top" : 532,
+        "left" : 112,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "TRANSFORM2_copy0" : {
+        "label" : "Transform 3",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 392.9,
+        "left" : 252.5,
+        "graph" : {
+          "FORMULA3_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "DWH Gift Type"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "TRANSFORM2_copy0_copy0" : {
+        "label" : "Transform 4",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 532,
+        "left" : 252,
+        "graph" : {
+          "FORMULA3_copy0_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "DWH Gift Type"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "APPEND1" : {
+        "label" : "Append 1",
+        "type" : "APPEND",
+        "top" : 392.9,
+        "left" : 392.5
+      },
+      "APPEND2" : {
+        "label" : "Append 2",
+        "type" : "APPEND",
+        "top" : 532.9,
+        "left" : 392.5
+      },
+      "FILTER0" : {
+        "label" : "Filter to Gift Pledge Only, opp record type gift, match planned",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 532.2,
+        "left" : 812
+      },
+      "LOAD_DATASET5" : {
+        "label" : "DWH BI Dump",
+        "type" : "LOAD_DATASET",
+        "top" : 1371.8,
+        "left" : 112.1,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "LOAD_DATASET6" : {
+        "label" : "DWH Pledge Dump",
+        "type" : "LOAD_DATASET",
+        "top" : 1231.8,
+        "left" : 112.1,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "TRANSFORM2_copy0_copy0_copy0" : {
+        "label" : "Transform 5",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 1371.8,
+        "left" : 252.10000000000002,
+        "graph" : {
+          "FORMULA3_copy0_copy0_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "DWH Gift Type"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "TRANSFORM2_copy0_copy0_copy0_copy0" : {
+        "label" : "Transform 6",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 1231.8,
+        "left" : 252.10000000000002,
+        "graph" : {
+          "FORMULA3_copy0_copy0_copy0_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "DWH Gift Type"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "AGGREGATE0_copy0" : {
+        "label" : "Aggregate 1",
+        "description" : "",
+        "type" : "AGGREGATE",
+        "top" : 1231.7,
+        "left" : 532.1,
+        "graph" : {
+          "EXTRACT0_copy0" : null,
+          "AGGREGATE1_copy0" : null
+        },
+        "connectors" : [ {
+          "source" : "EXTRACT0_copy0",
+          "target" : "AGGREGATE1_copy0"
+        } ]
+      },
+      "FILTER1" : {
+        "label" : "Filter to Gift Pledge Only opp record type pledge",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 1091.8,
+        "left" : 812.1
+      },
+      "JOIN1" : {
+        "label" : "Join 1",
+        "type" : "JOIN",
+        "top" : 1231.8,
+        "left" : 812.1
+      },
+      "APPEND4" : {
+        "label" : "Append 4",
+        "type" : "APPEND",
+        "top" : 951.8,
+        "left" : 952.1
+      },
+      "AGGREGATE0_copy1" : {
+        "label" : "Aggregate 0 Copy",
+        "type" : "AGGREGATE",
+        "top" : 1371.8,
+        "left" : 532.1,
+        "graph" : {
+          "EXTRACT0_copy1" : null,
+          "AGGREGATE1_copy1" : null
+        },
+        "connectors" : [ {
+          "source" : "EXTRACT0_copy1",
+          "target" : "AGGREGATE1_copy1"
+        } ]
+      },
+      "APPEND5" : {
+        "label" : "Append 5",
+        "type" : "APPEND",
+        "top" : 1231.8,
+        "left" : 672.1
+      },
+      "LOAD_DATASET7" : {
+        "label" : "DWH Expected Matching Gift Dump",
+        "type" : "LOAD_DATASET",
+        "top" : 672,
+        "left" : 112,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "TRANSFORM2_copy0_copy0_copy0_copy1" : {
+        "label" : "Transform 5 Copy",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 672.7,
+        "left" : 252,
+        "graph" : {
+          "FORMULA3_copy0_copy0_copy0_copy1" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "DWH Gift Type"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "APPEND6" : {
+        "label" : "Append 6",
+        "type" : "APPEND",
+        "top" : 672,
+        "left" : 392
+      }
+    },
+    "connectors" : [ {
+      "source" : "LOAD_DATASET0",
+      "target" : "TRANSFORM0"
+    }, {
+      "source" : "LOAD_DATASET1",
+      "target" : "TRANSFORM1"
+    }, {
+      "source" : "LOAD_DATASET2",
+      "target" : "TRANSFORM2"
+    }, {
+      "source" : "TRANSFORM2",
+      "target" : "APPEND0"
+    }, {
+      "source" : "TRANSFORM1",
+      "target" : "APPEND0"
+    }, {
+      "source" : "TRANSFORM3",
+      "target" : "JOIN0"
+    }, {
+      "source" : "APPEND4",
+      "target" : "TRANSFORM4"
+    }, {
+      "source" : "TRANSFORM4",
+      "target" : "OUTPUT0"
+    }, {
+      "source" : "LOAD_DATASET3",
+      "target" : "TRANSFORM2_copy0"
+    }, {
+      "source" : "LOAD_DATASET4",
+      "target" : "TRANSFORM2_copy0_copy0"
+    }, {
+      "source" : "APPEND6",
+      "target" : "APPEND1"
+    }, {
+      "source" : "TRANSFORM2_copy0",
+      "target" : "APPEND1"
+    }, {
+      "source" : "APPEND0",
+      "target" : "APPEND2"
+    }, {
+      "source" : "TRANSFORM2_copy0_copy0",
+      "target" : "APPEND2"
+    }, {
+      "source" : "TRANSFORM0",
+      "target" : "FILTER0"
+    }, {
+      "source" : "FILTER0",
+      "target" : "JOIN0"
+    }, {
+      "source" : "LOAD_DATASET5",
+      "target" : "TRANSFORM2_copy0_copy0_copy0"
+    }, {
+      "source" : "LOAD_DATASET6",
+      "target" : "TRANSFORM2_copy0_copy0_copy0_copy0"
+    }, {
+      "source" : "TRANSFORM2_copy0_copy0_copy0_copy0",
+      "target" : "AGGREGATE0_copy0"
+    }, {
+      "source" : "AGGREGATE0",
+      "target" : "TRANSFORM3"
+    }, {
+      "source" : "TRANSFORM0",
+      "target" : "FILTER1"
+    }, {
+      "source" : "FILTER1",
+      "target" : "JOIN1"
+    }, {
+      "source" : "APPEND5",
+      "target" : "JOIN1"
+    }, {
+      "source" : "JOIN0",
+      "target" : "APPEND4"
+    }, {
+      "source" : "JOIN1",
+      "target" : "APPEND4"
+    }, {
+      "source" : "APPEND1",
+      "target" : "AGGREGATE0"
+    }, {
+      "source" : "TRANSFORM2_copy0_copy0_copy0",
+      "target" : "AGGREGATE0_copy1"
+    }, {
+      "source" : "AGGREGATE0_copy0",
+      "target" : "APPEND5"
+    }, {
+      "source" : "AGGREGATE0_copy1",
+      "target" : "APPEND5"
+    }, {
+      "source" : "LOAD_DATASET7",
+      "target" : "TRANSFORM2_copy0_copy0_copy0_copy1"
+    }, {
+      "source" : "APPEND2",
+      "target" : "APPEND6"
+    }, {
+      "source" : "TRANSFORM2_copy0_copy0_copy0_copy1",
+      "target" : "APPEND6"
+    } ],
+    "hiddenColumns" : [ ]
+  },
+  "runMode" : "full"
+}

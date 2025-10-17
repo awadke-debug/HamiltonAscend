@@ -1,0 +1,341 @@
+.modal-backdrop {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.5);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  /* background: #eaf6ff; */
+  background: #F4F4F4;
+  border-radius: 16px;
+  width: 80%;              /* Wider modal */
+  max-width: 1000px;
+  padding: 2rem;
+  position: relative;
+  box-shadow: 0px 6px 18px rgba(0,0,0,0.2);
+}
+
+.modal-close {
+  position: absolute;
+  top: 1rem; right: 1rem;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+.modal-body {
+  display: flex;
+  gap: 2rem;               /* Space between left & right columns */
+}
+
+.modal-left {
+  flex: 1;
+  text-align: left;
+  border-right: 1px solid #d0e4f7;
+  /* padding-right: 1.5rem; */
+}
+
+.modal-right {
+  flex: 2;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: #222;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.person-icon{
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: #CADDFD;
+    display: flex
+;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-avatar {
+  width: 100px;
+  height: 100px;
+  border-radius: 12px;
+  margin-bottom: 1rem;
+}
+
+.alumni-name {
+  font-size: 1.4rem;
+  font-weight: bold;
+  margin: 0.5rem 0;
+}
+
+.grad-year {
+  font-size: 1.1rem;
+  color: #555;
+}
+
+.alumni-link, .alumni-email {
+  font-size: 14px;
+  margin: 0.7rem 0;
+  color: #333;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.icon {
+  width: 16px;
+  height: 16px;
+}
+
+.connection-icon {
+  width: 20px;
+  height: 20px;
+  margin-right: 5px;
+}
+
+.connect-btn {
+  margin-top: 1rem;
+  background: #002F86;
+  color: white;
+  padding: 0.6rem 1rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  width: max-content;
+}
+
+/* .modal-right p {
+  margin: 0.4rem 0;
+} */
+
+.modal-right .text-container-key-val h3 {
+  font-weight: 700;
+  color: #000;
+  font-size: 14px;
+}
+
+.text-container-key-val{
+  width: 100%;
+  display: flex;
+}
+.text-container-key-val h3{
+  width: 40%;
+}
+
+.text-container-key-val p{
+  width: 60%;
+  font-size: 14px;
+}
+
+.spinner-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex; /* Centers the spinner */
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(255, 255, 255, 0.75); /* Semi-transparent white overlay */
+    z-index: 1000; /* High z-index to ensure it's on top */
+}
+
+.linkedin-section {
+  display: flex;
+  justify-content: left;
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.linkedin-button {
+  background-color: #002F86;
+  color: white;
+  font-size: 14px;
+  border: none;
+  padding: 6px 12px;
+  border-radius:8px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.linkedin-button-disabled span{
+  margin-right: 10px;
+}
+
+.linkedin-button span{
+  margin-right: 10px;
+}
+
+.linkedin-button-disabled {
+  background-color: #002F86;
+  color: white;
+  font-size: 14px;
+  border: none;
+  padding: 6px 12px;
+  border-radius:8px;
+  cursor: not-allowed !important;
+  font-weight: 600;
+}
+
+.info-group {
+    text-align: left;
+    margin-bottom: 1.5rem;
+}
+
+.info-group .relative-for-popup p {
+    margin-bottom: 0.5rem;
+}
+.info-group p {
+    margin-bottom: 0.5rem;
+}
+
+/* Media query for mobile view */
+@media (max-width: 1024px) {
+.modal-backdrop {
+        padding: 10px; /* Reduce padding on smaller screens */
+        /* align-items: flex-start; */
+    }
+
+    .modal-content {
+        width: 100%; /* Adjust width for smaller screens */
+        max-width: none; /* No max-width on mobile */
+        flex-direction: column; /* Stack the columns on top of each other */
+        max-height: 96%;
+        padding: 15px;
+        margin-top: 20px; /* Ensure some space from the top */
+        overflow-y: auto;
+    }
+    
+    .modal-close {
+        top: 8px;
+        right: 12px;
+        font-size: 1.8em;
+    }
+
+    .modal-body {
+        flex-direction: column; /* Stack main sections */
+        gap: 1rem;
+        overflow-y: auto;
+    }
+    
+    .modal-left {
+        flex: none; /* Reset flex properties */
+        width: 100%; /* Take full width */
+        padding-right: 0;
+        border-right: none;
+        border-bottom: 1px solid #ddd; /* Separator between top and bottom sections */
+        padding-bottom: 15px;
+        display: grid; /* Use grid for more precise mobile layout */
+        grid-template-columns: auto 1fr; /* Image, then name/year and other details */
+        gap: 2px 10px; /* Gap between grid items (rows then columns) */
+        align-items: start; /* Align content to the top of its grid cell */
+        text-align: left; /* Align text left */
+    }
+
+    .modal-avatar {
+        width: 150px; /* Smaller image on mobile */
+        /* height: 150px; */
+        height: 100%;
+        grid-column: 1 / 2; /* Place in first column */
+        grid-row: 1 / span 2; /* Span two rows */
+        margin-bottom: 0; /* No bottom margin, grid handles spacing */
+    }
+
+    .alumni-name {
+        font-size: 1.3em;
+        grid-column: 2 / 2; /* Place next to image */
+        grid-row: 1 / 1; /* First row */
+        display: flex;
+        flex-direction: column;
+        text-align: left;
+    }
+
+    .grad-year {
+        font-size: 0.9em;
+        display: inline; /* Keep name and year inline */
+    }
+
+    .linkedin-section {
+        grid-column: 2 / 2; /* Next to image */
+        grid-row: 2 / 2; /* Second row */
+        text-align: left; /* Align button left */
+        margin-top: 0;
+    }
+    
+    .linkedin-button {
+        justify-content: flex-start; /* Align button content to the left */
+        padding: 5px 10px; /* Smaller padding for mobile button */
+        font-size: 12px;
+    }
+    .linkedin-button span{
+      margin-right: 7px;
+    }
+
+    .linkedin-button span img{
+      width: 20px !important;
+      height: 20px !important;
+    }
+
+    .alumni-email {
+        grid-column: 2 / 2; /* Span both columns below image/name */
+        grid-row: 3 / 3; /* Third row */
+        justify-content: flex-start; /* Align email left */
+        margin: 10px 0;
+    }
+
+    .connect-btn {
+        grid-column: 2 / 2; /* Span both columns */
+        grid-row: 4 / 4; /* Fourth row */
+        width: max-content; /* Full width button on mobile */
+        padding: 10px;
+        margin-top: 0;
+        font-size: 12px;
+        display: block;
+        align-items: center;
+    }
+    .modal-left-right-section{
+      margin-left: 10px;
+    }
+
+    .modal-right {
+        flex: 1;
+        padding-left: 0; /* No left padding on mobile */
+        padding-top: 15px; /* Space from the top of the right section */
+    }
+    
+    .modal-right p {
+        /* On mobile, labels and values should wrap nicely */
+        display: flex;
+        flex-wrap: wrap; /* Allow content to wrap */
+        align-items: baseline; /* Align first line of text */
+        margin-bottom: 5px; /* Slightly less space between fields */
+    }
+    
+    .modal-right p strong {
+        white-space: nowrap; /* Prevent label from breaking */
+        margin-right: 5px; /* Space between label and value */
+    }
+
+    .info-group {
+      text-align: left;
+      margin-bottom: 0;
+  }
+
+  .info-group .relative-for-popup p {
+      margin-bottom: 0;
+  }
+  .info-group p {
+      margin-bottom: 0;
+  }
+
+  .text-container-key-val{
+    margin-top: 20px;
+}
+}

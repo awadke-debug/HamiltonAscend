@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObjectTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <caseValues>
+        <caseType>Nominative</caseType>
+        <plural>false</plural>
+        <value>Arbeitselement-Höherstufung</value>
+    </caseValues>
+    <caseValues>
+        <caseType>Nominative</caseType>
+        <plural>true</plural>
+        <value>Arbeitselement-Höherstufungen</value>
+    </caseValues>
+    <caseValues>
+        <caseType>Accusative</caseType>
+        <plural>false</plural>
+        <value>Arbeitselement-Höherstufung</value>
+    </caseValues>
+    <caseValues>
+        <caseType>Accusative</caseType>
+        <plural>true</plural>
+        <value>Arbeitselement-Höherstufungen</value>
+    </caseValues>
+    <caseValues>
+        <caseType>Genitive</caseType>
+        <plural>false</plural>
+        <value>Arbeitselement-Höherstufung</value>
+    </caseValues>
+    <caseValues>
+        <caseType>Genitive</caseType>
+        <plural>true</plural>
+        <value>Arbeitselement-Höherstufungen</value>
+    </caseValues>
+    <caseValues>
+        <caseType>Dative</caseType>
+        <plural>false</plural>
+        <value>Arbeitselement-Höherstufung</value>
+    </caseValues>
+    <caseValues>
+        <caseType>Dative</caseType>
+        <plural>true</plural>
+        <value>Arbeitselement-Höherstufungen</value>
+    </caseValues>
+    <gender>Feminine</gender>
+    <nameFieldLabel>Name der Arbeitselement-Höherstufung</nameFieldLabel>
+    <validationRules>
+        <errorMessage>Es ist nicht möglich, ein &quot;Work_Item&quot; in einer inaktiven Pipeline höherzustufen.</errorMessage>
+        <name>sf_devops__No_Promotion_to_Inactive_Pipeline</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Ein &quot;Work_Item&quot;, das Mitglied eines &quot;Change_Bundle&quot; ist, kann nicht in eine &quot;Pipeline_Stage&quot; höhergestuft werden.</errorMessage>
+        <name>sf_devops__Promoted_And_Installed</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Ein &quot;Work_Item&quot; kann nicht in eine versionierte &quot;Pipeline_Stage&quot; höhergestuft werden.</errorMessage>
+        <name>sf_devops__Promoted_To_Versioned</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Ein &quot;WorkItem&quot; kann nur höhergestuft werden, wenn es genehmigt ist.</errorMessage>
+        <name>sf_devops__Promoted_Without_Approval</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Ein &quot;WorkItem&quot; kann nur in eine Phase im selben Projekt höhergestuft werden.</errorMessage>
+        <name>sf_devops__Promoted_Wrong_Project</name>
+    </validationRules>
+</CustomObjectTranslation>

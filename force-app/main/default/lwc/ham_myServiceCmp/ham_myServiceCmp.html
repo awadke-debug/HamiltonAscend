@@ -1,0 +1,67 @@
+<template>
+    <!-- My Service Accordion -->
+    <template if:true={showService}>
+      <div class="card-service">
+        <div class="card-header-service" onclick={toggleService}>
+          <span>▲</span> {label.myService}
+        </div>
+        <div class="card-body-service">
+          <template for:each={myServices} for:item="item" >
+            <p class="section-label" key={item.order}>{item.displaylabel}</p>
+            <template lwc:if={item.displayValueList}>
+              <ul key={item.order}>
+                  <template for:each={item.displayValueList} for:item="value">
+                      <li class="accordian-text-new" key={value}>{value}</li>
+                  </template>
+              </ul>
+            </template>
+            <template lwc:else>
+                  <p key={item.order}>{item.displayValueText}</p>
+              </template>            
+          </template>
+          <div class="info-group">
+
+            <div class="relative-for-popup">
+            <p class="info-spacing clickable-contact" onclick={openConnectionPopUp} data-name="CampusContact">
+                <strong>{label.myContactToVolunteer}:</strong> {campusContact.name}
+            </p>
+            <template if:true={isPopupVisible}>
+                <template if:true={isDesktopView}>
+                    <div class="popup-card">
+                        <div class="popup-close" onclick={closeConnectionPopUp}>×</div>
+                        <div class="popup-item">
+                            <span><img src={images.callImage} class="popup-icon" alt="" width="25px" height="25px"></img></span>
+                            <a href={campusContact.phone}>{campusContact.phoneLabel}</a>
+                        </div>
+                        <div class="popup-item">
+                            <span><img src={images.mailImage} class="popup-icon" alt="" width="25px" height="25px"></img></span>
+                            <a href={campusContact.email}>{campusContact.emailLabel}</a>
+                        </div>
+                    </div>
+                </template>
+
+                <template if:true={isMobileView}>
+                    <div aria-label="Dialog title" aria-describedby="popover-body-id" class="slds-popover">
+                        <div class="slds-popover__close slds-float_right" onclick={closeConnectionPopUp}>×</div>
+                        <div id="popover-body-id" class="slds-popover__body">
+                          <span><img src={images.callImage} class="popup-icon" alt="" width="25px" height="25px"></img></span>
+                            <a href={campusContact.phone}>{campusContact.phoneLabel}</a>
+                            <br/>
+                            <span><img src={images.mailImage} class="popup-icon" alt="" width="25px" height="25px"></img></span>
+                            <a href={campusContact.email}>{campusContact.emailLabel}</a>
+                        </div>
+                    </div>
+                </template>
+            </template>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </template>
+    <template if:false={showService}>
+      <div class="card-service collapsed-service" onclick={toggleService}>
+        <div class="card-header-service"><span>▶</span> {label.myService}</div>
+      </div>
+    </template>
+</template>

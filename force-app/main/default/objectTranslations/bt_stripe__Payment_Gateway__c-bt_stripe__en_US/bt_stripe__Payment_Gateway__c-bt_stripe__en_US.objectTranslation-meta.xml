@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObjectTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <caseValues>
+        <plural>false</plural>
+        <value>Payment Gateway</value>
+    </caseValues>
+    <caseValues>
+        <plural>true</plural>
+        <value>Payment Gateways</value>
+    </caseValues>
+    <layouts>
+        <layout>Payment Gateway Layout</layout>
+        <sections>
+            <label><!-- Custom Links --></label>
+            <section>Custom Links</section>
+        </sections>
+        <sections>
+            <label><!-- Gateway Information --></label>
+            <section>Gateway Information</section>
+        </sections>
+        <sections>
+            <label><!-- Mobile App Settings --></label>
+            <section>Mobile App Settings</section>
+        </sections>
+    </layouts>
+    <startsWith>Consonant</startsWith>
+    <validationRules>
+        <errorMessage><!-- The Site ID must be a non-negative integer. --></errorMessage>
+        <name>bt_stripe__Non_Negative_Integer_Required</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Webhook Label can not have a space or any special characters in the name, except an underscore (ex. _). --></errorMessage>
+        <name>bt_stripe__Webhook_Label_Validation</name>
+    </validationRules>
+    <webLinks>
+        <label><!-- Auth --></label>
+        <name>bt_stripe__Auth</name>
+    </webLinks>
+    <webLinks>
+        <label><!-- Create_Spreedly_Gateway --></label>
+        <name>bt_stripe__Create_Spreedly_Gateway</name>
+    </webLinks>
+    <webLinks>
+        <label><!-- Manage_Stripe_Keys --></label>
+        <name>bt_stripe__Manage_Stripe_Keys</name>
+    </webLinks>
+    <webLinks>
+        <label><!-- New_External_Account --></label>
+        <name>bt_stripe__New_External_Account</name>
+    </webLinks>
+    <webLinks>
+        <label><!-- Sync_With_Stripe --></label>
+        <name>bt_stripe__Sync_With_Stripe</name>
+    </webLinks>
+    <webLinks>
+        <label><!-- Update_Balance --></label>
+        <name>bt_stripe__Update_Balance</name>
+    </webLinks>
+</CustomObjectTranslation>

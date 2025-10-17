@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObjectTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <caseValues>
+        <plural>false</plural>
+        <value>環境</value>
+    </caseValues>
+    <nameFieldLabel>環境名稱</nameFieldLabel>
+    <validationRules>
+        <errorMessage>環境的 Expired__c 欄位無法設定為 false。</errorMessage>
+        <name>sf_devops__Expired_Changed</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>無法插入 Expired__c 設定為 true 的環境。</errorMessage>
+        <name>sf_devops__Expired_Insert</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>取代環境必須已到期。</errorMessage>
+        <name>sf_devops__Expired_Replaces</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>必須設定 Refresh_Source 和 Refresh_Date 兩者，或將兩者皆保留空白。</errorMessage>
+        <name>sf_devops__Refresh_Source_And_Date</name>
+    </validationRules>
+</CustomObjectTranslation>

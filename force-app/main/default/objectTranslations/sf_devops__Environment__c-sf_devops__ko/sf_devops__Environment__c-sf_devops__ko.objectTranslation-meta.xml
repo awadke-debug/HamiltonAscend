@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObjectTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <caseValues>
+        <plural>false</plural>
+        <value>환경</value>
+    </caseValues>
+    <nameFieldLabel>환경 이름</nameFieldLabel>
+    <validationRules>
+        <errorMessage>환경의 Expired__c 필드는 false로 설정할 수 없습니다.</errorMessage>
+        <name>sf_devops__Expired_Changed</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Expired__c가 true로 설정된 환경은 삽입할 수 없습니다.</errorMessage>
+        <name>sf_devops__Expired_Insert</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>교체 환경이 만료되어야 합니다.</errorMessage>
+        <name>sf_devops__Expired_Replaces</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Refresh_Source 및 Refresh_Date은(는) 대부분 둘 다 설정되어 있거나 둘 다 비어 있습니다.</errorMessage>
+        <name>sf_devops__Refresh_Source_And_Date</name>
+    </validationRules>
+</CustomObjectTranslation>

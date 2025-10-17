@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObjectTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <caseValues>
+        <plural>false</plural>
+        <value>Assignment</value>
+    </caseValues>
+    <caseValues>
+        <plural>true</plural>
+        <value>Assignment</value>
+    </caseValues>
+    <layouts>
+        <layout>Account Assignment Layout</layout>
+        <sections>
+            <label><!-- Custom Links --></label>
+            <section>Custom Links</section>
+        </sections>
+    </layouts>
+    <layouts>
+        <layout>Contact Assignment Layout</layout>
+        <sections>
+            <label><!-- Custom Links --></label>
+            <section>Custom Links</section>
+        </sections>
+    </layouts>
+    <recordTypes>
+        <description><!-- An assignment for a household or organization. --></description>
+        <label><!-- Account Assignment --></label>
+        <name>ucinn_ascendv2__Account_Assignment</name>
+    </recordTypes>
+    <recordTypes>
+        <description><!-- An assignment for a constituent. --></description>
+        <label><!-- Contact Assignment --></label>
+        <name>ucinn_ascendv2__Contact_Assignment</name>
+    </recordTypes>
+    <startsWith>Vowel</startsWith>
+    <validationRules>
+        <errorMessage><!-- An Assignment may not be associated with both a Relationship Manager (User) and a Relationship Manager (Constituent) --></errorMessage>
+        <name>Assigned_Mngr_Const_User_At_Once</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- You cannot edit fundraising assignments --></errorMessage>
+        <name>Cannot_Edit_Fundraiser_Assignments</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Asssignment Type is required --></errorMessage>
+        <name>ucinn_ascendv2__Assignment_Type_Required</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- The Assignment End Date cannot be in the future --></errorMessage>
+        <name>ucinn_ascendv2__No_Future_End_Date</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- An Assignment must be associated with an Organization or Constituent --></errorMessage>
+        <name>ucinn_ascendv2__Required_Organization_or_Constituent</name>
+    </validationRules>
+</CustomObjectTranslation>

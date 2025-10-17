@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionCalls>
+        <description>Call Invocable Apex to run DML in a future (async) context to get around CPU timeout limits.</description>
+        <name>Establish_Chapter_String</name>
+        <label>Establish Chapter String</label>
+        <locationX>176</locationX>
+        <locationY>323</locationY>
+        <actionName>ContactCurrentChaptersUtility</actionName>
+        <actionType>apex</actionType>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>addressRelations</name>
+            <value>
+                <elementReference>$Record</elementReference>
+            </value>
+        </inputParameters>
+        <nameSegment>ContactCurrentChaptersUtility</nameSegment>
+        <offset>0</offset>
+    </actionCalls>
+    <apiVersion>63.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <description>Updated entry trigger</description>
+    <environments>Default</environments>
+    <interviewLabel>HAM Chapter Constituent Curren {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>HAM Chapter Constituent Current</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <start>
+        <locationX>50</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Establish_Chapter_String</targetReference>
+        </connector>
+        <filterFormula>((  NOT(ISNULL({!$Record.HAM_Chapter__c})) &amp;&amp;
+    TEXT({!$Record.ucinn_ascendv2__Status__c}) = &quot;Current&quot; )   
+||
+  (  ISCHANGED({!$Record.ucinn_ascendv2__Status__c}) &amp;&amp;
+    (TEXT({!$Record.ucinn_ascendv2__Status__c}) = &quot;Current&quot; || TEXT({!$Record.ucinn_ascendv2__Status__c}) = &quot;Former&quot;)  )
+||
+  ISCHANGED({!$Record.HAM_Chapter__c})
+||
+  ISNEW()
+)</filterFormula>
+        <object>ucinn_ascendv2__Address_Relation__c</object>
+        <recordTriggerType>CreateAndUpdate</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Active</status>
+    <variables>
+        <name>updateContact</name>
+        <dataType>SObject</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>true</isOutput>
+        <objectType>Contact</objectType>
+    </variables>
+    <variables>
+        <name>updateContacts</name>
+        <dataType>SObject</dataType>
+        <isCollection>true</isCollection>
+        <isInput>true</isInput>
+        <isOutput>true</isOutput>
+        <objectType>Contact</objectType>
+    </variables>
+</Flow>

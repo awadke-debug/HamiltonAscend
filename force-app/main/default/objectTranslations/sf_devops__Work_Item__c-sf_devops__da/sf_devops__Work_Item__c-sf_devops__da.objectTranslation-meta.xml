@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObjectTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <caseValues>
+        <article>Definite</article>
+        <plural>false</plural>
+        <value>Arbejdselementet</value>
+    </caseValues>
+    <caseValues>
+        <article>Indefinite</article>
+        <plural>false</plural>
+        <value>Arbejdselement</value>
+    </caseValues>
+    <caseValues>
+        <article>None</article>
+        <plural>false</plural>
+        <value>Arbejdselement</value>
+    </caseValues>
+    <caseValues>
+        <article>Definite</article>
+        <plural>true</plural>
+        <value>Arbejdselementerne</value>
+    </caseValues>
+    <caseValues>
+        <article>Indefinite</article>
+        <plural>true</plural>
+        <value>Arbejdselementer</value>
+    </caseValues>
+    <caseValues>
+        <article>None</article>
+        <plural>true</plural>
+        <value>Arbejdselementer</value>
+    </caseValues>
+    <gender>Neuter</gender>
+    <nameFieldLabel>Arbejdselementnummer</nameFieldLabel>
+    <validationRules>
+        <errorMessage>Et Work_Item kan ikke have Development_Approved_By angivet, hvis det ikke er Development_Approved.</errorMessage>
+        <name>sf_devops__Approved_By_Without_Approved</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Du skal angive Development_Approved_By, når dette arbejdselement er godkendt.</errorMessage>
+        <name>sf_devops__Approved_Without_Approved_By</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Et arbejdselement kan ikke godkendes uden en gennemgang.</errorMessage>
+        <name>sf_devops__Approved_Without_Review</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Et arbejdselement skal høre til det samme projekt som dets ændringspakke.</errorMessage>
+        <name>sf_devops__Change_Bundle_Project</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Et arbejdselement kan ikke kombineres, hvis det er i en pakke.</errorMessage>
+        <name>sf_devops__Combined_Bundled</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Et arbejdselement kan ikke kombineres, hvis det ikke refererer til det arbejdselement, det er kombineret med.</errorMessage>
+        <name>sf_devops__Combined_Not_Combined_With</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Et arbejdselement kan ikke kombineres, hvis det aldrig har været promoveret.</errorMessage>
+        <name>sf_devops__Combined_Not_Promoted</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Et arbejdselement kan ikke have Combined_With angivet, hvis det ikke er i tilstanden Kombineret.</errorMessage>
+        <name>sf_devops__Combined_With_Not_Combined</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Et arbejdselement kan ikke have Combined_With angivet til et arbejdselement, der ikke udførte handlingen Kombiner.</errorMessage>
+        <name>sf_devops__Combined_With_Not_Survivor</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Mulige værdier Concluded_c er: CLOSED, NEVERED, COMBINED eller tomt.</errorMessage>
+        <name>sf_devops__Concluded_values</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Et arbejdselement kan ikke have sit Concluded__c-felt ændret, når det er indstillet.</errorMessage>
+        <name>sf_devops__Disable_Concluded</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Et arbejdselement kan ikke have sit Promoted__c-felt inaktiveret, når det er indstillet.</errorMessage>
+        <name>sf_devops__Disable_Promoted</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Arbejdselementer kan ikke tilsluttes til udløbne miljøer.</errorMessage>
+        <name>sf_devops__Environment_Expired</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Et arbejdselement skal høre til det samme projekt som dets miljø.</errorMessage>
+        <name>sf_devops__Environment_Project</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Kan ikke referere til et miljø, der ikke understøtter ændringssporing.</errorMessage>
+        <name>sf_devops__Environment_Requires_Tracking</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Et arbejdselement kan ikke have sit Promoted_From_Environment__c-felt ændret, når det er angivet.</errorMessage>
+        <name>sf_devops__PromotedFromEnvironment_Changed</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Et arbejdselement kan ikke have sit Promoted_From_Environment__c-felt angivet med en værdi, der er forskellig fra værdien i Environment__c, og det kan kun angives, når Environment__c er angivet til nul.</errorMessage>
+        <name>sf_devops__PromotedFromEnvironment_Set</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Et Work_Item kan ikke være medlem af en Change_Bundle, hvis det aldrig er blevet promoveret.</errorMessage>
+        <name>sf_devops__Promoted_And_Installed</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Du kan ikke oprette et Work_Item med promoveringsflaget angivet.</errorMessage>
+        <name>sf_devops__Promoted_On_Create</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Et WorkItem kan ikke blive promoveret, hvis det ikke er godkendt.</errorMessage>
+        <name>sf_devops__Promoted_Without_Approval</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Et arbejdselement kan ikke have dets basisforgreningsfelt angivet, hvis det er ikke-promoveret, pakket eller afsluttet.</errorMessage>
+        <name>sf_devops__Rebase_Branch</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Deprecated --></errorMessage>
+        <name>sf_devops__Rebase_Remote_Reference</name>
+    </validationRules>
+    <webLinks>
+        <label>Vis i DevOps Center</label>
+        <name>sf_devops__Devops_Center</name>
+    </webLinks>
+</CustomObjectTranslation>

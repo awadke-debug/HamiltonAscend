@@ -1,0 +1,192 @@
+{
+  "version" : "63.0",
+  "nodes" : {
+    "LOAD_DATASET0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "PAYMENT_ID", "GIFT", "ACCOUNTING_DATE", "PROGRAM", "FUND", "CREDIT_AMOUNT", "COST_CENTER", "LEDGER_ACCOUNT", "LINE_MEMO", "JOURNAL", "SESSION_ID", "DEBIT_AMOUNT", "GRANT", "REVENUE_CATEGORY", "GIFT_ID" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "WORKDAY_DONOR_CONTRIBUTIONS",
+          "connectionName" : "ascend_Production_Data_Lake_INBOUND",
+          "sourceObjectName" : "WORKDAY_DONOR_CONTRIBUTIONS"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "OUTPUT0" : {
+      "action" : "save",
+      "sources" : [ "FORMULA0" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "workday donor contributions",
+          "name" : "workday_donor_contributions",
+          "folderName" : "SharedApp"
+        },
+        "measuresToCurrencies" : [ ]
+      }
+    },
+    "TO_MEASURE0" : {
+      "action" : "typeCast",
+      "sources" : [ "LOAD_DATASET0" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "CREDIT_AMOUNT_to_measure",
+          "newProperties" : {
+            "name" : "CREDIT_AMOUNT"
+          }
+        } ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "CREDIT_AMOUNT" ]
+        }
+      },
+      "parameters" : {
+        "fields" : [ {
+          "name" : "CREDIT_AMOUNT",
+          "newProperties" : {
+            "label" : "CREDIT_AMOUNT",
+            "name" : "CREDIT_AMOUNT_to_measure",
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        } ]
+      }
+    },
+    "TO_MEASURE1" : {
+      "action" : "typeCast",
+      "sources" : [ "TO_MEASURE0" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "DEBIT_AMOUNT_to_measure",
+          "newProperties" : {
+            "name" : "DEBIT_AMOUNT"
+          }
+        } ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "DEBIT_AMOUNT" ]
+        }
+      },
+      "parameters" : {
+        "fields" : [ {
+          "name" : "DEBIT_AMOUNT",
+          "newProperties" : {
+            "label" : "DEBIT_AMOUNT",
+            "name" : "DEBIT_AMOUNT_to_measure",
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        } ]
+      }
+    },
+    "FORMULA0" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA1" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Workday_Unique_ID_delete",
+          "label" : "Workday Unique ID-delete",
+          "formulaExpression" : "concat(\r\n    FUND,'-',\r\n    PROGRAM,'-',\r\n    COST_CENTER,'-',\r\n    LEDGER_ACCOUNT,'-',\r\n    'missing','-',\r\n    REVENUE_CATEGORY,'-',\r\n    GIFT_ID,'-',\r\n    coalesce( GRANT, ''),\r\n   \r\n    '-',\r\n    'missing'\r\n    ) \r\n",
+          "precision" : 30000,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA1" : {
+      "action" : "formula",
+      "sources" : [ "TO_MEASURE1" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Workday_Unique_ID",
+          "label" : "Workday Unique ID",
+          "formulaExpression" : "concat(\r\n    substr(coalesce(FUND,''), 1, 2),'-',\r\n    substr(coalesce(PROGRAM,''), 1, 2),'-',\r\n    substr(coalesce(COST_CENTER,''), 1, 6),'-',\r\n    substr(coalesce(LEDGER_ACCOUNT,''), 1, 4),'-',\r\n\r\n    substr(coalesce(REVENUE_CATEGORY,''), 1, 6),'-',\r\n    substr(coalesce(GIFT_ID,''), 1, 8),'-',\r\n    substr(coalesce(GRANT,''), 1, 8)\r\n    ) \r\n",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    }
+  },
+  "ui" : {
+    "nodes" : {
+      "LOAD_DATASET0" : {
+        "label" : "WORKDAY_DONOR_CONTRIBUTIONS",
+        "type" : "LOAD_DATASET",
+        "top" : 112,
+        "left" : 112,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "OUTPUT0" : {
+        "label" : "Output 0",
+        "type" : "OUTPUT",
+        "top" : 113.1,
+        "left" : 530.9
+      },
+      "TRANSFORM0" : {
+        "label" : "Transform 0",
+        "type" : "TRANSFORM",
+        "top" : 112,
+        "left" : 252,
+        "graph" : {
+          "TO_MEASURE0" : {
+            "label" : "To Number"
+          },
+          "TO_MEASURE1" : {
+            "label" : "To Number"
+          },
+          "FORMULA0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Workday Unique ID-delete"
+          },
+          "FORMULA1" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Workday Unique ID"
+          }
+        },
+        "connectors" : [ {
+          "source" : "TO_MEASURE0",
+          "target" : "TO_MEASURE1"
+        }, {
+          "source" : "FORMULA1",
+          "target" : "FORMULA0"
+        }, {
+          "source" : "TO_MEASURE1",
+          "target" : "FORMULA1"
+        } ]
+      }
+    },
+    "connectors" : [ {
+      "source" : "TRANSFORM0",
+      "target" : "OUTPUT0"
+    }, {
+      "source" : "LOAD_DATASET0",
+      "target" : "TRANSFORM0"
+    } ],
+    "hiddenColumns" : [ ]
+  },
+  "runMode" : "full"
+}

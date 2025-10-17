@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObjectTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <caseValues>
+        <plural>false</plural>
+        <value>Application</value>
+    </caseValues>
+    <caseValues>
+        <plural>true</plural>
+        <value>Applications</value>
+    </caseValues>
+    <layouts>
+        <layout>Application Layout</layout>
+        <sections>
+            <label><!-- Application Information --></label>
+            <section>Application Information</section>
+        </sections>
+        <sections>
+            <label><!-- Controls --></label>
+            <section>Controls</section>
+        </sections>
+        <sections>
+            <label><!-- Custom Links --></label>
+            <section>Custom Links</section>
+        </sections>
+    </layouts>
+    <startsWith>Vowel</startsWith>
+    <validationRules>
+        <errorMessage><!-- Release Planning must be enabled to enable Case Creation. --></errorMessage>
+        <name>agf__Release_Planning_Must_Be_Enabled_Case</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>
+            <!-- Instance list must be of the form: NA1 NA2 CS2 ...
+Use capital letters and only a space between instances.
+Allowed prefixes are NA, CS, EU, AP, GS or SR only. -->
+        </errorMessage>
+        <name>agf__Space_Separated_Instances</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Application Type must be specified. --></errorMessage>
+        <name>agf__Specify_Application_Type</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- The Application&apos;s Category must be specified. --></errorMessage>
+        <name>agf__Specify_Category</name>
+    </validationRules>
+</CustomObjectTranslation>

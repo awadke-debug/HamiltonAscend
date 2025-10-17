@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObjectTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <caseValues>
+        <plural>false</plural>
+        <value>对象活动</value>
+    </caseValues>
+    <nameFieldLabel>对象活动名称</nameFieldLabel>
+    <validationRules>
+        <errorMessage>引用的 Change_Submission__c 必须来自相同的 Work_Item。</errorMessage>
+        <name>sf_devops__Change_Submission_Work_Item</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>引用的 Environment__c 必须来自与 Object_Activity__c 相同的项目。</errorMessage>
+        <name>sf_devops__Environment_Project</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>引用的 Parent_Activity__c 必须来自与 Object_Activity__c 相同的项目。</errorMessage>
+        <name>sf_devops__Parent_Activity_Project</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>引用的 Pipeline__c 必须来自与 Object_Activity__c 相同的对象。</errorMessage>
+        <name>sf_devops__Pipeline_Project</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>引用的 Target_Pipeline_Stage__c 必须来自相同的销售漏斗。</errorMessage>
+        <name>sf_devops__Target_Stage_Pipeline</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>引用的 Work_Item__c 必须来自与 Object_Activity__c 相同的项目。</errorMessage>
+        <name>sf_devops__Work_Item_Project</name>
+    </validationRules>
+</CustomObjectTranslation>

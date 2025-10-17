@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObjectTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <caseValues>
+        <plural>false</plural>
+        <value>Release</value>
+    </caseValues>
+    <caseValues>
+        <plural>true</plural>
+        <value>Releases</value>
+    </caseValues>
+    <layouts>
+        <layout>Release Layout</layout>
+        <sections>
+            <label><!-- Custom Links --></label>
+            <section>Custom Links</section>
+        </sections>
+    </layouts>
+    <layouts>
+        <layout>Release Layout (Admin)</layout>
+        <sections>
+            <label><!-- Custom Links --></label>
+            <section>Custom Links</section>
+        </sections>
+    </layouts>
+    <startsWith>Consonant</startsWith>
+    <validationRules>
+        <errorMessage><!-- Actual Release Date is required if the release has been fully or partially deployed. --></errorMessage>
+        <name>agf__Actual_Deploy_Date_Required_if_Deployed</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- The Application must be set when the Release Status is not In Development --></errorMessage>
+        <name>agf__Application_set_after_In_Development</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>
+            <!-- Instance list must be of the form: NA1,NA2,CS2,...
+Use capital letters and no whitespace.
+Allowed prefixes are NA, CS, EU, AP, GS or SR only. -->
+        </errorMessage>
+        <name>agf__Comma_Separated_Instances</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Scheduled End Date must be set when Scheduled Date is specified. --></errorMessage>
+        <name>agf__End_needed_when_Sched_date_specified</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- GS0 End date cannot be more than 14 days later than GS0 Release Date. --></errorMessage>
+        <name>agf__GS0_Duration_Must_be_14_days_or_less</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- End date cannot be more than 14 days later than Release Date. --></errorMessage>
+        <name>agf__Release_Duration_Must_be_14_days_or_less</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Release Manager must be specified if the release has been fully or partially deployed. --></errorMessage>
+        <name>agf__Release_Manager_required_if_deployed</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Scheduled Release Date must be specified. --></errorMessage>
+        <name>agf__Scheduled_Date_Required_if_no_GS0_Date</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>
+            <!-- Instance list must be of the form: NA1 NA2 CS2 ...
+Use capital letters and only a space between instances.
+Allowed prefixes are NA, CS, EU, AP, GS or SR only. -->
+        </errorMessage>
+        <name>agf__Space_Separated_Instances</name>
+    </validationRules>
+</CustomObjectTranslation>

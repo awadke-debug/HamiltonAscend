@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObjectTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <caseValues>
+        <plural>false</plural>
+        <value>作業項目</value>
+    </caseValues>
+    <nameFieldLabel>作業項目番号</nameFieldLabel>
+    <validationRules>
+        <errorMessage>Development_Approved ではない Work_Item の Development_Approved_By を設定することはできません。</errorMessage>
+        <name>sf_devops__Approved_By_Without_Approved</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>この作業項目が承認済みの場合、Development_Approved_By を設定する必要があります。</errorMessage>
+        <name>sf_devops__Approved_Without_Approved_By</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>レビューなしで作業項目を承認することはできません。</errorMessage>
+        <name>sf_devops__Approved_Without_Review</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>作業項目はその変更バンドルと同じプロジェクトに属する必要があります。</errorMessage>
+        <name>sf_devops__Change_Bundle_Project</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>バンドル内にある作業項目を組み合わせることはできません。</errorMessage>
+        <name>sf_devops__Combined_Bundled</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>組み合わせ先の作業項目を参照していない作業項目を組み合わせることはできません。</errorMessage>
+        <name>sf_devops__Combined_Not_Combined_With</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>昇格されていない作業項目を組み合わせることはできません。</errorMessage>
+        <name>sf_devops__Combined_Not_Promoted</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>組み合わせ済み状態ではない作業項目の Combined_With を設定することはできません。</errorMessage>
+        <name>sf_devops__Combined_With_Not_Combined</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>作業項目の Combined_With を、組み合わせ操作を実行していない作業項目に設定することはできません。</errorMessage>
+        <name>sf_devops__Combined_With_Not_Survivor</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Concluded_c の可能な値は CLOSED、NEVERED、COMBINED、または空です。</errorMessage>
+        <name>sf_devops__Concluded_values</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>設定後に作業項目の Concluded__c 項目を変更することはできません。</errorMessage>
+        <name>sf_devops__Disable_Concluded</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>設定後に作業項目の Promoted__c 項目を無効にすることはできません。</errorMessage>
+        <name>sf_devops__Disable_Promoted</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>期限切れになっている環境に作業項目を接続することはできません。</errorMessage>
+        <name>sf_devops__Environment_Expired</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>作業項目はその環境と同じプロジェクトに属する必要があります。</errorMessage>
+        <name>sf_devops__Environment_Project</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>変更追跡をサポートしない環境を参照することはできません。</errorMessage>
+        <name>sf_devops__Environment_Requires_Tracking</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>設定後に作業項目の Promoted_From_Environment__c 項目を変更することはできません。</errorMessage>
+        <name>sf_devops__PromotedFromEnvironment_Changed</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>作業項目の Promoted_From_Environment__c 項目を Environment__c の値とは異なる値に設定することはできません。また、作業項目は、Environment__c を null に設定する場合のみ設定できます。</errorMessage>
+        <name>sf_devops__PromotedFromEnvironment_Set</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>作業項目は、昇格されていない場合、Change_Bundle のメンバーになることはできません。</errorMessage>
+        <name>sf_devops__Promoted_And_Installed</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>[昇格済み] フラグを設定した Work_Item を作成することはできません。</errorMessage>
+        <name>sf_devops__Promoted_On_Create</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>承認されていない作業項目は昇格できません。</errorMessage>
+        <name>sf_devops__Promoted_Without_Approval</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>昇格済みでない作業項目、バンドルされた作業項目、または終了した作業項目の [再設定ブランチ] 項目を設定することはできません。</errorMessage>
+        <name>sf_devops__Rebase_Branch</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Deprecated --></errorMessage>
+        <name>sf_devops__Rebase_Remote_Reference</name>
+    </validationRules>
+    <webLinks>
+        <label>DevOps Center で表示</label>
+        <name>sf_devops__Devops_Center</name>
+    </webLinks>
+</CustomObjectTranslation>

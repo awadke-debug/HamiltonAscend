@@ -1,0 +1,24 @@
+<template>
+    <lightning-modal-header label="Select address from the results"></lightning-modal-header>
+    <lightning-modal-body>
+        <p class="slds-var-p-vertical_medium">
+            Results for search address "{searchString}". Add more detail for more accurate results.
+        </p>
+        
+
+        <template lwc:if={displayAddressOptions}>
+            <template for:each={addressOptions} for:item="address">
+                <div style="cursor: pointer;" class="slds-box" key={address.idx} data-address={address.value} onclick={handleAddressOptionClick}>{address.value}</div>
+            </template>
+        </template>
+        <template lwc:else>
+            <div><i>No results found</i></div>
+        </template>
+
+        
+    </lightning-modal-body>
+
+    <template if:true={addressOptionsLoading}>
+        <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+    </template>
+</template>

@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObjectTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <caseValues>
+        <plural>false</plural>
+        <value>Élément de travail</value>
+    </caseValues>
+    <caseValues>
+        <plural>true</plural>
+        <value>Éléments de travail</value>
+    </caseValues>
+    <gender>Masculine</gender>
+    <nameFieldLabel>Nombre d’éléments de travail</nameFieldLabel>
+    <startsWith>Vowel</startsWith>
+    <validationRules>
+        <errorMessage>Development_Approved_By ne peut pas être défini si le Work_Item n&apos;est pas Development_Approved.</errorMessage>
+        <name>sf_devops__Approved_By_Without_Approved</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Vous devez définir Development_Approved_By lorsque cet Élément de travail est approuvé.</errorMessage>
+        <name>sf_devops__Approved_Without_Approved_By</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Un Élément de travail ne peut pas être approuvé sans révision.</errorMessage>
+        <name>sf_devops__Approved_Without_Review</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Un Élément de travail doit appartenir au même projet que son Paquet de modifications.</errorMessage>
+        <name>sf_devops__Change_Bundle_Project</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Un élément de travail ne peut pas être combiné s&apos;il fait partie d’un paquet.</errorMessage>
+        <name>sf_devops__Combined_Bundled</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Un élément de travail ne peut pas être combiné s&apos;il ne fait pas référence à l’élément de travail dans lequel il est combiné.</errorMessage>
+        <name>sf_devops__Combined_Not_Combined_With</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Un élément de travail ne peut pas être combiné s&apos;il n’a jamais été promu.</errorMessage>
+        <name>sf_devops__Combined_Not_Promoted</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Un élément de travail ne peut pas être défini sur Combined_With s’il ne se trouve pas dans l’état Combiné.</errorMessage>
+        <name>sf_devops__Combined_With_Not_Combined</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Un élément de travail ne peut pas être défini sur Combined_With avec un élément de travail qui n’a pas effectué l’opération Combiner.</errorMessage>
+        <name>sf_devops__Combined_With_Not_Survivor</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Les valeurs possibles pour Concluded_c sont : LOSED, NEVERED, COMBINED ou vide.</errorMessage>
+        <name>sf_devops__Concluded_values</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Une fois l&apos;Élément de travail défini, son champ Concluded__c ne peut pas être modifié.</errorMessage>
+        <name>sf_devops__Disable_Concluded</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Une fois l&apos;Élément de travail défini, son champ Promoted__c ne peut pas être désactivé.</errorMessage>
+        <name>sf_devops__Disable_Promoted</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Les Éléments de travail ne peuvent pas être connectés à des environnements expirés.</errorMessage>
+        <name>sf_devops__Environment_Expired</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Un Élément de travail doit appartenir au même projet que son Environnement.</errorMessage>
+        <name>sf_devops__Environment_Project</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Impossible de référencer un environnement qui ne prend pas en charge le suivi des modifications.</errorMessage>
+        <name>sf_devops__Environment_Requires_Tracking</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Une fois l&apos;Élément de travail défini, son champ Promoted_From_Environment__c ne peut pas être modifié.</errorMessage>
+        <name>sf_devops__PromotedFromEnvironment_Changed</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Le champ Promoted_From_Environment__c de l&apos;Élément de travail ne peut pas être défini avec une valeur différente de la valeur Environment__c et peut être défini uniquement lorsque Environment__c est défini sur null</errorMessage>
+        <name>sf_devops__PromotedFromEnvironment_Set</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Un Work_Item ne peut pas être membre d&apos;un Change_Bundle s&apos;il n&apos;a jamais été promu.</errorMessage>
+        <name>sf_devops__Promoted_And_Installed</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Vous ne pouvez pas créer un Work_Item avec l&apos;indicateur Promu défini.</errorMessage>
+        <name>sf_devops__Promoted_On_Create</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Un élément de travail ne peut pas être promu s&apos;il n&apos;a pas été Approuvé.</errorMessage>
+        <name>sf_devops__Promoted_Without_Approval</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Le champ Branche de rebasage d’un élément de travail ne peut pas être défini s’il est non promu, empaqueté ou conclu.</errorMessage>
+        <name>sf_devops__Rebase_Branch</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Deprecated --></errorMessage>
+        <name>sf_devops__Rebase_Remote_Reference</name>
+    </validationRules>
+    <webLinks>
+        <label>Afficher dans le Centre DevOps</label>
+        <name>sf_devops__Devops_Center</name>
+    </webLinks>
+</CustomObjectTranslation>

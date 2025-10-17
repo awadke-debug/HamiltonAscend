@@ -1,0 +1,194 @@
+{
+  "version" : "60.0",
+  "nodes" : {
+    "JOIN1" : {
+      "action" : "join",
+      "sources" : [ "JOIN3", "LOAD_DATASET11" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Contact.AccountId", "Contact.Id", "CampaignId", "Filter0.Id", "Filter0.Status", "Filter0.IsActive", "Filter0.HAM_Fiscal_Year__c" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "CampaignId" ],
+        "rightQualifier" : "Filter0",
+        "rightKeys" : [ "Id" ]
+      }
+    },
+    "OUTPUT3" : {
+      "action" : "save",
+      "sources" : [ "FILTER0" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Validate Historical Campaigns",
+          "name" : "Validate_Historical_Campaigns",
+          "folderName" : "SharedApp"
+        },
+        "dateConfigurationName" : "July_Fiscal_Year",
+        "measuresToCurrencies" : [ ]
+      }
+    },
+    "JOIN3" : {
+      "action" : "join",
+      "sources" : [ "LOAD_DATASET9", "LOAD_DATASET10" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Contact1.Id", "Id" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Contact.Id" ],
+        "rightQualifier" : "Contact1",
+        "rightKeys" : [ "Id" ]
+      }
+    },
+    "LOAD_DATASET9" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Contact.AccountId", "Contact.Id", "CampaignId", "Id" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Campaign Member",
+          "name" : "Campaign_Member"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "LOAD_DATASET10" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Id", "ucinn_ascendv2__External_System_ID__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "Contact",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "Contact"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "LOAD_DATASET11" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Type", "Id", "Name", "Status", "IsActive", "HAM_Fiscal_Year__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "Campaign",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "Campaign"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "FILTER0" : {
+      "action" : "filter",
+      "sources" : [ "JOIN1" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "Filter0.Type",
+          "operator" : "EQUAL",
+          "operands" : [ "Internal Alumni Participation" ]
+        } ]
+      }
+    }
+  },
+  "ui" : {
+    "nodes" : {
+      "JOIN1" : {
+        "label" : "Join 1",
+        "type" : "JOIN",
+        "top" : 113.80000000000001,
+        "left" : 671.7
+      },
+      "OUTPUT3" : {
+        "label" : "Output 3",
+        "type" : "OUTPUT",
+        "top" : 113.80000000000001,
+        "left" : 951.7
+      },
+      "JOIN3" : {
+        "label" : "Join 3",
+        "type" : "JOIN",
+        "top" : 113.80000000000001,
+        "left" : 531.7
+      },
+      "LOAD_DATASET9" : {
+        "label" : "Campaign Member",
+        "type" : "LOAD_DATASET",
+        "top" : 112.4,
+        "left" : 391.9,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "LOAD_DATASET10" : {
+        "label" : "Contact",
+        "type" : "LOAD_DATASET",
+        "top" : 252,
+        "left" : 532.1,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "LOAD_DATASET11" : {
+        "label" : "Campaign",
+        "type" : "LOAD_DATASET",
+        "top" : 391.9,
+        "left" : 672.1,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "FILTER0" : {
+        "label" : "Filter 0",
+        "type" : "FILTER",
+        "top" : 112,
+        "left" : 812
+      }
+    },
+    "connectors" : [ {
+      "source" : "LOAD_DATASET9",
+      "target" : "JOIN3"
+    }, {
+      "source" : "JOIN3",
+      "target" : "JOIN1"
+    }, {
+      "source" : "LOAD_DATASET10",
+      "target" : "JOIN3"
+    }, {
+      "source" : "FILTER0",
+      "target" : "OUTPUT3"
+    }, {
+      "source" : "LOAD_DATASET11",
+      "target" : "JOIN1"
+    }, {
+      "source" : "JOIN1",
+      "target" : "FILTER0"
+    } ],
+    "hiddenColumns" : [ ]
+  },
+  "runMode" : "full"
+}

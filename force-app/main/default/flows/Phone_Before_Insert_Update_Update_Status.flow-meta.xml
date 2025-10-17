@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>59.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <decisions>
+        <description>This decision will check if the End Date has been populated</description>
+        <name>Is_End_Date_Populated</name>
+        <label>Is End Date Populated ?</label>
+        <locationX>182</locationX>
+        <locationY>287</locationY>
+        <defaultConnectorLabel>No, Not Populated</defaultConnectorLabel>
+        <rules>
+            <name>Yes_Populated</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.ucinn_ascendv2__End_Date__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_Status</targetReference>
+            </connector>
+            <label>Yes, Populated</label>
+        </rules>
+    </decisions>
+    <description>This Flow will run on the Phone object before inserting or updating a record and update the Status field on Phone.</description>
+    <environments>Default</environments>
+    <interviewLabel>Phone - Before Insert / Update - Update End Date {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Phone - Before Insert / Update - Update Status</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordUpdates>
+        <description>This will update the value on the Status field.</description>
+        <name>Update_Status</name>
+        <label>Update Status</label>
+        <locationX>50</locationX>
+        <locationY>395</locationY>
+        <inputAssignments>
+            <field>ucinn_ascendv2__Is_Preferred__c</field>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>ucinn_ascendv2__Status__c</field>
+            <value>
+                <stringValue>Former</stringValue>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <start>
+        <locationX>56</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Is_End_Date_Populated</targetReference>
+        </connector>
+        <object>ucinn_ascendv2__Phone__c</object>
+        <recordTriggerType>CreateAndUpdate</recordTriggerType>
+        <triggerType>RecordBeforeSave</triggerType>
+    </start>
+    <status>Active</status>
+</Flow>

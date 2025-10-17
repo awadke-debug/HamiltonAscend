@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObjectTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <caseValues>
+        <plural>false</plural>
+        <value>工作項目升級</value>
+    </caseValues>
+    <nameFieldLabel>工作項目升級名稱</nameFieldLabel>
+    <validationRules>
+        <errorMessage>您無法將 Work_Item 升級至未啟用的管道。</errorMessage>
+        <name>sf_devops__No_Promotion_to_Inactive_Pipeline</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>作為 Change_Bundle 成員的 Work_Item 無法升級到 Pipeline_Stage。</errorMessage>
+        <name>sf_devops__Promoted_And_Installed</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Work_Item 無法升級到已版本化的 Pipeline_Stage。</errorMessage>
+        <name>sf_devops__Promoted_To_Versioned</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>工作項目若非「已核准」，則無法升級。</errorMessage>
+        <name>sf_devops__Promoted_Without_Approval</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>工作項目只能升級到相同專案內的階段。</errorMessage>
+        <name>sf_devops__Promoted_Wrong_Project</name>
+    </validationRules>
+</CustomObjectTranslation>

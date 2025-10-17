@@ -1,0 +1,250 @@
+{
+  "version" : "62.0",
+  "nodes" : {
+    "LOAD_DATASET0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "ucinn_ascendv2__Opportunity__c", "Opportunity.Type", "Opportunity.ucinn_ascendv2__Pledge_Gift_ID_Formula__c", "Constituent_or_Account_Id", "Contact.Name", "Pledge_Date", "SUM_Fundraising_Amount", "SUM_Cash_Amount", "Pledge_Balance" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Pledge Balance",
+          "name" : "Pledge_Balance"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "LOAD_DATASET2" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "ucinn_ascendv2__Full_Name_Formula__c", "Name", "Id", "ucinn_ascendv2__Lifetime_Cash__c", "ucinn_ascendv2__Lifetime_Fundraising__c", "HAM_Outstanding_Balance__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "Contact",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "Contact"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "EXTRACT0" : {
+      "action" : "extractGrains",
+      "sources" : [ "LOAD_DATASET0" ],
+      "parameters" : {
+        "grainExtractions" : [ ]
+      }
+    },
+    "AGGREGATE1" : {
+      "action" : "aggregate",
+      "sources" : [ "EXTRACT0" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "SUM_Pledge_Balance",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        } ]
+      },
+      "parameters" : {
+        "aggregations" : [ {
+          "action" : "SUM",
+          "source" : "Pledge_Balance",
+          "name" : "SUM_Pledge_Balance",
+          "label" : "Sum of Pledge Balance"
+        } ],
+        "groupings" : [ "Constituent_or_Account_Id" ],
+        "pivots" : [ ],
+        "nodeType" : "STANDARD"
+      }
+    },
+    "JOIN0" : {
+      "action" : "join",
+      "sources" : [ "LOAD_DATASET2", "AGGREGATE1" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Id" ],
+        "rightQualifier" : "Aggregatea",
+        "rightKeys" : [ "Constituent_or_Account_Id" ]
+      }
+    },
+    "FORMULA0" : {
+      "action" : "formula",
+      "sources" : [ "JOIN0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Pledge_Balance_Recode",
+          "label" : "Pledge Balance Recode",
+          "formulaExpression" : "case \r\n    when \"Aggregatea.SUM_Pledge_Balance\" = null\r\n  \r\n    then 0\r\n\r\n    else\r\n   \"Aggregatea.SUM_Pledge_Balance\"\r\nend",
+          "precision" : 10,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA1" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "check_pledge_balance",
+          "label" : "check pledge balance",
+          "formulaExpression" : "case \r\n    when Pledge_Balance_Recode=HAM_Outstanding_Balance__c\r\n    then 'true'\r\n\r\n    else\r\n    'false'\r\nend",
+          "precision" : 10,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA2" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA1" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "diff",
+          "label" : "diff",
+          "formulaExpression" : "HAM_Outstanding_Balance__c-Pledge_Balance_Recode",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "OUTPUT0" : {
+      "action" : "save",
+      "sources" : [ "FORMULA2" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "test_pledge_balance",
+          "name" : "test_pledge_balance"
+        },
+        "measuresToCurrencies" : [ ]
+      }
+    }
+  },
+  "ui" : {
+    "nodes" : {
+      "LOAD_DATASET0" : {
+        "label" : "Pledge Balance",
+        "type" : "LOAD_DATASET",
+        "top" : 112,
+        "left" : 112,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "LOAD_DATASET2" : {
+        "label" : "Contact",
+        "type" : "LOAD_DATASET",
+        "top" : 252,
+        "left" : 252,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "AGGREGATE0" : {
+        "label" : "Aggregate account or contact",
+        "description" : "",
+        "type" : "AGGREGATE",
+        "top" : 112,
+        "left" : 252,
+        "graph" : {
+          "EXTRACT0" : null,
+          "AGGREGATE1" : null
+        },
+        "connectors" : [ {
+          "source" : "EXTRACT0",
+          "target" : "AGGREGATE1"
+        } ]
+      },
+      "JOIN0" : {
+        "label" : "Join 0",
+        "type" : "JOIN",
+        "top" : 112,
+        "left" : 392
+      },
+      "TRANSFORM0" : {
+        "label" : "Transform 0",
+        "type" : "TRANSFORM",
+        "top" : 112,
+        "left" : 532,
+        "graph" : {
+          "FORMULA0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Pledge Balance Recode"
+          },
+          "FORMULA1" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "check pledge balance"
+          },
+          "FORMULA2" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "diff"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA0",
+          "target" : "FORMULA1"
+        }, {
+          "source" : "FORMULA1",
+          "target" : "FORMULA2"
+        } ]
+      },
+      "OUTPUT0" : {
+        "label" : "Output 0",
+        "type" : "OUTPUT",
+        "top" : 112,
+        "left" : 672
+      }
+    },
+    "connectors" : [ {
+      "source" : "LOAD_DATASET0",
+      "target" : "AGGREGATE0"
+    }, {
+      "source" : "LOAD_DATASET2",
+      "target" : "JOIN0"
+    }, {
+      "source" : "AGGREGATE0",
+      "target" : "JOIN0"
+    }, {
+      "source" : "JOIN0",
+      "target" : "TRANSFORM0"
+    }, {
+      "source" : "TRANSFORM0",
+      "target" : "OUTPUT0"
+    } ],
+    "hiddenColumns" : [ ]
+  },
+  "runMode" : "full"
+}

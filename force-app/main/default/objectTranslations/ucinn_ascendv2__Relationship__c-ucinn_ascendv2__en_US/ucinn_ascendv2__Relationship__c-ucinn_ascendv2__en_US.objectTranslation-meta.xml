@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObjectTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <caseValues>
+        <plural>false</plural>
+        <value>Relationship</value>
+    </caseValues>
+    <caseValues>
+        <plural>true</plural>
+        <value>Relationships</value>
+    </caseValues>
+    <layouts>
+        <layout>Relationship Layout</layout>
+        <sections>
+            <label><!-- Custom Links --></label>
+            <section>Custom Links</section>
+        </sections>
+        <sections>
+            <label><!-- Notes --></label>
+            <section>Notes</section>
+        </sections>
+        <sections>
+            <label><!-- Related Constituent Information --></label>
+            <section>Related Constituent Information</section>
+        </sections>
+    </layouts>
+    <layouts>
+        <layout>Relationship Layout v1</layout>
+        <sections>
+            <label><!-- Custom Links --></label>
+            <section>Custom Links</section>
+        </sections>
+        <sections>
+            <label><!-- Notes --></label>
+            <section>Notes</section>
+        </sections>
+        <sections>
+            <label><!-- Related Constituent Information --></label>
+            <section>Related Constituent Information</section>
+        </sections>
+    </layouts>
+    <quickActions>
+        <label><!-- Retroactive Soft Credits --></label>
+        <name>ucinn_ascendv2__Retroactive_Soft_Credits</name>
+    </quickActions>
+    <startsWith>Consonant</startsWith>
+    <validationRules>
+        <errorMessage><!-- A constituent cannot be in a relationship with himself/herself. --></errorMessage>
+        <name>ucinn_ascendv2__Contact_Cannot_Match_Related_Contact</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Please set the Deceased flag on either the Constituent or Related Constituent. --></errorMessage>
+        <name>ucinn_ascendv2__Enforce_Deceased_Flag</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Please ensure that neither the Constituent nor the Related Constituent is deceased before creating a Spousal relationship. --></errorMessage>
+        <name>ucinn_ascendv2__Enforce_Spouse_to_be_alive</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Please remove the Deceased flag on the Constituent/Related Constituent. --></errorMessage>
+        <name>ucinn_ascendv2__Maintain_Deceased_or_Widow_Relationship</name>
+    </validationRules>
+</CustomObjectTranslation>

@@ -1,0 +1,117 @@
+{
+  "version" : "61.0",
+  "nodes" : {
+    "OUTPUT1_copy0" : {
+      "action" : "save",
+      "sources" : [ "JOIN85_copy0" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "temp-name",
+          "name" : "temp_name"
+        },
+        "measuresToCurrencies" : [ ]
+      }
+    },
+    "LOAD_DATASET46_copy0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Id", "Name" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "RecordType",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "RecordType"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "LOAD_DATASET47_copy0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Id", "Name", "LastName", "FirstName", "MiddleName", "Suffix", "Type", "Alias", "UserRoleId", "RecordTypeId", "ProfileId", "NameOrAlias" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "Name",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "Name"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN85_copy0" : {
+      "action" : "join",
+      "sources" : [ "LOAD_DATASET47_copy0", "LOAD_DATASET46_copy0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "RecordTypeId" ],
+        "rightQualifier" : "RecordType",
+        "rightKeys" : [ "Id" ]
+      }
+    }
+  },
+  "ui" : {
+    "nodes" : {
+      "OUTPUT1_copy0" : {
+        "label" : "Output 1",
+        "type" : "OUTPUT",
+        "top" : 112,
+        "left" : 391.9
+      },
+      "LOAD_DATASET46_copy0" : {
+        "label" : "RecordType",
+        "type" : "LOAD_DATASET",
+        "top" : 252.20000000000005,
+        "left" : 251.9,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "LOAD_DATASET47_copy0" : {
+        "label" : "Name",
+        "type" : "LOAD_DATASET",
+        "top" : 112,
+        "left" : 112,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN85_copy0" : {
+        "label" : "Lookup Record Type to Name",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 112,
+        "left" : 252.00000000000003
+      }
+    },
+    "connectors" : [ {
+      "source" : "LOAD_DATASET47_copy0",
+      "target" : "JOIN85_copy0"
+    }, {
+      "source" : "LOAD_DATASET46_copy0",
+      "target" : "JOIN85_copy0"
+    }, {
+      "source" : "JOIN85_copy0",
+      "target" : "OUTPUT1_copy0"
+    } ],
+    "hiddenColumns" : [ ]
+  },
+  "runMode" : "full"
+}

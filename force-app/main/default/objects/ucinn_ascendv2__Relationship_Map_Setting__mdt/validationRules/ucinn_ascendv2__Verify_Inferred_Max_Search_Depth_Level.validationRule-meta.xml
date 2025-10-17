@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>ucinn_ascendv2__Verify_Inferred_Max_Search_Depth_Level</fullName>
+    <active>true</active>
+    <description>This value determines how deep ascend searches for inferred relationships. Valid values are 2 or 3</description>
+    <errorConditionFormula>ucinn_ascendv2__Inferred_Max_Search_Depth__c  &lt; 2 ||
+ucinn_ascendv2__Inferred_Max_Search_Depth__c  &gt; 3</errorConditionFormula>
+    <errorMessage>Relationship Map Inferred Max Search Depth value must be 2 or 3.</errorMessage>
+</ValidationRule>

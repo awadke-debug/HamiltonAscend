@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObjectTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <caseValues>
+        <plural>false</plural>
+        <value>Rating</value>
+    </caseValues>
+    <caseValues>
+        <plural>true</plural>
+        <value>Ratings</value>
+    </caseValues>
+    <layouts>
+        <layout>Account Wealth Rating Layout</layout>
+        <sections>
+            <label><!-- Custom Links --></label>
+            <section>Custom Links</section>
+        </sections>
+    </layouts>
+    <layouts>
+        <layout>Contact Wealth Rating Layout</layout>
+        <sections>
+            <label><!-- Additional Information --></label>
+            <section>Additional Information</section>
+        </sections>
+        <sections>
+            <label><!-- Custom Links --></label>
+            <section>Custom Links</section>
+        </sections>
+    </layouts>
+    <layouts>
+        <layout>HAM_Annual_Giving_Ask</layout>
+        <sections>
+            <label><!-- Custom Links --></label>
+            <section>Custom Links</section>
+        </sections>
+    </layouts>
+    <layouts>
+        <layout>HAM_Donor_Status</layout>
+        <sections>
+            <label><!-- Custom Links --></label>
+            <section>Custom Links</section>
+        </sections>
+    </layouts>
+    <layouts>
+        <layout>HAM_Employer Engagement</layout>
+        <sections>
+            <label><!-- Custom Links --></label>
+            <section>Custom Links</section>
+        </sections>
+    </layouts>
+    <layouts>
+        <layout>HAM_Financial Asset</layout>
+        <sections>
+            <label><!-- Custom Links --></label>
+            <section>Custom Links</section>
+        </sections>
+    </layouts>
+    <layouts>
+        <layout>HAM_GVAC</layout>
+        <sections>
+            <label><!-- Custom Links --></label>
+            <section>Custom Links</section>
+        </sections>
+    </layouts>
+    <layouts>
+        <layout>HAM_Model_Score</layout>
+        <sections>
+            <label><!-- Custom Links --></label>
+            <section>Custom Links</section>
+        </sections>
+    </layouts>
+    <layouts>
+        <layout>HAM_Prospect Stage</layout>
+        <sections>
+            <label><!-- Custom Links --></label>
+            <section>Custom Links</section>
+        </sections>
+    </layouts>
+    <layouts>
+        <layout>HAM_Wealth Rating Layout</layout>
+        <sections>
+            <label><!-- Custom Links --></label>
+            <section>Custom Links</section>
+        </sections>
+    </layouts>
+    <layouts>
+        <layout>Kindsight Rating</layout>
+        <sections>
+            <label><!-- Additional Information --></label>
+            <section>Additional Information</section>
+        </sections>
+        <sections>
+            <label><!-- Custom Links --></label>
+            <section>Custom Links</section>
+        </sections>
+        <sections>
+            <label><!-- Kindsight Insights --></label>
+            <section>Kindsight Insights</section>
+        </sections>
+    </layouts>
+    <recordTypes>
+        <label><!-- Annual Giving Asks --></label>
+        <name>Annual_Giving_Asks</name>
+    </recordTypes>
+    <recordTypes>
+        <label><!-- Donor Status --></label>
+        <name>Donor_Status</name>
+    </recordTypes>
+    <recordTypes>
+        <label><!-- Financial Asset --></label>
+        <name>Financial_Asset</name>
+    </recordTypes>
+    <recordTypes>
+        <label><!-- GVAC --></label>
+        <name>GVAC</name>
+    </recordTypes>
+    <recordTypes>
+        <description><!-- Rating used to determine employer&apos;s engagement with Hamilton College --></description>
+        <label><!-- Employer Engagement Stage --></label>
+        <name>HAM_Employer_Engagement</name>
+    </recordTypes>
+    <recordTypes>
+        <description><!-- Rating used for prospect stage --></description>
+        <label><!-- Prospect Stage --></label>
+        <name>HAM_Prospect_Stage</name>
+    </recordTypes>
+    <recordTypes>
+        <description><!-- Summarizes Ratings --></description>
+        <label><!-- Wealth Rating --></label>
+        <name>HAM_Wealth_Rating</name>
+    </recordTypes>
+    <recordTypes>
+        <label><!-- Model Score --></label>
+        <name>Model_Score</name>
+    </recordTypes>
+    <recordTypes>
+        <description><!-- A household&apos;s wealth rating. --></description>
+        <label><!-- Account Wealth Rating --></label>
+        <name>ucinn_ascendv2__Account_Wealth_Rating</name>
+    </recordTypes>
+    <recordTypes>
+        <description><!-- A constituent&apos;s wealth rating. --></description>
+        <label><!-- Contact Wealth Rating --></label>
+        <name>ucinn_ascendv2__Contact_Wealth_Rating</name>
+    </recordTypes>
+    <recordTypes>
+        <label><!-- Kindsight --></label>
+        <name>ucinn_ascendv2__Kindsight</name>
+    </recordTypes>
+    <startsWith>Consonant</startsWith>
+    <validationRules>
+        <errorMessage><!-- Please populate either the wealth rating field or the estimated total giving capacity field. --></errorMessage>
+        <name>ucinn_ascendv2__Must_Populate_Either_WR_Or_EGC</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Only the owner of the record can edit fields. --></errorMessage>
+        <name>ucinn_ascendv2__Only_Edit_Own_Wealth_Ratings</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Profile value should match user&apos;s profile. --></errorMessage>
+        <name>ucinn_ascendv2__Profile_Name_Does_Not_Match_Picklist</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- The wealth rating profile cannot be changed from its original value. --></errorMessage>
+        <name>ucinn_ascendv2__Wealth_Rating_Profile_Cannot_Be_Changed</name>
+    </validationRules>
+</CustomObjectTranslation>

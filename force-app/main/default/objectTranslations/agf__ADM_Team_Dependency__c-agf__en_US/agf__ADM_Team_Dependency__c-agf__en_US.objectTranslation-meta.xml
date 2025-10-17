@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObjectTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <caseValues>
+        <plural>false</plural>
+        <value>Team Dependency</value>
+    </caseValues>
+    <caseValues>
+        <plural>true</plural>
+        <value>Team Dependencies</value>
+    </caseValues>
+    <layouts>
+        <layout>(Admin) Team Dependency</layout>
+        <sections>
+            <label><!-- Custom Links --></label>
+            <section>Custom Links</section>
+        </sections>
+        <sections>
+            <label><!-- Notes --></label>
+            <section>Notes</section>
+        </sections>
+        <sections>
+            <label><!-- What is needed and when? --></label>
+            <section>What is needed and when?</section>
+        </sections>
+        <sections>
+            <label><!-- Who needs this dependency? --></label>
+            <section>Who needs this dependency?</section>
+        </sections>
+        <sections>
+            <label><!-- Who will do the work? --></label>
+            <section>Who will do the work?</section>
+        </sections>
+    </layouts>
+    <layouts>
+        <layout>Team Dependency Layout</layout>
+        <sections>
+            <label><!-- Custom Links --></label>
+            <section>Custom Links</section>
+        </sections>
+        <sections>
+            <label><!-- Notes --></label>
+            <section>Notes</section>
+        </sections>
+        <sections>
+            <label><!-- What is needed and when? --></label>
+            <section>What is needed and when?</section>
+        </sections>
+        <sections>
+            <label><!-- Who needs this dependency? --></label>
+            <section>Who needs this dependency?</section>
+        </sections>
+        <sections>
+            <label><!-- Who will do the work? --></label>
+            <section>Who will do the work?</section>
+        </sections>
+    </layouts>
+    <startsWith>Consonant</startsWith>
+    <validationRules>
+        <errorMessage><!-- A user story for the deliverable must be linked to the dependency in order to set the dependency status to &quot;Prioritized&quot; or &quot;Committed&quot;. --></errorMessage>
+        <name>agf__Check_Provider_User_Story</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- The Team With Dependency you selected is not active. --></errorMessage>
+        <name>agf__Dependent_Team_Is_Active</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- The &apos;Needed By&apos; date cannot be in the past. --></errorMessage>
+        <name>agf__Needed_By_Date_in_Future</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- The Team Providing Deliverable you selected is not active. --></errorMessage>
+        <name>agf__Provider_Team_Is_Active</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Team Providing Deliverable and Team With Dependency cannot be the same! --></errorMessage>
+        <name>agf__Teams_Cannot_Be_The_Same</name>
+    </validationRules>
+    <webLinks>
+        <label><!-- Generate_graph_for_my_team --></label>
+        <name>agf__Generate_graph_for_my_team</name>
+    </webLinks>
+</CustomObjectTranslation>

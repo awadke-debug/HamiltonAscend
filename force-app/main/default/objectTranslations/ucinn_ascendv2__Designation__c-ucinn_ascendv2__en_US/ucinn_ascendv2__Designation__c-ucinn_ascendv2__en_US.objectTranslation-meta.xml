@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObjectTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <caseValues>
+        <plural>false</plural>
+        <value>Designation</value>
+    </caseValues>
+    <caseValues>
+        <plural>true</plural>
+        <value>Designations</value>
+    </caseValues>
+    <layouts>
+        <layout>Designation Layout</layout>
+        <sections>
+            <label><!-- Additional Information --></label>
+            <section>Additional Information</section>
+        </sections>
+        <sections>
+            <label><!-- Custom Links --></label>
+            <section>Custom Links</section>
+        </sections>
+        <sections>
+            <label><!-- Department / Unit Information --></label>
+            <section>Department / Unit Information</section>
+        </sections>
+        <sections>
+            <label><!-- Work Plan Unit Information --></label>
+            <section>Work Plan Unit Information</section>
+        </sections>
+        <sections>
+            <label><!-- Workday Financials --></label>
+            <section>Workday Financials</section>
+        </sections>
+    </layouts>
+    <layouts>
+        <layout>Parent Designation</layout>
+        <sections>
+            <label><!-- Additional Information --></label>
+            <section>Additional Information</section>
+        </sections>
+        <sections>
+            <label><!-- Custom Links --></label>
+            <section>Custom Links</section>
+        </sections>
+        <sections>
+            <label><!-- Department / Unit Information --></label>
+            <section>Department / Unit Information</section>
+        </sections>
+        <sections>
+            <label><!-- Endowment Information --></label>
+            <section>Endowment Information</section>
+        </sections>
+        <sections>
+            <label><!-- Summary Endowment Values --></label>
+            <section>Summary Endowment Values</section>
+        </sections>
+        <sections>
+            <label><!-- Work Plan Unit Information --></label>
+            <section>Work Plan Unit Information</section>
+        </sections>
+    </layouts>
+    <quickActions>
+        <label><!-- Update Designation --></label>
+        <name>ucinn_ascendv2__Update_Designation</name>
+    </quickActions>
+    <recordTypes>
+        <description><!-- for use with financial transactoins (gifts, pledges, etc.) --></description>
+        <label><!-- Gift Designation --></label>
+        <name>HAM_Gift_Designation</name>
+    </recordTypes>
+    <recordTypes>
+        <label><!-- Fund --></label>
+        <name>HAM_Parent_Designation</name>
+    </recordTypes>
+    <startsWith>Consonant</startsWith>
+    <validationRules>
+        <errorMessage><!-- Is Publicly Visible cannot be checked when G / L Effective Date is in the future and when G / L Expiration Date is in the present or past. --></errorMessage>
+        <name>ucinn_ascendv2__Status_Inactive_Rules</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Unit 1 percentage + unit 2 percentage must total 100%. --></errorMessage>
+        <name>ucinn_ascendv2__Unit_Percentage_Rules</name>
+    </validationRules>
+    <webLinks>
+        <label><!-- HAM_Fund_OnBase_Folder --></label>
+        <name>HAM_Fund_OnBase_Folder</name>
+    </webLinks>
+</CustomObjectTranslation>

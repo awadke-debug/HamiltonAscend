@@ -1,0 +1,1688 @@
+{
+  "version" : "61.0",
+  "nodes" : {
+    "LOAD_DATASET0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Fiscal_Year", "Designation.ucinn_ascendv2__Areas_of_Giving_CASE_Type__c", "ucinn_ascendv2__Credit_Type__c", "Object", "Id", "Organization_or_Contact_External_Id", "ucinn_ascendv2__Credit_Date_Formula__c", "Contact.ucinn_ascendv2__Primary_Contact_Type__c", "Constituent_or_Account_Id", "Contact.Name", "Account.Name", "Cash_Amount" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Gift Credit and Payment",
+          "name" : "Gift_Credit_and_Payment"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "LOAD_DATASET2" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "ucinn_ascendv2__Ethnicity__c", "Account_or_Contact_Id", "ucinn_ascendv2__Contact_Type__c", "HAM_Reunion_Year__c" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Account and Contact Dataset",
+          "name" : "Account_and_Contact_Dataset"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "FILTER0" : {
+      "action" : "filter",
+      "sources" : [ "LOAD_DATASET0" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "Object",
+          "operator" : "EQUAL",
+          "operands" : [ "Hard and Soft Credit" ]
+        }, {
+          "type" : "NUMBER",
+          "field" : "Cash_Amount",
+          "operator" : "GREATER_THAN",
+          "operands" : [ "0" ]
+        } ]
+      }
+    },
+    "JOIN0" : {
+      "action" : "join",
+      "sources" : [ "FILTER0", "FORMULA22" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Accountand.Account_or_Contact_Id" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Constituent_or_Account_Id" ],
+        "rightQualifier" : "Accountand",
+        "rightKeys" : [ "Account_or_Contact_Id" ]
+      }
+    },
+    "OUTPUT0" : {
+      "action" : "save",
+      "sources" : [ "DROP_FIELDS1" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Staff Report Dataset",
+          "name" : "Staff_Report_Dataset",
+          "folderName" : "SharedApp"
+        },
+        "dateConfigurationName" : "July_Fiscal_Year",
+        "measuresToCurrencies" : [ ]
+      }
+    },
+    "FORMULA1" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA3" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "E2_Trustee_All_Purposes_Donors",
+          "label" : "E2. Trustee All Purposes Donors",
+          "formulaExpression" : "case \r\nwhen array_contains(\"Accountand.ucinn_ascendv2__Contact_Type__c\",'Trustee')\r\nthen Constituent_or_Account_Id\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA2" : {
+      "action" : "formula",
+      "sources" : [ "DROP_FIELDS0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Empty",
+          "label" : "Empty",
+          "formulaExpression" : "''",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA3" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA2" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "E3_Trustee_All_Purposes_Dollor",
+          "label" : "E3. Trustee All Purposes $",
+          "formulaExpression" : "case \r\nwhen array_contains( \"Accountand.ucinn_ascendv2__Contact_Type__c\", 'Trustee')\r\nthen Cash_Amount\r\nend\r\n\r\n",
+          "precision" : 10,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA4" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA1" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "a2_Trustee_Total_Annual_Fund_Dollor",
+          "label" : "2a. Trustee Total Annual Fund $",
+          "formulaExpression" : "case \r\nwhen contains(\"Designation.ucinn_ascendv2__Areas_of_Giving_CASE_Type__c\", 'Hamilton Fund') and array_contains(\"Accountand.ucinn_ascendv2__Contact_Type__c\", 'Trustee')\r\nthen Cash_Amount\r\nend",
+          "precision" : 10,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA5" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA4" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "E4_Trustee_Total_Annual_Fund_Donors",
+          "label" : "E4. Trustee Total Annual Fund Donors",
+          "formulaExpression" : "case \r\nwhen contains(\"Designation.ucinn_ascendv2__Areas_of_Giving_CASE_Type__c\", 'Hamilton Fund') and array_contains(\"Accountand.ucinn_ascendv2__Contact_Type__c\", 'Trustee')\r\nthen Constituent_or_Account_Id\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA6" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA5" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "E7_Trustee_Annual_Fund_Designated_Dollor",
+          "label" : "E7. Trustee Annual Fund Designated $",
+          "formulaExpression" : "case \r\nwhen \"Designation.ucinn_ascendv2__Areas_of_Giving_CASE_Type__c\"='Hamilton Fund Designated' and array_contains(\"Accountand.ucinn_ascendv2__Contact_Type__c\", 'Trustee')\r\nthen Cash_Amount\r\nend\r\n",
+          "precision" : 10,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA7" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA6" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "d2_Trustee_Annual_Fund_Designated_Donors",
+          "label" : "2d. Trustee Annual Fund Designated Donors",
+          "formulaExpression" : "case \r\nwhen \"Designation.ucinn_ascendv2__Areas_of_Giving_CASE_Type__c\"='Hamilton Fund Designated' and array_contains(\"Accountand.ucinn_ascendv2__Contact_Type__c\", 'Trustee')\r\nthen Constituent_or_Account_Id\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA8" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA7" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "E5_Trustee_Annual_Fund_Unrestricted_Dollor",
+          "label" : "E5. Trustee Annual Fund Unrestricted $",
+          "formulaExpression" : "case \r\nwhen \"Designation.ucinn_ascendv2__Areas_of_Giving_CASE_Type__c\"='Hamilton Fund Unrestricted' and array_contains(\"Accountand.ucinn_ascendv2__Contact_Type__c\", 'Trustee')\r\nthen Cash_Amount\r\nend\r\n",
+          "precision" : 10,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA9" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA8" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "f2_Trustee_Annual_Fund_Unrestricted_Donors",
+          "label" : "2f. Trustee Annual Fund Unrestricted Donors",
+          "formulaExpression" : "case \r\nwhen \"Designation.ucinn_ascendv2__Areas_of_Giving_CASE_Type__c\"='Hamilton Fund Unrestricted' and array_contains(\"Accountand.ucinn_ascendv2__Contact_Type__c\", 'Trustee')\r\nthen Constituent_or_Account_Id\r\nend\r\n",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA10" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA9" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "a3_Trustee_Expendable_Restricted_Dollor",
+          "label" : "3a. Trustee Expendable Restricted $",
+          "formulaExpression" : "case \r\nwhen \"Designation.ucinn_ascendv2__Areas_of_Giving_CASE_Type__c\"='Expendable Restricted' and array_contains(\"Accountand.ucinn_ascendv2__Contact_Type__c\", 'Trustee')\r\nthen Cash_Amount\r\nend\r\n",
+          "precision" : 10,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA11" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA10" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "b3_Trustee_Expendable_Restricted_Donors",
+          "label" : "3b. Trustee Expendable Restricted Donors",
+          "formulaExpression" : "case \r\nwhen \"Designation.ucinn_ascendv2__Areas_of_Giving_CASE_Type__c\"='Expendable Restricted' and array_contains(\"Accountand.ucinn_ascendv2__Contact_Type__c\", 'Trustee')\r\nthen Constituent_or_Account_Id\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "DROP_FIELDS1" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA36" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Empty" ]
+        }
+      }
+    },
+    "FORMULA15" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA11" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "a4_Non_Reunion_Annual_Fund_Donors",
+          "label" : "4a. Non Reunion Annual Fund Donors",
+          "formulaExpression" : "case \r\nwhen \r\nIs_in_Reunion_Year is null\r\nand Is_Alumni is not null \r\nthen Constituent_or_Account_Id \r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA23" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA15" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "a5_People_of_Color_Donors",
+          "label" : "5a. People of Color Donors",
+          "formulaExpression" : "case when \"EnrichFiel.Is_ISB_in_FY\" is not null and Is_Alumni is not null and \"Accountand.Is_People_of_Color\" is not null then Constituent_or_Account_Id end",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA36" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA23" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "G22_10_Years_Alumni_HF_Total",
+          "label" : "G22. 10 Years Alumni HF Total",
+          "formulaExpression" : "case \r\nwhen Is_10_Years_Alumni_HF_Donor is not null\r\nthen Cash_Amount\r\nend",
+          "precision" : 10,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "TO_MEASURE0" : {
+      "action" : "typeCast",
+      "sources" : [ "LOAD_DATASET2" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "HAM_Reunion_Year__c",
+          "newProperties" : {
+            "label" : "Reunion Year To Number",
+            "name" : "HAM_Reunion_Year__c_to_measure",
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 0,
+              "precision" : 18
+            }
+          }
+        } ]
+      }
+    },
+    "FORMULA22" : {
+      "action" : "formula",
+      "sources" : [ "TO_MEASURE0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Is_People_of_Color",
+          "label" : "Is People of Color",
+          "formulaExpression" : "case \r\nwhen \r\narray_contains(ucinn_ascendv2__Ethnicity__c, 'Asian' )\r\nOR  array_contains(ucinn_ascendv2__Ethnicity__c , 'Black or African American')\r\nOR  array_contains(ucinn_ascendv2__Ethnicity__c , 'Hispanic') \r\nOR  array_contains(ucinn_ascendv2__Ethnicity__c , 'Multiracial')\r\nOR  array_contains(ucinn_ascendv2__Ethnicity__c , 'Native American or Alaska Native' )\r\nOR  array_contains(ucinn_ascendv2__Ethnicity__c , 'Native Hawaiian or Pacific Islander')\r\nTHEN Account_or_Contact_Id\r\n\r\nEND",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA12" : {
+      "action" : "formula",
+      "sources" : [ "JOIN1" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Empty",
+          "label" : "Empty",
+          "formulaExpression" : "''",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "DROP_FIELDS0" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA38" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Empty" ]
+        }
+      }
+    },
+    "FORMULA13" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA12" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Is_in_Reunion_Year",
+          "label" : "Is in Reunion Year",
+          "formulaExpression" : "case \r\nwhen \"Accountand.HAM_Reunion_Year__c_to_measure\">0 \r\nand Fiscal_Year > \"Accountand.HAM_Reunion_Year__c_to_measure\"\r\nand (Fiscal_Year-\"Accountand.HAM_Reunion_Year__c_to_measure\")%5=0\r\nthen Constituent_or_Account_Id\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA14" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA13" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Is_Alumni",
+          "label" : "Is Alumni",
+          "formulaExpression" : "case \r\nwhen \r\narray_contains(\"Accountand.ucinn_ascendv2__Contact_Type__c\", 'Hamilton Alumni')\r\nor array_contains(\"Accountand.ucinn_ascendv2__Contact_Type__c\", 'Hamilton Withdrawn')\r\nor array_contains(\"Accountand.ucinn_ascendv2__Contact_Type__c\", 'Kirkland Alumnae')\r\nthen Constituent_or_Account_Id\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA37" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA14" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Is_10_Years_Alumni_HF_Donor",
+          "label" : "Is 10 Years Alumni HF Donor",
+          "formulaExpression" : "case \r\nwhen Is_Alumni is not null \r\nand Fiscal_Year>\"Accountand.HAM_Reunion_Year__c_to_measure\" \r\nand Fiscal_Year-\"Accountand.HAM_Reunion_Year__c_to_measure\"<=10 \r\nand contains(\"Designation.ucinn_ascendv2__Areas_of_Giving_CASE_Type__c\", 'Hamilton Fund')\r\nthen Constituent_or_Account_Id\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA38" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA37" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Is_10_Years_Alumni_Donor",
+          "label" : "Is 10 Years Alumni Donor",
+          "formulaExpression" : "case \r\nwhen Is_Alumni is not null \r\nand Fiscal_Year>\"Accountand.HAM_Reunion_Year__c_to_measure\" \r\nand Fiscal_Year-\"Accountand.HAM_Reunion_Year__c_to_measure\"<=10 \r\nthen Constituent_or_Account_Id\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "LOAD_DATASET3" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Campaign.HAM_Fiscal_Year__c", "Campaign.Name", "Contact.Id" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Campaign Member",
+          "name" : "Campaign_Member"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "FILTER1" : {
+      "action" : "filter",
+      "sources" : [ "LOAD_DATASET3" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "Campaign.Name",
+          "operator" : "CONTAINS",
+          "operands" : [ "ISB" ]
+        } ]
+      }
+    },
+    "FORMULA16" : {
+      "action" : "formula",
+      "sources" : [ "JOIN2" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Is_ISB_in_FY",
+          "label" : "Is ISB in FY",
+          "formulaExpression" : "\"Contact.Id\"",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA17" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA16" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Key_of_Id_and_FY",
+          "label" : "Key of Id and FY",
+          "formulaExpression" : "concat(\"Contact.Id\",'-',\"Campaign.HAM_Fiscal_Year__c\")",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "DROP_FIELDS2" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA17" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "SELECT",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Key_of_Id_and_FY", "Is_ISB_in_FY", "EnrichFiel.Is_People_of_Color" ]
+        }
+      }
+    },
+    "FORMULA18" : {
+      "action" : "formula",
+      "sources" : [ "JOIN0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Key_of_Id_and_FY",
+          "label" : "Key of Id and FY",
+          "formulaExpression" : "concat(Constituent_or_Account_Id,'-',Fiscal_Year)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "JOIN1" : {
+      "action" : "join",
+      "sources" : [ "FORMULA18", "DROP_FIELDS2" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "EnrichFiel.Campaign.HAM_Fiscal_Year__c", "EnrichFiel.Campaign.Name", "EnrichFiel.Contact.Id", "EnrichFiel.Key_of_Id_and_FY" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Key_of_Id_and_FY" ],
+        "rightQualifier" : "EnrichFiel",
+        "rightKeys" : [ "Key_of_Id_and_FY" ]
+      }
+    },
+    "OUTPUT1" : {
+      "action" : "save",
+      "sources" : [ "DROP_FIELDS3" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "ISB For Staff Report",
+          "name" : "ISB_For_Staff_Report",
+          "folderName" : "SharedApp"
+        },
+        "dateConfigurationName" : "July_Fiscal_Year",
+        "measuresToCurrencies" : [ ]
+      }
+    },
+    "JOIN2" : {
+      "action" : "join",
+      "sources" : [ "FILTER1", "FORMULA22" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "EnrichFiel.Account_or_Contact_Id", "EnrichFiel.HAM_Reunion_Year__c", "EnrichFiel.ucinn_ascendv2__Primary_Contact_Type__c" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Contact.Id" ],
+        "rightQualifier" : "EnrichFiel",
+        "rightKeys" : [ "Account_or_Contact_Id" ]
+      }
+    },
+    "FORMULA20" : {
+      "action" : "formula",
+      "sources" : [ "JOIN7" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Is_in_Reunion_Year",
+          "label" : "Is in Reunion Year",
+          "formulaExpression" : "case \r\nwhen \"EnrichFiel.HAM_Reunion_Year__c_to_measure\">0 \r\nand \"Campaign.HAM_Fiscal_Year__c\" > \"EnrichFiel.HAM_Reunion_Year__c_to_measure\"\r\nand (\"Campaign.HAM_Fiscal_Year__c\"-\"EnrichFiel.HAM_Reunion_Year__c_to_measure\")%5=0\r\nthen \"Contact.Id\"\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA21" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA25" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Is_ISB_Non_Reunion",
+          "label" : "Is ISB Non-Reunion",
+          "formulaExpression" : "case \r\nwhen Is_in_Reunion_Year is null\r\nand Is_Alumni is not null\r\nthen \"Contact.Id\" end",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA24" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA21" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Is_ISB_People_of_Color",
+          "label" : "Is ISB People of Color",
+          "formulaExpression" : "case \r\nwhen \"EnrichFiel.Is_People_of_Color\" is not null \r\nand Is_Alumni is not null\r\nthen \"Contact.Id\" end",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA25" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA20" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Is_Alumni",
+          "label" : "Is Alumni",
+          "formulaExpression" : "case \r\nwhen \r\narray_contains(\"EnrichFiel.ucinn_ascendv2__Contact_Type__c\", 'Hamilton Alumni')\r\nor array_contains(\"EnrichFiel.ucinn_ascendv2__Contact_Type__c\", 'Hamilton Withdrawn')\r\nor array_contains(\"EnrichFiel.ucinn_ascendv2__Contact_Type__c\", 'Kirkland Alumnae')\r\nthen \"Contact.Id\"\r\nend",
+          "precision" : 10,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "DROP_FIELDS3" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES1" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Campaign.Name", "Contact.Id", "EnrichFiel.ucinn_ascendv2__Ethnicity__c", "EnrichFiel.ucinn_ascendv2__Contact_Type__c", "EnrichFiel.HAM_Reunion_Year__c_to_measure", "EnrichFiel.Is_People_of_Color", "Key_of_Id_and_FY", "Aggregatef.SUM_Cash_Amount", "EnrichFiel1.Is_LYBUNT", "EnrichFiel2.SUM_Cash_Amount", "Is_in_Reunion_Year", "Is_Alumni", "Campaign.HAM_Fiscal_Year__c_to_measure" ]
+        }
+      }
+    },
+    "FORMULA32" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA24" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "G17_Number_of_LYBUNTS_in_ISB",
+          "label" : "G17. Number of LYBUNTS in ISB",
+          "formulaExpression" : "case \r\nwhen \"EnrichFiel1.Is_LYBUNT\" is not null \r\nand \"EnrichFiel.HAM_Reunion_Year__c_to_measure\"<=\"Campaign.HAM_Fiscal_Year__c\"\r\nthen \"Contact.Id\"\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA33" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA32" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "G18_LYBUNT_HF_Dollor",
+          "label" : "G18. LYBUNT HF $",
+          "formulaExpression" : "case when G17_Number_of_LYBUNTS_in_ISB is not null then \"EnrichFiel2.SUM_Cash_Amount\" end",
+          "precision" : 10,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES1" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA39" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Aggregatef.SUM_Cash_Amount",
+          "newProperties" : {
+            "label" : "Cash Amount in Campaign Year",
+            "name" : "Aggregatef.SUM_Cash_Amount"
+          }
+        } ]
+      }
+    },
+    "FORMULA39" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA33" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Is_10_Years_Alumni",
+          "label" : "Is 10 Years Alumni",
+          "formulaExpression" : "case \r\nwhen Is_Alumni is not null \r\nand \"Campaign.HAM_Fiscal_Year__c\">\"EnrichFiel.HAM_Reunion_Year__c_to_measure\"\r\nand \"Campaign.HAM_Fiscal_Year__c\"-\"EnrichFiel.HAM_Reunion_Year__c_to_measure\"<=10 \r\nthen \"Contact.Id\"\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "EXTRACT0" : {
+      "action" : "extractGrains",
+      "sources" : [ "JOIN1" ],
+      "parameters" : {
+        "grainExtractions" : [ ]
+      }
+    },
+    "AGGREGATE1" : {
+      "action" : "aggregate",
+      "sources" : [ "EXTRACT0" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "SUM_Cash_Amount",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        } ]
+      },
+      "parameters" : {
+        "aggregations" : [ {
+          "action" : "SUM",
+          "source" : "Cash_Amount",
+          "name" : "SUM_Cash_Amount",
+          "label" : "Cash Amount"
+        } ],
+        "groupings" : [ "Key_of_Id_and_FY", "Constituent_or_Account_Id", "Fiscal_Year" ],
+        "pivots" : [ ],
+        "nodeType" : "STANDARD"
+      }
+    },
+    "FORMULA26" : {
+      "action" : "formula",
+      "sources" : [ "AGGREGATE1" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Following_Year",
+          "label" : "Following Year",
+          "formulaExpression" : "Fiscal_Year+1",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "DROP_FIELDS4" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA27" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Key_of_Id_and_FY", "Fiscal_Year", "Following_Year", "SUM_Cash_Amount" ]
+        }
+      }
+    },
+    "FORMULA27" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA26" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Key_of_Id_and_Following_FY",
+          "label" : "Key of Id and Following FY",
+          "formulaExpression" : "concat(Constituent_or_Account_Id,'-',Following_Year)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "JOIN3" : {
+      "action" : "join",
+      "sources" : [ "DROP_FIELDS4", "AGGREGATE1" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Aggregatef.Key_of_Id_and_FY", "Aggregatef.Constituent_or_Account_Id", "Aggregatef.Fiscal_Year" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Key_of_Id_and_Following_FY" ],
+        "rightQualifier" : "Aggregatef",
+        "rightKeys" : [ "Key_of_Id_and_FY" ]
+      }
+    },
+    "FORMULA28" : {
+      "action" : "formula",
+      "sources" : [ "JOIN3" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Is_LYBUNT",
+          "label" : "Is LYBUNT",
+          "formulaExpression" : "case when \"Aggregatef.SUM_Cash_Amount\"=0 then Constituent_or_Account_Id end",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "DROP_FIELDS5" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA28" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Constituent_or_Account_Id", "Aggregatef.SUM_Cash_Amount" ]
+        }
+      }
+    },
+    "FORMULA31" : {
+      "action" : "formula",
+      "sources" : [ "JOIN2" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Key_of_Id_and_FY",
+          "label" : "Key of Id and FY",
+          "formulaExpression" : "concat(\"Contact.Id\",'-',\"Campaign.HAM_Fiscal_Year__c\")",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "JOIN5" : {
+      "action" : "join",
+      "sources" : [ "JOIN6", "DROP_FIELDS5" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "EnrichFiel1.Key_of_Id_and_Following_FY" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Key_of_Id_and_FY" ],
+        "rightQualifier" : "EnrichFiel1",
+        "rightKeys" : [ "Key_of_Id_and_Following_FY" ]
+      }
+    },
+    "JOIN6" : {
+      "action" : "join",
+      "sources" : [ "FORMULA31", "AGGREGATE1" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Aggregatef.Key_of_Id_and_FY", "Aggregatef.Constituent_or_Account_Id", "Aggregatef.Fiscal_Year" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Key_of_Id_and_FY" ],
+        "rightQualifier" : "Aggregatef",
+        "rightKeys" : [ "Key_of_Id_and_FY" ]
+      }
+    },
+    "FILTER2" : {
+      "action" : "filter",
+      "sources" : [ "JOIN1" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "Designation.ucinn_ascendv2__Areas_of_Giving_CASE_Type__c",
+          "operator" : "EQUAL",
+          "operands" : [ "Hamilton Fund Designated", "Hamilton Fund Unrestricted" ]
+        } ]
+      }
+    },
+    "EXTRACT1" : {
+      "action" : "extractGrains",
+      "sources" : [ "FILTER2" ],
+      "parameters" : {
+        "grainExtractions" : [ ]
+      }
+    },
+    "AGGREGATE3" : {
+      "action" : "aggregate",
+      "sources" : [ "EXTRACT1" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "SUM_Cash_Amount",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        } ]
+      },
+      "parameters" : {
+        "aggregations" : [ {
+          "action" : "SUM",
+          "source" : "Cash_Amount",
+          "name" : "SUM_Cash_Amount",
+          "label" : "Cash Amount"
+        } ],
+        "groupings" : [ "Key_of_Id_and_FY", "Constituent_or_Account_Id", "Fiscal_Year" ],
+        "pivots" : [ ],
+        "nodeType" : "STANDARD"
+      }
+    },
+    "FORMULA34" : {
+      "action" : "formula",
+      "sources" : [ "AGGREGATE3" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Following_Year",
+          "label" : "Following Year",
+          "formulaExpression" : "Fiscal_Year+1",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA35" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA34" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Key_of_Id_and_Following_FY",
+          "label" : "Key of Id and Following FY",
+          "formulaExpression" : "concat(Constituent_or_Account_Id,'-',Following_Year)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES2" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA35" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "SUM_Cash_Amount",
+          "newProperties" : {
+            "label" : "HF Cash Amount in Previous Year",
+            "name" : "SUM_Cash_Amount"
+          }
+        } ]
+      }
+    },
+    "DROP_FIELDS6" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES2" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Key_of_Id_and_FY", "Fiscal_Year", "Following_Year", "Constituent_or_Account_Id" ]
+        }
+      }
+    },
+    "JOIN7" : {
+      "action" : "join",
+      "sources" : [ "JOIN5", "DROP_FIELDS6" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "EnrichFiel2.Key_of_Id_and_Following_FY" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Key_of_Id_and_FY" ],
+        "rightQualifier" : "EnrichFiel2",
+        "rightKeys" : [ "Key_of_Id_and_Following_FY" ]
+      }
+    }
+  },
+  "ui" : {
+    "nodes" : {
+      "LOAD_DATASET0" : {
+        "label" : "Gift Credit and Payment",
+        "type" : "LOAD_DATASET",
+        "top" : 250.2,
+        "left" : 112,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "LOAD_DATASET2" : {
+        "label" : "Account and Contact Dataset",
+        "type" : "LOAD_DATASET",
+        "top" : 392.1,
+        "left" : 252,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "FILTER0" : {
+        "label" : "Filter Object",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 250.2,
+        "left" : 252
+      },
+      "JOIN0" : {
+        "label" : "Lookup Contact to Credit",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 252.8,
+        "left" : 391.9
+      },
+      "OUTPUT0" : {
+        "label" : "Output 0",
+        "type" : "OUTPUT",
+        "top" : 252.5,
+        "left" : 2351
+      },
+      "TRANSFORM0" : {
+        "label" : "Report Fields 1",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 252.5,
+        "left" : 2211,
+        "graph" : {
+          "FORMULA1" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "E2. Trustee All Purposes Donors"
+          },
+          "FORMULA2" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Empty"
+          },
+          "FORMULA3" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "E3. Trustee All Purposes $"
+          },
+          "FORMULA4" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "2a. Trustee Total Annual Fund $"
+          },
+          "FORMULA5" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "E4. Trustee Total Annual Fund Donors"
+          },
+          "FORMULA6" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "E7. Trustee Annual Fund Designated $"
+          },
+          "FORMULA7" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "2d. Trustee Annual Fund Designated Donors"
+          },
+          "FORMULA8" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "E5. Trustee Annual Fund Unrestricted $"
+          },
+          "FORMULA9" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "2f. Trustee Annual Fund Unrestricted Donors"
+          },
+          "FORMULA10" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "3a. Trustee Expendable Restricted $"
+          },
+          "FORMULA11" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "3b. Trustee Expendable Restricted Donors"
+          },
+          "DROP_FIELDS1" : {
+            "label" : "Drop Columns"
+          },
+          "FORMULA15" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "4a. Non Reunion Annual Fund Donors"
+          },
+          "FORMULA23" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "5a. People of Color Donors"
+          },
+          "FORMULA36" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "G22. 10 Years Alumni HF Total"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA3",
+          "target" : "FORMULA1"
+        }, {
+          "source" : "FORMULA2",
+          "target" : "FORMULA3"
+        }, {
+          "source" : "FORMULA1",
+          "target" : "FORMULA4"
+        }, {
+          "source" : "FORMULA4",
+          "target" : "FORMULA5"
+        }, {
+          "source" : "FORMULA5",
+          "target" : "FORMULA6"
+        }, {
+          "source" : "FORMULA6",
+          "target" : "FORMULA7"
+        }, {
+          "source" : "FORMULA7",
+          "target" : "FORMULA8"
+        }, {
+          "source" : "FORMULA8",
+          "target" : "FORMULA9"
+        }, {
+          "source" : "FORMULA9",
+          "target" : "FORMULA10"
+        }, {
+          "source" : "FORMULA10",
+          "target" : "FORMULA11"
+        }, {
+          "source" : "FORMULA11",
+          "target" : "FORMULA15"
+        }, {
+          "source" : "FORMULA15",
+          "target" : "FORMULA23"
+        }, {
+          "source" : "FORMULA23",
+          "target" : "FORMULA36"
+        }, {
+          "source" : "FORMULA36",
+          "target" : "DROP_FIELDS1"
+        } ]
+      },
+      "TRANSFORM1" : {
+        "label" : "Enrich Fields",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 392.8,
+        "left" : 391.9,
+        "graph" : {
+          "TO_MEASURE0" : {
+            "label" : "To Number"
+          },
+          "FORMULA22" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Is People of Color"
+          }
+        },
+        "connectors" : [ {
+          "source" : "TO_MEASURE0",
+          "target" : "FORMULA22"
+        } ]
+      },
+      "TRANSFORM2" : {
+        "label" : "Flags",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 252.5,
+        "left" : 2071,
+        "graph" : {
+          "FORMULA12" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Empty"
+          },
+          "DROP_FIELDS0" : {
+            "label" : "Drop Columns"
+          },
+          "FORMULA13" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Is in Reunion Year"
+          },
+          "FORMULA14" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Is Alumni"
+          },
+          "FORMULA37" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Is 10 Years Alumni HF Donor"
+          },
+          "FORMULA38" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Is 10 Years Alumni Donor"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA12",
+          "target" : "FORMULA13"
+        }, {
+          "source" : "FORMULA13",
+          "target" : "FORMULA14"
+        }, {
+          "source" : "FORMULA14",
+          "target" : "FORMULA37"
+        }, {
+          "source" : "FORMULA38",
+          "target" : "DROP_FIELDS0"
+        }, {
+          "source" : "FORMULA37",
+          "target" : "FORMULA38"
+        } ]
+      },
+      "LOAD_DATASET3" : {
+        "label" : "Campaign Member",
+        "type" : "LOAD_DATASET",
+        "top" : 812.1,
+        "left" : 532,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "FILTER1" : {
+        "label" : "Filter ISB",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 811.8,
+        "left" : 672
+      },
+      "TRANSFORM3" : {
+        "label" : "Enrich Fields",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 391.9,
+        "left" : 671.3,
+        "graph" : {
+          "FORMULA16" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Is ISB in FY"
+          },
+          "FORMULA17" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Key of Id and FY"
+          },
+          "DROP_FIELDS2" : {
+            "label" : "Keep Columns"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA16",
+          "target" : "FORMULA17"
+        }, {
+          "source" : "FORMULA17",
+          "target" : "DROP_FIELDS2"
+        } ]
+      },
+      "TRANSFORM4" : {
+        "label" : "Key Id+FY",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 252,
+        "left" : 532,
+        "graph" : {
+          "FORMULA18" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Key of Id and FY"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "JOIN1" : {
+        "label" : "Lookup ISB to Credit",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 252.10000000000002,
+        "left" : 672
+      },
+      "OUTPUT1" : {
+        "label" : "Output 1",
+        "type" : "OUTPUT",
+        "top" : 671.9,
+        "left" : 2213.1
+      },
+      "JOIN2" : {
+        "label" : "Lookup Reunion to ISB",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 672.4,
+        "left" : 672.1
+      },
+      "TRANSFORM5" : {
+        "label" : "Enrich Fields 2",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 671.9,
+        "left" : 2073.1,
+        "graph" : {
+          "FORMULA20" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Is in Reunion Year"
+          },
+          "FORMULA21" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Is ISB Non-Reunion"
+          },
+          "FORMULA24" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Is ISB People of Color"
+          },
+          "FORMULA25" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Is Alumni"
+          },
+          "DROP_FIELDS3" : {
+            "label" : "Drop Columns"
+          },
+          "FORMULA32" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "G17. Number of LYBUNTS in ISB"
+          },
+          "FORMULA33" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "G18. LYBUNT HF $"
+          },
+          "EDIT_ATTRIBUTES1" : {
+            "label" : "Edit Attributes"
+          },
+          "FORMULA39" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Is 10 Years Alumni"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA21",
+          "target" : "FORMULA24"
+        }, {
+          "source" : "FORMULA25",
+          "target" : "FORMULA21"
+        }, {
+          "source" : "FORMULA20",
+          "target" : "FORMULA25"
+        }, {
+          "source" : "FORMULA24",
+          "target" : "FORMULA32"
+        }, {
+          "source" : "FORMULA32",
+          "target" : "FORMULA33"
+        }, {
+          "source" : "EDIT_ATTRIBUTES1",
+          "target" : "DROP_FIELDS3"
+        }, {
+          "source" : "FORMULA39",
+          "target" : "EDIT_ATTRIBUTES1"
+        }, {
+          "source" : "FORMULA33",
+          "target" : "FORMULA39"
+        } ]
+      },
+      "AGGREGATE0" : {
+        "label" : "Aggregate Cash Amount",
+        "description" : "",
+        "type" : "AGGREGATE",
+        "top" : 392.2,
+        "left" : 952.2,
+        "graph" : {
+          "EXTRACT0" : null,
+          "AGGREGATE1" : null
+        },
+        "connectors" : [ {
+          "source" : "EXTRACT0",
+          "target" : "AGGREGATE1"
+        } ]
+      },
+      "TRANSFORM6" : {
+        "label" : "Enrich Fields",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 532.2,
+        "left" : 1092.2,
+        "graph" : {
+          "FORMULA26" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Following Year"
+          },
+          "DROP_FIELDS4" : {
+            "label" : "Drop Columns"
+          },
+          "FORMULA27" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Key of Id and Following FY"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA27",
+          "target" : "DROP_FIELDS4"
+        }, {
+          "source" : "FORMULA26",
+          "target" : "FORMULA27"
+        } ]
+      },
+      "JOIN3" : {
+        "label" : "Lookup Cash Amount in Following Year",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 532.3,
+        "left" : 1232.2
+      },
+      "TRANSFORM7" : {
+        "label" : "Enrich LYBUNT",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 532.2,
+        "left" : 1372.2,
+        "graph" : {
+          "FORMULA28" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Is LYBUNT"
+          },
+          "DROP_FIELDS5" : {
+            "label" : "Drop Columns"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA28",
+          "target" : "DROP_FIELDS5"
+        } ]
+      },
+      "TRANSFORM8" : {
+        "label" : "Enrich Fields",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 672,
+        "left" : 812,
+        "graph" : {
+          "FORMULA31" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Key of Id and FY"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "JOIN5" : {
+        "label" : "Lookup LYBUNT to ISB",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 672,
+        "left" : 1372
+      },
+      "JOIN6" : {
+        "label" : "Lookup Cash Amount to ISB",
+        "description" : "If didn't use, cancel it.",
+        "type" : "JOIN",
+        "top" : 672,
+        "left" : 952.1
+      },
+      "FILTER2" : {
+        "label" : "Filter HF",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 392.3,
+        "left" : 1512.4
+      },
+      "AGGREGATE2" : {
+        "label" : "Aggregate HF",
+        "description" : "",
+        "type" : "AGGREGATE",
+        "top" : 392.2,
+        "left" : 1652,
+        "graph" : {
+          "EXTRACT1" : null,
+          "AGGREGATE3" : null
+        },
+        "connectors" : [ {
+          "source" : "EXTRACT1",
+          "target" : "AGGREGATE3"
+        } ]
+      },
+      "TRANSFORM9" : {
+        "label" : "Enrich Fields",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 531.6,
+        "left" : 1652,
+        "graph" : {
+          "FORMULA34" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Following Year"
+          },
+          "FORMULA35" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Key of Id and Following FY"
+          },
+          "EDIT_ATTRIBUTES2" : {
+            "label" : "Edit Attributes"
+          },
+          "DROP_FIELDS6" : {
+            "label" : "Drop Columns"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA35",
+          "target" : "EDIT_ATTRIBUTES2"
+        }, {
+          "source" : "EDIT_ATTRIBUTES2",
+          "target" : "DROP_FIELDS6"
+        }, {
+          "source" : "FORMULA34",
+          "target" : "FORMULA35"
+        } ]
+      },
+      "JOIN7" : {
+        "label" : "Lookup HF Cash Amount in Previous Year",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 672,
+        "left" : 1652.1
+      }
+    },
+    "connectors" : [ {
+      "source" : "LOAD_DATASET0",
+      "target" : "FILTER0"
+    }, {
+      "source" : "FILTER0",
+      "target" : "JOIN0"
+    }, {
+      "source" : "TRANSFORM1",
+      "target" : "JOIN0"
+    }, {
+      "source" : "TRANSFORM0",
+      "target" : "OUTPUT0"
+    }, {
+      "source" : "TRANSFORM2",
+      "target" : "TRANSFORM0"
+    }, {
+      "source" : "LOAD_DATASET2",
+      "target" : "TRANSFORM1"
+    }, {
+      "source" : "LOAD_DATASET3",
+      "target" : "FILTER1"
+    }, {
+      "source" : "JOIN2",
+      "target" : "TRANSFORM3"
+    }, {
+      "source" : "JOIN0",
+      "target" : "TRANSFORM4"
+    }, {
+      "source" : "TRANSFORM4",
+      "target" : "JOIN1"
+    }, {
+      "source" : "TRANSFORM3",
+      "target" : "JOIN1"
+    }, {
+      "source" : "FILTER1",
+      "target" : "JOIN2"
+    }, {
+      "source" : "TRANSFORM1",
+      "target" : "JOIN2"
+    }, {
+      "source" : "JOIN7",
+      "target" : "TRANSFORM5"
+    }, {
+      "source" : "TRANSFORM5",
+      "target" : "OUTPUT1"
+    }, {
+      "source" : "JOIN1",
+      "target" : "AGGREGATE0"
+    }, {
+      "source" : "AGGREGATE0",
+      "target" : "TRANSFORM6"
+    }, {
+      "source" : "TRANSFORM6",
+      "target" : "JOIN3"
+    }, {
+      "source" : "AGGREGATE0",
+      "target" : "JOIN3"
+    }, {
+      "source" : "JOIN3",
+      "target" : "TRANSFORM7"
+    }, {
+      "source" : "JOIN1",
+      "target" : "TRANSFORM2"
+    }, {
+      "source" : "JOIN2",
+      "target" : "TRANSFORM8"
+    }, {
+      "source" : "JOIN6",
+      "target" : "JOIN5"
+    }, {
+      "source" : "TRANSFORM7",
+      "target" : "JOIN5"
+    }, {
+      "source" : "TRANSFORM8",
+      "target" : "JOIN6"
+    }, {
+      "source" : "AGGREGATE0",
+      "target" : "JOIN6"
+    }, {
+      "source" : "JOIN1",
+      "target" : "FILTER2"
+    }, {
+      "source" : "FILTER2",
+      "target" : "AGGREGATE2"
+    }, {
+      "source" : "AGGREGATE2",
+      "target" : "TRANSFORM9"
+    }, {
+      "source" : "JOIN5",
+      "target" : "JOIN7"
+    }, {
+      "source" : "TRANSFORM9",
+      "target" : "JOIN7"
+    } ],
+    "hiddenColumns" : [ ]
+  },
+  "runMode" : "full"
+}

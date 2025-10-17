@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>HAM_Colleague_Person_Status__c</fullName>
+    <description>This is used to identify an entity that is no longer a usable contact, but is stored for historical reasons. If there is no value in this field, the record is active.</description>
+    <label>HAM Colleague Person Status</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Unverified Death</fullName>
+                <default>false</default>
+                <label>Unverified Death</label>
+            </value>
+            <value>
+                <fullName>Merged Duplicate</fullName>
+                <default>false</default>
+                <label>Merged Duplicate</label>
+            </value>
+            <value>
+                <fullName>Inactive</fullName>
+                <default>false</default>
+                <label>Inactive</label>
+            </value>
+            <value>
+                <fullName>Deceased</fullName>
+                <default>false</default>
+                <label>Deceased</label>
+            </value>
+            <value>
+                <fullName>Lost</fullName>
+                <default>false</default>
+                <label>Lost</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

@@ -1,0 +1,121 @@
+<template>
+    <article class="slds-card slds-var-m-bottom_medium">
+        <div class="slds-card__header slds-grid">
+            <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                <div class="slds-media__figure">
+                    <span class="slds-icon_container slds-icon-standard-account" title="travel">
+                        <svg class="slds-icon slds-icon_small" aria-hidden="true">
+                            <use xlink:href="/_slds/icons/custom-sprite/svg/symbols.svg#custom31"></use>
+                        </svg>
+                        <span class="slds-assistive-text">travel</span>
+                    </span>
+                </div>
+                <div class="slds-media__body">
+                    <h2 class="slds-card__header-title">
+                        <a href="#" class="slds-card__header-link slds-truncate" title="travel">
+                            <span>Travel</span>
+                        </a>
+                    </h2>
+                </div>
+                <div class="slds-no-flex">
+                    <slot></slot>
+                </div>
+            </header>
+        </div>
+        <div class="slds-card__body slds-card__body_inner">
+            <div class="slds-p-around_medium">
+                <div class="slds-grid slds-wrap slds-gutters">
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                        <div class="slds-form-element">
+                            <lightning-combobox name="mode" value={mode} label="Mode of Travel" placeholder="Select Mode"
+                                options={modeOptions} onchange={handleInputChange} required="true"></lightning-combobox>
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                        <div lwc:if={isFlightOrTrain} class="slds-grid slds-wrap slds-gutters">
+                            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                                <div class="slds-form-element">
+                                    <lightning-input type="text" name="flightNumber" label="Flight Number:"
+                                        onchange={handleInputChange} value={flightNumber}></lightning-input>
+                                </div>
+                            </div>
+                            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                                <div class="slds-form-element">
+                                    <lightning-input type="text" name="trainNumber" label="Train number:"
+                                        onchange={handleInputChange} value={trainNumber}></lightning-input>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                        <div class="slds-form-element slds-grid">
+                            <lightning-textarea 
+                              max-length="255"
+                              name="sourceAddress" 
+                              label="Source Address" 
+                              placeholder="type here..."
+                              value={sourceAddress}
+                              onchange={handleInputChange}
+                              style="flex-grow: 1;"
+                            ></lightning-textarea>
+
+                            <lightning-button-icon 
+                                icon-name="utility:search"
+                                alternative-text="Search Address"
+                                onclick={showSearchAddresModal}
+                                title="Search Address"
+                                style="align-self: center;"
+                                class="slds-m-left_x-small"
+                                disabled={disableSearchSource}
+                                data-address-prop="sourceAddress"
+                            ></lightning-button-icon>
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                        <div class="slds-form-element slds-grid">
+                            <lightning-textarea 
+                              max-length="255"
+                              name="destinationAddress" 
+                              label="Destination Address" 
+                              placeholder="type here..."
+                              value={destinationAddress}
+                              onchange={handleInputChange}
+                              style="flex-grow: 1;"
+                            >
+                            </lightning-textarea>
+
+                            <lightning-button-icon 
+                                icon-name="utility:search"
+                                alternative-text="Search Address"
+                                onclick={showSearchAddresModal}
+                                title="Search Address"
+                                style="align-self: center;"
+                                class="slds-m-left_x-small"
+                                disabled={disableSearchDestination}
+                                data-address-prop="destinationAddress"
+                            ></lightning-button-icon>
+                        </div>
+                    </div>
+                    <div class="slds-p-around_medium slds-col slds-size_1-of-1 slds-medium-size_1-of-1">
+                        <div class="slds-grid slds-wrap slds-gutters">
+                            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                                <div class="slds-form-element">
+                                    <lightning-input type="datetime" name="travelStartDate" label="Start Date/Time:"
+                                        class="slds-input" onchange={handleInputChange} value={travelStartDate} required="true">
+                                    </lightning-input>
+                                </div>
+                            </div>
+                            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                                <div class="slds-form-element">
+                                    <lightning-input type="datetime" name="travelEndDate" label="End Date/Time:"
+                                        class="slds-input" onchange={handleInputChange} value={travelEndDate} required="true">
+                                    </lightning-input>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </article>
+</template>

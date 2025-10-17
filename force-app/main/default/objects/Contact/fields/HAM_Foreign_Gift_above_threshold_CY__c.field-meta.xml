@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>HAM_Foreign_Gift_above_threshold_CY__c</fullName>
+    <description>This field is used to flag any foreign gift that are above the threshold the last calendar year (1st Jan to 31st Dec).</description>
+    <formula>IF( AND(HAM_Hard_Credit_Current_Calendar_Year__c &gt; 50000,  HAM_Is_Foreign_Entity__c ), TRUE, FALSE)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <inlineHelpText>This field is used to flag any foreign gift that are above the threshold this current calendar year (1st Jan &apos;24 to 31st Dec &apos;24).
+Last Year Value: $50K</inlineHelpText>
+    <label>HAM Foreign Gift above threshold CY</label>
+    <type>Checkbox</type>
+</CustomField>

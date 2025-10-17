@@ -1,0 +1,284 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>60.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <decisions>
+        <name>Check_for_Prospect</name>
+        <label>Check for Prospect</label>
+        <locationX>501</locationX>
+        <locationY>539</locationY>
+        <defaultConnector>
+            <targetReference>Update_Primary_Constituent_Is_a_Prospect</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Is a Prospect</defaultConnectorLabel>
+        <rules>
+            <name>Is_not_a_Prospect</name>
+            <conditionLogic>1 AND ( 2 OR 3)</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.HAM_Status__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Current</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.HAM_Stage__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Not a Prospect Ever</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.HAM_Stage__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Not a Prospect Now</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_Primary_Constituent_Is_not_a_Prospect</targetReference>
+            </connector>
+            <label>Is not a Prospect</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>check_for_Spouse</name>
+        <label>check for Spouse</label>
+        <locationX>446</locationX>
+        <locationY>1163</locationY>
+        <defaultConnectorLabel>No Spouse</defaultConnectorLabel>
+        <rules>
+            <name>has_Spouse</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.ucinn_ascendv2__Account__r.ucinn_ascendv2__Primary_Contact__r.ucinn_ascendv2__Preferred_Spouse__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_Spose_record</targetReference>
+            </connector>
+            <label>has Spouse</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Has_Contact</name>
+        <label>Has Contact</label>
+        <locationX>248</locationX>
+        <locationY>947</locationY>
+        <defaultConnector>
+            <targetReference>Update_Account_s_Constituent_Details</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Update the organization&apos;s Primary Constituent</defaultConnectorLabel>
+        <rules>
+            <name>Update_the_constitutent</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.ucinn_ascendv2__Contact__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_Contact_Details</targetReference>
+            </connector>
+            <label>Update the constitutent</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Has_the_asset_changed</name>
+        <label>Has the asset changed</label>
+        <locationX>501</locationX>
+        <locationY>839</locationY>
+        <defaultConnectorLabel>Do not update asset</defaultConnectorLabel>
+        <rules>
+            <name>Update_Asset</name>
+            <conditionLogic>or</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.HAM_Total_Found_Assets__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Has_Contact</targetReference>
+            </connector>
+            <label>Update Asset</label>
+        </rules>
+    </decisions>
+    <description>Update the rating on the org overview to be the most recent current major gift wealth rating on this organization.</description>
+    <environments>Default</environments>
+    <interviewLabel>HAM Update Current Overview Rating {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>HAM Update Current Overview Rating &amp; not a prospect</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordLookups>
+        <name>Get_Rating_Records</name>
+        <label>Get Rating Records</label>
+        <locationX>501</locationX>
+        <locationY>323</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Update_Org_Overview_Rating</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>ucinn_ascendv2__Account__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.ucinn_ascendv2__Account__r.Id</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>HAM_Status__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Current</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>ucinn_ascendv2__Type__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Major Gift Rating</stringValue>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>ucinn_ascendv2__Wealth_Rating__c</object>
+        <sortField>HAM_Start_Date__c</sortField>
+        <sortOrder>Desc</sortOrder>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordUpdates>
+        <description>This element will update the primary constituent on organization</description>
+        <name>Update_Account_s_Constituent_Details</name>
+        <label>Update Account&apos;s Constituent Details</label>
+        <locationX>446</locationX>
+        <locationY>1055</locationY>
+        <connector>
+            <targetReference>check_for_Spouse</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>HAM_Total_Estimated_Assets__c</field>
+            <value>
+                <elementReference>$Record.HAM_Total_Found_Assets__c</elementReference>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record.ucinn_ascendv2__Account__r.ucinn_ascendv2__Primary_Contact__r</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Update_Contact_Details</name>
+        <label>Update Contact Details</label>
+        <locationX>50</locationX>
+        <locationY>1055</locationY>
+        <inputAssignments>
+            <field>HAM_Total_Estimated_Assets__c</field>
+            <value>
+                <elementReference>$Record.HAM_Total_Found_Assets__c</elementReference>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record.ucinn_ascendv2__Contact__r</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Update_Org_Overview_Rating</name>
+        <label>Update Org Overview Rating</label>
+        <locationX>501</locationX>
+        <locationY>431</locationY>
+        <connector>
+            <targetReference>Check_for_Prospect</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>ucinn_ascendv2__Wealth_Rating__c</field>
+            <value>
+                <elementReference>Get_Rating_Records.ucinn_ascendv2__Wealth_Rating__c</elementReference>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record.ucinn_ascendv2__Account__r</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Update_Primary_Constituent_Is_a_Prospect</name>
+        <label>Update Primary Constituent Is a Prospect</label>
+        <locationX>633</locationX>
+        <locationY>647</locationY>
+        <connector>
+            <targetReference>Has_the_asset_changed</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>HAM_Not_a_Prospect__c</field>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record.ucinn_ascendv2__Account__r.ucinn_ascendv2__Primary_Contact__r</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Update_Primary_Constituent_Is_not_a_Prospect</name>
+        <label>Update Primary Constituent Is not a Prospect</label>
+        <locationX>369</locationX>
+        <locationY>647</locationY>
+        <connector>
+            <targetReference>Has_the_asset_changed</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>HAM_Not_a_Prospect__c</field>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record.ucinn_ascendv2__Account__r.ucinn_ascendv2__Primary_Contact__r</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <description>This element is used to update the asset estimation on spouse record</description>
+        <name>Update_Spose_record</name>
+        <label>Update Spose record</label>
+        <locationX>314</locationX>
+        <locationY>1271</locationY>
+        <inputAssignments>
+            <field>HAM_Total_Estimated_Assets__c</field>
+            <value>
+                <elementReference>$Record.HAM_Total_Found_Assets__c</elementReference>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record.ucinn_ascendv2__Account__r.ucinn_ascendv2__Primary_Contact__r.ucinn_ascendv2__Preferred_Spouse__r</inputReference>
+    </recordUpdates>
+    <start>
+        <locationX>375</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Get_Rating_Records</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>ucinn_ascendv2__Account__c</field>
+            <operator>IsNull</operator>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
+        </filters>
+        <object>ucinn_ascendv2__Wealth_Rating__c</object>
+        <recordTriggerType>CreateAndUpdate</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Active</status>
+</Flow>

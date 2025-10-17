@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObjectTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <caseValues>
+        <plural>false</plural>
+        <value>Promotion d&apos;élément de travail</value>
+    </caseValues>
+    <caseValues>
+        <plural>true</plural>
+        <value>Promotions d&apos;éléments de travail</value>
+    </caseValues>
+    <gender>Feminine</gender>
+    <nameFieldLabel>Nom de la promotion de l&apos;élément de trav</nameFieldLabel>
+    <startsWith>Consonant</startsWith>
+    <validationRules>
+        <errorMessage>Vous ne pouvez pas promouvoir un Work_Item vers un pipeline inactif.</errorMessage>
+        <name>sf_devops__No_Promotion_to_Inactive_Pipeline</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Un Work_Item membre d&apos;un Change_Bundle ne peut pas être promu en Pipeline_Stage.</errorMessage>
+        <name>sf_devops__Promoted_And_Installed</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Un Work_Item ne peut pas être promu en Pipeline_Stage avec version.</errorMessage>
+        <name>sf_devops__Promoted_To_Versioned</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Un élément de travail ne peut pas être promu s&apos;il n&apos;a pas été Approuvé.</errorMessage>
+        <name>sf_devops__Promoted_Without_Approval</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Un élément de travail peut être promu en étape uniquement dans le même Projet.</errorMessage>
+        <name>sf_devops__Promoted_Wrong_Project</name>
+    </validationRules>
+</CustomObjectTranslation>

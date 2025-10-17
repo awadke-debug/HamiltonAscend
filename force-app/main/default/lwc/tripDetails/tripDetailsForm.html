@@ -1,0 +1,36 @@
+<template>
+    <div style="display: flex; justify-content: center;">
+        <lightning-record-picker 
+          label="Trip Details"
+          placeholder="type here..."
+          object-api-name="HAM_Trip_Details__c"
+          style="width: 50%;"
+          value={tripDetailId}
+          onchange={handleRecordChange}
+          display-info={tripPickerDisplayInfo}
+          matching-info={tripPickerMatchingInfo}
+        ></lightning-record-picker>
+    </div>
+    <div class="slds-m-top_medium slds-m-bottom_x-large">
+        <div class="slds-p-around_medium lgc-bg">
+            <lightning-input type="text" label="Name:" name="tripDetailsName" value={tripDetailsName} onchange={handleInputChange}></lightning-input>
+        </div>
+        <div class="slds-p-around_medium">
+            <div class="slds-grid slds-wrap slds-gutters">
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                    <div class="slds-form-element">
+                        <lightning-input type="datetime" name="tripDetailsStartDate" value={tripDetailsStartDate} label="Start Date/Time:" onchange={handleInputChange} class="slds-input">
+                        </lightning-input>
+                    </div>
+                </div>
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                    <div class="slds-form-element">
+                        <lightning-input type="datetime" name="tripDetailsEndDate" value={tripDetailsEndDate} label="End Date/Time:" onchange={handleInputChange} class="slds-input">
+                        </lightning-input>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</template>

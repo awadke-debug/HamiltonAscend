@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>HAM_Phone_and_Type__c</fullName>
+    <externalId>false</externalId>
+    <formula>IF(NOT(ISBLANK( TEXT(ucinn_ascendv2__Preferred_Phone_Type__c ))),HAM_Formatted_Phone__c + &apos; (&apos; + TEXT(ucinn_ascendv2__Preferred_Phone_Type__c) + &apos;)&apos;,HAM_Formatted_Phone__c)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Phone and Type</label>
+    <required>false</required>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

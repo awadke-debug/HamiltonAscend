@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>64.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <decisions>
+        <name>Has_Primary_constituent_type_changed</name>
+        <label>Has Primary constituent type changed</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>No - Primary Type not changed</defaultConnectorLabel>
+        <rules>
+            <name>Yes_Primary_type_changed</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.ucinn_ascendv2__Primary_Contact_Type__c</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Is_Incoming_Parent</targetReference>
+            </connector>
+            <label>Yes - Primary type changed</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Is_Incoming_Parent</name>
+        <label>Is Incoming Parent?</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>updatedfromIncomingParenttoanother</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Not an Incoming parent</defaultConnectorLabel>
+        <rules>
+            <name>Yes_Incoming_Parent</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.ucinn_ascendv2__Primary_Contact_Type__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Incoming Parent</stringValue>
+                </rightValue>
+            </conditions>
+            <doesRequireRecordChangedToMeetCriteria>true</doesRequireRecordChangedToMeetCriteria>
+            <label>Yes - Incoming Parent</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>updatedfromIncomingParenttoanother</name>
+        <label>updated from Incoming Parent to another</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Outcome_1_of_Decision_3</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record__Prior.ucinn_ascendv2__Primary_Contact_Type__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Incoming Parent</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.ucinn_ascendv2__Primary_Contact_Type__c</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <stringValue>Incoming Parent</stringValue>
+                </rightValue>
+            </conditions>
+            <doesRequireRecordChangedToMeetCriteria>true</doesRequireRecordChangedToMeetCriteria>
+            <label>Outcome 1 of Decision 3</label>
+        </rules>
+    </decisions>
+    <description>Automatic Service Indicators to Incoming Parents</description>
+    <environments>Default</environments>
+    <interviewLabel>HAM a {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>HAM handle Service Indicators to Incoming Parents</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <start>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Has_Primary_constituent_type_changed</targetReference>
+        </connector>
+        <doesRequireRecordChangedToMeetCriteria>true</doesRequireRecordChangedToMeetCriteria>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>ucinn_ascendv2__Primary_Contact_Type__c</field>
+            <operator>IsNull</operator>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
+        </filters>
+        <object>Contact</object>
+        <recordTriggerType>CreateAndUpdate</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Draft</status>
+</Flow>

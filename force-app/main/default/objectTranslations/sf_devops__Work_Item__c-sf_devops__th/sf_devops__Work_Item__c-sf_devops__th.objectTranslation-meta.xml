@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObjectTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <caseValues>
+        <plural>false</plural>
+        <value>รายการงาน</value>
+    </caseValues>
+    <nameFieldLabel>เลขที่่ของรายการงาน</nameFieldLabel>
+    <validationRules>
+        <errorMessage>ต้องไม่ตั้ง Development_Approved_By ของ Work_Item ถ้าไม่ได้อยู่ใน Development_Approved</errorMessage>
+        <name>sf_devops__Approved_By_Without_Approved</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>คุณต้องตั้ง Development_Approved_By เมื่อรายการงานนี้ได้รับอนุมัติ</errorMessage>
+        <name>sf_devops__Approved_Without_Approved_By</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>ไม่สามารถอนุมัติรายการงานโดยไม่มีการตรวจทาน</errorMessage>
+        <name>sf_devops__Approved_Without_Review</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>รายการงานต้องเป็นของโครงการเดียวกันกับบันเดิลการเปลี่ยนแปลง</errorMessage>
+        <name>sf_devops__Change_Bundle_Project</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>ไม่สามารถรวมรายการงาน ถ้าอยู่ในบันเดิล</errorMessage>
+        <name>sf_devops__Combined_Bundled</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>ไม่สามารถรวมรายการงาน ถ้าไม่ได้อ้างอิงรายการงานที่จะรวมด้วยกัน</errorMessage>
+        <name>sf_devops__Combined_Not_Combined_With</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>ไม่สามารถรวมรายการงาน ถ้ายังไม่เคยเลื่อนระดับ</errorMessage>
+        <name>sf_devops__Combined_Not_Promoted</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>รายการงานต้องไม่ตั้ง Combined_With ถ้าไม่ได้อยู่ในสถานะรวมแล้ว</errorMessage>
+        <name>sf_devops__Combined_With_Not_Combined</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>รายการงานต้องไม่ตั้ง Combined_With เป็นรายการงานที่ไม่ได้ดำเนินการรวม</errorMessage>
+        <name>sf_devops__Combined_With_Not_Survivor</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>ค่าที่เป็นไปได้สำหรับ Concluded_c คือ : CLOSED, NEVERED, COMBINED หรือว่างเปล่า</errorMessage>
+        <name>sf_devops__Concluded_values</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>เมื่อตั้งแล้ว ห้ามเปลี่ยนฟิลด์ Concluded__c ของรายการงาน</errorMessage>
+        <name>sf_devops__Disable_Concluded</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>เมื่อตั้งแล้ว ห้ามปิดใช้งานฟิลด์ Concluded__c ของรายการงาน</errorMessage>
+        <name>sf_devops__Disable_Promoted</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>ไม่สามารถเชื่อมโยงรายการงานกับสภาพแวดล้อมที่หมดอายุแล้ว</errorMessage>
+        <name>sf_devops__Environment_Expired</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>รายการงานต้องเป็นของโครงการเดียวกันกับสภาพแวดล้อมของตนเอง</errorMessage>
+        <name>sf_devops__Environment_Project</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>ไม่สามารถอ้างอิงสภาพแวดล้อมที่ไม่รองรับการติดตามการเปลี่ยนแปลง</errorMessage>
+        <name>sf_devops__Environment_Requires_Tracking</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>เมื่อตั้งแล้ว ห้ามเปลี่ยนฟิลด์ Promoted_From_Environment__c ของรายการงาน</errorMessage>
+        <name>sf_devops__PromotedFromEnvironment_Changed</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>ไม่สามารถตั้งฟิลด์ Promoted_From_Environment__c ของรายการงานเป็นค่าที่แตกต่างจากค่าของ Environment__c และจะตั้งได้เมื่อตั้ง Environment__c เป็นค่าว่างเท่านั้น</errorMessage>
+        <name>sf_devops__PromotedFromEnvironment_Set</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Work_Item ต้องไม่เป็นสมาชิกของ Change_Bundle ถ้ายังไม่เคยเลื่อนขั้นมาก่อน</errorMessage>
+        <name>sf_devops__Promoted_And_Installed</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>คุณไม่สามารถสร้าง Work_Item ที่ตั้งค่าสถานะเป็นเลื่อนขั้นแล้ว</errorMessage>
+        <name>sf_devops__Promoted_On_Create</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>ไม่สามารถเลื่อนขั้น WorkItem ถ้ายังไม่ได้รับอนุมัติ</errorMessage>
+        <name>sf_devops__Promoted_Without_Approval</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>รายการงานต้องไม่ตั้งฟิลด์รีเบสสาขาของตน ถ้ายังไม่ได้เลื่อนระดับ ไม่ได้เป็นบันเดิล หรือสรุปแล้ว</errorMessage>
+        <name>sf_devops__Rebase_Branch</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Deprecated --></errorMessage>
+        <name>sf_devops__Rebase_Remote_Reference</name>
+    </validationRules>
+    <webLinks>
+        <label>เรียกดูใน DevOps Center</label>
+        <name>sf_devops__Devops_Center</name>
+    </webLinks>
+</CustomObjectTranslation>

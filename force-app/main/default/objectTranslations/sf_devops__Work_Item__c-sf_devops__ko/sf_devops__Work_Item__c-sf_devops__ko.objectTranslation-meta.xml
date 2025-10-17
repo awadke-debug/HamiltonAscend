@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObjectTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <caseValues>
+        <plural>false</plural>
+        <value>작업 항목</value>
+    </caseValues>
+    <nameFieldLabel>작업 항목 번호</nameFieldLabel>
+    <validationRules>
+        <errorMessage>Work_Item은(는) Development_Approved이(가) 아닌 경우 Development_Approved_By을(를) 설정할 수 없습니다.</errorMessage>
+        <name>sf_devops__Approved_By_Without_Approved</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>이 작업 항목이 승인되면 Development_Approved_By을(를) 설정해야 합니다.</errorMessage>
+        <name>sf_devops__Approved_Without_Approved_By</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>작업 항목은 검토 없이 승인될 수 없습니다.</errorMessage>
+        <name>sf_devops__Approved_Without_Review</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>작업 항목은 변경 번들과 동일한 프로젝트에 속해있어야 합니다.</errorMessage>
+        <name>sf_devops__Change_Bundle_Project</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>작업 항목이 번들에 있는 경우에는 결합할 수 없습니다.</errorMessage>
+        <name>sf_devops__Combined_Bundled</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>작업 항목이 결합된 작업 항목을 참조하지 않는 경우에는 결합할 수 없습니다.</errorMessage>
+        <name>sf_devops__Combined_Not_Combined_With</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>작업 항목이 승격된 적이 없는 경우에는 결합할 수 없습니다.</errorMessage>
+        <name>sf_devops__Combined_Not_Promoted</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>작업 항목이 결합됨 상태가 아닌 경우에는 Combined_With를 설정할 수 없습니다.</errorMessage>
+        <name>sf_devops__Combined_With_Not_Combined</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>작업 항목은 결합 작업을 수행하지 않은 작업 항목에 Combined_With를 설정할 수 없습니다.</errorMessage>
+        <name>sf_devops__Combined_With_Not_Survivor</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Concluded_c에 가능한 값은 CLOSED, NEVERED, COMBINED 또는 비어 있음입니다.</errorMessage>
+        <name>sf_devops__Concluded_values</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>작업 항목의 Concluded__c 필드는 설정한 후 변경할 수 없습니다.</errorMessage>
+        <name>sf_devops__Disable_Concluded</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>작업 항목의 Promoted__c 필드는 설정한 후 비활성화할 수 없습니다.</errorMessage>
+        <name>sf_devops__Disable_Promoted</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>작업 항목은 만료된 환경에 연결할 수 없습니다.</errorMessage>
+        <name>sf_devops__Environment_Expired</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>작업 항목은 환경과 동일한 프로젝트에 속해있어야 합니다.</errorMessage>
+        <name>sf_devops__Environment_Project</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>변경 추적을 지원하지 않는 환경은 참조할 수 없습니다.</errorMessage>
+        <name>sf_devops__Environment_Requires_Tracking</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>작업 항목의 Promoted_From_Environment__c 필드는 설정한 후 변경할 수 없습니다.</errorMessage>
+        <name>sf_devops__PromotedFromEnvironment_Changed</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>작업 항목의 Promoted_From_Environment__c 필드는 Environment__c의 값과 다른 값으로 설정할 수 없으며 Environment__c이(가) null로 설정된 경우에만 설정할 수 있습니다.</errorMessage>
+        <name>sf_devops__PromotedFromEnvironment_Set</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>Work_Item은(는) 승격된 적이 없을 경우 Change_Bundle의 구성원이 될 수 없습니다.</errorMessage>
+        <name>sf_devops__Promoted_And_Installed</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>승격됨 플래그가 설정된 Work_Item은(는) 만들 수 없습니다.</errorMessage>
+        <name>sf_devops__Promoted_On_Create</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>승인되지 않은 작업 항목은 승격될 수 없습니다.</errorMessage>
+        <name>sf_devops__Promoted_Without_Approval</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>작업 항목이 승격되지 않거나, 번들로 지정되거나, 완료된 경우에는 분기 다시 지정 필드를 설정할 수 없습니다.</errorMessage>
+        <name>sf_devops__Rebase_Branch</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Deprecated --></errorMessage>
+        <name>sf_devops__Rebase_Remote_Reference</name>
+    </validationRules>
+    <webLinks>
+        <label>DevOps Center에서 보기</label>
+        <name>sf_devops__Devops_Center</name>
+    </webLinks>
+</CustomObjectTranslation>

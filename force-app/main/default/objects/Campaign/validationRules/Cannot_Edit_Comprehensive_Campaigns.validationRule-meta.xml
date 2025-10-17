@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Cannot_Edit_Comprehensive_Campaigns</fullName>
+    <active>true</active>
+    <description>Prevents users who are not assigned the Comprehensive Campaign Manager permission from editing comprehensive campaign records.</description>
+    <errorConditionFormula>AND(
+ RecordType.DeveloperName =&apos;Comprehensive_Campaign&apos;,
+ NOT($Permission.HAM_Comprehensive_Campaign_Manager), 
+    OR(
+        ISCHANGED(Name),
+        ISCHANGED(IsActive),
+	ISCHANGED(Type),
+	ISCHANGED(ParentId),
+	ISCHANGED(RecordTypeId),
+        ISCHANGED(Status),
+        ISCHANGED(StartDate),
+        ISCHANGED(EndDate),
+        ISCHANGED(HAM_Dollars_Public_Goal__c)
+    )
+)</errorConditionFormula>
+    <errorMessage>Only Comprehensive Campaign Managers can edit comprehensive campaigns</errorMessage>
+</ValidationRule>

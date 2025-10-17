@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObjectTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <caseValues>
+        <plural>false</plural>
+        <value>Objectactiviteit</value>
+    </caseValues>
+    <caseValues>
+        <plural>true</plural>
+        <value>Objectactiviteiten</value>
+    </caseValues>
+    <gender>Feminine</gender>
+    <nameFieldLabel>Naam van objectactiviteit</nameFieldLabel>
+    <validationRules>
+        <errorMessage>De Change_Submission__c waarnaar wordt verwezen moet van hetzelfde Work_Item zijn.</errorMessage>
+        <name>sf_devops__Change_Submission_Work_Item</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>De Environment__c waarnaar wordt verwezen moet tot hetzelfde project behoren als de Object_Activity__c.</errorMessage>
+        <name>sf_devops__Environment_Project</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>De Parent_Activity__c waarnaar wordt verwezen moet tot hetzelfde project behoren als de Object_Activity__c.</errorMessage>
+        <name>sf_devops__Parent_Activity_Project</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>De Pipeline__c waarnaar wordt verwezen moet tot hetzelfde project behoren als de Object_Activity__c.</errorMessage>
+        <name>sf_devops__Pipeline_Project</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>De Target_Pipeline_Stage__c waarnaar wordt verwezen moet van hetzelfde Pipeline zijn.</errorMessage>
+        <name>sf_devops__Target_Stage_Pipeline</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage>De Work_Item__c waarnaar wordt verwezen moet tot hetzelfde project behoren als de Object_Activity__c.</errorMessage>
+        <name>sf_devops__Work_Item_Project</name>
+    </validationRules>
+</CustomObjectTranslation>

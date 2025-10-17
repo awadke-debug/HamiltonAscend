@@ -1,0 +1,311 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>64.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <constants>
+        <description>as of no this is single person, eventually it will be team.</description>
+        <name>OwnerIDForTaskAssignment</name>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>00GVG000006P9Sr2AK</stringValue>
+        </value>
+    </constants>
+    <decisions>
+        <name>C1_Last_Name_Blank</name>
+        <label>C1 Last Name Blank</label>
+        <locationX>768</locationX>
+        <locationY>434</locationY>
+        <defaultConnector>
+            <targetReference>C3_Contact</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>C1 Present</defaultConnectorLabel>
+        <rules>
+            <name>C1_Blank</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.conference360__Last_Name2__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>C2_Contact</targetReference>
+            </connector>
+            <label>C1 Blank</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>C2_Contact</name>
+        <label>C2 Contact</label>
+        <locationX>569</locationX>
+        <locationY>624</locationY>
+        <defaultConnector>
+            <targetReference>Update_Email_ID_to_Attendee_Record</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>C2 Present</defaultConnectorLabel>
+        <rules>
+            <name>C2_Blank</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.conference360__Contact__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>C3_Contact</targetReference>
+            </connector>
+            <label>C2 Blank</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>C3_Contact</name>
+        <label>C3 Contact</label>
+        <locationX>1050</locationX>
+        <locationY>619</locationY>
+        <defaultConnectorLabel>C3 Present</defaultConnectorLabel>
+        <rules>
+            <name>C3_Blank</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.conference360__Contact__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Get_All_Emails_from_Org</targetReference>
+            </connector>
+            <label>C3 Blank</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <description>Check if first and last name match</description>
+        <name>Check_if_First_and_Last_name_match</name>
+        <label>Check if First and Last name match</label>
+        <locationX>929</locationX>
+        <locationY>1420</locationY>
+        <defaultConnector>
+            <targetReference>Update_Contact_even_if_name_not_match</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>No match for First and Last name</defaultConnectorLabel>
+        <rules>
+            <name>First_and_Last_Name_match</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Loop_all_matched_email_results.ucinn_ascendv2__Contact__r.FirstName</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <elementReference>$Record.conference360__First_Name2__c</elementReference>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>Loop_all_matched_email_results.ucinn_ascendv2__Contact__r.LastName</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <elementReference>$Record.conference360__Last_Name2__c</elementReference>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_Attendee_Record</targetReference>
+            </connector>
+            <label>First and Last Name match</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Count_of_fetched_email_records</name>
+        <label>Count of fetched email records</label>
+        <locationX>1053</locationX>
+        <locationY>1010</locationY>
+        <defaultConnector>
+            <targetReference>Create_Task</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Count Null</defaultConnectorLabel>
+        <rules>
+            <name>C_0</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_All_Emails_from_Org</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Loop_all_matched_email_results</targetReference>
+            </connector>
+            <label>Count &gt; 0</label>
+        </rules>
+    </decisions>
+    <description>Ensures Attendee records are always linked to the right Contact and reduces manual cleanup. Tasks are created for the Events Team whenever the system cannot resolve conflicts automatically.</description>
+    <environments>Default</environments>
+    <interviewLabel>HAM Contact And Last Name Update {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>HAM Contact And Last Name Update</label>
+    <loops>
+        <description>From all email results loop for first name and last name match</description>
+        <name>Loop_all_matched_email_results</name>
+        <label>Loop all matched email results</label>
+        <locationX>936</locationX>
+        <locationY>1139</locationY>
+        <collectionReference>Get_All_Emails_from_Org</collectionReference>
+        <iterationOrder>Asc</iterationOrder>
+        <nextValueConnector>
+            <targetReference>Check_if_First_and_Last_name_match</targetReference>
+        </nextValueConnector>
+        <noMoreValuesConnector>
+            <targetReference>Create_Task</targetReference>
+        </noMoreValuesConnector>
+    </loops>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>FREE_FORM_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordCreates>
+        <description>Create a task to review Attendee record and assign to events team.</description>
+        <name>Create_Task</name>
+        <label>Create Task</label>
+        <locationX>1471</locationX>
+        <locationY>1259</locationY>
+        <inputAssignments>
+            <field>OwnerId</field>
+            <value>
+                <elementReference>OwnerIDForTaskAssignment</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Priority</field>
+            <value>
+                <stringValue>Normal</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Status</field>
+            <value>
+                <stringValue>Open</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Subject</field>
+            <value>
+                <stringValue>Other</stringValue>
+            </value>
+        </inputAssignments>
+        <object>Task</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordCreates>
+    <recordLookups>
+        <description>Get all matching emails from org with the attendee record</description>
+        <name>Get_All_Emails_from_Org</name>
+        <label>Get All Emails from Org</label>
+        <locationX>1060</locationX>
+        <locationY>825</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Count_of_fetched_email_records</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>ucinn_ascendv2__Email_Address__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.conference360__Email2__c</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>false</getFirstRecordOnly>
+        <object>ucinn_ascendv2__Email__c</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordUpdates>
+        <description>Match for first name and last name found so update that to attendee record</description>
+        <name>Update_Attendee_Record</name>
+        <label>Update Attendee Record</label>
+        <locationX>936</locationX>
+        <locationY>1628</locationY>
+        <inputAssignments>
+            <field>conference360__Contact__c</field>
+            <value>
+                <elementReference>Loop_all_matched_email_results.ucinn_ascendv2__Contact__r.Id</elementReference>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Update_Contact_even_if_name_not_match</name>
+        <label>Update Contact even if name not match</label>
+        <locationX>725</locationX>
+        <locationY>1286</locationY>
+        <connector>
+            <targetReference>Loop_all_matched_email_results</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>conference360__Contact__c</field>
+            <value>
+                <elementReference>Loop_all_matched_email_results.ucinn_ascendv2__Contact__r.Id</elementReference>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <description>Update Email ID to Attendee Record, fetch from Contact</description>
+        <name>Update_Email_ID_to_Attendee_Record</name>
+        <label>Update Email ID to Attendee Record</label>
+        <locationX>427</locationX>
+        <locationY>753</locationY>
+        <inputAssignments>
+            <field>conference360__Email2__c</field>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <start>
+        <locationX>650</locationX>
+        <locationY>48</locationY>
+        <connector>
+            <targetReference>C1_Last_Name_Blank</targetReference>
+        </connector>
+        <filterLogic>or</filterLogic>
+        <filters>
+            <field>conference360__Last_Name2__c</field>
+            <operator>IsNull</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <filters>
+            <field>conference360__Contact__c</field>
+            <operator>IsNull</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <object>conference360__Attendee__c</object>
+        <recordTriggerType>CreateAndUpdate</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Draft</status>
+    <variables>
+        <name>currentItem_Filter_final_collection</name>
+        <dataType>SObject</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>ucinn_ascendv2__Email__c</objectType>
+    </variables>
+</Flow>

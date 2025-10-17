@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObjectTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <caseValues>
+        <plural>false</plural>
+        <value>Deduction</value>
+    </caseValues>
+    <caseValues>
+        <plural>true</plural>
+        <value>Deductions</value>
+    </caseValues>
+    <layouts>
+        <layout>Deduction Layout</layout>
+        <sections>
+            <label><!-- Custom Links --></label>
+            <section>Custom Links</section>
+        </sections>
+        <sections>
+            <label><!-- Deduction Details --></label>
+            <section>Deduction Details</section>
+        </sections>
+    </layouts>
+    <startsWith>Consonant</startsWith>
+    <validationRules>
+        <errorMessage><!-- Deduction percentage field and amount derived from percent field are both required to complete this deduction information. --></errorMessage>
+        <name>ucinn_ascendv2__Amount_Derived_from_Percent_Required</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Either deduction amount or percentage is required.  Both fields cannot be blank. --></errorMessage>
+        <name>ucinn_ascendv2__Amount_or_Percent_Required</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- The end date for a deduction cannot be the same or older than the start date. --></errorMessage>
+        <name>ucinn_ascendv2__End_Date_Greater_Than_Start_Date</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- You can enter either deduction amount or deduction percentage and derived amount.  Entering both values is not allowed. --></errorMessage>
+        <name>ucinn_ascendv2__Enter_Either_Amount_or_Percent</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Select a frequency for the deduction. --></errorMessage>
+        <name>ucinn_ascendv2__Frequency_of_Deduction_Is_Required</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Select a source for the deduction. --></errorMessage>
+        <name>ucinn_ascendv2__Source_Is_Required</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Start date is required if source is not outright gift. --></errorMessage>
+        <name>ucinn_ascendv2__Start_Date_for_Non_Outright_Gifts</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Select a status for the deduction. --></errorMessage>
+        <name>ucinn_ascendv2__Status_Is_Required</name>
+    </validationRules>
+</CustomObjectTranslation>

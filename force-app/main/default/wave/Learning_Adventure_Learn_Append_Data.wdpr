@@ -1,0 +1,139 @@
+{
+  "version" : "53.0",
+  "nodes" : {
+    "LOAD_DATASET0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Industry", "Opportunity_Name", "Account_Type", "Account_Owner", "Product_Name", "Region", "Stage", "Close_Date_Year", "Close_Date_Month", "Amount", "Probability", "Order_Quantity" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Region_North_South",
+          "name" : "Region_North_South"
+        }
+      }
+    },
+    "APPEND0" : {
+      "action" : "appendV2",
+      "sources" : [ "LOAD_DATASET0", "LOAD_DATASET1" ],
+      "parameters" : {
+        "fieldMappings" : [ {
+          "top" : "Industry",
+          "bottom" : "Industry"
+        }, {
+          "top" : "Opportunity_Name",
+          "bottom" : "Opportunity_Name"
+        }, {
+          "top" : "Account_Type",
+          "bottom" : "Account_Type"
+        }, {
+          "top" : "Account_Owner",
+          "bottom" : "Account_Owner"
+        }, {
+          "top" : "Product_Name",
+          "bottom" : "Product_Name"
+        }, {
+          "top" : "Region",
+          "bottom" : "Region"
+        }, {
+          "top" : "Stage",
+          "bottom" : "Stage"
+        }, {
+          "top" : "Close_Date_Year",
+          "bottom" : "Close_Date_Year"
+        }, {
+          "top" : "Close_Date_Month",
+          "bottom" : "Close_Date_Month"
+        }, {
+          "top" : "Amount",
+          "bottom" : "Amount"
+        }, {
+          "top" : "Probability",
+          "bottom" : "Probability"
+        }, {
+          "top" : "Order_Quantity",
+          "bottom" : "Order_Quantity"
+        } ]
+      }
+    },
+    "LOAD_DATASET1" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Industry", "Opportunity_Name", "Account_Type", "Account_Owner", "Product_Name", "Region", "Stage", "Close_Date_Year", "Close_Date_Month", "Amount", "Probability", "Order_Quantity" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Region_East_West",
+          "name" : "Region_East_West"
+        }
+      }
+    },
+    "OUTPUT0" : {
+      "action" : "save",
+      "sources" : [ "APPEND0" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Learn - Append",
+          "name" : "Learn_Append",
+          "folderName" : "Learning_Adventure"
+        }
+      }
+    }
+  },
+  "ui" : {
+    "nodes" : {
+      "LOAD_DATASET0" : {
+        "label" : "Region_North",
+        "description" : "",
+        "type" : "LOAD_DATASET",
+        "top" : 112,
+        "left" : 112,
+        "graph" : {
+          "LOAD_DATASET0" : null
+        },
+        "connectors" : [ ],
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "APPEND0" : {
+        "label" : "Append",
+        "type" : "APPEND",
+        "top" : 112,
+        "left" : 252
+      },
+      "LOAD_DATASET1" : {
+        "label" : "Region_East_West",
+        "type" : "LOAD_DATASET",
+        "top" : 252,
+        "left" : 112,
+        "graph" : {
+          "LOAD_DATASET1" : null
+        },
+        "connectors" : [ ],
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "OUTPUT0" : {
+        "label" : "Output",
+        "type" : "OUTPUT",
+        "top" : 112,
+        "left" : 392
+      }
+    },
+    "connectors" : [ {
+      "source" : "LOAD_DATASET0",
+      "target" : "APPEND0"
+    }, {
+      "source" : "LOAD_DATASET1",
+      "target" : "APPEND0"
+    }, {
+      "source" : "APPEND0",
+      "target" : "OUTPUT0"
+    } ],
+    "hiddenColumns" : [ ]
+  }
+}

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObjectTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <caseValues>
+        <plural>false</plural>
+        <value>Application Approver</value>
+    </caseValues>
+    <caseValues>
+        <plural>true</plural>
+        <value>Application Approvers</value>
+    </caseValues>
+    <layouts>
+        <layout>Application Approver Layout</layout>
+        <sections>
+            <label><!-- Approver Information --></label>
+            <section>Approver Information</section>
+        </sections>
+        <sections>
+            <label><!-- Custom Links --></label>
+            <section>Custom Links</section>
+        </sections>
+    </layouts>
+    <startsWith>Consonant</startsWith>
+    <validationRules>
+        <errorMessage><!-- The Approval Context must be specified. --></errorMessage>
+        <name>agf__Approval_Conext_Must_Be_Specified</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- The Approval Context must be specified. --></errorMessage>
+        <name>agf__Approval_Context_Must_Be_Specified</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- When an Approver is specified, Approver Email must be blank or match the user&apos;s system-defined email. --></errorMessage>
+        <name>agf__Approver_Email_must_match_users_email</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- The Approver Role must be specified. --></errorMessage>
+        <name>agf__Approver_Role_Must_Be_Specified</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Approval Type must be specified. --></errorMessage>
+        <name>agf__Approver_Type_is_Required</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- You must specify an Approver for Approver Role &quot;Release Coverage&quot;. --></errorMessage>
+        <name>agf__Approver_must_be_specified_for_Coverage</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- You must specify either an Approver or an Email. --></errorMessage>
+        <name>agf__Approver_or_Email_must_be_specified</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Cloud must be blank unless the Approval Role is Cloud Leader --></errorMessage>
+        <name>agf__Cloud_must_be_blank_unless_Cloud_Leader</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Cloud must be specified when Approval Role is Cloud Leader --></errorMessage>
+        <name>agf__Cloud_must_be_specified_for_Cloud_Leader</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Executive Role must be specified when &quot;Executive&quot; Approver Role is selected. --></errorMessage>
+        <name>agf__ExecRole_Specified_For_Executive_Approvr</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Approver Role must be &quot;Executive&quot; when Executive Role is specified. --></errorMessage>
+        <name>agf__Exec_Role_Blank_unless_Executive_Role</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Approver Role must be &quot;Functional&quot; when Functional Team is specified. --></errorMessage>
+        <name>agf__Team_Blank_unless_Functional_ApproveRole</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Functional Team must be specified when &quot;Functional&quot; Approver Role is selected. --></errorMessage>
+        <name>agf__Team_Specified_Functional_Approver_Role</name>
+    </validationRules>
+</CustomObjectTranslation>

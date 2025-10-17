@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObjectTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <caseValues>
+        <plural>false</plural>
+        <value>Transaction</value>
+    </caseValues>
+    <caseValues>
+        <plural>true</plural>
+        <value>Transactions</value>
+    </caseValues>
+    <fieldSets>
+        <label><!-- Mass Capture VF --></label>
+        <name>bt_stripe__Mass_Capture_VF</name>
+    </fieldSets>
+    <fieldSets>
+        <label><!-- Virtual Terminal --></label>
+        <name>bt_stripe__Virtual_Terminal</name>
+    </fieldSets>
+    <layouts>
+        <layout>Charge Transaction Layout</layout>
+        <sections>
+            <label><!-- Custom Links --></label>
+            <section>Custom Links</section>
+        </sections>
+        <sections>
+            <label><!-- Fees --></label>
+            <section>Fees</section>
+        </sections>
+        <sections>
+            <label><!-- Metrics --></label>
+            <section>Metrics</section>
+        </sections>
+        <sections>
+            <label><!-- Payment Gateway Data --></label>
+            <section>Payment Gateway Data</section>
+        </sections>
+        <sections>
+            <label><!-- Payment Method --></label>
+            <section>Payment Method</section>
+        </sections>
+        <sections>
+            <label><!-- Related To --></label>
+            <section>Related To</section>
+        </sections>
+        <sections>
+            <label><!-- Status --></label>
+            <section>Status</section>
+        </sections>
+    </layouts>
+    <layouts>
+        <layout>Payout Transaction Layout</layout>
+        <sections>
+            <label><!-- Custom Links --></label>
+            <section>Custom Links</section>
+        </sections>
+        <sections>
+            <label><!-- Description --></label>
+            <section>Description</section>
+        </sections>
+        <sections>
+            <label><!-- Payout Details --></label>
+            <section>Payout Details</section>
+        </sections>
+        <sections>
+            <label><!-- Related To --></label>
+            <section>Related To</section>
+        </sections>
+        <sections>
+            <label><!-- Status --></label>
+            <section>Status</section>
+        </sections>
+        <sections>
+            <label><!-- Stripe Data --></label>
+            <section>Stripe Data</section>
+        </sections>
+    </layouts>
+    <layouts>
+        <layout>Transfer Transaction Layout</layout>
+        <sections>
+            <label><!-- Custom Links --></label>
+            <section>Custom Links</section>
+        </sections>
+        <sections>
+            <label><!-- Description --></label>
+            <section>Description</section>
+        </sections>
+        <sections>
+            <label><!-- Related To --></label>
+            <section>Related To</section>
+        </sections>
+        <sections>
+            <label><!-- Status --></label>
+            <section>Status</section>
+        </sections>
+        <sections>
+            <label><!-- Stripe Data --></label>
+            <section>Stripe Data</section>
+        </sections>
+    </layouts>
+    <recordTypes>
+        <description><!-- Auto-created by webhook. --></description>
+        <label><!-- Adjustment --></label>
+        <name>bt_stripe__Adjustment</name>
+    </recordTypes>
+    <recordTypes>
+        <description><!-- For Authorizations, Charges, Refunds, and Write Offs. --></description>
+        <label><!-- Charge --></label>
+        <name>bt_stripe__Charge</name>
+    </recordTypes>
+    <recordTypes>
+        <description><!-- For Payouts. --></description>
+        <label><!-- Payout --></label>
+        <name>bt_stripe__Payout</name>
+    </recordTypes>
+    <recordTypes>
+        <description><!-- For Transfers and Transfer Reversals. --></description>
+        <label><!-- Transfer --></label>
+        <name>bt_stripe__Transfer</name>
+    </recordTypes>
+    <startsWith>Consonant</startsWith>
+    <validationRules>
+        <errorMessage><!-- The currency on transaction does not match with the currency of the related Payment Gateway --></errorMessage>
+        <name>bt_stripe__Validate_transaction_currency</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Write off transactions must be marked as non-gateway --></errorMessage>
+        <name>bt_stripe__Validate_write_off_non_gateway</name>
+    </validationRules>
+    <webLinks>
+        <label><!-- Authorize --></label>
+        <name>bt_stripe__Authorize</name>
+    </webLinks>
+    <webLinks>
+        <label><!-- Cancel_Payment_Intent --></label>
+        <name>bt_stripe__Cancel_Payment_Intent</name>
+    </webLinks>
+    <webLinks>
+        <label><!-- Cancel_Payout --></label>
+        <name>bt_stripe__Cancel_Payout</name>
+    </webLinks>
+    <webLinks>
+        <label><!-- Charge --></label>
+        <name>bt_stripe__Charge</name>
+    </webLinks>
+    <webLinks>
+        <label><!-- ChargeList --></label>
+        <name>bt_stripe__ChargeList</name>
+    </webLinks>
+    <webLinks>
+        <label><!-- Create_Update_Payment_Method --></label>
+        <name>bt_stripe__Create_Update_Payment_Method</name>
+    </webLinks>
+    <webLinks>
+        <label><!-- Partial_Refund --></label>
+        <name>bt_stripe__Partial_Refund</name>
+    </webLinks>
+    <webLinks>
+        <label><!-- Partial_Reversal --></label>
+        <name>bt_stripe__Partial_Reversal</name>
+    </webLinks>
+    <webLinks>
+        <label><!-- Process --></label>
+        <name>bt_stripe__Process</name>
+    </webLinks>
+    <webLinks>
+        <label><!-- Refund --></label>
+        <name>bt_stripe__Refund</name>
+    </webLinks>
+    <webLinks>
+        <label><!-- Reverse --></label>
+        <name>bt_stripe__Reverse</name>
+    </webLinks>
+</CustomObjectTranslation>
