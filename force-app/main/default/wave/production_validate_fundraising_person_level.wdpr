@@ -1,0 +1,320 @@
+{
+  "version" : "60.0",
+  "nodes" : {
+    "LOAD_DATASET0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Person_Id", "SORT_NAME", "Committed_GIK_AGG", "Paid_to_Date_GIK_SUM", "Raised_Total_AGG", "All_Bequest_Intentions_SUM" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "dwh recognition donor raised total",
+          "name" : "dwh_recognition_donor_raised_total"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "LOAD_DATASET1" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Account and Contact Dataset",
+          "name" : "Account_and_Contact_Dataset"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN0" : {
+      "action" : "join",
+      "sources" : [ "LOAD_DATASET1", "LOAD_DATASET0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "OUTER",
+        "leftKeys" : [ "Account_or_Contact_External_Id" ],
+        "rightQualifier" : "dwhrecogni",
+        "rightKeys" : [ "Person_Id" ]
+      }
+    },
+    "FORMULA0" : {
+      "action" : "formula",
+      "sources" : [ "JOIN0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Fundraising_Diff",
+          "label" : "Fundraising Diff",
+          "formulaExpression" : "CASE\r\n    WHEN \"dwhrecogni.Raised_Total_AGG\" IS NULL AND Lifetime_Fundraising_Amount IS NULL THEN 0\r\n    WHEN \"dwhrecogni.Raised_Total_AGG\" IS NULL THEN 0 - Lifetime_Fundraising_Amount\r\n    WHEN Lifetime_Fundraising_Amount IS NULL THEN \"dwhrecogni.Raised_Total_AGG\"\r\n    ELSE \"dwhrecogni.Raised_Total_AGG\" - Lifetime_Fundraising_Amount\r\nEND",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA1" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA2" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Cash_Diff",
+          "label" : "Cash Diff",
+          "formulaExpression" : "CASE\r\n    WHEN \"dwhrecogni.Paid_to_Date_GIK_SUM\" IS NULL AND Lifetime_Cash_Amount IS NULL THEN 0\r\n    WHEN \"dwhrecogni.Paid_to_Date_GIK_SUM\" IS NULL THEN 0 - Lifetime_Cash_Amount\r\n    WHEN Lifetime_Cash_Amount IS NULL THEN \"dwhrecogni.Paid_to_Date_GIK_SUM\"\r\n    ELSE \"dwhrecogni.Paid_to_Date_GIK_SUM\" - Lifetime_Cash_Amount\r\nEND",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA2" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Fundraising_Diff_Abs_Value",
+          "label" : "Fundraising Diff Abs Value",
+          "formulaExpression" : "abs(Fundraising_Diff)",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA3" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA1" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Cash_Diff_Abs_Value",
+          "label" : "Cash Diff Abs Value",
+          "formulaExpression" : "abs(Cash_Diff)",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA4" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA3" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "fundraising_diff_range",
+          "label" : "fundraising diff range",
+          "formulaExpression" : "case \r\n    when Fundraising_Diff_Abs_Value=0\r\n    then 'a 0 Match'     \r\n    when Fundraising_Diff_Abs_Value<=1\r\n    then 'b 0-1'     \r\n    when Fundraising_Diff_Abs_Value<=5\r\n    then 'c 1-5'     \r\n    when Fundraising_Diff_Abs_Value<=10\r\n    then 'd 5-10' \r\n    else\r\n    'e 10+'\r\n end",
+          "precision" : 10,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA5" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA4" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Cash_Diff_Range",
+          "label" : "Cash Diff Range",
+          "formulaExpression" : "case \r\n    when Cash_Diff_Abs_Value=0\r\n    then 'a 0 Match'     \r\n    when Cash_Diff_Abs_Value<=1\r\n    then 'b 0-1'     \r\n    when Cash_Diff_Abs_Value<=5\r\n    then 'c 1-5'     \r\n    when Cash_Diff_Abs_Value<=10\r\n    then 'd 5-10' \r\n    else\r\n    'e 10+'\r\n end",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA6" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA5" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "ascend_flag",
+          "label" : "ascend flag",
+          "formulaExpression" : "CASE\r\n    WHEN ucinn_ascendv2__External_System_ID__c IS NULL THEN 'Not ascend'\r\n    ELSE 'ascend'\r\nEND",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA7" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA6" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "DWH_flag",
+          "label" : "DWH flag",
+          "formulaExpression" : "CASE\r\n    WHEN \"dwhrecogni.Person_Id\"\r\n    IS NULL THEN 'Not DWH'\r\n    ELSE 'DWH'\r\nEND",
+          "precision" : 10,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "OUTPUT0" : {
+      "action" : "save",
+      "sources" : [ "FORMULA7" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "production validate fundraising person level",
+          "name" : "production_validate_fundraising_person_level",
+          "folderName" : "SharedApp"
+        },
+        "measuresToCurrencies" : [ ]
+      }
+    }
+  },
+  "ui" : {
+    "nodes" : {
+      "LOAD_DATASET0" : {
+        "label" : "dwh recognition donor raised total",
+        "type" : "LOAD_DATASET",
+        "top" : 252.60000000000002,
+        "left" : 112.1,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "LOAD_DATASET1" : {
+        "label" : "Account and Contact Dataset",
+        "type" : "LOAD_DATASET",
+        "top" : 112.1,
+        "left" : 112.1,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN0" : {
+        "label" : "Join 0",
+        "type" : "JOIN",
+        "top" : 112,
+        "left" : 252
+      },
+      "TRANSFORM0" : {
+        "label" : "Transform 0",
+        "type" : "TRANSFORM",
+        "top" : 112,
+        "left" : 392,
+        "graph" : {
+          "FORMULA0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Formula"
+          },
+          "FORMULA1" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Cash Diff"
+          },
+          "FORMULA2" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Fundraising Diff Abs Value"
+          },
+          "FORMULA3" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Cash Diff Abs Value"
+          },
+          "FORMULA4" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Fundraising Diff Range"
+          },
+          "FORMULA5" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Cash Diff Range"
+          },
+          "FORMULA6" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "ascend flag"
+          },
+          "FORMULA7" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "DWH flag"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA2",
+          "target" : "FORMULA1"
+        }, {
+          "source" : "FORMULA0",
+          "target" : "FORMULA2"
+        }, {
+          "source" : "FORMULA1",
+          "target" : "FORMULA3"
+        }, {
+          "source" : "FORMULA3",
+          "target" : "FORMULA4"
+        }, {
+          "source" : "FORMULA4",
+          "target" : "FORMULA5"
+        }, {
+          "source" : "FORMULA5",
+          "target" : "FORMULA6"
+        }, {
+          "source" : "FORMULA6",
+          "target" : "FORMULA7"
+        } ]
+      },
+      "OUTPUT0" : {
+        "label" : "Output 0",
+        "type" : "OUTPUT",
+        "top" : 112,
+        "left" : 532
+      }
+    },
+    "connectors" : [ {
+      "source" : "LOAD_DATASET1",
+      "target" : "JOIN0"
+    }, {
+      "source" : "LOAD_DATASET0",
+      "target" : "JOIN0"
+    }, {
+      "source" : "JOIN0",
+      "target" : "TRANSFORM0"
+    }, {
+      "source" : "TRANSFORM0",
+      "target" : "OUTPUT0"
+    } ],
+    "hiddenColumns" : [ ]
+  },
+  "runMode" : "full"
+}

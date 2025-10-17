@@ -1,0 +1,44 @@
+.hamilton-header {
+    background-color: #002F86 !important; 
+    top: 0;
+    z-index: 1000;
+    width: 100%;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    font-family: 'Times New Roman', sans-serif; 
+}
+
+.hamilton-text-logo {
+    color: #FFFFFF; 
+    font-size: 48px; /* Adjust size to match image visually */
+    font-family: 'Times New Roman', sans-serif; 
+    text-decoration: none; 
+    /* line-height: 2;  */
+    display: inline-block; 
+    padding-left: 10px;  
+}
+
+
+/* Ensure responsiveness for grids and columns */
+@media (max-width: 768px) {
+    .hamilton-header .slds-grid {
+        flex-direction: row;
+        align-items: left; 
+        justify-content: center;
+    }
+    .hamilton-logo {
+        margin-bottom: 0.5rem;
+        justify-content: center;
+        align-items: center; 
+    }
+    .hamilton-text-logo {
+        font-size: 28px; /* Smaller font on mobile */
+        
+    }
+    .slds-col {
+        width: 100%; /* Ensure columns stack on mobile */
+        text-align: center; /* Center content in stacked columns */
+    }
+    .slds-grid_align-end {
+        justify-content: center; /* Center content when aligned to end on desktop */
+    }
+}

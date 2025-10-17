@@ -1,0 +1,139 @@
+{
+  "version" : "62.0",
+  "nodes" : {
+    "LOAD_DATASET26_copy0_copy0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Id", "ucinn_ascendv2__Designation_Detail__c", "ucinn_ascendv2__Amount_Paid_to_Date_Same_Designation__c", "ucinn_ascendv2__Amount_Paid_to_Date__c", "ucinn_ascendv2__G_L_Account__c", "ucinn_ascendv2__Opportunity__c", "ucinn_ascendv2__Payment_Amount__c", "ucinn_ascendv2__Post_to_G_L_Date__c", "ucinn_ascendv2__Transaction_ID__c", "ucinn_ascendv2__Opportunity_Stage__c", "ucinn_ascendv2__Session_Approved_Date_Formula__c", "ucinn_ascendv2__Tender_Type_Formula__c", "Name" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "ucinn_ascendv2__Payment__c",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "ucinn_ascendv2__Payment__c"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "LOAD_DATASET38_copy0_copy0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Id", "Name", "ucinn_ascendv2__Payment__c", "ucinn_ascendv2__Stock__c", "ucinn_ascendv2__Company_Name__c", "ucinn_ascendv2__Number_of_Shares_Formula__c", "ucinn_ascendv2__Payment_Amount_Formula__c", "CreatedDate" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "ucinn_ascendv2__Stock_Payment__c",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "ucinn_ascendv2__Stock_Payment__c"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "FILTER12_copy0_copy0" : {
+      "action" : "filter",
+      "sources" : [ "LOAD_DATASET38_copy0_copy0" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "ucinn_ascendv2__Payment__c",
+          "operator" : "IS_NOT_NULL",
+          "operands" : [ ]
+        } ]
+      }
+    },
+    "JOIN48_copy0_copy0" : {
+      "action" : "join",
+      "sources" : [ "LOAD_DATASET26_copy0_copy0", "FILTER12_copy0_copy0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Id" ],
+        "rightQualifier" : "stock",
+        "rightKeys" : [ "ucinn_ascendv2__Payment__c" ]
+      }
+    },
+    "OUTPUT5_copy0" : {
+      "action" : "save",
+      "sources" : [ "FILTER12_copy0_copy0" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "test_stock",
+          "name" : "test_stock"
+        },
+        "measuresToCurrencies" : [ ]
+      }
+    }
+  },
+  "ui" : {
+    "nodes" : {
+      "LOAD_DATASET26_copy0_copy0" : {
+        "label" : "ucinn_ascendv2__Payment__c",
+        "type" : "LOAD_DATASET",
+        "top" : 252.60000000000002,
+        "left" : 112,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "LOAD_DATASET38_copy0_copy0" : {
+        "label" : "ucinn_ascendv2__Stock_Payment__c",
+        "type" : "LOAD_DATASET",
+        "top" : 252.60000000000002,
+        "left" : 252,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "FILTER12_copy0_copy0" : {
+        "label" : "Remove null payments",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 112.60000000000002,
+        "left" : 252
+      },
+      "JOIN48_copy0_copy0" : {
+        "label" : "Join stock to payment",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 112.60000000000002,
+        "left" : 112
+      },
+      "OUTPUT5_copy0" : {
+        "label" : "Output 5",
+        "type" : "OUTPUT",
+        "top" : 112,
+        "left" : 392.9000000000001
+      }
+    },
+    "connectors" : [ {
+      "source" : "LOAD_DATASET38_copy0_copy0",
+      "target" : "FILTER12_copy0_copy0"
+    }, {
+      "source" : "LOAD_DATASET26_copy0_copy0",
+      "target" : "JOIN48_copy0_copy0"
+    }, {
+      "source" : "FILTER12_copy0_copy0",
+      "target" : "JOIN48_copy0_copy0"
+    }, {
+      "source" : "FILTER12_copy0_copy0",
+      "target" : "OUTPUT5_copy0"
+    } ],
+    "hiddenColumns" : [ ]
+  },
+  "runMode" : "full"
+}

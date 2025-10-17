@@ -1,0 +1,815 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RecordType xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Planned_Gift</fullName>
+    <active>true</active>
+    <businessProcess>Planned Gift</businessProcess>
+    <label>Planned Gift</label>
+    <picklistValues>
+        <picklist>ForecastCategoryName</picklist>
+        <values>
+            <fullName>Best Case</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Closed</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Commit</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Omitted</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Pipeline</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>HAM_Data_Source__c</picklist>
+        <values>
+            <fullName>Data Warehouse Integration</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>HR</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Handshake</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Interim Interface</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>MHC</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Marketing Cloud</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>NCOA</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>SIS</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Self Reported</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>SmartyStreets API</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>iWave</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>HAM_Trust_Annuity_Term__c</picklist>
+        <values>
+            <fullName>Life</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Number of Years</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>LeadSource</picklist>
+        <values>
+            <fullName>Advertisement</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Employee Referral</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>External Referral</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Other</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Partner</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Trade Show</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>Loss_Reason__c</picklist>
+        <values>
+            <fullName>Lost to Competitor</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>No Budget %2F Lost Funding</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>No Decision %2F Non-Responsive</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Other</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Price</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>Type</picklist>
+        <values>
+            <fullName>Charitable Gift Annuity</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Charitable Lead Trust</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Charitable Remainder Trust</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Charitable Remainder Unitrust</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Deferred Gift Annuities</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Donor Advised Fund</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Irrevocable Bequest Pledge</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Life Insurance</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Planned Gift Retirement Account</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Revocable Bequest Pledge</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>bt_stripe__Billing_Method__c</picklist>
+        <values>
+            <fullName>charge_automatically</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>send_invoice</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>bt_stripe__Prorate__c</picklist>
+        <values>
+            <fullName>No</fullName>
+            <default>true</default>
+        </values>
+        <values>
+            <fullName>Yes</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>bt_stripe__Proration_Behavior__c</picklist>
+        <values>
+            <fullName>Create Prorations</fullName>
+            <default>true</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>ucinn_ascendv2__Account_Type__c</picklist>
+        <values>
+            <fullName>Checking</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Savings</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>ucinn_ascendv2__Acknowledgement__c</picklist>
+        <values>
+            <fullName>Acknowledged</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Do Not Acknowledge</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Not Acknowledged</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>ucinn_ascendv2__Adjustment_Reason__c</picklist>
+        <values>
+            <fullName>Amount Change</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Appeal Code Change</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Cancelled</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Data entry error</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Designation change</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Donor request</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Expired credit card</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Gift Date Change</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Gift Type Change</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Insufficient funds</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Invalid credit card number</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Recognition Change</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Unsigned check</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Written Off</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>ucinn_ascendv2__Adjustment_Reason_v1__c</picklist>
+        <values>
+            <fullName>Amount Change</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Appeal Code Change</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Cancelled</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Data Entry Error</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Designation Change</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Donor Request</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Expired Credit Card</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Gift Date Change</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Gift Type Change</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Gift to Pledge Payment</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Insufficient Funds</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Invalid Credit Card Number</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Other</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Pledge Payment to Gift</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Recognition Change</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Unsigned Check</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Void</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Written Off</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>ucinn_ascendv2__Adjustment_Type__c</picklist>
+        <values>
+            <fullName>Gift Adjustment</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Pledge Adjustment</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Pledge Payment Adjustment</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Recurring Gift Adjustment</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>To Gift Adjustment</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>To Pledge Payment Adjustment</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>ucinn_ascendv2__Commitment_Type__c</picklist>
+        <values>
+            <fullName>Binding</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Conditional</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Regular</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Verbal %2F Phonathon</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>ucinn_ascendv2__Confirmation_Method__c</picklist>
+        <values>
+            <fullName>Email%2FOnline Confirmation</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Matching Form Received</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>ucinn_ascendv2__Frequency__c</picklist>
+        <values>
+            <fullName>Annual</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Bi-Weekly</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Monthly</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Quarterly</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Semi-Annual</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Weekly</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>ucinn_ascendv2__Operating_Entity_Currency_Iso_Code__c</picklist>
+        <values>
+            <fullName>AED</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>AUD</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>CAD</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>EUR</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>GBP</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>JPY</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>SGD</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>USD</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>ucinn_ascendv2__Payment_Type__c</picklist>
+        <values>
+            <fullName>American Express</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Credit Card</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Discover</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>MasterCard</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Visa</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>ucinn_ascendv2__Pledge_Reminder_Owner__c</picklist>
+        <values>
+            <fullName>Gift Officer</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Stewardship Team</fullName>
+            <default>true</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>ucinn_ascendv2__Pledge_Reminder_Preference__c</picklist>
+        <values>
+            <fullName>Email</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Email and Mail</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Mail</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Personal Visit</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Phone</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Send to Third Party</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>ucinn_ascendv2__SEC_Code__c</picklist>
+        <values>
+            <fullName>ARC</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>CBR</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>CCD</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>CIE</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>COR</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>CTX</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>MTE</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>PBR</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>POP</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>POS</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>PPD</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>RCK</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>TEL</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>WEB</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>ucinn_ascendv2__Status_In_External_Payment_Gateway__c</picklist>
+        <values>
+            <fullName>Cancelled</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Charged</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Void</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>ucinn_ascendv2__Sub_Type_1__c</picklist>
+        <values>
+            <fullName>Academic</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Cancer Center</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Hospital</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>School of Medicine</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>ucinn_ascendv2__Sub_Type_2__c</picklist>
+        <values>
+            <fullName>Academic</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Cancer Center</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Hospital</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>School of Medicine</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>ucinn_ascendv2__Sub_Type_3__c</picklist>
+        <values>
+            <fullName>Academic</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Cancer Center</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Hospital</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>School of Medicine</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>ucinn_ascendv2__Transaction_Currency_Iso_Code__c</picklist>
+        <values>
+            <fullName>AED</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>AUD</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>CAD</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>EUR</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>GBP</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>JPY</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>SGD</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>USD</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>ucinn_ascendv2__Unit__c</picklist>
+        <values>
+            <fullName>Alumni Association</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Athletics</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Libraries</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Office of the Provost</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Radio</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>School for Communications</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>School of Architecture</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>School of Art and Design</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>School of Business</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>School of Cinematic Arts</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>School of Dance</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>School of Dentistry</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>School of Dramatic Arts</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>School of Education</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>School of Engineering</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>School of Gerontology</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>School of Law</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>School of Medicine</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>School of Music</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>School of Pharmacy</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>School of Public Policy</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>School of Social Work</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>University Advancement</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>University Relations</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+</RecordType>

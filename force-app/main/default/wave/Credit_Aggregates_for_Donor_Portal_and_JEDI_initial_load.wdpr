@@ -1,0 +1,1880 @@
+{
+  "version" : "64.0",
+  "nodes" : {
+    "LOAD_DATASET0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Designation.ucinn_ascendv2__Acknowledgement_Description_Formula__c", "Fiscal_Year", "ucinn_ascendv2__Credit_Date_Formula__c", "ucinn_ascendv2__Contact__c", "HAM_Campaign_Priority__c", "Constituent_or_Account_Id", "Cash_Amount", "Fundraising_Amount" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Gift Credit and Payment",
+          "name" : "Gift_Credit_and_Payment"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "EXTRACT0" : {
+      "action" : "extractGrains",
+      "sources" : [ "EDIT_ATTRIBUTES123" ],
+      "parameters" : {
+        "grainExtractions" : [ ]
+      }
+    },
+    "AGGREGATE1" : {
+      "action" : "aggregate",
+      "sources" : [ "EXTRACT0" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "Paid",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        }, {
+          "name" : "Pledged",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        } ]
+      },
+      "parameters" : {
+        "aggregations" : [ {
+          "action" : "SUM",
+          "source" : "Cash_Amount",
+          "name" : "Paid",
+          "label" : "Paid"
+        }, {
+          "action" : "SUM",
+          "source" : "Fundraising_Amount",
+          "name" : "Pledged",
+          "label" : "Pledged"
+        } ],
+        "groupings" : [ "Constituent_or_Account_Id", "Purpose" ],
+        "pivots" : [ ],
+        "nodeType" : "STANDARD"
+      }
+    },
+    "EDIT_ATTRIBUTES123" : {
+      "action" : "schema",
+      "sources" : [ "FILTER56" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Designation.ucinn_ascendv2__Acknowledgement_Description_Formula__c",
+          "newProperties" : {
+            "label" : "Purpose",
+            "name" : "Purpose",
+            "typeProperties" : {
+              "type" : "TEXT",
+              "length" : 32000
+            }
+          }
+        } ]
+      }
+    },
+    "LOAD_DATASET0_copy0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Constituent_or_Account_Id", "ucinn_ascendv2__Contact__c", "opp_stage.Opportunity.StageName", "Designation.ucinn_ascendv2__Designation_Name__c", "SUM_Fundraising_Amount", "SUM_Cash_Amount", "Pledge_Balance" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Pledge Balance",
+          "name" : "Pledge_Balance"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "EXTRACT0_copy0" : {
+      "action" : "extractGrains",
+      "sources" : [ "FILTER3_copy0" ],
+      "parameters" : {
+        "grainExtractions" : [ ]
+      }
+    },
+    "AGGREGATE1_copy0" : {
+      "action" : "aggregate",
+      "sources" : [ "EXTRACT0_copy0" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "SUM_Pledge_Balance",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        }, {
+          "name" : "SUM_SUM_Cash_Amount",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        }, {
+          "name" : "SUM_SUM_Fundraising_Amount",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        } ]
+      },
+      "parameters" : {
+        "aggregations" : [ {
+          "action" : "SUM",
+          "source" : "Pledge_Balance",
+          "name" : "SUM_Pledge_Balance",
+          "label" : "Sum of Pledge Balance"
+        }, {
+          "action" : "SUM",
+          "source" : "SUM_Cash_Amount",
+          "name" : "SUM_SUM_Cash_Amount",
+          "label" : "Sum of Sum of Cash Amount"
+        }, {
+          "action" : "SUM",
+          "source" : "SUM_Fundraising_Amount",
+          "name" : "SUM_SUM_Fundraising_Amount",
+          "label" : "Sum of Sum of Fundraising Amount"
+        } ],
+        "groupings" : [ "Constituent_or_Account_Id", "Designation.ucinn_ascendv2__Designation_Name__c" ],
+        "pivots" : [ ],
+        "nodeType" : "STANDARD"
+      }
+    },
+    "FILTER3_copy0" : {
+      "action" : "filter",
+      "sources" : [ "FILTER58" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "ucinn_ascendv2__Contact__c",
+          "operator" : "IS_NOT_NULL",
+          "operands" : [ ]
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES1" : {
+      "action" : "schema",
+      "sources" : [ "AGGREGATE1_copy0" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Designation.ucinn_ascendv2__Designation_Name__c",
+          "newProperties" : {
+            "label" : "Purpose",
+            "name" : "Purpose",
+            "typeProperties" : {
+              "type" : "TEXT",
+              "length" : 32000
+            }
+          }
+        } ]
+      }
+    },
+    "FORMULA0" : {
+      "action" : "formula",
+      "sources" : [ "EDIT_ATTRIBUTES4" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Prod_RecordTypeId",
+          "label" : "Prod RecordTypeId",
+          "formulaExpression" : "'012U1000005yAo2IAE'",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES2" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES1" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "SUM_Pledge_Balance",
+          "newProperties" : {
+            "label" : "Remaining",
+            "name" : "Remaining"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES3" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES2" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "SUM_SUM_Cash_Amount",
+          "newProperties" : {
+            "label" : "Paid",
+            "name" : "Paid"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES4" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES3" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "SUM_SUM_Fundraising_Amount",
+          "newProperties" : {
+            "label" : "Pledged",
+            "name" : "Pledged"
+          }
+        } ]
+      }
+    },
+    "FORMULA1" : {
+      "action" : "formula",
+      "sources" : [ "AGGREGATE1" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Prod_RecordTypeId",
+          "label" : "Prod RecordTypeId",
+          "formulaExpression" : "'012U1000005yCTFIA2'",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "EXTRACT1" : {
+      "action" : "extractGrains",
+      "sources" : [ "EDIT_ATTRIBUTES123" ],
+      "parameters" : {
+        "grainExtractions" : [ ]
+      }
+    },
+    "AGGREGATE3" : {
+      "action" : "aggregate",
+      "sources" : [ "EXTRACT1" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "SUM_Cash_Amount",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        }, {
+          "name" : "SUM_Fundraising_Amount",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        } ]
+      },
+      "parameters" : {
+        "aggregations" : [ {
+          "action" : "SUM",
+          "source" : "Cash_Amount",
+          "name" : "SUM_Cash_Amount",
+          "label" : "Sum of Cash Amount"
+        }, {
+          "action" : "SUM",
+          "source" : "Fundraising_Amount",
+          "name" : "SUM_Fundraising_Amount",
+          "label" : "Sum of Fundraising Amount"
+        } ],
+        "groupings" : [ "Constituent_or_Account_Id", "Fiscal_Year", "Purpose" ],
+        "pivots" : [ ],
+        "nodeType" : "STANDARD"
+      }
+    },
+    "LOAD_DATASET1" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "ucinn_ascendv2__Endowment_Book_Value__c", "HAM_Endowment_Book_Value_Date__c", "Id", "RecordTypeId", "ucinn_ascendv2__Endowment_Market_Value__c", "ucinn_ascendv2__Fund_Name__c", "HAM_Fund_Status__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "ucinn_ascendv2__Designation__c",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "ucinn_ascendv2__Designation__c"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "FORMULA204_copy0" : {
+      "action" : "formula",
+      "sources" : [ "AGGREGATE3" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Key_of_Id_and_Fiscal_Year",
+          "label" : "Key of Id and Fiscal Year",
+          "formulaExpression" : "concat(Constituent_or_Account_Id,'-',Fiscal_Year)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA205_copy0" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA204_copy0" ],
+      "parameters" : {
+        "partitionBy" : [ "Key_of_Id_and_Fiscal_Year" ],
+        "orderBy" : [ {
+          "fieldName" : "Purpose",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "MULTIVALUE",
+          "name" : "All_Daily_Designation",
+          "label" : "All Daily Designation",
+          "formulaExpression" : "collect_set(Purpose)"
+        } ]
+      }
+    },
+    "FORMULA206_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA205_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Daily_Designation",
+          "label" : "Daily Designation",
+          "formulaExpression" : "string(All_Daily_Designation)",
+          "precision" : 32000,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES115_copy0" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA206_copy0" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Daily_Designation",
+          "newProperties" : {
+            "label" : "Fiscal Year Designation Temp",
+            "name" : "Daily_Designation",
+            "typeProperties" : {
+              "type" : "TEXT",
+              "length" : 32000
+            }
+          }
+        } ]
+      }
+    },
+    "EXTRACT15_copy0" : {
+      "action" : "extractGrains",
+      "sources" : [ "EDIT_ATTRIBUTES115_copy0" ],
+      "parameters" : {
+        "grainExtractions" : [ ]
+      }
+    },
+    "AGGREGATE31_copy0" : {
+      "action" : "aggregate",
+      "sources" : [ "EXTRACT15_copy0" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "SUM_SUM_Cash_Amount",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        }, {
+          "name" : "SUM_SUM_Fundraising_Amount",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        } ]
+      },
+      "parameters" : {
+        "aggregations" : [ {
+          "action" : "SUM",
+          "source" : "SUM_Cash_Amount",
+          "name" : "SUM_SUM_Cash_Amount",
+          "label" : "Sum of Sum of Cash Amount"
+        }, {
+          "action" : "SUM",
+          "source" : "SUM_Fundraising_Amount",
+          "name" : "SUM_SUM_Fundraising_Amount",
+          "label" : "Sum of Sum of Fundraising Amount"
+        } ],
+        "groupings" : [ "Key_of_Id_and_Fiscal_Year" ],
+        "pivots" : [ ],
+        "nodeType" : "STANDARD"
+      }
+    },
+    "FORMULA207_copy0" : {
+      "action" : "formula",
+      "sources" : [ "AGGREGATE31_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Constituent",
+          "label" : "Constituent",
+          "formulaExpression" : "substr(Key_of_Id_and_Fiscal_Year,1,18)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA208_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA207_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Fiscal_Year",
+          "label" : "Fiscal Year",
+          "formulaExpression" : "concat('FY ',substr(Key_of_Id_and_Fiscal_Year,20,4))",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FILTER55_copy0" : {
+      "action" : "filter",
+      "sources" : [ "FORMULA216" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "NUMBER",
+          "field" : "Row_Number",
+          "operator" : "EQUAL",
+          "operands" : [ "1" ]
+        } ]
+      }
+    },
+    "FILTER56" : {
+      "action" : "filter",
+      "sources" : [ "LOAD_DATASET0" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "NUMBER",
+          "field" : "Cash_Amount",
+          "operator" : "GREATER_THAN",
+          "operands" : [ "0" ]
+        }, {
+          "type" : "NUMBER",
+          "field" : "Fundraising_Amount",
+          "operator" : "GREATER_THAN",
+          "operands" : [ "0" ]
+        }, {
+          "type" : "TEXT",
+          "field" : "Fiscal_Year",
+          "operator" : "IS_NOT_NULL",
+          "operands" : [ ]
+        }, {
+          "type" : "TEXT",
+          "field" : "ucinn_ascendv2__Contact__c",
+          "operator" : "IS_NOT_NULL",
+          "operands" : [ ]
+        } ],
+        "filterBooleanLogic" : "(1 OR 2) AND 3 AND 4"
+      }
+    },
+    "FORMULA214" : {
+      "action" : "formula",
+      "sources" : [ "EDIT_ATTRIBUTES115_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "length_of_fiscal_year_designation",
+          "label" : "length of fiscal year designation",
+          "formulaExpression" : "char_length(Daily_Designation)",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA215" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA214" ],
+      "parameters" : {
+        "partitionBy" : [ "Key_of_Id_and_Fiscal_Year" ],
+        "orderBy" : [ {
+          "fieldName" : "length_of_fiscal_year_designation",
+          "direction" : "DESC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Fiscal_Year_Designations",
+          "label" : "Fiscal Year Designations",
+          "formulaExpression" : "first_value(Daily_Designation)",
+          "precision" : 32000,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA216" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA215" ],
+      "parameters" : {
+        "partitionBy" : [ "Key_of_Id_and_Fiscal_Year" ],
+        "orderBy" : [ {
+          "fieldName" : "length_of_fiscal_year_designation",
+          "direction" : "DESC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Row_Number",
+          "label" : "Row Number",
+          "formulaExpression" : "row_number()",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "EXTRACT0_copy1" : {
+      "action" : "extractGrains",
+      "sources" : [ "EDIT_ATTRIBUTES123" ],
+      "parameters" : {
+        "grainExtractions" : [ ]
+      }
+    },
+    "AGGREGATE1_copy1" : {
+      "action" : "aggregate",
+      "sources" : [ "EXTRACT0_copy1" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "Paid",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        }, {
+          "name" : "Pledged",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        } ]
+      },
+      "parameters" : {
+        "aggregations" : [ {
+          "action" : "SUM",
+          "source" : "Cash_Amount",
+          "name" : "Paid",
+          "label" : "Paid"
+        }, {
+          "action" : "SUM",
+          "source" : "Fundraising_Amount",
+          "name" : "Pledged",
+          "label" : "Pledged"
+        } ],
+        "groupings" : [ "Constituent_or_Account_Id", "HAM_Campaign_Priority__c" ],
+        "pivots" : [ ],
+        "nodeType" : "STANDARD"
+      }
+    },
+    "FORMULA1_copy0" : {
+      "action" : "formula",
+      "sources" : [ "AGGREGATE1_copy1" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Prod_RecordTypeId",
+          "label" : "Prod RecordTypeId",
+          "formulaExpression" : "'012U1000005yCLBIA2'",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "JOIN0" : {
+      "action" : "join",
+      "sources" : [ "FORMULA208_copy0", "DROP_FIELDS0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Key_of_Id_and_Fiscal_Year" ],
+        "rightQualifier" : "x",
+        "rightKeys" : [ "Key_of_Id_and_Fiscal_Year" ]
+      }
+    },
+    "DROP_FIELDS0" : {
+      "action" : "schema",
+      "sources" : [ "FILTER55_copy0" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "SELECT",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Key_of_Id_and_Fiscal_Year", "Fiscal_Year_Designations" ]
+        }
+      }
+    },
+    "FORMULA1_copy1" : {
+      "action" : "formula",
+      "sources" : [ "JOIN0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Prod_RecordTypeId",
+          "label" : "Prod RecordTypeId",
+          "formulaExpression" : "'012U1000005yCWTIA2'",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "DROP_FIELDS1" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA1_copy1" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Key_of_Id_and_Fiscal_Year", "x.Key_of_Id_and_Fiscal_Year" ]
+        }
+      }
+    },
+    "REPLACE0" : {
+      "action" : "formula",
+      "sources" : [ "EDIT_ATTRIBUTES125" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "x.Fiscal_Year_Designations_replace",
+          "newProperties" : {
+            "name" : "x.Fiscal_Year_Designations"
+          }
+        } ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "x.Fiscal_Year_Designations" ]
+        }
+      },
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "x.Fiscal_Year_Designations_replace",
+          "label" : "Fiscal Year Designations",
+          "formulaExpression" : "replace(\"x.Fiscal_Year_Designations\", '[', ' ')",
+          "precision" : 32000
+        } ]
+      }
+    },
+    "REPLACE1" : {
+      "action" : "formula",
+      "sources" : [ "REPLACE0" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "x.Fiscal_Year_Designations_replace",
+          "newProperties" : {
+            "name" : "x.Fiscal_Year_Designations"
+          }
+        } ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "x.Fiscal_Year_Designations" ]
+        }
+      },
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "x.Fiscal_Year_Designations_replace",
+          "label" : "Fiscal Year Designations",
+          "formulaExpression" : "replace(\"x.Fiscal_Year_Designations\", ']', ' ')",
+          "precision" : 32000
+        } ]
+      }
+    },
+    "TRIM0" : {
+      "action" : "formula",
+      "sources" : [ "REPLACE1" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "x.Fiscal_Year_Designations_trim",
+          "newProperties" : {
+            "name" : "x.Fiscal_Year_Designations"
+          }
+        } ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "x.Fiscal_Year_Designations" ]
+        }
+      },
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "x.Fiscal_Year_Designations_trim",
+          "label" : "Fiscal Year Designations",
+          "formulaExpression" : "trim(\"x.Fiscal_Year_Designations\")",
+          "precision" : 32000
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES125" : {
+      "action" : "schema",
+      "sources" : [ "DROP_FIELDS1" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "x.Fiscal_Year_Designations",
+          "newProperties" : {
+            "label" : "Fiscal Year Designations",
+            "name" : "x.Fiscal_Year_Designations",
+            "typeProperties" : {
+              "type" : "TEXT",
+              "length" : 32000
+            }
+          }
+        } ]
+      }
+    },
+    "LOAD_DATASET2" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Id", "ucinn_ascendv2__Contact_Stewardee__c", "ucinn_ascendv2__Status__c", "HAM_Reporting_Type__c", "ucinn_ascendv2__Designation__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "ucinn_ascendv2__Designation_Stewardship__c",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "ucinn_ascendv2__Designation_Stewardship__c"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN1" : {
+      "action" : "join",
+      "sources" : [ "LOAD_DATASET2", "LOAD_DATASET1" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LEFT_OUTER",
+        "leftKeys" : [ "ucinn_ascendv2__Designation__c" ],
+        "rightQualifier" : "designation",
+        "rightKeys" : [ "Id" ]
+      }
+    },
+    "FILTER57" : {
+      "action" : "filter",
+      "sources" : [ "JOIN1" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "ucinn_ascendv2__Status__c",
+          "operator" : "EQUAL",
+          "operands" : [ "Current" ]
+        }, {
+          "type" : "TEXT",
+          "field" : "HAM_Reporting_Type__c",
+          "operator" : "EQUAL",
+          "operands" : [ "Comprehensive", "Financial Only" ]
+        }, {
+          "type" : "TEXT",
+          "field" : "designation.RecordTypeId",
+          "operator" : "EQUAL",
+          "operands" : [ "012U1000000lheLIAQ" ]
+        }, {
+          "type" : "TEXT",
+          "field" : "designation.HAM_Fund_Status__c",
+          "operator" : "NOT",
+          "operands" : [ "Inactive" ]
+        }, {
+          "type" : "TEXT",
+          "field" : "ucinn_ascendv2__Contact_Stewardee__c",
+          "operator" : "IS_NOT_NULL",
+          "operands" : [ ]
+        } ]
+      }
+    },
+    "APPEND0" : {
+      "action" : "appendV2",
+      "sources" : [ "FORMULA1", "TRIM0" ],
+      "parameters" : {
+        "fieldMappings" : [ {
+          "top" : "Constituent_or_Account_Id",
+          "bottom" : "Constituent"
+        }, {
+          "top" : "Purpose",
+          "bottom" : "x.Fiscal_Year_Designations"
+        }, {
+          "top" : "Paid",
+          "bottom" : "SUM_SUM_Cash_Amount"
+        }, {
+          "top" : "Pledged",
+          "bottom" : "SUM_SUM_Fundraising_Amount"
+        }, {
+          "top" : "Prod_RecordTypeId",
+          "bottom" : "Prod_RecordTypeId"
+        }, {
+          "top" : "Designation.ucinn_ascendv2__Designation_Name__c",
+          "bottom" : "x.Fiscal_Year_Designations"
+        }, {
+          "bottom" : "Fiscal_Year"
+        } ]
+      }
+    },
+    "APPEND1" : {
+      "action" : "appendV2",
+      "sources" : [ "APPEND0", "JOIN2" ],
+      "parameters" : {
+        "fieldMappings" : [ {
+          "top" : "Constituent_or_Account_Id",
+          "bottom" : "Constituent_or_Account_Id"
+        }, {
+          "top" : "Purpose",
+          "bottom" : "Campaign.Name"
+        }, {
+          "top" : "Paid",
+          "bottom" : "Paid"
+        }, {
+          "top" : "Pledged",
+          "bottom" : "Pledged"
+        }, {
+          "top" : "Prod_RecordTypeId",
+          "bottom" : "Prod_RecordTypeId"
+        }, {
+          "top" : "Designation.ucinn_ascendv2__Designation_Name__c",
+          "bottom" : "Campaign.Name"
+        } ]
+      }
+    },
+    "APPEND2" : {
+      "action" : "appendV2",
+      "sources" : [ "APPEND1", "FORMULA0" ],
+      "parameters" : {
+        "fieldMappings" : [ {
+          "top" : "Constituent_or_Account_Id",
+          "bottom" : "Constituent_or_Account_Id"
+        }, {
+          "top" : "Purpose",
+          "bottom" : "Purpose"
+        }, {
+          "top" : "Paid",
+          "bottom" : "Paid"
+        }, {
+          "top" : "Pledged",
+          "bottom" : "Pledged"
+        }, {
+          "top" : "Prod_RecordTypeId",
+          "bottom" : "Prod_RecordTypeId"
+        }, {
+          "top" : "Designation.ucinn_ascendv2__Designation_Name__c",
+          "bottom" : "Purpose"
+        }, {
+          "bottom" : "Remaining"
+        } ]
+      }
+    },
+    "APPEND3" : {
+      "action" : "appendV2",
+      "sources" : [ "APPEND2", "FORMULA218" ],
+      "parameters" : {
+        "fieldMappings" : [ {
+          "top" : "Constituent_or_Account_Id",
+          "bottom" : "ucinn_ascendv2__Contact_Stewardee__c"
+        }, {
+          "top" : "Purpose",
+          "bottom" : "designation.ucinn_ascendv2__Fund_Name__c"
+        }, {
+          "top" : "Paid",
+          "bottom" : "designation.ucinn_ascendv2__Endowment_Market_Value__c"
+        }, {
+          "top" : "Pledged",
+          "bottom" : "designation.ucinn_ascendv2__Endowment_Book_Value__c"
+        }, {
+          "top" : "Prod_RecordTypeId",
+          "bottom" : "Prod_RecordTypeId"
+        }, {
+          "top" : "Designation.ucinn_ascendv2__Designation_Name__c",
+          "bottom" : "designation.ucinn_ascendv2__Fund_Name__c"
+        }, {
+          "bottom" : "designation.HAM_Endowment_Book_Value_Date__c"
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES116" : {
+      "action" : "schema",
+      "sources" : [ "APPEND3" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Constituent_or_Account_Id",
+          "newProperties" : {
+            "label" : "Constituent",
+            "name" : "Constituent__c"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES118" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES124" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Paid",
+          "newProperties" : {
+            "label" : "Paid",
+            "name" : "HAM_Paid__c"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES119" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES118" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Pledged",
+          "newProperties" : {
+            "label" : "Pledged",
+            "name" : "HAM_Pledged__c"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES120" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES119" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Fiscal_Year",
+          "newProperties" : {
+            "label" : "Fiscal Year",
+            "name" : "HAM_Fiscal_Year__c"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES121" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES120" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Remaining",
+          "newProperties" : {
+            "label" : "Pledge Balance",
+            "name" : "HAM_Pledge_Balance__c"
+          }
+        } ]
+      }
+    },
+    "FORMULA217" : {
+      "action" : "formula",
+      "sources" : [ "EDIT_ATTRIBUTES121" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "HAM_Status__c",
+          "label" : "HAM_Status",
+          "formulaExpression" : "'Active'\r\n ",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES122" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA217" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "designation.HAM_Endowment_Book_Value_Date__c",
+          "newProperties" : {
+            "label" : "HAM_Endowed_Fund_Date__c",
+            "name" : "HAM_Endowed_Fund_Date__c"
+          }
+        } ]
+      }
+    },
+    "FORMULA219" : {
+      "action" : "formula",
+      "sources" : [ "EDIT_ATTRIBUTES122" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "HAM_External_System_ID__c",
+          "label" : "External System ID",
+          "formulaExpression" : "concat(Prod_RecordTypeId,'-',Constituent__c,'-',coalesce(HAM_Designation__c, 'NA'),'-',coalesce(HAM_Fiscal_Year__c, 'NA')\r\n)",
+          "precision" : 30000,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES124" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES116" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Purpose",
+          "newProperties" : {
+            "label" : "Purpose",
+            "name" : "HAM_Designation__c",
+            "typeProperties" : {
+              "type" : "TEXT",
+              "length" : 32000
+            }
+          }
+        } ]
+      }
+    },
+    "OUTPUT0" : {
+      "action" : "save",
+      "sources" : [ "FORMULA219" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Credit Aggregates for Donor Portal and JEDI initial load",
+          "name" : "Credit_Aggregates_for_Donor_Portal_and_JEDI_initial_load",
+          "folderName" : "SharedApp"
+        },
+        "measuresToCurrencies" : [ ]
+      }
+    },
+    "DROP_FIELDS2" : {
+      "action" : "schema",
+      "sources" : [ "FILTER57" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "designation.RecordTypeId" ]
+        }
+      }
+    },
+    "FORMULA218" : {
+      "action" : "formula",
+      "sources" : [ "DROP_FIELDS2" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Prod_RecordTypeId",
+          "label" : "Prod RecordTypeId",
+          "formulaExpression" : "'012U1000005yCZhIAM'",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "JOIN2" : {
+      "action" : "join",
+      "sources" : [ "FORMULA1_copy0", "LOAD_DATASET23_copy0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "HAM_Campaign_Priority__c" ],
+        "rightQualifier" : "Campaign",
+        "rightKeys" : [ "Id" ]
+      }
+    },
+    "OUTPUT1" : {
+      "action" : "save",
+      "sources" : [ "JOIN2" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "test",
+          "name" : "test"
+        },
+        "measuresToCurrencies" : [ ]
+      }
+    },
+    "LOAD_DATASET23_copy0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Id", "Name" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "Campaign",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "Campaign"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "FILTER58" : {
+      "action" : "filter",
+      "sources" : [ "LOAD_DATASET0_copy0" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "opp_stage.Opportunity.StageName",
+          "operator" : "EQUAL",
+          "operands" : [ "Active" ]
+        } ]
+      }
+    }
+  },
+  "ui" : {
+    "nodes" : {
+      "LOAD_DATASET0" : {
+        "label" : "Gift Credit and Payment",
+        "type" : "LOAD_DATASET",
+        "top" : 112,
+        "left" : 112,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "AGGREGATE0" : {
+        "label" : "Aggregate to the entity-purpose level",
+        "description" : "",
+        "type" : "AGGREGATE",
+        "top" : 112.19999999999999,
+        "left" : 672.1,
+        "graph" : {
+          "EXTRACT0" : null,
+          "AGGREGATE1" : null
+        },
+        "connectors" : [ {
+          "source" : "EXTRACT0",
+          "target" : "AGGREGATE1"
+        } ]
+      },
+      "TRANSFORM0" : {
+        "label" : "Giving By Purpose: Rename Designation Name",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 112,
+        "left" : 530.2,
+        "graph" : {
+          "EDIT_ATTRIBUTES123" : {
+            "label" : "Edit Attributes"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "LOAD_DATASET0_copy0" : {
+        "label" : "Pledge Balance",
+        "type" : "LOAD_DATASET",
+        "top" : 951.4,
+        "left" : 111.5,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "AGGREGATE0_copy0" : {
+        "label" : "Aggregate to id and desig",
+        "description" : "",
+        "type" : "AGGREGATE",
+        "top" : 951.6,
+        "left" : 672.3,
+        "graph" : {
+          "EXTRACT0_copy0" : null,
+          "AGGREGATE1_copy0" : null
+        },
+        "connectors" : [ {
+          "source" : "EXTRACT0_copy0",
+          "target" : "AGGREGATE1_copy0"
+        } ]
+      },
+      "FILTER3_copy0" : {
+        "label" : "Keep constituents only",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 951.4,
+        "left" : 391.5
+      },
+      "TRANSFORM2" : {
+        "label" : "Rename and Record Type ID",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 951.4,
+        "left" : 1791.5,
+        "graph" : {
+          "EDIT_ATTRIBUTES1" : {
+            "label" : "Edit Attributes"
+          },
+          "FORMULA0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Prod RecordTypeId"
+          },
+          "EDIT_ATTRIBUTES2" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES3" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES4" : {
+            "label" : "Edit Attributes"
+          }
+        },
+        "connectors" : [ {
+          "source" : "EDIT_ATTRIBUTES1",
+          "target" : "EDIT_ATTRIBUTES2"
+        }, {
+          "source" : "EDIT_ATTRIBUTES2",
+          "target" : "EDIT_ATTRIBUTES3"
+        }, {
+          "source" : "EDIT_ATTRIBUTES4",
+          "target" : "FORMULA0"
+        }, {
+          "source" : "EDIT_ATTRIBUTES3",
+          "target" : "EDIT_ATTRIBUTES4"
+        } ]
+      },
+      "TRANSFORM3" : {
+        "label" : "Add record type",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 112.19999999999999,
+        "left" : 1372,
+        "graph" : {
+          "FORMULA1" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Prod RecordTypeId"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "TRANSFORM4" : {
+        "label" : "Campaign",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 531.4,
+        "left" : 392.1,
+        "graph" : { },
+        "connectors" : [ ]
+      },
+      "TRANSFORM5" : {
+        "label" : "Giving over 5 years",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 252.39999999999998,
+        "left" : 532.4,
+        "graph" : { },
+        "connectors" : [ ]
+      },
+      "AGGREGATE2" : {
+        "label" : "Aggregate to the entity-fiscal year-purpose level",
+        "description" : "",
+        "type" : "AGGREGATE",
+        "top" : 252.10000000000002,
+        "left" : 672,
+        "graph" : {
+          "EXTRACT1" : null,
+          "AGGREGATE3" : null
+        },
+        "connectors" : [ {
+          "source" : "EXTRACT1",
+          "target" : "AGGREGATE3"
+        } ]
+      },
+      "LOAD_DATASET1" : {
+        "label" : "ucinn_ascendv2__Designation__c",
+        "type" : "LOAD_DATASET",
+        "top" : 1231.4,
+        "left" : 111.5,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "TRANSFORM64_copy0" : {
+        "label" : "Key Id+Date",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 252,
+        "left" : 812.1,
+        "graph" : {
+          "FORMULA204_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Key of Id and fiscal year"
+          },
+          "FORMULA205_copy0" : {
+            "label" : "All Daily Designation"
+          },
+          "FORMULA206_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Daily Designation"
+          },
+          "EDIT_ATTRIBUTES115_copy0" : {
+            "label" : "Edit Attributes"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA205_copy0",
+          "target" : "FORMULA206_copy0"
+        }, {
+          "source" : "FORMULA206_copy0",
+          "target" : "EDIT_ATTRIBUTES115_copy0"
+        }, {
+          "source" : "FORMULA204_copy0",
+          "target" : "FORMULA205_copy0"
+        } ]
+      },
+      "AGGREGATE30_copy0" : {
+        "label" : "Aggregate Id and Date",
+        "description" : "",
+        "type" : "AGGREGATE",
+        "top" : 252,
+        "left" : 952,
+        "graph" : {
+          "EXTRACT15_copy0" : null,
+          "AGGREGATE31_copy0" : null
+        },
+        "connectors" : [ {
+          "source" : "EXTRACT15_copy0",
+          "target" : "AGGREGATE31_copy0"
+        } ]
+      },
+      "TRANSFORM65_copy0" : {
+        "label" : "Enrich Fields",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 252.5,
+        "left" : 1092,
+        "graph" : {
+          "FORMULA207_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Constituent"
+          },
+          "FORMULA208_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Fiscal Year"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA207_copy0",
+          "target" : "FORMULA208_copy0"
+        } ]
+      },
+      "FILTER55_copy0" : {
+        "label" : "Filter Row Number",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 391.3,
+        "left" : 1092
+      },
+      "FILTER56" : {
+        "label" : "Filter to Positive Credits",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 111.9,
+        "left" : 252
+      },
+      "TRANSFORM67" : {
+        "label" : "length of fiscal year-designation",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 392,
+        "left" : 812.1,
+        "graph" : {
+          "FORMULA214" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "length of fiscal year designation"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "TRANSFORM68" : {
+        "label" : "Transform fiscal year designation",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 392,
+        "left" : 952,
+        "graph" : {
+          "FORMULA215" : {
+            "label" : "Fiscal Year Designations"
+          },
+          "FORMULA216" : {
+            "label" : "Row Number"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA215",
+          "target" : "FORMULA216"
+        } ]
+      },
+      "AGGREGATE0_copy1" : {
+        "label" : "Aggregate to the entity-campaign level",
+        "description" : "",
+        "type" : "AGGREGATE",
+        "top" : 532,
+        "left" : 672.1,
+        "graph" : {
+          "EXTRACT0_copy1" : null,
+          "AGGREGATE1_copy1" : null
+        },
+        "connectors" : [ {
+          "source" : "EXTRACT0_copy1",
+          "target" : "AGGREGATE1_copy1"
+        } ]
+      },
+      "TRANSFORM3_copy0" : {
+        "label" : "Add record type",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 532.3,
+        "left" : 1091.3,
+        "graph" : {
+          "FORMULA1_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Prod RecordTypeId"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "JOIN0" : {
+        "label" : "look up designations",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 252,
+        "left" : 1232
+      },
+      "TRANSFORM69" : {
+        "label" : "Keep fields",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 392,
+        "left" : 1232,
+        "graph" : {
+          "DROP_FIELDS0" : {
+            "label" : "Drop Columns"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "TRANSFORM3_copy1" : {
+        "label" : "Add record type",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 252.10000000000002,
+        "left" : 1512,
+        "graph" : {
+          "FORMULA1_copy1" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Prod RecordTypeId"
+          },
+          "DROP_FIELDS1" : {
+            "label" : "Drop Columns"
+          },
+          "REPLACE0" : {
+            "parameters" : {
+              "type" : "REPLACE_UI"
+            },
+            "label" : "Replace"
+          },
+          "REPLACE1" : {
+            "parameters" : {
+              "type" : "REPLACE_UI"
+            },
+            "label" : "Replace"
+          },
+          "TRIM0" : {
+            "parameters" : {
+              "type" : "TRIM_UI"
+            },
+            "label" : "Trim"
+          },
+          "EDIT_ATTRIBUTES125" : {
+            "label" : "Edit Attributes"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA1_copy1",
+          "target" : "DROP_FIELDS1"
+        }, {
+          "source" : "REPLACE0",
+          "target" : "REPLACE1"
+        }, {
+          "source" : "REPLACE1",
+          "target" : "TRIM0"
+        }, {
+          "source" : "EDIT_ATTRIBUTES125",
+          "target" : "REPLACE0"
+        }, {
+          "source" : "DROP_FIELDS1",
+          "target" : "EDIT_ATTRIBUTES125"
+        } ]
+      },
+      "LOAD_DATASET2" : {
+        "label" : "ucinn_ascendv2__Designation_Stewardship__c",
+        "type" : "LOAD_DATASET",
+        "top" : 1091.4,
+        "left" : 111.5,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN1" : {
+        "label" : "lookup designation",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 1091.4,
+        "left" : 251.5
+      },
+      "FILTER57" : {
+        "label" : "Filter to selected records",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 1091.4,
+        "left" : 391.5
+      },
+      "APPEND0" : {
+        "label" : "Append 0",
+        "type" : "APPEND",
+        "top" : 112,
+        "left" : 1512
+      },
+      "APPEND1" : {
+        "label" : "Append 1",
+        "type" : "APPEND",
+        "top" : 112.1,
+        "left" : 1652.1
+      },
+      "APPEND2" : {
+        "label" : "Append 2",
+        "type" : "APPEND",
+        "top" : 112,
+        "left" : 1792
+      },
+      "APPEND3" : {
+        "label" : "Append 3",
+        "type" : "APPEND",
+        "top" : 112,
+        "left" : 1932
+      },
+      "TRANSFORM70" : {
+        "label" : "Rename Fields",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 112,
+        "left" : 2072,
+        "graph" : {
+          "EDIT_ATTRIBUTES116" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES118" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES119" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES120" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES121" : {
+            "label" : "Edit Attributes"
+          },
+          "FORMULA217" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "status"
+          },
+          "EDIT_ATTRIBUTES122" : {
+            "label" : "Edit Attributes"
+          },
+          "FORMULA219" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "External System ID"
+          },
+          "EDIT_ATTRIBUTES124" : {
+            "label" : "Edit Attributes"
+          }
+        },
+        "connectors" : [ {
+          "source" : "EDIT_ATTRIBUTES118",
+          "target" : "EDIT_ATTRIBUTES119"
+        }, {
+          "source" : "EDIT_ATTRIBUTES119",
+          "target" : "EDIT_ATTRIBUTES120"
+        }, {
+          "source" : "EDIT_ATTRIBUTES120",
+          "target" : "EDIT_ATTRIBUTES121"
+        }, {
+          "source" : "EDIT_ATTRIBUTES121",
+          "target" : "FORMULA217"
+        }, {
+          "source" : "FORMULA217",
+          "target" : "EDIT_ATTRIBUTES122"
+        }, {
+          "source" : "EDIT_ATTRIBUTES122",
+          "target" : "FORMULA219"
+        }, {
+          "source" : "EDIT_ATTRIBUTES124",
+          "target" : "EDIT_ATTRIBUTES118"
+        }, {
+          "source" : "EDIT_ATTRIBUTES116",
+          "target" : "EDIT_ATTRIBUTES124"
+        } ]
+      },
+      "OUTPUT0" : {
+        "label" : "Output 0",
+        "type" : "OUTPUT",
+        "top" : 112,
+        "left" : 2212
+      },
+      "TRANSFORM71" : {
+        "label" : "Record ID",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 1091.4,
+        "left" : 1931.5,
+        "graph" : {
+          "DROP_FIELDS2" : {
+            "label" : "Drop Columns"
+          },
+          "FORMULA218" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Formula"
+          }
+        },
+        "connectors" : [ {
+          "source" : "DROP_FIELDS2",
+          "target" : "FORMULA218"
+        } ]
+      },
+      "JOIN2" : {
+        "label" : "Look up Campaign Name",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 532,
+        "left" : 1651.2
+      },
+      "OUTPUT1" : {
+        "label" : "Output 1",
+        "type" : "OUTPUT",
+        "top" : 671.6,
+        "left" : 1652.1
+      },
+      "LOAD_DATASET23_copy0" : {
+        "label" : "Campaign",
+        "type" : "LOAD_DATASET",
+        "top" : 672,
+        "left" : 1511.8,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "FILTER58" : {
+        "label" : "Filter to stage is active",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 952,
+        "left" : 252
+      }
+    },
+    "connectors" : [ {
+      "source" : "TRANSFORM0",
+      "target" : "AGGREGATE0"
+    }, {
+      "source" : "FILTER56",
+      "target" : "TRANSFORM0"
+    }, {
+      "source" : "FILTER58",
+      "target" : "FILTER3_copy0"
+    }, {
+      "source" : "FILTER3_copy0",
+      "target" : "AGGREGATE0_copy0"
+    }, {
+      "source" : "AGGREGATE0_copy0",
+      "target" : "TRANSFORM2"
+    }, {
+      "source" : "AGGREGATE0",
+      "target" : "TRANSFORM3"
+    }, {
+      "source" : "TRANSFORM0",
+      "target" : "TRANSFORM4"
+    }, {
+      "source" : "TRANSFORM0",
+      "target" : "TRANSFORM5"
+    }, {
+      "source" : "TRANSFORM5",
+      "target" : "AGGREGATE2"
+    }, {
+      "source" : "TRANSFORM64_copy0",
+      "target" : "AGGREGATE30_copy0"
+    }, {
+      "source" : "AGGREGATE30_copy0",
+      "target" : "TRANSFORM65_copy0"
+    }, {
+      "source" : "AGGREGATE2",
+      "target" : "TRANSFORM64_copy0"
+    }, {
+      "source" : "LOAD_DATASET0",
+      "target" : "FILTER56"
+    }, {
+      "source" : "TRANSFORM64_copy0",
+      "target" : "TRANSFORM67"
+    }, {
+      "source" : "TRANSFORM67",
+      "target" : "TRANSFORM68"
+    }, {
+      "source" : "AGGREGATE0_copy1",
+      "target" : "TRANSFORM3_copy0"
+    }, {
+      "source" : "TRANSFORM4",
+      "target" : "AGGREGATE0_copy1"
+    }, {
+      "source" : "TRANSFORM68",
+      "target" : "FILTER55_copy0"
+    }, {
+      "source" : "TRANSFORM65_copy0",
+      "target" : "JOIN0"
+    }, {
+      "source" : "TRANSFORM69",
+      "target" : "JOIN0"
+    }, {
+      "source" : "FILTER55_copy0",
+      "target" : "TRANSFORM69"
+    }, {
+      "source" : "JOIN0",
+      "target" : "TRANSFORM3_copy1"
+    }, {
+      "source" : "LOAD_DATASET2",
+      "target" : "JOIN1"
+    }, {
+      "source" : "LOAD_DATASET1",
+      "target" : "JOIN1"
+    }, {
+      "source" : "JOIN1",
+      "target" : "FILTER57"
+    }, {
+      "source" : "TRANSFORM3",
+      "target" : "APPEND0"
+    }, {
+      "source" : "TRANSFORM3_copy1",
+      "target" : "APPEND0"
+    }, {
+      "source" : "APPEND0",
+      "target" : "APPEND1"
+    }, {
+      "source" : "JOIN2",
+      "target" : "APPEND1"
+    }, {
+      "source" : "APPEND1",
+      "target" : "APPEND2"
+    }, {
+      "source" : "TRANSFORM2",
+      "target" : "APPEND2"
+    }, {
+      "source" : "APPEND2",
+      "target" : "APPEND3"
+    }, {
+      "source" : "TRANSFORM71",
+      "target" : "APPEND3"
+    }, {
+      "source" : "APPEND3",
+      "target" : "TRANSFORM70"
+    }, {
+      "source" : "TRANSFORM70",
+      "target" : "OUTPUT0"
+    }, {
+      "source" : "FILTER57",
+      "target" : "TRANSFORM71"
+    }, {
+      "source" : "TRANSFORM3_copy0",
+      "target" : "JOIN2"
+    }, {
+      "source" : "JOIN2",
+      "target" : "OUTPUT1"
+    }, {
+      "source" : "LOAD_DATASET23_copy0",
+      "target" : "JOIN2"
+    }, {
+      "source" : "LOAD_DATASET0_copy0",
+      "target" : "FILTER58"
+    } ],
+    "hiddenColumns" : [ ]
+  },
+  "runMode" : "full"
+}

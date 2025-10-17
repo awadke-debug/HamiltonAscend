@@ -1,0 +1,58 @@
+<template>
+    <template if:true={loading}>
+        <lightning-spinner
+            alternative-text="Loading..."
+            size="medium"
+            variant="brand">
+        </lightning-spinner>
+    </template>
+    <div class="dashboard-container">
+        <div class="profile-section-container">
+            <c-ham_profile-section
+                contact={contact}
+                major-minor={majorMinor}
+                facebook-url={facebookUrl}
+                campus-contact={campusContact}
+                my-connect={myConnect}
+                personal-section={personalSection}
+                label={label}
+                main-resource={mainResource}
+            ></c-ham_profile-section>
+        </div>
+        <div class="philanthropy-section-container">
+            <c-ham_philanthropy-section
+                hc-badges={hcBadges}
+                philanthropy-sections={philanthropySections}
+                label={label}
+                main-resource={mainResource}
+                onscrolltophilanthropy={handleScrollToPhilanthropy}>
+            ></c-ham_philanthropy-section>
+        </div>
+    </div>
+
+    <div class="accordions-container">
+        <div class="my-service-container">
+            <c-ham_my-service-cmp 
+                my-services={myServices}
+                label={label}
+                campus-contact={campusContact}
+                main-resource={mainResource}>
+            </c-ham_my-service-cmp>
+        </div>
+        <div class="my-affinities-container">
+            <c-ham_my-Affinities-cmp 
+                label={label}
+                my-affinities={myAffinities}>
+            </c-ham_my-Affinities-cmp>
+        </div>
+    </div>
+
+    <div data-id="philanthropy-detail-section-id" class="philanthropy-detail-container">
+        <c-ham_philanthropy-detail-cmp
+        label={label}
+        campus-contact={campusContact}
+        philanthropy-sections={philanthropyDetailSections}
+        philanthropy-data-tables={philanthropyDataTables}>            
+        </c-ham_philanthropy-detail-cmp>
+    </div>
+</template>

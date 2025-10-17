@@ -1,0 +1,334 @@
+{
+  "version" : "63.0",
+  "nodes" : {
+    "LOAD_DATASET0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "External_System_ID", "First_Name", "Employment_Company_Name", "Institutional_Suffix", "Employment_Title", "Company_Industry_Name", "Last_Name", "Industry_Group", "Wealth_Rating", "Company_Type_Type", "PRM", "Donor_ID" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Class of 2018 Industry",
+          "name" : "Class_of_2018_Industry"
+        },
+        "sampleDetails" : {
+          "type" : "TopN"
+        }
+      }
+    },
+    "LOAD_DATASET1" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "ucinn_ascendv2__External_System_ID__c", "Id" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "Contact",
+          "connectionName" : "Twice_Daily_Updated_SFDC_LOCAL",
+          "sourceObjectName" : "Contact"
+        },
+        "sampleDetails" : {
+          "type" : "TopN"
+        }
+      }
+    },
+    "LOAD_DATASET3_copy0_copy0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "RecordTypeId", "ucinn_ascendv2__Contact__c", "ucinn_ascendv2__Degree_Institution__c", "ucinn_ascendv2__Major_Formula__c", "ucinn_ascendv2__Major_School_of_Study_Formula__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "ucinn_ascendv2__Degree_Information__c",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "ucinn_ascendv2__Degree_Information__c"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "FILTER0_copy0_copy0" : {
+      "action" : "filter",
+      "sources" : [ "JOIN18_copy0_copy0" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "Record_Type.Name",
+          "operator" : "EQUAL",
+          "operands" : [ "School Degree Information" ]
+        }, {
+          "type" : "TEXT",
+          "field" : "Institution.Name",
+          "operator" : "EQUAL",
+          "operands" : [ "Hamilton College", "Kirkland College" ]
+        } ]
+      }
+    },
+    "LOAD_DATASET10_copy0_copy0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Id", "Name" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "Account",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "Account"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN18_copy0_copy0" : {
+      "action" : "join",
+      "sources" : [ "JOIN41_copy0_copy0", "LOAD_DATASET10_copy0_copy0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "ucinn_ascendv2__Degree_Institution__c", "Institution.Id" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "ucinn_ascendv2__Degree_Institution__c" ],
+        "rightQualifier" : "Institution",
+        "rightKeys" : [ "Id" ]
+      }
+    },
+    "LOAD_DATASET28_copy0_copy0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Id", "Name" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "RecordType",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "RecordType"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN41_copy0_copy0" : {
+      "action" : "join",
+      "sources" : [ "LOAD_DATASET3_copy0_copy0", "LOAD_DATASET28_copy0_copy0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "RecordTypeId", "Record_Type.Id" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "RecordTypeId" ],
+        "rightQualifier" : "Record_Type",
+        "rightKeys" : [ "Id" ]
+      }
+    },
+    "DROP_FIELDS3_copy0" : {
+      "action" : "schema",
+      "sources" : [ "JOIN42" ],
+      "parameters" : {
+        "slice" : {
+          "mode" : "SELECT",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Contact.ucinn_ascendv2__External_System_ID__c", "ucinn_ascendv2__Major_Formula__c", "ucinn_ascendv2__Major_School_of_Study_Formula__c" ]
+        }
+      }
+    },
+    "JOIN42" : {
+      "action" : "join",
+      "sources" : [ "FILTER0_copy0_copy0", "LOAD_DATASET1" ],
+      "schema" : {
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "ucinn_ascendv2__Contact__c", "Contact.Id" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "ucinn_ascendv2__Contact__c" ],
+        "rightQualifier" : "Contact",
+        "rightKeys" : [ "Id" ]
+      }
+    },
+    "JOIN43" : {
+      "action" : "join",
+      "sources" : [ "LOAD_DATASET0", "DROP_FIELDS3_copy0" ],
+      "schema" : {
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Concentration.Contact.ucinn_ascendv2__External_System_ID__c" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "External_System_ID" ],
+        "rightQualifier" : "Concentration",
+        "rightKeys" : [ "Contact.ucinn_ascendv2__External_System_ID__c" ]
+      }
+    },
+    "OUTPUT0" : {
+      "action" : "save",
+      "sources" : [ "JOIN43" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Class of 2018 Industry Concentration",
+          "name" : "Class_of_2018_Industry_Concentration"
+        }
+      }
+    }
+  },
+  "ui" : {
+    "nodes" : {
+      "LOAD_DATASET0" : {
+        "label" : "Class of 2018 Industry",
+        "type" : "LOAD_DATASET",
+        "top" : 112,
+        "left" : 112,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "LOAD_DATASET1" : {
+        "label" : "Contact",
+        "type" : "LOAD_DATASET",
+        "top" : 393.2,
+        "left" : 672.4,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "LOAD_DATASET3_copy0_copy0" : {
+        "label" : "ucinn_ascendv2__Degree_Information__c",
+        "type" : "LOAD_DATASET",
+        "top" : 253,
+        "left" : 112.4,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "FILTER0_copy0_copy0" : {
+        "label" : "Filter School Degree HC and KC Only",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 253.10000000000002,
+        "left" : 532.4
+      },
+      "LOAD_DATASET10_copy0_copy0" : {
+        "label" : "Account",
+        "type" : "LOAD_DATASET",
+        "top" : 393.1,
+        "left" : 392.4,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN18_copy0_copy0" : {
+        "label" : "Lookup Institution to Degree",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 253,
+        "left" : 392.4
+      },
+      "LOAD_DATASET28_copy0_copy0" : {
+        "label" : "RecordType Copy",
+        "type" : "LOAD_DATASET",
+        "top" : 393,
+        "left" : 252.39999999999998,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN41_copy0_copy0" : {
+        "label" : "Lookup Record Type To Degree",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 253,
+        "left" : 252.39999999999998
+      },
+      "TRANSFORM4_copy0" : {
+        "label" : "Keep Column",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 253.2,
+        "left" : 812.4,
+        "graph" : {
+          "DROP_FIELDS3_copy0" : {
+            "label" : "Keep Columns"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "JOIN42" : {
+        "label" : "Join 42",
+        "type" : "JOIN",
+        "top" : 253.2,
+        "left" : 672.4
+      },
+      "JOIN43" : {
+        "label" : "Join 43",
+        "type" : "JOIN",
+        "top" : 112.19999999999999,
+        "left" : 812
+      },
+      "OUTPUT0" : {
+        "label" : "Output 0",
+        "type" : "OUTPUT",
+        "top" : 112,
+        "left" : 952
+      }
+    },
+    "connectors" : [ {
+      "source" : "LOAD_DATASET3_copy0_copy0",
+      "target" : "JOIN41_copy0_copy0"
+    }, {
+      "source" : "JOIN41_copy0_copy0",
+      "target" : "JOIN18_copy0_copy0"
+    }, {
+      "source" : "LOAD_DATASET10_copy0_copy0",
+      "target" : "JOIN18_copy0_copy0"
+    }, {
+      "source" : "JOIN18_copy0_copy0",
+      "target" : "FILTER0_copy0_copy0"
+    }, {
+      "source" : "LOAD_DATASET28_copy0_copy0",
+      "target" : "JOIN41_copy0_copy0"
+    }, {
+      "source" : "JOIN42",
+      "target" : "TRANSFORM4_copy0"
+    }, {
+      "source" : "FILTER0_copy0_copy0",
+      "target" : "JOIN42"
+    }, {
+      "source" : "LOAD_DATASET1",
+      "target" : "JOIN42"
+    }, {
+      "source" : "LOAD_DATASET0",
+      "target" : "JOIN43"
+    }, {
+      "source" : "TRANSFORM4_copy0",
+      "target" : "JOIN43"
+    }, {
+      "source" : "JOIN43",
+      "target" : "OUTPUT0"
+    } ],
+    "hiddenColumns" : [ ]
+  },
+  "runMode" : "full"
+}

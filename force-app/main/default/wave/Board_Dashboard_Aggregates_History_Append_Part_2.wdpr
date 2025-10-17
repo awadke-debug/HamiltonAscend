@@ -1,0 +1,316 @@
+{
+  "version" : "63.0",
+  "nodes" : {
+    "LOAD_DATASET2_copy0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "IsDeleted", "Name", "HAM_Start_Date__c", "HAM_Status__c", "HAM_SLT_Approved__c", "HAM_Comments__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "HAM_Board_Dashboard_Data__c",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "HAM_Board_Dashboard_Data__c"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "FILTER0_copy0" : {
+      "action" : "filter",
+      "sources" : [ "LOAD_DATASET2_copy0" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "HAM_Status__c",
+          "operator" : "EQUAL",
+          "operands" : [ "Current" ]
+        }, {
+          "type" : "TEXT",
+          "field" : "IsDeleted",
+          "operator" : "EQUAL",
+          "operands" : [ "false" ]
+        } ]
+      }
+    },
+    "LOAD_DATASET0_copy0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Fiscal_Year", "Report_Update_Date", "Committed_Including_Bequest_Intention_FYTD", "SUM_HF_Received", "Committed_Including_Bequest_Intention", "Received", "Received_FYTD", "HF_Received_FYTD" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Board Dashboard ADV Aggregates History",
+          "name" : "Board_Dashboard_ADV_Aggregates_History"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN0" : {
+      "action" : "join",
+      "sources" : [ "LOAD_DATASET0_copy0", "FILTER0_copy0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Report_Update_Date" ],
+        "rightKeys" : [ "HAM_Start_Date__c" ]
+      }
+    },
+    "OUTPUT0" : {
+      "action" : "save",
+      "sources" : [ "DROP_FIELDS1" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Board Dashboard ADV Aggregates History with Approvals",
+          "name" : "Board_Dashboard_ADV_Aggregates_History_with_Approvals",
+          "folderName" : "SharedApp"
+        },
+        "measuresToCurrencies" : [ ]
+      }
+    },
+    "DROP_FIELDS0" : {
+      "action" : "schema",
+      "sources" : [ "JOIN0" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "IsDeleted", "HAM_Start_Date__c", "HAM_Status__c" ]
+        }
+      }
+    },
+    "FORMULA0" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA2" ],
+      "parameters" : {
+        "partitionBy" : [ "key" ],
+        "orderBy" : [ {
+          "fieldName" : "Approved_Date",
+          "direction" : "DESC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "DATETIME",
+          "name" : "max_approved_date",
+          "label" : "max approved date",
+          "formulaExpression" : "first_value(Approved_Date)",
+          "format" : "MM/dd/yyyy",
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA1" : {
+      "action" : "formula",
+      "sources" : [ "DROP_FIELDS0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "key",
+          "label" : "key",
+          "formulaExpression" : "'a'",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA2" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA1" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "DATETIME",
+          "name" : "Approved_Date",
+          "label" : "Approved Date",
+          "formulaExpression" : "case    \r\nwhen HAM_SLT_Approved__c='true'\r\n    then Report_Update_Date\r\n   \r\nend",
+          "format" : "MM/dd/yyyy",
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA3" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "is_max_approved_date",
+          "label" : "is max approved date",
+          "formulaExpression" : "case \r\n    when max_approved_date=Approved_Date\r\n    then 'true'\r\n\r\n    else\r\n    'false'\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FILTER1" : {
+      "action" : "filter",
+      "sources" : [ "FORMULA3" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "is_max_approved_date",
+          "operator" : "EQUAL",
+          "operands" : [ "true" ]
+        } ]
+      }
+    },
+    "DROP_FIELDS1" : {
+      "action" : "schema",
+      "sources" : [ "FILTER1" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "SELECT",
+          "ignoreMissingFields" : true,
+          "fields" : [ "SUM_HF_Received", "Committed_Including_Bequest_Intention", "Received", "Name", "HAM_SLT_Approved__c", "HAM_Comments__c", "Approved_Date", "Fiscal_Year", "Committed_Including_Bequest_Intention_FYTD", "Received_FYTD", "HF_Received_FYTD" ]
+        }
+      }
+    }
+  },
+  "ui" : {
+    "nodes" : {
+      "LOAD_DATASET2_copy0" : {
+        "label" : "HAM_Board_Dashboard_Data__c",
+        "type" : "LOAD_DATASET",
+        "top" : 252.2,
+        "left" : 112,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "FILTER0_copy0" : {
+        "label" : "Filter 0",
+        "type" : "FILTER",
+        "top" : 253.10000000000002,
+        "left" : 252
+      },
+      "LOAD_DATASET0_copy0" : {
+        "label" : "Board Dashboard ADV Aggregates History",
+        "type" : "LOAD_DATASET",
+        "top" : 112,
+        "left" : 112,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN0" : {
+        "label" : "Join 0",
+        "type" : "JOIN",
+        "top" : 252,
+        "left" : 392
+      },
+      "OUTPUT0" : {
+        "label" : "Output 0",
+        "type" : "OUTPUT",
+        "top" : 251.8,
+        "left" : 950.2
+      },
+      "TRANSFORM0" : {
+        "label" : "Transform 0",
+        "type" : "TRANSFORM",
+        "top" : 252,
+        "left" : 532,
+        "graph" : {
+          "DROP_FIELDS0" : {
+            "label" : "Drop Columns"
+          },
+          "FORMULA0" : {
+            "label" : "max approved date"
+          },
+          "FORMULA1" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "key"
+          },
+          "FORMULA2" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Approved Date"
+          },
+          "FORMULA3" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "is max approved date"
+          }
+        },
+        "connectors" : [ {
+          "source" : "DROP_FIELDS0",
+          "target" : "FORMULA1"
+        }, {
+          "source" : "FORMULA2",
+          "target" : "FORMULA0"
+        }, {
+          "source" : "FORMULA1",
+          "target" : "FORMULA2"
+        }, {
+          "source" : "FORMULA0",
+          "target" : "FORMULA3"
+        } ]
+      },
+      "FILTER1" : {
+        "label" : "Filter to max approved date",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 252,
+        "left" : 672
+      },
+      "TRANSFORM1" : {
+        "label" : "Keep Fields",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 252,
+        "left" : 812,
+        "graph" : {
+          "DROP_FIELDS1" : {
+            "label" : "Drop Columns"
+          }
+        },
+        "connectors" : [ ]
+      }
+    },
+    "connectors" : [ {
+      "source" : "LOAD_DATASET2_copy0",
+      "target" : "FILTER0_copy0"
+    }, {
+      "source" : "LOAD_DATASET0_copy0",
+      "target" : "JOIN0"
+    }, {
+      "source" : "FILTER0_copy0",
+      "target" : "JOIN0"
+    }, {
+      "source" : "TRANSFORM1",
+      "target" : "OUTPUT0"
+    }, {
+      "source" : "JOIN0",
+      "target" : "TRANSFORM0"
+    }, {
+      "source" : "TRANSFORM0",
+      "target" : "FILTER1"
+    }, {
+      "source" : "FILTER1",
+      "target" : "TRANSFORM1"
+    } ],
+    "hiddenColumns" : [ ]
+  },
+  "runMode" : "full"
+}

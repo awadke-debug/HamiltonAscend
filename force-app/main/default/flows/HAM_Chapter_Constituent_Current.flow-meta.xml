@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>63.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <description>Triggered on new Address Relations that are Status = &apos;Current&apos; and if Status changes on update. This flow builds the Current Chapters string on the parent Contact.</description>
+    <environments>Default</environments>
+    <interviewLabel>HAM Chapter Constituent Curren {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>HAM Chapter Constituent Current</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <start>
+        <locationX>50</locationX>
+        <locationY>0</locationY>
+        <filterFormula>(ISNEW() &amp;&amp; NOT(ISNULL({!$Record.HAM_Chapter__c})) &amp;&amp; TEXT({!$Record.ucinn_ascendv2__Status__c}) = &quot;Current&quot;)
+||
+(ISCHANGED({!$Record.ucinn_ascendv2__Status__c}) &amp;&amp; (TEXT({!$Record.ucinn_ascendv2__Status__c}) = &quot;Current&quot; || TEXT({!$Record.ucinn_ascendv2__Status__c}) = &quot;Former&quot;))</filterFormula>
+        <object>ucinn_ascendv2__Address_Relation__c</object>
+        <recordTriggerType>CreateAndUpdate</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>InvalidDraft</status>
+    <variables>
+        <name>updateContact</name>
+        <dataType>SObject</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>true</isOutput>
+        <objectType>Contact</objectType>
+    </variables>
+    <variables>
+        <name>updateContacts</name>
+        <dataType>SObject</dataType>
+        <isCollection>true</isCollection>
+        <isInput>true</isInput>
+        <isOutput>true</isOutput>
+        <objectType>Contact</objectType>
+    </variables>
+</Flow>

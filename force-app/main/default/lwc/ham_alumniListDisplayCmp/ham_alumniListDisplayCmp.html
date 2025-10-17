@@ -1,0 +1,28 @@
+<template>
+    <div class="list-container">
+        <template for:each={alumniList} for:item="alumni" >
+            <div key={alumni.contactId} class="alumn-row" onclick={handleProfileSelect} data-id={alumni.contactId}>
+                <template if:true={alumni.profilePictureUrl}>
+                    <img src={alumni.profilePictureUrl} class="avatar-large" alt="Profile Picture" />
+                </template>
+                <template if:false={alumni.profilePictureUrl}>
+                    <lightning-icon class="person-icon" icon-name="standard:user" size="large"></lightning-icon>
+                </template>
+                <div class="row-info">
+                    <div class="row-field name">{alumni.contactName}</div>                    
+                    <template for:each={alumni.fields} for:item="field">
+                        <div key={field.label} class="row-field">
+                            <strong>{field.label}</strong>
+                            <template if:true={field.value}>
+                                &nbsp; {field.value}
+                            </template>
+                            <template if:false={field.value}>
+                                &nbsp; -
+                            </template>
+                        </div>
+                    </template>
+                </div>
+            </div>
+        </template>
+    </div>
+</template>

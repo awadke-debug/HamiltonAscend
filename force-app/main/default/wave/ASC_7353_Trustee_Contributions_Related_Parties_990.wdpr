@@ -1,0 +1,954 @@
+{
+  "version" : "63.0",
+  "nodes" : {
+    "LOAD_DATASET7_copy0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "ucinn_ascendv2__Is_End_Date_Before_Start_Formula__c", "ucinn_ascendv2__Start_Date__c", "ucinn_ascendv2__End_Date__c", "RecordTypeId", "ucinn_ascendv2__Account__c", "ucinn_ascendv2__Contact__c", "ucinn_ascendv2__Involvement_Code__c", "ucinn_ascendv2__Status__c", "ucinn_ascendv2__Involvement_Code_Description_Formula__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "ucinn_ascendv2__Involvement__c",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "ucinn_ascendv2__Involvement__c"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "LOAD_DATASET8_copy0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Id", "Name" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "RecordType",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "RecordType"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN15_copy0" : {
+      "action" : "join",
+      "sources" : [ "LOAD_DATASET7_copy0", "LOAD_DATASET8_copy0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "RecordTypeId", "Record_Type.Id" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "RecordTypeId" ],
+        "rightQualifier" : "Record_Type",
+        "rightKeys" : [ "Id" ]
+      }
+    },
+    "LOAD_DATASET19_copy0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Id", "HAM_Category__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "ucinn_ascendv2__Involvement_Value__c",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "ucinn_ascendv2__Involvement_Value__c"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN27_copy0" : {
+      "action" : "join",
+      "sources" : [ "JOIN15_copy0", "LOAD_DATASET19_copy0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Involvement_Code.Id", "ucinn_ascendv2__Involvement_Code__c" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "ucinn_ascendv2__Involvement_Code__c" ],
+        "rightQualifier" : "Involvement_Code",
+        "rightKeys" : [ "Id" ]
+      }
+    },
+    "FORMULA71_copy0" : {
+      "action" : "formula",
+      "sources" : [ "JOIN27_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Account_or_Contact_Id",
+          "label" : "Account or Contact Id",
+          "formulaExpression" : "coalesce(ucinn_ascendv2__Contact__c,ucinn_ascendv2__Account__c)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FILTER66_copy0" : {
+      "action" : "filter",
+      "sources" : [ "FORMULA71_copy0" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "Involvement_Code.HAM_Category__c",
+          "operator" : "EQUAL",
+          "operands" : [ "Board of Trustees" ]
+        } ],
+        "filterBooleanLogic" : "1"
+      }
+    },
+    "DROP_FIELDS52_copy0" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA267_copy0" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "SELECT",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Account_or_Contact_Id", "All_Trustee_Involvements_Multivalue" ]
+        }
+      }
+    },
+    "FORMULA267_copy0" : {
+      "action" : "computeRelative",
+      "sources" : [ "FILTER68" ],
+      "parameters" : {
+        "partitionBy" : [ "ucinn_ascendv2__Contact__c" ],
+        "orderBy" : [ {
+          "fieldName" : "ucinn_ascendv2__Involvement_Code_Description_Formula__c",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "MULTIVALUE",
+          "name" : "All_Trustee_Involvements_Multivalue",
+          "label" : "All Trustee Involvements Multivalue",
+          "formulaExpression" : "collect_list(ucinn_ascendv2__Involvement_Code_Description_Formula__c)"
+        } ]
+      }
+    },
+    "FORMULA268" : {
+      "action" : "formula",
+      "sources" : [ "DROP_FIELDS52_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "is_FY24_Trustee",
+          "label" : "is FY24 Trustee",
+          "formulaExpression" : "'true'",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "JOIN98_copy0" : {
+      "action" : "join",
+      "sources" : [ "LOAD_DATASET20", "FORMULA268" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Trustee_Involvements.Account_or_Contact_Id" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Account_or_Contact_Id" ],
+        "rightQualifier" : "Trustee_Involvements",
+        "rightKeys" : [ "Account_or_Contact_Id" ]
+      }
+    },
+    "LOAD_DATASET20" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "ucinn_ascendv2__External_System_ID__c", "Account_or_Contact_External_Id", "Is_Active", "ucinn_ascendv2__Is_Deceased__c", "Current_Employer.Organization.Name", "HAM_LiveAlumni_Employer__c", "Account_or_Contact_Id", "ucinn_ascendv2__Full_Name_Formula__c", "HAM_LiveAlumni_Job_Title__c", "Job_Title__c", "ucinn_ascendv2__Primary_Contact_Type__c", "Outstanding_Balance_Excluding_Bequest_Intentions" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Account and Contact Dataset",
+          "name" : "Account_and_Contact_Dataset"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "LOAD_DATASET21" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "ID", "Name" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "key employee list",
+          "name" : "key_employee_list"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "FORMULA269" : {
+      "action" : "formula",
+      "sources" : [ "LOAD_DATASET21" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "is_key_employee",
+          "label" : "is key employee",
+          "formulaExpression" : "'true'",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "JOIN99" : {
+      "action" : "join",
+      "sources" : [ "JOIN98_copy0", "FORMULA269" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Account_or_Contact_Id" ],
+        "rightQualifier" : "flagkeyemp",
+        "rightKeys" : [ "ID" ]
+      }
+    },
+    "FILTER67" : {
+      "action" : "filter",
+      "sources" : [ "JOIN99" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "flagkeyemp.is_key_employee",
+          "operator" : "EQUAL",
+          "operands" : [ "true" ]
+        }, {
+          "type" : "TEXT",
+          "field" : "Trustee_Involvements.is_FY24_Trustee",
+          "operator" : "EQUAL",
+          "operands" : [ "true" ]
+        } ],
+        "filterBooleanLogic" : "1 OR 2"
+      }
+    },
+    "OUTPUT0" : {
+      "action" : "save",
+      "sources" : [ "FORMULA272" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Trustees_Key_Employee_990",
+          "name" : "Trustees_Key_Employee_990",
+          "folderName" : "SharedApp"
+        },
+        "measuresToCurrencies" : [ ]
+      }
+    },
+    "FILTER68" : {
+      "action" : "filter",
+      "sources" : [ "FILTER66_copy0" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "DATETIME",
+          "field" : "ucinn_ascendv2__Start_Date__c",
+          "operator" : "LESS_OR_EQUAL",
+          "operands" : [ "1719705600000" ]
+        }, {
+          "type" : "DATETIME",
+          "field" : "ucinn_ascendv2__End_Date__c",
+          "operator" : "IS_NULL",
+          "operands" : [ ]
+        }, {
+          "type" : "DATETIME",
+          "field" : "ucinn_ascendv2__End_Date__c",
+          "operator" : "GREATER_OR_EQUAL",
+          "operands" : [ "1688169600000" ]
+        } ],
+        "filterBooleanLogic" : "1 AND (2 OR 3)"
+      }
+    },
+    "LOAD_DATASET0_copy0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "HAM_Tender_Type__c", "ucinn_ascendv2__Credit_Type__c", "Contact.ucinn_ascendv2__Full_Name_Formula__c", "Account.Id", "Fiscal_Year", "Account.Type", "ucinn_ascendv2__Credit_Date_Formula__c", "Object", "Opportunity.Name", "ucinn_ascendv2__Gift_Type_Formula__c", "Opportunity.Type", "Constituent_or_Account_Id", "Cash_Amount", "Fundraising_Amount" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Gift Credit and Payment",
+          "name" : "Gift_Credit_and_Payment"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "FILTER0_copy0" : {
+      "action" : "filter",
+      "sources" : [ "LOAD_DATASET0_copy0" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "NUMBER",
+          "field" : "Cash_Amount",
+          "operator" : "GREATER_THAN",
+          "operands" : [ "0" ]
+        } ],
+        "filterBooleanLogic" : "1"
+      }
+    },
+    "FILTER69" : {
+      "action" : "filter",
+      "sources" : [ "FILTER0_copy0" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "Fiscal_Year",
+          "operator" : "EQUAL",
+          "operands" : [ "2024" ]
+        } ]
+      }
+    },
+    "FORMULA270" : {
+      "action" : "formula",
+      "sources" : [ "FILTER67" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "is_FY24_Trustee_or_Key_Employee",
+          "label" : "is FY24 Trustee or Key Employee",
+          "formulaExpression" : "'true'",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA272" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA270" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Constituent_Type_990",
+          "label" : "Constituent Type 990",
+          "formulaExpression" : "case \r\n    when \"Trustee_Involvements.is_FY24_Trustee\"='true'\r\n    then 'trustee'\r\n    \r\n    else\r\n    ucinn_ascendv2__Primary_Contact_Type__c\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "JOIN100" : {
+      "action" : "join",
+      "sources" : [ "FILTER69", "FORMULA272" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "OUTER",
+        "leftKeys" : [ "Constituent_or_Account_Id" ],
+        "rightQualifier" : "Addflag",
+        "rightKeys" : [ "Account_or_Contact_Id" ]
+      }
+    },
+    "FILTER70" : {
+      "action" : "filter",
+      "sources" : [ "JOIN101" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "Addflag.is_FY24_Trustee_or_Key_Employee",
+          "operator" : "EQUAL",
+          "operands" : [ "true" ]
+        } ]
+      }
+    },
+    "OUTPUT1" : {
+      "action" : "save",
+      "sources" : [ "FILTER70" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Trustees_Key_Employee_990_credits",
+          "name" : "Trustees_Key_Employee_990_credits",
+          "folderName" : "SharedApp"
+        },
+        "measuresToCurrencies" : [ ]
+      }
+    },
+    "LOAD_DATASET0_copy0_copy0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "ucinn_ascendv2__Gift_Type_Formula__c", "ucinn_ascendv2__Credit_Type__c", "Contact.ucinn_ascendv2__Full_Name_Formula__c", "Account.Id", "Fiscal_Year", "Account.Type", "ucinn_ascendv2__Credit_Date_Formula__c", "Opportunity.HAM_Business_Office_Asset__c", "Object", "Opportunity.Name", "Opportunity.Type", "Constituent_or_Account_Id", "Cash_Amount", "Bequest_Intention", "Fundraising_Amount" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Gift Credit and Payment",
+          "name" : "Gift_Credit_and_Payment"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "FILTER0_copy0_copy0" : {
+      "action" : "filter",
+      "sources" : [ "LOAD_DATASET0_copy0_copy0" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "NUMBER",
+          "field" : "Fundraising_Amount",
+          "operator" : "GREATER_THAN",
+          "operands" : [ "0" ]
+        }, {
+          "type" : "NUMBER",
+          "field" : "Cash_Amount",
+          "operator" : "GREATER_THAN",
+          "operands" : [ "0" ]
+        }, {
+          "type" : "TEXT",
+          "field" : "Opportunity.HAM_Business_Office_Asset__c",
+          "operator" : "EQUAL",
+          "operands" : [ "true" ]
+        }, {
+          "type" : "NUMBER",
+          "field" : "Bequest_Intention",
+          "operator" : "EQUAL",
+          "operands" : [ "0" ]
+        } ],
+        "filterBooleanLogic" : "(1 OR 2) AND 3 AND 4"
+      }
+    },
+    "EXTRACT0" : {
+      "action" : "extractGrains",
+      "sources" : [ "FILTER0_copy0_copy0" ],
+      "parameters" : {
+        "grainExtractions" : [ ]
+      }
+    },
+    "AGGREGATE1" : {
+      "action" : "aggregate",
+      "sources" : [ "EXTRACT0" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "SUM_Fundraising_Amount",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        }, {
+          "name" : "SUM_Cash_Amount",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        } ]
+      },
+      "parameters" : {
+        "aggregations" : [ {
+          "action" : "SUM",
+          "source" : "Fundraising_Amount",
+          "name" : "SUM_Fundraising_Amount",
+          "label" : "Sum of Fundraising Amount"
+        }, {
+          "action" : "SUM",
+          "source" : "Cash_Amount",
+          "name" : "SUM_Cash_Amount",
+          "label" : "Sum of Cash Amount"
+        } ],
+        "groupings" : [ "Constituent_or_Account_Id" ],
+        "pivots" : [ ],
+        "nodeType" : "STANDARD"
+      }
+    },
+    "FORMULA271" : {
+      "action" : "formula",
+      "sources" : [ "AGGREGATE1" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Outstanding_Balance_Excl_BI_BO_Assets_Only",
+          "label" : "Outstanding Balance Excl BI-BO Assets Only",
+          "formulaExpression" : "SUM_Fundraising_Amount-SUM_Cash_Amount",
+          "precision" : 10,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES0" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA271" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "SUM_Fundraising_Amount",
+          "newProperties" : {
+            "label" : "Lifetime Fundraising Excl BI -BO Assets only",
+            "name" : "Lifetime_Fundraising_Excl_BI_BO_Assets_only"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES1" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES0" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "SUM_Cash_Amount",
+          "newProperties" : {
+            "label" : "Lifetime Cash-BO Assets only",
+            "name" : "Lifetime_Cash_BO_Assets_only"
+          }
+        } ]
+      }
+    },
+    "JOIN101" : {
+      "action" : "join",
+      "sources" : [ "JOIN100", "EDIT_ATTRIBUTES1" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Constituent_or_Account_Id" ],
+        "rightQualifier" : "BO_Assets",
+        "rightKeys" : [ "Constituent_or_Account_Id" ]
+      }
+    }
+  },
+  "ui" : {
+    "nodes" : {
+      "LOAD_DATASET7_copy0" : {
+        "label" : "ucinn_ascendv2__Involvement__c",
+        "type" : "LOAD_DATASET",
+        "top" : 1092,
+        "left" : 252.2,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "LOAD_DATASET8_copy0" : {
+        "label" : "RecordType",
+        "type" : "LOAD_DATASET",
+        "top" : 952,
+        "left" : 393,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN15_copy0" : {
+        "label" : "Join Record Type To Involvement",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 952,
+        "left" : 252
+      },
+      "LOAD_DATASET19_copy0" : {
+        "label" : "ucinn_ascendv2__Involvement_Value__c",
+        "type" : "LOAD_DATASET",
+        "top" : 812,
+        "left" : 392.6,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN27_copy0" : {
+        "label" : "Lookup Involvement Code To Involvement",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 812,
+        "left" : 252.10000000000002
+      },
+      "TRANSFORM26_copy0" : {
+        "label" : "Enrich Involvements",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 670.2,
+        "left" : 252,
+        "graph" : {
+          "FORMULA71_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Contact or Account Id"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "FILTER66_copy0" : {
+        "label" : "Filter to Board of Trustees",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 530.2,
+        "left" : 252
+      },
+      "TRANSFORM76_copy0" : {
+        "label" : "Keep FY24 Trustee Involvements",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 252.5,
+        "left" : 252.39999999999998,
+        "graph" : {
+          "DROP_FIELDS52_copy0" : {
+            "label" : "Keep Columns"
+          },
+          "FORMULA267_copy0" : {
+            "label" : "All Trustee Involvements Multivalue"
+          },
+          "FORMULA268" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "is FY24 Trustee"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA267_copy0",
+          "target" : "DROP_FIELDS52_copy0"
+        }, {
+          "source" : "DROP_FIELDS52_copy0",
+          "target" : "FORMULA268"
+        } ]
+      },
+      "JOIN98_copy0" : {
+        "label" : "Lookup Trustee Involvements",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 112.6,
+        "left" : 251.89999999999998
+      },
+      "LOAD_DATASET20" : {
+        "label" : "Account and Contact Dataset",
+        "type" : "LOAD_DATASET",
+        "top" : 112.1,
+        "left" : 112,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "LOAD_DATASET21" : {
+        "label" : "key employee list",
+        "type" : "LOAD_DATASET",
+        "top" : 530.2,
+        "left" : 532,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "TRANSFORM77" : {
+        "label" : "flag key employees",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 390.2,
+        "left" : 532,
+        "graph" : {
+          "FORMULA269" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "is key employee"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "JOIN99" : {
+        "label" : "lookup key employees",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 112.19999999999999,
+        "left" : 532
+      },
+      "FILTER67" : {
+        "label" : "Keep Trustees and Key Employees",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 112.1,
+        "left" : 671.8
+      },
+      "OUTPUT0" : {
+        "label" : "contact level",
+        "description" : "",
+        "type" : "OUTPUT",
+        "top" : 112.1,
+        "left" : 1511.3
+      },
+      "FILTER68" : {
+        "label" : "Filter to FY24 Trustees",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 390.2,
+        "left" : 252
+      },
+      "LOAD_DATASET0_copy0" : {
+        "label" : "Gift Credit and Payment",
+        "type" : "LOAD_DATASET",
+        "top" : 954.1,
+        "left" : 1092,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "FILTER0_copy0" : {
+        "label" : "Filter to credit cash",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 672,
+        "left" : 1092
+      },
+      "FILTER69" : {
+        "label" : "Filter to FY2024",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 532.1,
+        "left" : 1092.5
+      },
+      "TRANSFORM78" : {
+        "label" : "Add flag",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 112,
+        "left" : 812,
+        "graph" : {
+          "FORMULA270" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "is FY24 Trustee or Key Employee"
+          },
+          "FORMULA272" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Constituent Type 990"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA270",
+          "target" : "FORMULA272"
+        } ]
+      },
+      "JOIN100" : {
+        "label" : "Lookup account and contact",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 252.60000000000002,
+        "left" : 1092.2
+      },
+      "FILTER70" : {
+        "label" : "keeps credits associated with trustees/key employees",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 252.2,
+        "left" : 1651.7
+      },
+      "OUTPUT1" : {
+        "label" : "credits",
+        "description" : "",
+        "type" : "OUTPUT",
+        "top" : 253.89999999999998,
+        "left" : 1791.9
+      },
+      "LOAD_DATASET0_copy0_copy0" : {
+        "label" : "Gift Credit and Payment",
+        "type" : "LOAD_DATASET",
+        "top" : 952.3,
+        "left" : 1370,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "FILTER0_copy0_copy0" : {
+        "label" : "Filter to credits and BO assets and excl BI",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 812.3,
+        "left" : 1370
+      },
+      "AGGREGATE0" : {
+        "label" : "Aggregate to account or contact",
+        "description" : "",
+        "type" : "AGGREGATE",
+        "top" : 672.3,
+        "left" : 1370,
+        "graph" : {
+          "EXTRACT0" : null,
+          "AGGREGATE1" : null
+        },
+        "connectors" : [ {
+          "source" : "EXTRACT0",
+          "target" : "AGGREGATE1"
+        } ]
+      },
+      "TRANSFORM79" : {
+        "label" : "Outstanding Balance for BO Assets",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 532.3,
+        "left" : 1370,
+        "graph" : {
+          "FORMULA271" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Outstanding Balance Excl BI-BO Assets Only"
+          },
+          "EDIT_ATTRIBUTES0" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES1" : {
+            "label" : "Edit Attributes"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA271",
+          "target" : "EDIT_ATTRIBUTES0"
+        }, {
+          "source" : "EDIT_ATTRIBUTES0",
+          "target" : "EDIT_ATTRIBUTES1"
+        } ]
+      },
+      "JOIN101" : {
+        "label" : "Lookup BO Assets Outstanding Balance",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 252.2,
+        "left" : 1371.5
+      }
+    },
+    "connectors" : [ {
+      "source" : "LOAD_DATASET20",
+      "target" : "JOIN98_copy0"
+    }, {
+      "source" : "JOIN15_copy0",
+      "target" : "JOIN27_copy0"
+    }, {
+      "source" : "LOAD_DATASET7_copy0",
+      "target" : "JOIN15_copy0"
+    }, {
+      "source" : "LOAD_DATASET8_copy0",
+      "target" : "JOIN15_copy0"
+    }, {
+      "source" : "LOAD_DATASET19_copy0",
+      "target" : "JOIN27_copy0"
+    }, {
+      "source" : "JOIN27_copy0",
+      "target" : "TRANSFORM26_copy0"
+    }, {
+      "source" : "TRANSFORM26_copy0",
+      "target" : "FILTER66_copy0"
+    }, {
+      "source" : "FILTER68",
+      "target" : "TRANSFORM76_copy0"
+    }, {
+      "source" : "TRANSFORM76_copy0",
+      "target" : "JOIN98_copy0"
+    }, {
+      "source" : "LOAD_DATASET21",
+      "target" : "TRANSFORM77"
+    }, {
+      "source" : "JOIN98_copy0",
+      "target" : "JOIN99"
+    }, {
+      "source" : "TRANSFORM77",
+      "target" : "JOIN99"
+    }, {
+      "source" : "JOIN99",
+      "target" : "FILTER67"
+    }, {
+      "source" : "TRANSFORM78",
+      "target" : "OUTPUT0"
+    }, {
+      "source" : "FILTER66_copy0",
+      "target" : "FILTER68"
+    }, {
+      "source" : "LOAD_DATASET0_copy0",
+      "target" : "FILTER0_copy0"
+    }, {
+      "source" : "FILTER0_copy0",
+      "target" : "FILTER69"
+    }, {
+      "source" : "FILTER67",
+      "target" : "TRANSFORM78"
+    }, {
+      "source" : "FILTER69",
+      "target" : "JOIN100"
+    }, {
+      "source" : "TRANSFORM78",
+      "target" : "JOIN100"
+    }, {
+      "source" : "JOIN101",
+      "target" : "FILTER70"
+    }, {
+      "source" : "FILTER70",
+      "target" : "OUTPUT1"
+    }, {
+      "source" : "LOAD_DATASET0_copy0_copy0",
+      "target" : "FILTER0_copy0_copy0"
+    }, {
+      "source" : "FILTER0_copy0_copy0",
+      "target" : "AGGREGATE0"
+    }, {
+      "source" : "AGGREGATE0",
+      "target" : "TRANSFORM79"
+    }, {
+      "source" : "JOIN100",
+      "target" : "JOIN101"
+    }, {
+      "source" : "TRANSFORM79",
+      "target" : "JOIN101"
+    } ],
+    "hiddenColumns" : [ ]
+  },
+  "runMode" : "full"
+}

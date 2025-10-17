@@ -1,0 +1,31 @@
+<template>
+    <div class="card-list-container">
+        <template if:true={cardRecords.length}>
+            <template for:each={cardRecords} for:item="card">
+                <div key={card.Id} class="mobile-pledge-card">
+                    <div class="card-title">
+                        <h3>{card.title}</h3>
+                    </div>
+                    <div class="card-details">
+                        <template for:each={card.fields} for:item="field">
+                            <div key={field.key} class="card-detail-item">
+                                <span class="card-label">{field.label}:</span>
+                                <span class="card-value">
+                                    {field.value} </span>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+            </template>
+        </template>
+        <template if:false={cardRecords.length}>
+            <div class="no-records-message">{label.noRecordsMsg}</div>
+        </template>
+
+        <template if:true={tableData.hasMore}>
+            <button class="load-more-button" onclick={handleLoadMore}>
+                {label.loadMoreMobile}
+            </button>
+        </template>
+    </div>
+</template>

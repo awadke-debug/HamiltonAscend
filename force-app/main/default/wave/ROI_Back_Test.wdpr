@@ -1,0 +1,1649 @@
+{
+  "version" : "64.0",
+  "nodes" : {
+    "LOAD_DATASET0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Wealth_Rating_Sorting", "HAM_Name_w_Suffix__c", "HAM_Reunion_Year__c", "ucinn_ascendv2__Primary_Contact_Type__c", "ucinn_ascendv2__Wealth_Rating__c", "Account_or_Contact_Id", "Is_Primary_Contact", "Primary_Relationship_Manager.Assigned_User_Name" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Account and Contact Dataset",
+          "name" : "Account_and_Contact_Dataset"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "LOAD_DATASET1" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "ucinn_ascendv2__Account__c", "ucinn_ascendv2__Assigned_Relationship_Manager_User__c", "ucinn_ascendv2__Assignment_End_Date__c", "ucinn_ascendv2__Assignment_Start_Date__c", "ucinn_ascendv2__Assigned_Relationship_Mngr_Name_Formula__c", "HAM_Role__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "ucinn_ascendv2__Assignment__c",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "ucinn_ascendv2__Assignment__c"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "FILTER0" : {
+      "action" : "filter",
+      "sources" : [ "FILTER5" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "HAM_Role__c",
+          "operator" : "EQUAL",
+          "operands" : [ "Major Gift Officer", "Principal Gift Officer" ]
+        }, {
+          "type" : "TEXT",
+          "field" : "ucinn_ascendv2__Assigned_Relationship_Mngr_Name_Formula__c",
+          "operator" : "IS_NOT_NULL",
+          "operands" : [ ]
+        } ]
+      }
+    },
+    "FILTER1" : {
+      "action" : "filter",
+      "sources" : [ "FILTER0" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "DATETIME",
+          "field" : "ucinn_ascendv2__Assignment_End_Date__c",
+          "operator" : "IS_NULL",
+          "operands" : [ ]
+        } ]
+      }
+    },
+    "FORMULA1" : {
+      "action" : "formula",
+      "sources" : [ "FILTER1" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Currently_Assigned_to_MGO_PGO_Flag",
+          "label" : "Currently Assigned to MGO/PGO Flag",
+          "formulaExpression" : "'true'",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "DROP_FIELDS0" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA1" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "SELECT",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Currently_Assigned_to_MGO_PGO_Flag", "Account.ucinn_ascendv2__Primary_Contact__c" ]
+        }
+      }
+    },
+    "JOIN0" : {
+      "action" : "join",
+      "sources" : [ "LOAD_DATASET0", "DROP_FIELDS0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "CurrentAssigned.Account.ucinn_ascendv2__Primary_Contact__c" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Account_or_Contact_Id" ],
+        "rightQualifier" : "CurrentAssigned",
+        "rightKeys" : [ "Account.ucinn_ascendv2__Primary_Contact__c" ]
+      }
+    },
+    "FILTER2" : {
+      "action" : "filter",
+      "sources" : [ "FILTER0" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "DATETIME",
+          "field" : "ucinn_ascendv2__Assignment_Start_Date__c",
+          "operator" : "IS_NOT_NULL",
+          "operands" : [ ]
+        } ]
+      }
+    },
+    "FORMULA2" : {
+      "action" : "computeRelative",
+      "sources" : [ "FILTER2" ],
+      "parameters" : {
+        "partitionBy" : [ "Account.ucinn_ascendv2__Primary_Contact__c" ],
+        "orderBy" : [ {
+          "fieldName" : "ucinn_ascendv2__Assignment_Start_Date__c",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "DATETIME",
+          "name" : "First_Assigned_to_MGO_PGO_Date",
+          "label" : "First Assigned to MGO/PGO Date",
+          "formulaExpression" : "first_value(ucinn_ascendv2__Assignment_Start_Date__c)",
+          "format" : "yyyy-MM-dd",
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA3" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA2" ],
+      "parameters" : {
+        "partitionBy" : [ "Account.ucinn_ascendv2__Primary_Contact__c" ],
+        "orderBy" : [ {
+          "fieldName" : "ucinn_ascendv2__Assignment_Start_Date__c",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "First_MGO_PGO_PRM",
+          "label" : "First MGO/PGO PRM",
+          "formulaExpression" : "first_value(ucinn_ascendv2__Assigned_Relationship_Mngr_Name_Formula__c)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "DROP_FIELDS1" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA3" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "SELECT",
+          "ignoreMissingFields" : true,
+          "fields" : [ "First_Assigned_to_MGO_PGO_Date", "First_MGO_PGO_PRM", "Account.ucinn_ascendv2__Primary_Contact__c" ]
+        }
+      }
+    },
+    "FORMULA4" : {
+      "action" : "formula",
+      "sources" : [ "DROP_FIELDS1" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Total_Year_Since_First_Assigned_to_MGO_PGO",
+          "label" : "Total Year Since First Assigned to MGO/PGO",
+          "formulaExpression" : "fiscalYear(current_date())-fiscalYear(First_Assigned_to_MGO_PGO_Date)",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "JOIN1" : {
+      "action" : "join",
+      "sources" : [ "JOIN0", "FORMULA4" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "FirstMGOPGO.Account.ucinn_ascendv2__Primary_Contact__c" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Account_or_Contact_Id" ],
+        "rightQualifier" : "FirstMGOPGO",
+        "rightKeys" : [ "Account.ucinn_ascendv2__Primary_Contact__c" ]
+      }
+    },
+    "FILTER3" : {
+      "action" : "filter",
+      "sources" : [ "FILTER5" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "HAM_Role__c",
+          "operator" : "EQUAL",
+          "operands" : [ "Annual Fund Officer" ]
+        }, {
+          "type" : "TEXT",
+          "field" : "ucinn_ascendv2__Assigned_Relationship_Mngr_Name_Formula__c",
+          "operator" : "IS_NOT_NULL",
+          "operands" : [ ]
+        } ]
+      }
+    },
+    "FILTER2_copy0" : {
+      "action" : "filter",
+      "sources" : [ "FILTER3" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "DATETIME",
+          "field" : "ucinn_ascendv2__Assignment_Start_Date__c",
+          "operator" : "IS_NOT_NULL",
+          "operands" : [ ]
+        } ]
+      }
+    },
+    "FORMULA2_copy0" : {
+      "action" : "computeRelative",
+      "sources" : [ "FILTER2_copy0" ],
+      "parameters" : {
+        "partitionBy" : [ "Account.ucinn_ascendv2__Primary_Contact__c" ],
+        "orderBy" : [ {
+          "fieldName" : "ucinn_ascendv2__Assignment_Start_Date__c",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "DATETIME",
+          "name" : "First_Assigned_to_AFO_Date",
+          "label" : "First Assigned to AFO Date",
+          "formulaExpression" : "first_value(ucinn_ascendv2__Assignment_Start_Date__c)",
+          "format" : "yyyy-MM-dd",
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA3_copy0" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA2_copy0" ],
+      "parameters" : {
+        "partitionBy" : [ "Account.ucinn_ascendv2__Primary_Contact__c" ],
+        "orderBy" : [ {
+          "fieldName" : "ucinn_ascendv2__Assignment_Start_Date__c",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "First_AFO_PRM",
+          "label" : "First AFO PRM",
+          "formulaExpression" : "first_value(ucinn_ascendv2__Assigned_Relationship_Mngr_Name_Formula__c)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "DROP_FIELDS1_copy0" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA3_copy0" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "SELECT",
+          "ignoreMissingFields" : true,
+          "fields" : [ "First_Assigned_to_AFO_Date", "First_AFO_PRM", "Account.ucinn_ascendv2__Primary_Contact__c" ]
+        }
+      }
+    },
+    "JOIN2" : {
+      "action" : "join",
+      "sources" : [ "JOIN1", "DROP_FIELDS1_copy0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "FirstAFO.Account.ucinn_ascendv2__Primary_Contact__c" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Account_or_Contact_Id" ],
+        "rightQualifier" : "FirstAFO",
+        "rightKeys" : [ "Account.ucinn_ascendv2__Primary_Contact__c" ]
+      }
+    },
+    "OUTPUT0" : {
+      "action" : "save",
+      "sources" : [ "JOIN6" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Assignment History",
+          "name" : "Assignment_History",
+          "folderName" : "SharedApp"
+        },
+        "dateConfigurationName" : "July_Fiscal_Year",
+        "measuresToCurrencies" : [ ]
+      }
+    },
+    "OUTPUT1" : {
+      "action" : "save",
+      "sources" : [ "JOIN7" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "MGO PGO Test",
+          "name" : "MGO_PGO_Test",
+          "folderName" : "SharedApp"
+        },
+        "dateConfigurationName" : "July_Fiscal_Year",
+        "measuresToCurrencies" : [ ]
+      }
+    },
+    "LOAD_DATASET0_copy0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Wealth_Rating_Sorting", "HAM_Name_w_Suffix__c", "HAM_Reunion_Year__c", "ucinn_ascendv2__Primary_Contact_Type__c", "ucinn_ascendv2__Wealth_Rating__c", "Account_or_Contact_Id", "Is_Primary_Contact", "Primary_Relationship_Manager.Assigned_User_Name" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Account and Contact Dataset",
+          "name" : "Account_and_Contact_Dataset"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN3" : {
+      "action" : "join",
+      "sources" : [ "FILTER4", "LOAD_DATASET0_copy0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Accountand.Account_or_Contact_Id" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Account.ucinn_ascendv2__Primary_Contact__c" ],
+        "rightQualifier" : "Accountand",
+        "rightKeys" : [ "Account_or_Contact_Id" ]
+      }
+    },
+    "LOAD_DATASET3_copy0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "ucinn_ascendv2__Primary_Contact__c", "Id" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "Account",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "Account"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN1_copy0" : {
+      "action" : "join",
+      "sources" : [ "LOAD_DATASET1", "LOAD_DATASET3_copy0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "ucinn_ascendv2__Account__c", "Account.Id" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "ucinn_ascendv2__Account__c" ],
+        "rightQualifier" : "Account",
+        "rightKeys" : [ "Id" ]
+      }
+    },
+    "FILTER4" : {
+      "action" : "filter",
+      "sources" : [ "FILTER5" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "HAM_Role__c",
+          "operator" : "EQUAL",
+          "operands" : [ "Major Gift Officer", "Principal Gift Officer" ]
+        } ]
+      }
+    },
+    "LOAD_DATASET4" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Opportunity.Type", "Fiscal_Year", "ucinn_ascendv2__Credit_Date_Formula__c", "Constituent_or_Account_Id", "Cash_Amount", "Fundraising_Amount" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Gift Credit and Payment",
+          "name" : "Gift_Credit_and_Payment"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN4" : {
+      "action" : "join",
+      "sources" : [ "FORMULA22", "FORMULA5" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Join2.Is_Primary_Contact", "Join2.HAM_Name_w_Suffix__c", "Join2.HAM_Reunion_Year__c", "Join2.ucinn_ascendv2__Primary_Contact_Type__c", "Join2.ucinn_ascendv2__Wealth_Rating__c", "Join2.Account_or_Contact_Id", "Join2.Primary_Relationship_Manager.Assigned_User_Name", "Join2.CurrentAssigned.Currently_Assigned_to_MGO_PGO_Flag", "Join2.FirstMGOPGO.First_MGO_PGO_PRM", "Join2.FirstMGOPGO.Total_Year_Since_First_Assigned_to_MGO_PGO", "Join2.FirstAFO.First_Assigned_to_AFO_Date", "Join2.FirstAFO.First_AFO_PRM", "Join2.Year_of_First_Assigned_MGO_PGO_Date" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Constituent_or_Account_Id" ],
+        "rightQualifier" : "Join2",
+        "rightKeys" : [ "Account_or_Contact_Id" ]
+      }
+    },
+    "FORMULA6" : {
+      "action" : "formula",
+      "sources" : [ "JOIN4" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Cash_in_5_Years_Prior_to_First_MGO_PGO_Assigned_Date",
+          "label" : "Cash in 5 Years Prior to First MGO/PGO Assigned Date",
+          "formulaExpression" : "case \r\nwhen \r\nucinn_ascendv2__Credit_Date_Formula__c<\"Join2.FirstMGOPGO.First_Assigned_to_MGO_PGO_Date\"\r\nand ucinn_ascendv2__Credit_Date_Formula__c>=\"Join2.FirstMGOPGO.First_Assigned_to_MGO_PGO_Date\"- INTERVAL 5 YEAR\r\nthen Cash_Amount\r\nend",
+          "precision" : 10,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA7" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA8" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Cash_in_3_Years_Prior_to_First_MGO_PGO_Assigned_Date",
+          "label" : "Cash in 3 Years Prior to First MGO/PGO Assigned Date",
+          "formulaExpression" : "case \r\nwhen \r\nucinn_ascendv2__Credit_Date_Formula__c<\"Join2.FirstMGOPGO.First_Assigned_to_MGO_PGO_Date\"\r\nand ucinn_ascendv2__Credit_Date_Formula__c>=\"Join2.FirstMGOPGO.First_Assigned_to_MGO_PGO_Date\"- INTERVAL 3 YEAR\r\nthen Cash_Amount\r\nend\r\n\r\n",
+          "precision" : 10,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA8" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA6" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Cash_in_5_Years_After_First_MGO_PGO_Assigned_Date",
+          "label" : "Cash in 5 Years After First MGO/PGO Assigned Date",
+          "formulaExpression" : "case \r\nwhen \r\nucinn_ascendv2__Credit_Date_Formula__c>=\"Join2.FirstMGOPGO.First_Assigned_to_MGO_PGO_Date\"\r\nand ucinn_ascendv2__Credit_Date_Formula__c<\"Join2.FirstMGOPGO.First_Assigned_to_MGO_PGO_Date\"+ INTERVAL 5 YEAR\r\nthen Cash_Amount\r\nend\r\n\r\n",
+          "precision" : 10,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA9" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA7" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Cash_in_3_Years_After_First_MGO_PGO_Assigned_Date",
+          "label" : "Cash in 3 Years After First MGO/PGO Assigned Date",
+          "formulaExpression" : "case \r\nwhen \r\nucinn_ascendv2__Credit_Date_Formula__c>=\"Join2.FirstMGOPGO.First_Assigned_to_MGO_PGO_Date\"\r\nand ucinn_ascendv2__Credit_Date_Formula__c<\"Join2.FirstMGOPGO.First_Assigned_to_MGO_PGO_Date\"+ INTERVAL 3 YEAR\r\nthen Cash_Amount\r\nend\r\n\r\n",
+          "precision" : 10,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA10" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA9" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Fundraising_in_5_Years_Prior_to_First_MGO_PGO_Assigned_Date",
+          "label" : "Fundraising in 5 Years Prior to First MGO/PGO Assigned Date",
+          "formulaExpression" : "case \r\nwhen \r\nucinn_ascendv2__Credit_Date_Formula__c<\"Join2.FirstMGOPGO.First_Assigned_to_MGO_PGO_Date\"\r\nand ucinn_ascendv2__Credit_Date_Formula__c>=\"Join2.FirstMGOPGO.First_Assigned_to_MGO_PGO_Date\"- INTERVAL 5 YEAR\r\nthen Fundraising_Amount\r\nend\r\n",
+          "precision" : 10,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA11" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA10" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Fundraising_in_5_Years_After_First_MGO_PGO_Assigned_Date",
+          "label" : "Fundraising in 5 Years After First MGO/PGO Assigned Date",
+          "formulaExpression" : "case \r\nwhen \r\nucinn_ascendv2__Credit_Date_Formula__c>=\"Join2.FirstMGOPGO.First_Assigned_to_MGO_PGO_Date\"\r\nand ucinn_ascendv2__Credit_Date_Formula__c<\"Join2.FirstMGOPGO.First_Assigned_to_MGO_PGO_Date\"+ INTERVAL 5 YEAR\r\nthen Fundraising_Amount\r\nend\r\n\r\n",
+          "precision" : 10,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA12" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA11" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Fundraising_in_3_Years_Prior_to_First_MGO_PGO_Assigned_Date",
+          "label" : "Fundraising in 3 Years Prior to First MGO/PGO Assigned Date",
+          "formulaExpression" : "case \r\nwhen \r\nucinn_ascendv2__Credit_Date_Formula__c<\"Join2.FirstMGOPGO.First_Assigned_to_MGO_PGO_Date\"\r\nand ucinn_ascendv2__Credit_Date_Formula__c>=\"Join2.FirstMGOPGO.First_Assigned_to_MGO_PGO_Date\"- INTERVAL 3 YEAR\r\nthen Fundraising_Amount\r\nend\r\n\r\n",
+          "precision" : 10,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA13" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA12" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Fundraising_in_3_Years_After_First_MGO_PGO_Assigned_Date",
+          "label" : "Fundraising in 3 Years After First MGO/PGO Assigned Date",
+          "formulaExpression" : "case \r\nwhen \r\nucinn_ascendv2__Credit_Date_Formula__c>=\"Join2.FirstMGOPGO.First_Assigned_to_MGO_PGO_Date\"\r\nand ucinn_ascendv2__Credit_Date_Formula__c<\"Join2.FirstMGOPGO.First_Assigned_to_MGO_PGO_Date\"+ INTERVAL 3 YEAR\r\nthen Fundraising_Amount\r\nend\r\n\r\n",
+          "precision" : 10,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA14" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA13" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Cash_FY21_25",
+          "label" : "Cash FY21-25",
+          "formulaExpression" : "case \r\nwhen Fiscal_Year>=2021 and Fiscal_Year<=2025\r\nthen Cash_Amount\r\nend",
+          "precision" : 10,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA15" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA14" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Cash_FY16_20",
+          "label" : "Cash FY16-20",
+          "formulaExpression" : "case \r\nwhen Fiscal_Year>=2016 and Fiscal_Year<=2020\r\nthen Cash_Amount\r\nend\r\n",
+          "precision" : 10,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA16" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA17" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Fundraising_FY16_20",
+          "label" : "Fundraising FY16-20",
+          "formulaExpression" : "case \r\nwhen Fiscal_Year>=2016 and Fiscal_Year<=2020\r\nthen Fundraising_Amount\r\nend\r\n\r\n",
+          "precision" : 10,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA17" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA15" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Fundraising_FY21_25",
+          "label" : "Fundraising FY21-25",
+          "formulaExpression" : "case \r\nwhen Fiscal_Year>=2021 and Fiscal_Year<=2025\r\nthen Fundraising_Amount\r\nend\r\n\r\n",
+          "precision" : 10,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA5" : {
+      "action" : "formula",
+      "sources" : [ "JOIN2" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Year_of_First_Assigned_MGO_PGO_Date",
+          "label" : "Year of First Assigned MGO/PGO Date",
+          "formulaExpression" : "string(fiscalYear(\"FirstMGOPGO.First_Assigned_to_MGO_PGO_Date\"))",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "EXTRACT0" : {
+      "action" : "extractGrains",
+      "sources" : [ "FORMULA16" ],
+      "parameters" : {
+        "grainExtractions" : [ ]
+      }
+    },
+    "AGGREGATE1" : {
+      "action" : "aggregate",
+      "sources" : [ "EXTRACT0" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "SUM_Cash_FY16_20",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        }, {
+          "name" : "SUM_Cash_FY21_25",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        }, {
+          "name" : "SUM_Cash_in_3_Years_After_First_MGO_PGO_Assigned_Date",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        }, {
+          "name" : "SUM_Cash_in_3_Years_Prior_to_First_MGO_PGO_Assigned_Date",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        }, {
+          "name" : "SUM_Cash_in_5_Years_After_First_MGO_PGO_Assigned_Date",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        }, {
+          "name" : "SUM_Cash_in_5_Years_Prior_to_First_MGO_PGO_Assigned_Date",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        }, {
+          "name" : "SUM_Fundraising_FY16_20",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        }, {
+          "name" : "SUM_Fundraising_FY21_25",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        }, {
+          "name" : "SUM_Fundraising_in_3_Years_After_First_MGO_PGO_Assigned_Date",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        }, {
+          "name" : "SUM_Fundraising_in_3_Years_Prior_to_First_MGO_PGO_Assigned_Date",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        }, {
+          "name" : "SUM_Fundraising_in_5_Years_After_First_MGO_PGO_Assigned_Date",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        }, {
+          "name" : "SUM_Fundraising_in_5_Years_Prior_to_First_MGO_PGO_Assigned_Date",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        } ]
+      },
+      "parameters" : {
+        "aggregations" : [ {
+          "action" : "SUM",
+          "source" : "Cash_FY16_20",
+          "name" : "SUM_Cash_FY16_20",
+          "label" : "Cash FY16-20"
+        }, {
+          "action" : "SUM",
+          "source" : "Cash_FY21_25",
+          "name" : "SUM_Cash_FY21_25",
+          "label" : "Cash FY21-25"
+        }, {
+          "action" : "SUM",
+          "source" : "Cash_in_3_Years_After_First_MGO_PGO_Assigned_Date",
+          "name" : "SUM_Cash_in_3_Years_After_First_MGO_PGO_Assigned_Date",
+          "label" : "Cash in 3 Years After First MGO/PGO Assigned Date"
+        }, {
+          "action" : "SUM",
+          "source" : "Cash_in_3_Years_Prior_to_First_MGO_PGO_Assigned_Date",
+          "name" : "SUM_Cash_in_3_Years_Prior_to_First_MGO_PGO_Assigned_Date",
+          "label" : "Cash in 3 Years Prior to First MGO/PGO Assigned Date"
+        }, {
+          "action" : "SUM",
+          "source" : "Cash_in_5_Years_After_First_MGO_PGO_Assigned_Date",
+          "name" : "SUM_Cash_in_5_Years_After_First_MGO_PGO_Assigned_Date",
+          "label" : "Cash in 5 Years After First MGO/PGO Assigned Date"
+        }, {
+          "action" : "SUM",
+          "source" : "Cash_in_5_Years_Prior_to_First_MGO_PGO_Assigned_Date",
+          "name" : "SUM_Cash_in_5_Years_Prior_to_First_MGO_PGO_Assigned_Date",
+          "label" : "Cash in 5 Years Prior to First MGO/PGO Assigned Date"
+        }, {
+          "action" : "SUM",
+          "source" : "Fundraising_FY16_20",
+          "name" : "SUM_Fundraising_FY16_20",
+          "label" : "Fundraising FY16-20"
+        }, {
+          "action" : "SUM",
+          "source" : "Fundraising_FY21_25",
+          "name" : "SUM_Fundraising_FY21_25",
+          "label" : "Fundraising FY21-25"
+        }, {
+          "action" : "SUM",
+          "source" : "Fundraising_in_3_Years_After_First_MGO_PGO_Assigned_Date",
+          "name" : "SUM_Fundraising_in_3_Years_After_First_MGO_PGO_Assigned_Date",
+          "label" : "Fundraising in 3 Years After First MGO/PGO Assigned Date"
+        }, {
+          "action" : "SUM",
+          "source" : "Fundraising_in_3_Years_Prior_to_First_MGO_PGO_Assigned_Date",
+          "name" : "SUM_Fundraising_in_3_Years_Prior_to_First_MGO_PGO_Assigned_Date",
+          "label" : "Fundraising in 3 Years Prior to First MGO/PGO Assigned Date"
+        }, {
+          "action" : "SUM",
+          "source" : "Fundraising_in_5_Years_After_First_MGO_PGO_Assigned_Date",
+          "name" : "SUM_Fundraising_in_5_Years_After_First_MGO_PGO_Assigned_Date",
+          "label" : "Fundraising in 5 Years After First MGO/PGO Assigned Date"
+        }, {
+          "action" : "SUM",
+          "source" : "Fundraising_in_5_Years_Prior_to_First_MGO_PGO_Assigned_Date",
+          "name" : "SUM_Fundraising_in_5_Years_Prior_to_First_MGO_PGO_Assigned_Date",
+          "label" : "Fundraising in 5 Years Prior to First MGO/PGO Assigned Date"
+        } ],
+        "groupings" : [ "Constituent_or_Account_Id", "Is_BQI" ],
+        "pivots" : [ ],
+        "nodeType" : "STANDARD"
+      }
+    },
+    "JOIN5" : {
+      "action" : "join",
+      "sources" : [ "FORMULA5", "AGGREGATE1" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Aggregate0.Constituent_or_Account_Id" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LEFT_OUTER",
+        "leftKeys" : [ "Account_or_Contact_Id" ],
+        "rightQualifier" : "Aggregate0",
+        "rightKeys" : [ "Constituent_or_Account_Id" ]
+      }
+    },
+    "FORMULA18" : {
+      "action" : "formula",
+      "sources" : [ "JOIN1_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Is_Exclude",
+          "label" : "Is Exclude",
+          "formulaExpression" : "case \r\nwhen HAM_Role__c='Major Gift Officer'\r\nand (ucinn_ascendv2__Assigned_Relationship_Mngr_Name_Formula__c='Christopher Jacobsen'\r\nor ucinn_ascendv2__Assigned_Relationship_Mngr_Name_Formula__c='Development Officer 1'\r\nor ucinn_ascendv2__Assigned_Relationship_Mngr_Name_Formula__c='Donna Lutz'\r\nor ucinn_ascendv2__Assigned_Relationship_Mngr_Name_Formula__c='Francesco Lapertosa'\r\nor ucinn_ascendv2__Assigned_Relationship_Mngr_Name_Formula__c='Joan Stewart'\r\nor ucinn_ascendv2__Assigned_Relationship_Mngr_Name_Formula__c='John Drew'\r\nor ucinn_ascendv2__Assigned_Relationship_Mngr_Name_Formula__c='John Nehme'\r\nor ucinn_ascendv2__Assigned_Relationship_Mngr_Name_Formula__c='Joni Chizzonite'\r\nor ucinn_ascendv2__Assigned_Relationship_Mngr_Name_Formula__c='Joseph Medina'\r\nor ucinn_ascendv2__Assigned_Relationship_Mngr_Name_Formula__c='Karen Leach'\r\nor ucinn_ascendv2__Assigned_Relationship_Mngr_Name_Formula__c='Monica Walts'\r\nor ucinn_ascendv2__Assigned_Relationship_Mngr_Name_Formula__c='Nikki Barbano'\r\nor ucinn_ascendv2__Assigned_Relationship_Mngr_Name_Formula__c='Pamela Havens'\r\nor ucinn_ascendv2__Assigned_Relationship_Mngr_Name_Formula__c='Patricia Whitford'\r\nor ucinn_ascendv2__Assigned_Relationship_Mngr_Name_Formula__c='Principal Gift Officer'\r\nor ucinn_ascendv2__Assigned_Relationship_Mngr_Name_Formula__c='Ryan Mahanna'\r\nor ucinn_ascendv2__Assigned_Relationship_Mngr_Name_Formula__c='Shelley Moses'\r\nor ucinn_ascendv2__Assigned_Relationship_Mngr_Name_Formula__c='Stephanie Broomfield'\r\nor ucinn_ascendv2__Assigned_Relationship_Mngr_Name_Formula__c is null)\r\nthen 'exclude'\r\nwhen HAM_Role__c='Principal Gift Officer' \r\nand (ucinn_ascendv2__Assigned_Relationship_Mngr_Name_Formula__c='ALERT - HOLD' or ucinn_ascendv2__Assigned_Relationship_Mngr_Name_Formula__c='Francesco Lapertosa')\r\nthen 'exclude'\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FILTER5" : {
+      "action" : "filter",
+      "sources" : [ "FORMULA18" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "Is_Exclude",
+          "operator" : "IS_NULL",
+          "operands" : [ ]
+        } ]
+      }
+    },
+    "JOIN6" : {
+      "action" : "join",
+      "sources" : [ "JOIN3", "FORMULA4" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "EnrichFiel.Account.ucinn_ascendv2__Primary_Contact__c", "EnrichFiel.First_MGO_PGO_PRM", "EnrichFiel.Total_Year_Since_First_Assigned_to_MGO_PGO" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Account.ucinn_ascendv2__Primary_Contact__c" ],
+        "rightQualifier" : "EnrichFiel",
+        "rightKeys" : [ "Account.ucinn_ascendv2__Primary_Contact__c" ]
+      }
+    },
+    "FORMULA19" : {
+      "action" : "formula",
+      "sources" : [ "LOAD_DATASET5" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "u_5_Year_Flag",
+          "label" : "5 Year Flag",
+          "formulaExpression" : "case \r\nwhen \r\nmanaged_month<first_assigned+ INTERVAL 5 year\r\nthen 'true'\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FILTER6" : {
+      "action" : "filter",
+      "sources" : [ "FORMULA19" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "u_5_Year_Flag",
+          "operator" : "EQUAL",
+          "operands" : [ "true" ]
+        } ]
+      }
+    },
+    "EXTRACT1" : {
+      "action" : "extractGrains",
+      "sources" : [ "FILTER6" ],
+      "parameters" : {
+        "grainExtractions" : [ ]
+      }
+    },
+    "AGGREGATE3" : {
+      "action" : "aggregate",
+      "sources" : [ "EXTRACT1" ],
+      "parameters" : {
+        "aggregations" : [ {
+          "action" : "UNIQUE",
+          "source" : "managed_month",
+          "name" : "UNIQUE_managed_month",
+          "label" : "managed month"
+        } ],
+        "groupings" : [ "Primary_Constituent" ],
+        "pivots" : [ ],
+        "nodeType" : "STANDARD"
+      }
+    },
+    "FORMULA20" : {
+      "action" : "formula",
+      "sources" : [ "AGGREGATE3" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Percent_Assigned_in_5_Years",
+          "label" : "% Assigned in 5 Years",
+          "formulaExpression" : "case when \r\nUNIQUE_managed_month/(5*12)>1\r\nthen 1\r\nelse UNIQUE_managed_month/(5*12)\r\n\r\nend",
+          "precision" : 10,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA21" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA20" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Group_Assigned_in_5_Years",
+          "label" : "Group % Assigned in 5 Years",
+          "formulaExpression" : "case \r\nwhen Percent_Assigned_in_5_Years>=0 and Percent_Assigned_in_5_Years<0.2\r\nthen 'a:[0%-20%)'\r\nwhen Percent_Assigned_in_5_Years>=0.2 and Percent_Assigned_in_5_Years<0.4\r\nthen 'b:[20%-40%)'\r\nwhen Percent_Assigned_in_5_Years>=0.4 and Percent_Assigned_in_5_Years<0.6\r\nthen 'c:[40%-60%)'\r\nwhen Percent_Assigned_in_5_Years>=0.6 and Percent_Assigned_in_5_Years<0.8\r\nthen 'd:[60%-80%)'\r\nwhen Percent_Assigned_in_5_Years>=0.8 and Percent_Assigned_in_5_Years<1\r\nthen 'e:[80%-100%)'\r\nwhen Percent_Assigned_in_5_Years=1\r\nthen 'f:[100%]'\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "JOIN7" : {
+      "action" : "join",
+      "sources" : [ "JOIN5", "FORMULA21" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "TimeAssigned.Primary_Constituent", "TimeAssigned.UNIQUE_managed_month" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Account_or_Contact_Id" ],
+        "rightQualifier" : "TimeAssigned",
+        "rightKeys" : [ "Primary_Constituent" ]
+      }
+    },
+    "LOAD_DATASET5" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "managed_month", "first_assigned", "Primary_Constituent" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "ROI_Back_Test assignment month level for CRMA",
+          "name" : "ROI_Back_Test_assignment_month_level_for_CRMA"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "FORMULA22" : {
+      "action" : "formula",
+      "sources" : [ "LOAD_DATASET4" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Is_BQI",
+          "label" : "Is BQI",
+          "formulaExpression" : "case when \"Opportunity.Type\"='PGBEQ (Revocable Bequest)'\r\nthen 'true'\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    }
+  },
+  "ui" : {
+    "nodes" : {
+      "LOAD_DATASET0" : {
+        "label" : "Account and Contact Dataset",
+        "type" : "LOAD_DATASET",
+        "top" : 251.10000000000002,
+        "left" : 252.10000000000002,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "LOAD_DATASET1" : {
+        "label" : "ucinn_ascendv2__Assignment__c",
+        "type" : "LOAD_DATASET",
+        "top" : 1231.7,
+        "left" : 392.3,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "FILTER0" : {
+        "label" : "Filter MGO/PGO",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 671.1,
+        "left" : 392.1
+      },
+      "FILTER1" : {
+        "label" : "Filter Assignment End Date",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 531.1,
+        "left" : 392.1
+      },
+      "TRANSFORM1" : {
+        "label" : "Enrich Fields",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 391.1,
+        "left" : 392.1,
+        "graph" : {
+          "FORMULA1" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Currently Assigned to MGO/PGO Flag"
+          },
+          "DROP_FIELDS0" : {
+            "label" : "Keep Columns"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA1",
+          "target" : "DROP_FIELDS0"
+        } ]
+      },
+      "JOIN0" : {
+        "label" : "Join 0",
+        "type" : "JOIN",
+        "top" : 251.10000000000002,
+        "left" : 392.1
+      },
+      "FILTER2" : {
+        "label" : "Filter Assignment Start Date",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 532.4,
+        "left" : 532.1
+      },
+      "TRANSFORM2" : {
+        "label" : "Enrich Fields",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 392.4,
+        "left" : 532.1,
+        "graph" : {
+          "FORMULA2" : {
+            "label" : "First Assigned to MGO/PGO Date"
+          },
+          "FORMULA3" : {
+            "label" : "First MGO/PGO PRM"
+          },
+          "DROP_FIELDS1" : {
+            "label" : "Keep Columns"
+          },
+          "FORMULA4" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Total Year Since First Assigned to MGO/PGO"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA2",
+          "target" : "FORMULA3"
+        }, {
+          "source" : "FORMULA3",
+          "target" : "DROP_FIELDS1"
+        }, {
+          "source" : "DROP_FIELDS1",
+          "target" : "FORMULA4"
+        } ]
+      },
+      "JOIN1" : {
+        "label" : "Join 1",
+        "type" : "JOIN",
+        "top" : 252,
+        "left" : 532
+      },
+      "FILTER3" : {
+        "label" : "Filter AFO",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 672.4,
+        "left" : 672.1
+      },
+      "FILTER2_copy0" : {
+        "label" : "Filter Assignment Start Date",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 532.4,
+        "left" : 672.1
+      },
+      "TRANSFORM2_copy0" : {
+        "label" : "Enrich Fields",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 392.2,
+        "left" : 672,
+        "graph" : {
+          "FORMULA2_copy0" : {
+            "label" : "First Assigned to AFO Date"
+          },
+          "FORMULA3_copy0" : {
+            "label" : "First AFO PRM"
+          },
+          "DROP_FIELDS1_copy0" : {
+            "label" : "Keep Columns"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA2_copy0",
+          "target" : "FORMULA3_copy0"
+        }, {
+          "source" : "FORMULA3_copy0",
+          "target" : "DROP_FIELDS1_copy0"
+        } ]
+      },
+      "JOIN2" : {
+        "label" : "Join 2",
+        "type" : "JOIN",
+        "top" : 252.39999999999998,
+        "left" : 672.1
+      },
+      "OUTPUT0" : {
+        "label" : "Output 0",
+        "type" : "OUTPUT",
+        "top" : 811.6,
+        "left" : 1232.5
+      },
+      "OUTPUT1" : {
+        "label" : "Output 1",
+        "type" : "OUTPUT",
+        "top" : 252.5,
+        "left" : 1932.1
+      },
+      "LOAD_DATASET0_copy0" : {
+        "label" : "Account and Contact Dataset",
+        "type" : "LOAD_DATASET",
+        "top" : 951.6,
+        "left" : 952.5,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN3" : {
+        "label" : "Join 3",
+        "type" : "JOIN",
+        "top" : 811.6,
+        "left" : 952.5
+      },
+      "LOAD_DATASET3_copy0" : {
+        "label" : "Account",
+        "type" : "LOAD_DATASET",
+        "top" : 1091.7,
+        "left" : 252.10000000000002,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN1_copy0" : {
+        "label" : "Join 1",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 1091.7,
+        "left" : 392.1
+      },
+      "FILTER4" : {
+        "label" : "Filter 4",
+        "type" : "FILTER",
+        "top" : 811.6,
+        "left" : 812.5
+      },
+      "LOAD_DATASET4" : {
+        "label" : "Gift Credit and Payment",
+        "type" : "LOAD_DATASET",
+        "top" : 532.2,
+        "left" : 952,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN4" : {
+        "label" : "Join 4",
+        "type" : "JOIN",
+        "top" : 532.5,
+        "left" : 1232
+      },
+      "TRANSFORM3" : {
+        "label" : "Enrich Fields",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 532.5,
+        "left" : 1372,
+        "graph" : {
+          "FORMULA6" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Cash in 5 Years Prior to First MGO/PGO Assigned Date"
+          },
+          "FORMULA7" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Cash in 3 Years Prior to First MGO/PGO Assigned Date"
+          },
+          "FORMULA8" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Cash in 5 Years After First MGO/PGO Assigned Date"
+          },
+          "FORMULA9" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Cash in 3 Years After First MGO/PGO Assigned Date"
+          },
+          "FORMULA10" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Fundraising in 5 Years Prior to First MGO/PGO Assigned Date"
+          },
+          "FORMULA11" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Fundraising in 5 Years After First MGO/PGO Assigned Date"
+          },
+          "FORMULA12" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Fundraising in 3 Years Prior to First MGO/PGO Assigned Date"
+          },
+          "FORMULA13" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Fundraising in 3 Years After First MGO/PGO Assigned Date"
+          },
+          "FORMULA14" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Cash FY21-25"
+          },
+          "FORMULA15" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Cash FY16-20"
+          },
+          "FORMULA16" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Fundraising FY16-20"
+          },
+          "FORMULA17" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Fundraising FY21-25"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA8",
+          "target" : "FORMULA7"
+        }, {
+          "source" : "FORMULA6",
+          "target" : "FORMULA8"
+        }, {
+          "source" : "FORMULA7",
+          "target" : "FORMULA9"
+        }, {
+          "source" : "FORMULA9",
+          "target" : "FORMULA10"
+        }, {
+          "source" : "FORMULA10",
+          "target" : "FORMULA11"
+        }, {
+          "source" : "FORMULA11",
+          "target" : "FORMULA12"
+        }, {
+          "source" : "FORMULA12",
+          "target" : "FORMULA13"
+        }, {
+          "source" : "FORMULA13",
+          "target" : "FORMULA14"
+        }, {
+          "source" : "FORMULA14",
+          "target" : "FORMULA15"
+        }, {
+          "source" : "FORMULA17",
+          "target" : "FORMULA16"
+        }, {
+          "source" : "FORMULA15",
+          "target" : "FORMULA17"
+        } ]
+      },
+      "TRANSFORM4" : {
+        "label" : "Enrich Fields",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 252.5,
+        "left" : 1232,
+        "graph" : {
+          "FORMULA5" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Year of First Assigned MGO/PGO Date"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "AGGREGATE0" : {
+        "label" : "Aggregate 0",
+        "type" : "AGGREGATE",
+        "top" : 392.5,
+        "left" : 1372,
+        "graph" : {
+          "EXTRACT0" : null,
+          "AGGREGATE1" : null
+        },
+        "connectors" : [ {
+          "source" : "EXTRACT0",
+          "target" : "AGGREGATE1"
+        } ]
+      },
+      "JOIN5" : {
+        "label" : "Join 5",
+        "type" : "JOIN",
+        "top" : 252.5,
+        "left" : 1372.1
+      },
+      "TRANSFORM5" : {
+        "label" : "Transform 5",
+        "type" : "TRANSFORM",
+        "top" : 952,
+        "left" : 393.3,
+        "graph" : {
+          "FORMULA18" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Is Exclude"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "FILTER5" : {
+        "label" : "Filter 5",
+        "type" : "FILTER",
+        "top" : 812.1,
+        "left" : 392.4
+      },
+      "JOIN6" : {
+        "label" : "Join 6",
+        "type" : "JOIN",
+        "top" : 811.6,
+        "left" : 1092.5
+      },
+      "TRANSFORM6" : {
+        "label" : "Enrich Fields",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 812.1,
+        "left" : 1652.3,
+        "graph" : {
+          "FORMULA19" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "5 Year Flag"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "FILTER6" : {
+        "label" : "Filter 6",
+        "type" : "FILTER",
+        "top" : 672.5,
+        "left" : 1652.1
+      },
+      "AGGREGATE2" : {
+        "label" : "Aggregate 2",
+        "type" : "AGGREGATE",
+        "top" : 532.5,
+        "left" : 1652.1,
+        "graph" : {
+          "EXTRACT1" : null,
+          "AGGREGATE3" : null
+        },
+        "connectors" : [ {
+          "source" : "EXTRACT1",
+          "target" : "AGGREGATE3"
+        } ]
+      },
+      "TRANSFORM7" : {
+        "label" : "Transform 7",
+        "type" : "TRANSFORM",
+        "top" : 392.5,
+        "left" : 1652.1,
+        "graph" : {
+          "FORMULA20" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "% Assigned in 5 Years"
+          },
+          "FORMULA21" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Group % Assigned in 5 Years"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA20",
+          "target" : "FORMULA21"
+        } ]
+      },
+      "JOIN7" : {
+        "label" : "Join 7",
+        "type" : "JOIN",
+        "top" : 252.5,
+        "left" : 1652.1
+      },
+      "LOAD_DATASET5" : {
+        "label" : "ROI_Back_Test assignment month level for CRMA",
+        "type" : "LOAD_DATASET",
+        "top" : 952.1,
+        "left" : 1652.3,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "TRANSFORM8" : {
+        "label" : "Transform 8",
+        "type" : "TRANSFORM",
+        "top" : 532.2,
+        "left" : 1092,
+        "graph" : {
+          "FORMULA22" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Is BQI"
+          }
+        },
+        "connectors" : [ ]
+      }
+    },
+    "connectors" : [ {
+      "source" : "FILTER4",
+      "target" : "JOIN3"
+    }, {
+      "source" : "LOAD_DATASET1",
+      "target" : "JOIN1_copy0"
+    }, {
+      "source" : "FILTER1",
+      "target" : "TRANSFORM1"
+    }, {
+      "source" : "LOAD_DATASET0",
+      "target" : "JOIN0"
+    }, {
+      "source" : "TRANSFORM1",
+      "target" : "JOIN0"
+    }, {
+      "source" : "FILTER2",
+      "target" : "TRANSFORM2"
+    }, {
+      "source" : "JOIN0",
+      "target" : "JOIN1"
+    }, {
+      "source" : "TRANSFORM2",
+      "target" : "JOIN1"
+    }, {
+      "source" : "FILTER0",
+      "target" : "FILTER2"
+    }, {
+      "source" : "FILTER0",
+      "target" : "FILTER1"
+    }, {
+      "source" : "FILTER2_copy0",
+      "target" : "TRANSFORM2_copy0"
+    }, {
+      "source" : "FILTER3",
+      "target" : "FILTER2_copy0"
+    }, {
+      "source" : "JOIN1",
+      "target" : "JOIN2"
+    }, {
+      "source" : "TRANSFORM2_copy0",
+      "target" : "JOIN2"
+    }, {
+      "source" : "JOIN6",
+      "target" : "OUTPUT0"
+    }, {
+      "source" : "LOAD_DATASET0_copy0",
+      "target" : "JOIN3"
+    }, {
+      "source" : "LOAD_DATASET3_copy0",
+      "target" : "JOIN1_copy0"
+    }, {
+      "source" : "TRANSFORM8",
+      "target" : "JOIN4"
+    }, {
+      "source" : "JOIN4",
+      "target" : "TRANSFORM3"
+    }, {
+      "source" : "JOIN2",
+      "target" : "TRANSFORM4"
+    }, {
+      "source" : "TRANSFORM4",
+      "target" : "JOIN4"
+    }, {
+      "source" : "TRANSFORM3",
+      "target" : "AGGREGATE0"
+    }, {
+      "source" : "TRANSFORM4",
+      "target" : "JOIN5"
+    }, {
+      "source" : "AGGREGATE0",
+      "target" : "JOIN5"
+    }, {
+      "source" : "JOIN7",
+      "target" : "OUTPUT1"
+    }, {
+      "source" : "JOIN1_copy0",
+      "target" : "TRANSFORM5"
+    }, {
+      "source" : "TRANSFORM5",
+      "target" : "FILTER5"
+    }, {
+      "source" : "FILTER5",
+      "target" : "FILTER4"
+    }, {
+      "source" : "FILTER5",
+      "target" : "FILTER3"
+    }, {
+      "source" : "FILTER5",
+      "target" : "FILTER0"
+    }, {
+      "source" : "JOIN3",
+      "target" : "JOIN6"
+    }, {
+      "source" : "TRANSFORM2",
+      "target" : "JOIN6"
+    }, {
+      "source" : "TRANSFORM6",
+      "target" : "FILTER6"
+    }, {
+      "source" : "FILTER6",
+      "target" : "AGGREGATE2"
+    }, {
+      "source" : "AGGREGATE2",
+      "target" : "TRANSFORM7"
+    }, {
+      "source" : "JOIN5",
+      "target" : "JOIN7"
+    }, {
+      "source" : "TRANSFORM7",
+      "target" : "JOIN7"
+    }, {
+      "source" : "LOAD_DATASET5",
+      "target" : "TRANSFORM6"
+    }, {
+      "source" : "LOAD_DATASET4",
+      "target" : "TRANSFORM8"
+    } ],
+    "hiddenColumns" : [ ]
+  },
+  "runMode" : "full"
+}

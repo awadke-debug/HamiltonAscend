@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+	<masterLabel>Digital Briefing PDF</masterLabel>
+	<apiVersion>62.0</apiVersion>
+	<isExposed>true</isExposed>
+	<targets>
+		<target>lightning__FlowScreen</target>
+		<target>lightning__RecordPage</target>
+	</targets>
+	<targetConfigs>
+		<targetConfig targets="lightning__FlowScreen">
+			<property name="recordId" label="Constituents Id" type="String" />
+			<property label="Height in rem" name="heightInRem" type="Integer" default="40" />
+			<property name="briefingType" label="Briefing Type" type="String" />
+	        <property name="briefingDetail" label="Briefing Detail" type="String" />
+		</targetConfig>
+		<targetConfig targets="lightning__RecordPage">
+			<property name="recordId" label="Constituents Id" type="String" />
+			<property label="Height in rem" name="heightInRem" type="Integer" default="40" />
+			<property name="briefingType" label="Briefing Type" type="String"/>
+	        <property name="briefingDetail" label="Briefing Detail" type="String" />
+		</targetConfig>
+	</targetConfigs>
+</LightningComponentBundle>

@@ -1,0 +1,776 @@
+{
+  "version" : "62.0",
+  "nodes" : {
+    "LOAD_DATASET0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Account_or_Contact_Id" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Account and Contact Dataset",
+          "name" : "Account_and_Contact_Dataset"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "LOAD_DATASET7_copy0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "ucinn_ascendv2__Is_End_Date_Before_Start_Formula__c", "ucinn_ascendv2__Start_Date__c", "ucinn_ascendv2__End_Date__c", "RecordTypeId", "ucinn_ascendv2__Account__c", "ucinn_ascendv2__Contact__c", "ucinn_ascendv2__Involvement_Code__c", "ucinn_ascendv2__Status__c", "ucinn_ascendv2__Involvement_Code_Description_Formula__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "ucinn_ascendv2__Involvement__c",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "ucinn_ascendv2__Involvement__c"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "LOAD_DATASET8_copy0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Id", "Name" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "RecordType",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "RecordType"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN15_copy0" : {
+      "action" : "join",
+      "sources" : [ "LOAD_DATASET7_copy0", "LOAD_DATASET8_copy0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "RecordTypeId", "Record_Type.Id" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "RecordTypeId" ],
+        "rightQualifier" : "Record_Type",
+        "rightKeys" : [ "Id" ]
+      }
+    },
+    "LOAD_DATASET19_copy0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Id", "HAM_Category__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "ucinn_ascendv2__Involvement_Value__c",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "ucinn_ascendv2__Involvement_Value__c"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN27_copy0" : {
+      "action" : "join",
+      "sources" : [ "JOIN15_copy0", "LOAD_DATASET19_copy0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Involvement_Code.Id", "ucinn_ascendv2__Involvement_Code__c" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "ucinn_ascendv2__Involvement_Code__c" ],
+        "rightQualifier" : "Involvement_Code",
+        "rightKeys" : [ "Id" ]
+      }
+    },
+    "FILTER8_copy0" : {
+      "action" : "filter",
+      "sources" : [ "FORMULA71_copy0" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "Involvement_Code.HAM_Category__c",
+          "operator" : "EQUAL",
+          "operands" : [ "Student NCAA Athletics" ]
+        }, {
+          "type" : "TEXT",
+          "field" : "ucinn_ascendv2__Status__c",
+          "operator" : "EQUAL",
+          "operands" : [ "Current" ]
+        } ]
+      }
+    },
+    "FORMULA13_copy0" : {
+      "action" : "computeRelative",
+      "sources" : [ "FILTER8_copy0" ],
+      "parameters" : {
+        "partitionBy" : [ "ucinn_ascendv2__Contact__c" ],
+        "orderBy" : [ {
+          "fieldName" : "ucinn_ascendv2__Contact__c",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "MULTIVALUE",
+          "name" : "All_NCAA_Involvements_Multivalue_collect_set_with_id",
+          "label" : "All NCAA Involvements Multivalue collect set with id",
+          "formulaExpression" : "collect_set(ucinn_ascendv2__Involvement_Code_Description_Formula__c)"
+        } ]
+      }
+    },
+    "FORMULA14_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA13_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "All_NCAA_Involvements_collect_set_with_id",
+          "label" : "All NCAA Involvements collect set with id",
+          "formulaExpression" : "array_join(All_NCAA_Involvements_Multivalue_collect_set_with_id, ', ')",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA72" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA14_copy0" ],
+      "parameters" : {
+        "partitionBy" : [ "ucinn_ascendv2__Contact__c" ],
+        "orderBy" : [ {
+          "fieldName" : "ucinn_ascendv2__Involvement_Code_Description_Formula__c",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "MULTIVALUE",
+          "name" : "All_NCAA_multi_collect_set_with_involvement",
+          "label" : "All NCAA collect set with involvement multi",
+          "formulaExpression" : "collect_set(ucinn_ascendv2__Involvement_Code_Description_Formula__c)"
+        } ]
+      }
+    },
+    "FORMULA73" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA72" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "All_NCAA_collect_set_with_involvement",
+          "label" : "All NCAA collect set with involvement",
+          "formulaExpression" : "array_join(All_NCAA_multi_collect_set_with_involvement,', ')",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA74" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA73" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Sort_Column",
+          "label" : "Sort Column",
+          "formulaExpression" : "concat(ucinn_ascendv2__Involvement_Code_Description_Formula__c, ucinn_ascendv2__Status__c)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA75" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA74" ],
+      "parameters" : {
+        "partitionBy" : [ "ucinn_ascendv2__Contact__c" ],
+        "orderBy" : [ {
+          "fieldName" : "Sort_Column",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "MULTIVALUE",
+          "name" : "All_ncaa_collect_set_with_sort_column_multi",
+          "label" : "All ncaa collect set with sort column multi",
+          "formulaExpression" : "collect_set(ucinn_ascendv2__Involvement_Code_Description_Formula__c)"
+        } ]
+      }
+    },
+    "FORMULA76" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA75" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "All_ncaa_collect_set_with_sort_column",
+          "label" : "All ncaa collect set with sort column",
+          "formulaExpression" : "array_join(All_ncaa_collect_set_with_sort_column_multi,', ')",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "JOIN28_copy0" : {
+      "action" : "join",
+      "sources" : [ "LOAD_DATASET0", "DROP_FIELDS7_copy0_copy0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "NCAA_Involvements.Account_or_Contact_Id" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Account_or_Contact_Id" ],
+        "rightQualifier" : "NCAA_Involvements",
+        "rightKeys" : [ "Account_or_Contact_Id" ]
+      }
+    },
+    "FORMULA71_copy0" : {
+      "action" : "formula",
+      "sources" : [ "JOIN27_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Account_or_Contact_Id",
+          "label" : "Account or Contact Id",
+          "formulaExpression" : "coalesce(ucinn_ascendv2__Contact__c,ucinn_ascendv2__Account__c)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FILTER9" : {
+      "action" : "filter",
+      "sources" : [ "FORMULA77" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "NCAA_Involvements.All_NCAA_Involvements_collect_set_with_id",
+          "operator" : "IS_NOT_NULL",
+          "operands" : [ ]
+        } ]
+      }
+    },
+    "OUTPUT0" : {
+      "action" : "save",
+      "sources" : [ "FILTER9" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "test for collect set",
+          "name" : "test_for_collect_set"
+        },
+        "dateConfigurationName" : "July_Fiscal_Year",
+        "measuresToCurrencies" : [ ]
+      }
+    },
+    "FORMULA13_copy0_copy0" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA76" ],
+      "parameters" : {
+        "partitionBy" : [ "ucinn_ascendv2__Contact__c" ],
+        "orderBy" : [ {
+          "fieldName" : "ucinn_ascendv2__Contact__c",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "MULTIVALUE",
+          "name" : "All_NCAA_Involvements_Multivalue_collect_list_with_id",
+          "label" : "All NCAA Involvements Multivalue collect list with id",
+          "formulaExpression" : "collect_list(ucinn_ascendv2__Involvement_Code_Description_Formula__c)"
+        } ]
+      }
+    },
+    "DROP_FIELDS7_copy0_copy0" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA76_copy0" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "SELECT",
+          "ignoreMissingFields" : true,
+          "fields" : [ "All_NCAA_Involvements_collect_list_with_id", "Account_or_Contact_Id", "All_NCAA_Involvements_collect_set_with_id", "All_NCAA_collect_set_with_involvement", "All_ncaa_collect_set_with_sort_column", "All_NCAA_collect_list_with_involvement", "All_ncaa_collect_list_with_sort_column" ]
+        }
+      }
+    },
+    "FORMULA14_copy0_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA13_copy0_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "All_NCAA_Involvements_collect_list_with_id",
+          "label" : "All NCAA Involvements collect list with id",
+          "formulaExpression" : "array_join(All_NCAA_Involvements_Multivalue_collect_list_with_id, ', ')",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA72_copy0" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA14_copy0_copy0" ],
+      "parameters" : {
+        "partitionBy" : [ "ucinn_ascendv2__Contact__c" ],
+        "orderBy" : [ {
+          "fieldName" : "ucinn_ascendv2__Involvement_Code_Description_Formula__c",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "MULTIVALUE",
+          "name" : "All_NCAA_multi_collect_list_with_involvement",
+          "label" : "All NCAA collect list with involvement multi",
+          "formulaExpression" : "collect_list(ucinn_ascendv2__Involvement_Code_Description_Formula__c)"
+        } ]
+      }
+    },
+    "FORMULA73_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA72_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "All_NCAA_collect_list_with_involvement",
+          "label" : "All NCAA collect list with involvement",
+          "formulaExpression" : "array_join(All_NCAA_multi_collect_list_with_involvement,', ')",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA75_copy0" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA73_copy0" ],
+      "parameters" : {
+        "partitionBy" : [ "ucinn_ascendv2__Contact__c" ],
+        "orderBy" : [ {
+          "fieldName" : "Sort_Column",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "MULTIVALUE",
+          "name" : "All_ncaa_collect_list_with_sort_column_multi",
+          "label" : "All ncaa collect list with sort column multi",
+          "formulaExpression" : "collect_list(ucinn_ascendv2__Involvement_Code_Description_Formula__c)"
+        } ]
+      }
+    },
+    "FORMULA76_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA75_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "All_ncaa_collect_list_with_sort_column",
+          "label" : "All ncaa collect list with sort column",
+          "formulaExpression" : "array_join(All_ncaa_collect_list_with_sort_column_multi,', ')",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "DROP_FIELDS7_copy0_copy0_copy0" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA72_copy0_copy0" ],
+      "parameters" : {
+        "slice" : {
+          "mode" : "SELECT",
+          "ignoreMissingFields" : true,
+          "fields" : [ "All_NCAA_multi_collect_list_with_involvement_new", "Account_or_Contact_Id" ]
+        }
+      }
+    },
+    "FORMULA72_copy0_copy0" : {
+      "action" : "computeRelative",
+      "sources" : [ "FILTER8_copy0" ],
+      "parameters" : {
+        "partitionBy" : [ "ucinn_ascendv2__Contact__c" ],
+        "orderBy" : [ {
+          "fieldName" : "ucinn_ascendv2__Involvement_Code_Description_Formula__c",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "MULTIVALUE",
+          "name" : "All_NCAA_multi_collect_list_with_involvement_new",
+          "label" : "All NCAA collect list with involvement multi new",
+          "formulaExpression" : "collect_list(ucinn_ascendv2__Involvement_Code_Description_Formula__c)"
+        } ]
+      }
+    },
+    "JOIN29" : {
+      "action" : "join",
+      "sources" : [ "JOIN28_copy0", "DROP_FIELDS7_copy0_copy0_copy0" ],
+      "schema" : {
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "collectlis.Account_or_Contact_Id" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "MULTI_VALUE_LOOKUP",
+        "leftKeys" : [ "Account_or_Contact_Id" ],
+        "rightQualifier" : "collectlis",
+        "rightKeys" : [ "Account_or_Contact_Id" ]
+      }
+    },
+    "FORMULA77" : {
+      "action" : "formula",
+      "sources" : [ "JOIN29" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "collectlis.All_NCAA_multi_collect_list_with_involvement_new_formula",
+          "label" : "All NCAA collect list with involvement multi new Formula",
+          "formulaExpression" : "string(\"collectlis.All_NCAA_multi_collect_list_with_involvement_new\")",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    }
+  },
+  "ui" : {
+    "nodes" : {
+      "LOAD_DATASET0" : {
+        "label" : "Account and Contact Dataset",
+        "type" : "LOAD_DATASET",
+        "top" : 112.80000000000001,
+        "left" : 112.9,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "LOAD_DATASET7_copy0" : {
+        "label" : "ucinn_ascendv2__Involvement__c",
+        "type" : "LOAD_DATASET",
+        "top" : 1090.3,
+        "left" : 532,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "LOAD_DATASET8_copy0" : {
+        "label" : "RecordType",
+        "type" : "LOAD_DATASET",
+        "top" : 950.3,
+        "left" : 672,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN15_copy0" : {
+        "label" : "Join Record Type To Involvement",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 950.3,
+        "left" : 532
+      },
+      "LOAD_DATASET19_copy0" : {
+        "label" : "ucinn_ascendv2__Involvement_Value__c",
+        "type" : "LOAD_DATASET",
+        "top" : 810.3,
+        "left" : 672,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN27_copy0" : {
+        "label" : "Lookup Involvement Code To Involvement",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 810.3,
+        "left" : 532
+      },
+      "FILTER8_copy0" : {
+        "label" : "Filter Current NCAA Involvements",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 532.1,
+        "left" : 532.8
+      },
+      "TRANSFORM9_copy0" : {
+        "label" : "collect set",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 392.1,
+        "left" : 532.8,
+        "graph" : {
+          "FORMULA13_copy0" : {
+            "label" : "All NCAA Involvement Multivalue collectset with id"
+          },
+          "FORMULA14_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "All NCAA Involvements collect set with id"
+          },
+          "FORMULA72" : {
+            "label" : "All NCAA collect set with involvement"
+          },
+          "FORMULA73" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "All NCAA collect set with involvement"
+          },
+          "FORMULA74" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Sort Column"
+          },
+          "FORMULA75" : {
+            "label" : "All ncaa collect set with sort column"
+          },
+          "FORMULA76" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "All ncaa collect set with sort column"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA13_copy0",
+          "target" : "FORMULA14_copy0"
+        }, {
+          "source" : "FORMULA14_copy0",
+          "target" : "FORMULA72"
+        }, {
+          "source" : "FORMULA72",
+          "target" : "FORMULA73"
+        }, {
+          "source" : "FORMULA73",
+          "target" : "FORMULA74"
+        }, {
+          "source" : "FORMULA74",
+          "target" : "FORMULA75"
+        }, {
+          "source" : "FORMULA75",
+          "target" : "FORMULA76"
+        } ]
+      },
+      "JOIN28_copy0" : {
+        "label" : "Lookup NCAA Involvements",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 112.9,
+        "left" : 532.9
+      },
+      "TRANSFORM26_copy0" : {
+        "label" : "Enrich Involvements",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 670.3,
+        "left" : 532,
+        "graph" : {
+          "FORMULA71_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Contact or Account Id"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "FILTER9" : {
+        "label" : "Filter 9",
+        "type" : "FILTER",
+        "top" : 112.1,
+        "left" : 1232.2
+      },
+      "OUTPUT0" : {
+        "label" : "Output 0",
+        "type" : "OUTPUT",
+        "top" : 112.9,
+        "left" : 1372.9
+      },
+      "TRANSFORM9_copy0_copy0" : {
+        "label" : "collect list",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 252,
+        "left" : 532.7,
+        "graph" : {
+          "FORMULA13_copy0_copy0" : {
+            "label" : "All NCAA Involvement Multivalue collect list with id"
+          },
+          "DROP_FIELDS7_copy0_copy0" : {
+            "label" : "Keep Columns"
+          },
+          "FORMULA14_copy0_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "All NCAA Involvements collect list with id"
+          },
+          "FORMULA72_copy0" : {
+            "label" : "All NCAA collect list with involvement"
+          },
+          "FORMULA73_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "All NCAA collect list with involvement"
+          },
+          "FORMULA75_copy0" : {
+            "label" : "All ncaa collect list with sort column"
+          },
+          "FORMULA76_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "All ncaa collect list with sort column"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA13_copy0_copy0",
+          "target" : "FORMULA14_copy0_copy0"
+        }, {
+          "source" : "FORMULA14_copy0_copy0",
+          "target" : "FORMULA72_copy0"
+        }, {
+          "source" : "FORMULA72_copy0",
+          "target" : "FORMULA73_copy0"
+        }, {
+          "source" : "FORMULA76_copy0",
+          "target" : "DROP_FIELDS7_copy0_copy0"
+        }, {
+          "source" : "FORMULA75_copy0",
+          "target" : "FORMULA76_copy0"
+        }, {
+          "source" : "FORMULA73_copy0",
+          "target" : "FORMULA75_copy0"
+        } ]
+      },
+      "TRANSFORM9_copy0_copy0_copy0" : {
+        "label" : "collect list Copy",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 392.7,
+        "left" : 811,
+        "graph" : {
+          "DROP_FIELDS7_copy0_copy0_copy0" : {
+            "label" : "Keep Columns"
+          },
+          "FORMULA72_copy0_copy0" : {
+            "label" : "All NCAA collect list with involvement new"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA72_copy0_copy0",
+          "target" : "DROP_FIELDS7_copy0_copy0_copy0"
+        } ]
+      },
+      "JOIN29" : {
+        "label" : "Join 29",
+        "type" : "JOIN",
+        "top" : 112.4,
+        "left" : 812
+      },
+      "TRANSFORM27" : {
+        "label" : "Transform 27",
+        "type" : "TRANSFORM",
+        "top" : 112,
+        "left" : 1091.3,
+        "graph" : {
+          "FORMULA77" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "All NCAA collect list with involvement multi new Formula"
+          }
+        },
+        "connectors" : [ ]
+      }
+    },
+    "connectors" : [ {
+      "source" : "LOAD_DATASET0",
+      "target" : "JOIN28_copy0"
+    }, {
+      "source" : "JOIN15_copy0",
+      "target" : "JOIN27_copy0"
+    }, {
+      "source" : "LOAD_DATASET7_copy0",
+      "target" : "JOIN15_copy0"
+    }, {
+      "source" : "LOAD_DATASET8_copy0",
+      "target" : "JOIN15_copy0"
+    }, {
+      "source" : "LOAD_DATASET19_copy0",
+      "target" : "JOIN27_copy0"
+    }, {
+      "source" : "FILTER8_copy0",
+      "target" : "TRANSFORM9_copy0"
+    }, {
+      "source" : "JOIN27_copy0",
+      "target" : "TRANSFORM26_copy0"
+    }, {
+      "source" : "TRANSFORM26_copy0",
+      "target" : "FILTER8_copy0"
+    }, {
+      "source" : "TRANSFORM27",
+      "target" : "FILTER9"
+    }, {
+      "source" : "FILTER9",
+      "target" : "OUTPUT0"
+    }, {
+      "source" : "TRANSFORM9_copy0",
+      "target" : "TRANSFORM9_copy0_copy0"
+    }, {
+      "source" : "TRANSFORM9_copy0_copy0",
+      "target" : "JOIN28_copy0"
+    }, {
+      "source" : "FILTER8_copy0",
+      "target" : "TRANSFORM9_copy0_copy0_copy0"
+    }, {
+      "source" : "JOIN28_copy0",
+      "target" : "JOIN29"
+    }, {
+      "source" : "TRANSFORM9_copy0_copy0_copy0",
+      "target" : "JOIN29"
+    }, {
+      "source" : "JOIN29",
+      "target" : "TRANSFORM27"
+    } ],
+    "hiddenColumns" : [ ]
+  },
+  "runMode" : "full"
+}

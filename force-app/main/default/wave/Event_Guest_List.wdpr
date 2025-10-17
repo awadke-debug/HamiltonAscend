@@ -1,0 +1,4136 @@
+{
+  "version" : "64.0",
+  "nodes" : {
+    "LOAD_DATASET0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "CreatedDate", "Id", "Name", "conference360__Approval_Status__c", "conference360__Attendance_Status__c", "conference360__AttendeeLink_Questions__c", "conference360__Attendee_Group__c", "conference360__Contact__c", "conference360__Email2__c", "conference360__Event_Item__c", "conference360__Event__c", "conference360__First_Name2__c", "conference360__Last_Name2__c", "conference360__Post_Event_Questions__c", "conference360__Primary_Email__c", "conference360__Registration_DateTime__c", "conference360__Registration_Status__c", "conference360__Attendee_Full_Name__c", "conference360__Event_End_Date__c", "conference360__Event_Name__c", "conference360__Event_Start_Date__c", "HAM_Guest_Of__c", "HAM_Attendee_Group_Name__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "conference360__Attendee__c",
+          "connectionName" : "Updated_Hourly",
+          "sourceObjectName" : "conference360__Attendee__c"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN0" : {
+      "action" : "join",
+      "sources" : [ "JOIN2", "LOAD_DATASET10" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "conference360__Registration_DateTime__c", "Contact.Id" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "conference360__Contact__c" ],
+        "rightQualifier" : "Contact",
+        "rightKeys" : [ "Id" ]
+      }
+    },
+    "OUTPUT0" : {
+      "action" : "save",
+      "sources" : [ "FORMULA12" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Event Guest List",
+          "name" : "Event_Guest_List",
+          "folderName" : "SharedApp"
+        },
+        "dateConfigurationName" : "July_Fiscal_Year",
+        "measuresToCurrencies" : [ ]
+      }
+    },
+    "FORMULA1" : {
+      "action" : "formula",
+      "sources" : [ "LOAD_DATASET0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "DATETIME",
+          "name" : "Registration_Date",
+          "label" : "Registration Date",
+          "formulaExpression" : "conference360__Registration_DateTime__c",
+          "format" : "yyyy-MM-dd",
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA9" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA1" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "DATETIME",
+          "name" : "Updated_Date_In_System",
+          "label" : "Updated Date In System",
+          "formulaExpression" : "now()",
+          "format" : "MM/dd/yyyy hh:mm:ss a",
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA10" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA9" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "DATETIME",
+          "name" : "Updated_Date",
+          "label" : "Updated Date",
+          "formulaExpression" : "Updated_Date_In_System- INTERVAL 4 hour",
+          "format" : "MM/dd/yyyy hh:mm:ss a",
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "DROP_FIELDS1" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA10" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Updated_Date_In_System" ]
+        }
+      }
+    },
+    "LOAD_DATASET3" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Id", "conference360__Bill_To_Contact__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "connectionName" : "Updated_Hourly",
+          "sourceObjectName" : "conference360__Attendee_Group__c"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN2" : {
+      "action" : "join",
+      "sources" : [ "DROP_FIELDS1", "LOAD_DATASET3" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "conference1.Id" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "conference360__Attendee_Group__c" ],
+        "rightQualifier" : "conference1",
+        "rightKeys" : [ "Id" ]
+      }
+    },
+    "EDIT_ATTRIBUTES0" : {
+      "action" : "schema",
+      "sources" : [ "JOIN17" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Accountand.Name",
+          "newProperties" : {
+            "label" : "Main Full Name",
+            "name" : "Accountand.Name"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES2" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES0" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "conference2.conference360__Type__c",
+          "newProperties" : {
+            "label" : "Event Item Type",
+            "name" : "conference2.conference360__Type__c"
+          }
+        } ]
+      }
+    },
+    "JOIN8" : {
+      "action" : "join",
+      "sources" : [ "JOIN0", "DROP_FIELDS2" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Accountand.PhotoUrl", "Accountand.Wealth_Rating.HAM_Wealth_Rating_Number__c", "Accountand.Id", "Accountand.ucinn_ascendv2__External_System_ID__c", "Accountand.Primary_Relationship_Manager.Assigned_User_Name", "Accountand.ucinn_ascendv2__Primary_Contact_Type__c", "Accountand.HAM_Institutional_Suffix__c", "Accountand.Aggregate.SUM_FY00_Collected_Amount_HF" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "conference1.conference360__Bill_To_Contact__c" ],
+        "rightQualifier" : "Accountand",
+        "rightKeys" : [ "Id" ]
+      }
+    },
+    "FORMULA7" : {
+      "action" : "formula",
+      "sources" : [ "EDIT_ATTRIBUTES2" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Main_Registrant",
+          "label" : "Main Registrant",
+          "formulaExpression" : "case \r\nwhen \r\nconference360__Attendee_Full_Name__c is not null\r\nand \"Accountand.Name\" is not null\r\nand conference360__Attendee_Full_Name__c!=\"Accountand.Name\"\r\nthen \"Accountand.Name\"\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "DROP_FIELDS0" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA7" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Accountand.Name" ]
+        }
+      }
+    },
+    "FORMULA12" : {
+      "action" : "formula",
+      "sources" : [ "DROP_FIELDS0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Event_Date_Plus_Event_Name",
+          "label" : "Event Date Plus Event Name",
+          "formulaExpression" : "concat(conference360__Event_Name__c, ' --- ', date_format(conference360__Event_Start_Date__c,'yyyy-MM-dd'))\r\n",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "LOAD_DATASET6" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "conference360__Calendar_Location__c", "conference360__Event_Location__c", "Id", "HAM_Event_Chapter__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "conference360__Event__c",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "conference360__Event__c"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN9" : {
+      "action" : "join",
+      "sources" : [ "JOIN10", "LOAD_DATASET6" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "conference.Id" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "conference360__Event__c" ],
+        "rightQualifier" : "conference",
+        "rightKeys" : [ "Id" ]
+      }
+    },
+    "DROP_FIELDS2" : {
+      "action" : "schema",
+      "sources" : [ "LOAD_DATASET10" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "SELECT",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Id", "Name" ]
+        }
+      }
+    },
+    "JOIN10" : {
+      "action" : "join",
+      "sources" : [ "JOIN8", "EDIT_ATTRIBUTES1" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Contact1.Id" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "conference360__Contact__c" ],
+        "rightQualifier" : "Contact1",
+        "rightKeys" : [ "Id" ]
+      }
+    },
+    "LOAD_DATASET8" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Id", "Name" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "Account",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "Account"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN11" : {
+      "action" : "join",
+      "sources" : [ "LOAD_DATASET9", "LOAD_DATASET8" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Constituent_Employer__c", "Account.Id" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Constituent_Employer__c" ],
+        "rightQualifier" : "Account",
+        "rightKeys" : [ "Id" ]
+      }
+    },
+    "EDIT_ATTRIBUTES1" : {
+      "action" : "schema",
+      "sources" : [ "JOIN11" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Account.Name",
+          "newProperties" : {
+            "label" : "Constituent Employer",
+            "name" : "Constituent_Employer"
+          }
+        } ]
+      }
+    },
+    "LOAD_DATASET9" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "HAM_Preferred_Chapter__c", "HAM_Total_Years_of_Giving__c", "HAM_Consecutive_Years_of_Giving__c", "HAM_Chapel_Bell__c", "Id", "PhotoUrl", "ucinn_ascendv2__Lifetime_Cash__c", "ucinn_ascendv2__Lifetime_Fundraising__c", "ucinn_ascendv2__Wealth_Rating__c", "HAM_Lifetime_Bequest_Intention__c", "Constituent_Employer__c", "HAM_JBA__c", "HAM_Profile_Picture_URL__c", "HAM_Reunion_Year__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "Contact",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "Contact"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "LOAD_DATASET10" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "All_Involvements", "Wealth_Rating.HAM_Wealth_Rating_Number__c", "Account.ucinn_ascendv2__Donor_ID__c", "Id", "ucinn_ascendv2__Donor_ID__c", "ucinn_ascendv2__Primary_Contact_Type__c", "Spouse.Name", "GS1812.Is_GS_1812_1YR", "Name", "GS1812.Is_GS_1812_CYR", "ucinn_ascendv2__External_System_ID__c", "Birthdate", "Job_Title__c", "Primary_Relationship_Manager.Assigned_User_Name", "HAM_Institutional_Suffix__c", "Aggregate.SUM_FY00_Collected_Amount_HF", "Aggregate.Sum.FY00_Collected_Amount", "Aggregate.Sum.FY01_Collected_Amount" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Account and Contact Dataset",
+          "name" : "Account_and_Contact_Dataset"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "LOAD_DATASET11" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "conference360__Item_Name__c", "conference360__Type__c", "Id" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "conference360__Event_Item__c",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "conference360__Event_Item__c"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "LOAD_DATASET12" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "conference360__Form_Element__c", "conference360__Answer_Text_Long__c", "conference360__Answer__c", "conference360__Attendee__c", "conference360__Question__c", "conference360__Event__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "conference360__Form_Submission_Answer__c",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "conference360__Form_Submission_Answer__c"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN12" : {
+      "action" : "join",
+      "sources" : [ "JOIN9", "LOAD_DATASET11" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "conference2.Id" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "conference360__Event_Item__c" ],
+        "rightQualifier" : "conference2",
+        "rightKeys" : [ "Id" ]
+      }
+    },
+    "JOIN14" : {
+      "action" : "join",
+      "sources" : [ "JOIN12", "JOIN13_copy0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Form.conference360__Attendee__c" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Id" ],
+        "rightQualifier" : "Form",
+        "rightKeys" : [ "conference360__Attendee__c" ]
+      }
+    },
+    "FILTER1" : {
+      "action" : "filter",
+      "sources" : [ "JOIN15" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "conference360__Event__c",
+          "operator" : "EQUAL",
+          "operands" : [ "Hamilton Baseball Alumni Weekend & First Pitch Dinner" ]
+        } ]
+      }
+    },
+    "FORMULA13_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FILTER1" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Answer",
+          "label" : "Answer",
+          "formulaExpression" : "case \r\nwhen conference360__Answer__c is not null and conference360__Answer_Text_Long__c is null\r\nthen conference360__Answer__c\r\nwhen conference360__Answer__c is null and conference360__Answer_Text_Long__c is not null\r\nthen conference360__Answer_Text_Long__c\r\nwhen conference360__Answer__c is not null and conference360__Answer_Text_Long__c is not null\r\nthen concat(conference360__Answer__c,', ', conference360__Answer_Text_Long__c)\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "DROP_FIELDS3_copy0" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA13_copy0" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "conference360__Answer__c", "conference360__Answer_Text_Long__c", "conference360__Event__c" ]
+        }
+      }
+    },
+    "FORMULA14_copy0" : {
+      "action" : "formula",
+      "sources" : [ "DROP_FIELDS3_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "q1000am1200pmTeamPractice_0",
+          "label" : "10:00 a.m.–12:00 p.m. – Team Practice",
+          "formulaExpression" : "case \r\nwhen contains(conference360__Question__c,'10:00 a.m.–12:00 p.m. – Team Practice') \r\nthen Answer\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA15_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA35_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "q1100am100pmTeamPracticeAlumniIntroductionsNetworking_0",
+          "label" : "11:00 a.m.–1:00 p.m. – Team Practice, Alumni Introductions & Networking",
+          "formulaExpression" : "case \r\nwhen contains(conference360__Question__c,'11:00 a.m.–1:00 p.m. – Team Practice, Alumni Introductions & Networking')\r\nthen Answer\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA16_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA36_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "q500600pmAlumniHappyHour_0",
+          "label" : "5:00–6:00 p.m. – Alumni Happy Hour",
+          "formulaExpression" : "case \r\nwhen contains(conference360__Question__c,'5:00–6:00 p.m. – Alumni Happy Hour')\r\nthen Answer\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA17_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA37_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "q600700pmAlumniParentHappyHour_0",
+          "label" : "6:00–7:00 p.m. – Alumni + Parent Happy Hour",
+          "formulaExpression" : "case \r\nwhen contains(conference360__Question__c,'6:00–7:00 p.m. – Alumni + Parent Happy Hour') \r\nthen Answer\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA18_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA38_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "q700900pmFirstPitchDinner_0",
+          "label" : "7:00–9:00 p.m. – First Pitch Dinner",
+          "formulaExpression" : "case \r\nwhen contains(conference360__Question__c,'7:00–9:00 p.m. – First Pitch Dinner') \r\nthen Answer\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA19_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA39_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "q900amCareerPanelDiscussions_0",
+          "label" : "9:00 a.m. – Career Panel Discussions",
+          "formulaExpression" : "case \r\nwhen contains(conference360__Question__c,'9:00 a.m. – Career Panel Discussions') \r\nthen Answer\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "DROP_FIELDS4_copy0" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA46" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "SELECT",
+          "ignoreMissingFields" : true,
+          "fields" : [ "conference360__Attendee__c", "q1000am1200pmTeamPractice", "q1100am100pmTeamPracticeAlumniIntroductionsNetworking", "q600700pmAlumniParentHappyHour", "q500600pmAlumniHappyHour", "q700900pmFirstPitchDinner", "q900amCareerPanelDiscussions", "Pleaseindicateanydietaryrestrictionsbelow", "Pleaselistoutthenamesinyourfoursome", "WillyoubeparticipatingatFridaycasualgolfoutingatTheSkenandoaClub" ]
+        }
+      }
+    },
+    "FORMULA35_copy0" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA14_copy0" ],
+      "parameters" : {
+        "partitionBy" : [ "conference360__Attendee__c" ],
+        "orderBy" : [ {
+          "fieldName" : "q1000am1200pmTeamPractice_0",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "q1000am1200pmTeamPractice",
+          "label" : "10:00 a.m.–12:00 p.m. – Team Practice",
+          "formulaExpression" : "last_value(q1000am1200pmTeamPractice_0)",
+          "precision" : 10,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA36_copy0" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA15_copy0" ],
+      "parameters" : {
+        "partitionBy" : [ "conference360__Attendee__c" ],
+        "orderBy" : [ {
+          "fieldName" : "q1100am100pmTeamPracticeAlumniIntroductionsNetworking_0",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "q1100am100pmTeamPracticeAlumniIntroductionsNetworking",
+          "label" : "11:00 a.m.–1:00 p.m. – Team Practice, Alumni Introductions & Networking",
+          "formulaExpression" : "last_value(q1100am100pmTeamPracticeAlumniIntroductionsNetworking_0)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA37_copy0" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA16_copy0" ],
+      "parameters" : {
+        "partitionBy" : [ "conference360__Attendee__c" ],
+        "orderBy" : [ {
+          "fieldName" : "q500600pmAlumniHappyHour_0",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "q500600pmAlumniHappyHour",
+          "label" : "5:00–6:00 p.m. – Alumni Happy Hour",
+          "formulaExpression" : "last_value(q500600pmAlumniHappyHour_0)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA38_copy0" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA17_copy0" ],
+      "parameters" : {
+        "partitionBy" : [ "conference360__Attendee__c" ],
+        "orderBy" : [ {
+          "fieldName" : "q600700pmAlumniParentHappyHour_0",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "q600700pmAlumniParentHappyHour",
+          "label" : "6:00–7:00 p.m. – Alumni + Parent Happy Hour",
+          "formulaExpression" : "last_value(q600700pmAlumniParentHappyHour_0)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA39_copy0" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA18_copy0" ],
+      "parameters" : {
+        "partitionBy" : [ "conference360__Attendee__c" ],
+        "orderBy" : [ {
+          "fieldName" : "q700900pmFirstPitchDinner_0",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "q700900pmFirstPitchDinner",
+          "label" : "7:00–9:00 p.m. – First Pitch Dinner",
+          "formulaExpression" : "last_value(q700900pmFirstPitchDinner_0)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA40_copy0" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA19_copy0" ],
+      "parameters" : {
+        "partitionBy" : [ "conference360__Attendee__c" ],
+        "orderBy" : [ {
+          "fieldName" : "q900amCareerPanelDiscussions_0",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "q900amCareerPanelDiscussions",
+          "label" : "9:00 a.m. – Career Panel Discussions",
+          "formulaExpression" : "last_value(q900amCareerPanelDiscussions_0)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA41" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA40_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Pleaseindicateanydietaryrestrictionsbelow_0",
+          "label" : "Please indicate any dietary restrictions below:",
+          "formulaExpression" : "case \r\nwhen contains(conference360__Question__c,'Please indicate any dietary restrictions below:') \r\nthen Answer\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA42" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA41" ],
+      "parameters" : {
+        "partitionBy" : [ "conference360__Attendee__c" ],
+        "orderBy" : [ {
+          "fieldName" : "Pleaseindicateanydietaryrestrictionsbelow_0",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Pleaseindicateanydietaryrestrictionsbelow",
+          "label" : "Please indicate any dietary restrictions below:",
+          "formulaExpression" : "last_value(Pleaseindicateanydietaryrestrictionsbelow_0)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA43" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA42" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Pleaselistoutthenamesinyourfoursome_0",
+          "label" : "Please list out the names in your foursome.",
+          "formulaExpression" : "case \r\nwhen contains(conference360__Question__c,'Please list out the names in your foursome.') \r\nthen Answer\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA44" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA45" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "WillyoubeparticipatingatFridaycasualgolfoutingatTheSkenandoaClub_0",
+          "label" : "Will you be participating at Friday's casual golf outing at The Skenandoa Club?",
+          "formulaExpression" : "case \r\nwhen contains(conference360__Question__c,'s casual golf outing at The Skenandoa Club?') \r\nthen Answer\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA45" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA43" ],
+      "parameters" : {
+        "partitionBy" : [ "conference360__Attendee__c" ],
+        "orderBy" : [ {
+          "fieldName" : "Pleaselistoutthenamesinyourfoursome_0",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Pleaselistoutthenamesinyourfoursome",
+          "label" : "Please list out the names in your foursome.",
+          "formulaExpression" : "last_value(Pleaselistoutthenamesinyourfoursome_0)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA46" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA44" ],
+      "parameters" : {
+        "partitionBy" : [ "conference360__Attendee__c" ],
+        "orderBy" : [ {
+          "fieldName" : "WillyoubeparticipatingatFridaycasualgolfoutingatTheSkenandoaClub_0",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "WillyoubeparticipatingatFridaycasualgolfoutingatTheSkenandoaClub",
+          "label" : "Will you be participating at Friday's casual golf outing at The Skenandoa Club?",
+          "formulaExpression" : "last_value(WillyoubeparticipatingatFridaycasualgolfoutingatTheSkenandoaClub_0)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "EXTRACT0_copy0" : {
+      "action" : "extractGrains",
+      "sources" : [ "DROP_FIELDS4_copy0" ],
+      "parameters" : {
+        "grainExtractions" : [ ]
+      }
+    },
+    "AGGREGATE1_copy0" : {
+      "action" : "aggregate",
+      "sources" : [ "EXTRACT0_copy0" ],
+      "parameters" : {
+        "aggregations" : [ {
+          "action" : "COUNT",
+          "name" : "COUNT_Rows",
+          "label" : "Rows"
+        } ],
+        "groupings" : [ "conference360__Attendee__c" ],
+        "pivots" : [ ],
+        "nodeType" : "STANDARD"
+      }
+    },
+    "JOIN13_copy0" : {
+      "action" : "join",
+      "sources" : [ "AGGREGATE1_copy0", "DROP_FIELDS4_copy0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "COUNT_Rows", "EnrichFiel.conference360__Attendee__c" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "conference360__Attendee__c" ],
+        "rightQualifier" : "EnrichFiel",
+        "rightKeys" : [ "conference360__Attendee__c" ]
+      }
+    },
+    "LOAD_DATASET14" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Name", "conference360__Form__c", "Id" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "conference360__Form_Element__c",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "conference360__Form_Element__c"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN15" : {
+      "action" : "join",
+      "sources" : [ "LOAD_DATASET12", "JOIN16" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Question.Id" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "conference360__Form_Element__c" ],
+        "rightQualifier" : "Question",
+        "rightKeys" : [ "Id" ]
+      }
+    },
+    "LOAD_DATASET15" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Id", "Name" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "conference360__Form__c",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "conference360__Form__c"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN16" : {
+      "action" : "join",
+      "sources" : [ "LOAD_DATASET14", "LOAD_DATASET15" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "conference.Id" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "conference360__Form__c" ],
+        "rightQualifier" : "conference",
+        "rightKeys" : [ "Id" ]
+      }
+    },
+    "FILTER2" : {
+      "action" : "filter",
+      "sources" : [ "JOIN15" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "Question.conference.Name",
+          "operator" : "EQUAL",
+          "operands" : [ "Homecoming", "Homecoming Guest - Additional Questions", "Homecoming Alumni - Additional Questions" ]
+        } ]
+      }
+    },
+    "FORMULA13_copy0_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FILTER2" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Answer",
+          "label" : "Answer",
+          "formulaExpression" : "case \r\nwhen conference360__Answer__c is not null and conference360__Answer_Text_Long__c is null\r\nthen conference360__Answer__c\r\nwhen conference360__Answer__c is null and conference360__Answer_Text_Long__c is not null\r\nthen conference360__Answer_Text_Long__c\r\nwhen conference360__Answer__c is not null and conference360__Answer_Text_Long__c is not null\r\nthen concat(conference360__Answer__c,', ', conference360__Answer_Text_Long__c)\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "DROP_FIELDS3_copy0_copy0" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA13_copy0_copy0" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "conference360__Answer__c", "conference360__Answer_Text_Long__c", "conference360__Event__c" ]
+        }
+      }
+    },
+    "FORMULA14_copy0_copy0" : {
+      "action" : "formula",
+      "sources" : [ "DROP_FIELDS3_copy0_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "LUNCH_AVAILABLE_Thur_0",
+          "label" : "LUNCH AVAILABLE (Thur)",
+          "formulaExpression" : "case \r\nwhen \"Question.Name\"='FE-0138'\r\nthen Answer\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA15_copy0_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA35_copy0_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "DINNER_AVAILABLE_Thur_0",
+          "label" : "DINNER AVAILABLE (Thur)",
+          "formulaExpression" : "case \r\nwhen \"Question.Name\"='FE-0151'\r\nthen Answer\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA16_copy0_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA36_copy0_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "ALUMNICOUNCILEXECUTIVECOMMITTEEDINNERMembersonly_Thur_0",
+          "label" : "ALUMNI COUNCIL EXECUTIVE COMMITTEE DINNER (Members only) (Thur)",
+          "formulaExpression" : "case \r\nwhen \"Question.Name\"='FE-0139'\r\nthen Answer\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA17_copy0_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA37_copy0_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "PUBTRIVIAALUMNISTUDENTSThur_0",
+          "label" : "PUB TRIVIA - ALUMNI & STUDENTS (Thur)",
+          "formulaExpression" : "case \r\nwhen \"Question.Name\"='FE-0140'\r\nthen Answer\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA18_copy0_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA38_copy0_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "BREAKFASTAVAILABLEFri_0",
+          "label" : "BREAKFAST AVAILABLE (Fri)",
+          "formulaExpression" : "case \r\nwhen \"Question.Name\"='FE-0141'\r\nthen Answer\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA19_copy0_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA39_copy0_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "ALUMNICOUNCILEXECUTIVECOMMITTEEMEETINGMembersonlyFri_0",
+          "label" : "ALUMNI COUNCIL EXECUTIVE COMMITTEE MEETING (Members only) (Fri)",
+          "formulaExpression" : "case \r\nwhen \"Question.Name\"='FE-0142'\r\nthen Answer\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "DROP_FIELDS4_copy0_copy0" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA126" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "SELECT",
+          "ignoreMissingFields" : true,
+          "fields" : [ "conference360__Attendee__c", "LUNCHAVAILABLEThur", "DINNER_AVAILABLE_Thur", "ALUMNiCOUNCILEXECUTIVECOMMITTEEDINNERMembersonlyThur", "PUBTRIVIAALUMNISTUDENTSThur", "BREAKFASTAVAILABLEFri", "ALUMNICOUNCILEXECUTIVECOMMITTEEMEETINGMembersonlyFri", "LUNCHAVAILABLEFri", "ALUMNICOUNCILLUNCHWITHSTUDENTSMembersonlyFri", "COUPERGUILDLUNCHWITHSTUDENTSMembersonlyFri", "NOMINATIONSCOMMITTEEMEETINGLUNCHFri", "ALUMNICOUNCILCOMMITTEEMEETINGSEICOMMITTEEMEETINGFri", "ALUMNICOUNCILCOMMITTEEMEETINGSFri", "STUDENTLEDCAMPUSTOURFri", "WELLINMUSEUMTOURFri", "r50THREUNIONALUMNIMEETINGFri", "FILLIUSJAZZARCHIVEPRESENTATIONFri", "GOLDGRADUATESOFTHELASTDECADEDROPINFri", "MARCMIXERFri", "ALUMNIGATHERINGATTHELITTLEPUBFri", "ALUMNICOUNCILRETIRINGFACULTYRECOGNITIONDINNERInvitationonlyFri", "DINNERAVAILABLEFri", "VOLLEYBALLVSAMHERSTFri", "HOMECOMINGJAZZ2025Fri", "CAMPFIRESINGTALENTSHOWANDSMORESFri", "DINERBFri", "BREAKFASTAVAILABLESat", "ALUMNICOUNCILANDCOUPERGUILDBREAKFASTSat", "ALUMNICOUNCILMEETINGSat", "HAMILTONCOLLEGEARBORETUMSATURDAYSPEAKERSERIESSat", "FIELDHOCKEYVSBOWDOINSat", "WOMENSSOCCERVSBOWDOINSat", "LUNCHAVAILABLESat", "ASPIRATIONALDESIGNSESSIONSat", "FALLFESTSat", "OPERATIONBIGSPLASHSat", "MENSSOCCERVSBOWDOINSat", "FOOTBALLVSBOWDOINSat", "ELSMEETINGSat", "WELLINMUSEUMTOURSat", "MENSSOCCERPOSTGAMEGATHERINGSat", "ALUMNISTUDENTNETWORKINGPOWERHOURSat", "MEETPRESIDENTTEPPERRECEPTIONSat", "DINNERAVAILABLESat", "CareerCommunityCategoriesSat", "GOLDMIXERSat", "DINERBSat", "BREAKFASTAVAILABLESun", "MENSSOCCERALUMNIATHLETEBRUNCHSun", "WOMENSSOCCERVSSTLAWRENCESun" ]
+        }
+      }
+    },
+    "FORMULA35_copy0_copy0" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA14_copy0_copy0" ],
+      "parameters" : {
+        "partitionBy" : [ "conference360__Attendee__c" ],
+        "orderBy" : [ {
+          "fieldName" : "LUNCH_AVAILABLE_Thur_0",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "LUNCHAVAILABLEThur",
+          "label" : "LUNCH AVAILABLE (Thur)",
+          "formulaExpression" : "last_value(LUNCH_AVAILABLE_Thur_0)",
+          "precision" : 10,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA36_copy0_copy0" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA15_copy0_copy0" ],
+      "parameters" : {
+        "partitionBy" : [ "conference360__Attendee__c" ],
+        "orderBy" : [ {
+          "fieldName" : "DINNER_AVAILABLE_Thur_0",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "DINNER_AVAILABLE_Thur",
+          "label" : "DINNER AVAILABLE (Thur)",
+          "formulaExpression" : "last_value(DINNER_AVAILABLE_Thur_0)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA37_copy0_copy0" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA16_copy0_copy0" ],
+      "parameters" : {
+        "partitionBy" : [ "conference360__Attendee__c" ],
+        "orderBy" : [ {
+          "fieldName" : "ALUMNICOUNCILEXECUTIVECOMMITTEEDINNERMembersonly_Thur_0",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "ALUMNiCOUNCILEXECUTIVECOMMITTEEDINNERMembersonlyThur",
+          "label" : "ALUMNI COUNCIL EXECUTIVE COMMITTEE DINNER (Members only) (Thur)",
+          "formulaExpression" : "last_value(ALUMNICOUNCILEXECUTIVECOMMITTEEDINNERMembersonly_Thur_0)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA38_copy0_copy0" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA17_copy0_copy0" ],
+      "parameters" : {
+        "partitionBy" : [ "conference360__Attendee__c" ],
+        "orderBy" : [ {
+          "fieldName" : "PUBTRIVIAALUMNISTUDENTSThur_0",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "PUBTRIVIAALUMNISTUDENTSThur",
+          "label" : "PUB TRIVIA - ALUMNI & STUDENTS (Thur)",
+          "formulaExpression" : "last_value(PUBTRIVIAALUMNISTUDENTSThur_0)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA39_copy0_copy0" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA18_copy0_copy0" ],
+      "parameters" : {
+        "partitionBy" : [ "conference360__Attendee__c" ],
+        "orderBy" : [ {
+          "fieldName" : "BREAKFASTAVAILABLEFri_0",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "BREAKFASTAVAILABLEFri",
+          "label" : "BREAKFAST AVAILABLE (Fri)",
+          "formulaExpression" : "last_value(BREAKFASTAVAILABLEFri_0)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA40_copy0_copy0" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA19_copy0_copy0" ],
+      "parameters" : {
+        "partitionBy" : [ "conference360__Attendee__c" ],
+        "orderBy" : [ {
+          "fieldName" : "ALUMNICOUNCILEXECUTIVECOMMITTEEMEETINGMembersonlyFri_0",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "ALUMNICOUNCILEXECUTIVECOMMITTEEMEETINGMembersonlyFri",
+          "label" : "ALUMNI COUNCIL EXECUTIVE COMMITTEE MEETING (Members only) (Fri)",
+          "formulaExpression" : "last_value(ALUMNICOUNCILEXECUTIVECOMMITTEEMEETINGMembersonlyFri_0)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA41_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA40_copy0_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "LUNCHAVAILABLEFri_0",
+          "label" : "LUNCH AVAILABLE (Fri)",
+          "formulaExpression" : "case \r\nwhen \"Question.Name\"='FE-0144'\r\nthen Answer\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA42_copy0" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA41_copy0" ],
+      "parameters" : {
+        "partitionBy" : [ "conference360__Attendee__c" ],
+        "orderBy" : [ {
+          "fieldName" : "LUNCHAVAILABLEFri_0",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "LUNCHAVAILABLEFri",
+          "label" : "LUNCH AVAILABLE (Fri)",
+          "formulaExpression" : "last_value(LUNCHAVAILABLEFri_0)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA43_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA42_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "ALUMNICOUNCILLUNCHWITHSTUDENTSMembersonlyFri_0",
+          "label" : "ALUMNI COUNCIL LUNCH WITH STUDENTS (Members only) (Fri)",
+          "formulaExpression" : "case \r\nwhen \"Question.Name\"='FE-0150'\r\nthen Answer\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA44_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA45_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "COUPERGUILDLUNCHWITHSTUDENTSMembersonlyFri_0",
+          "label" : "COUPER GUILD LUNCH WITH STUDENTS (Members only) (Fri)",
+          "formulaExpression" : "case \r\nwhen \"Question.Name\"='FE-0155'\r\nthen Answer\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA45_copy0" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA43_copy0" ],
+      "parameters" : {
+        "partitionBy" : [ "conference360__Attendee__c" ],
+        "orderBy" : [ {
+          "fieldName" : "ALUMNICOUNCILLUNCHWITHSTUDENTSMembersonlyFri_0",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "ALUMNICOUNCILLUNCHWITHSTUDENTSMembersonlyFri",
+          "label" : "ALUMNI COUNCIL LUNCH WITH STUDENTS (Members only) (Fri)",
+          "formulaExpression" : "last_value(ALUMNICOUNCILLUNCHWITHSTUDENTSMembersonlyFri_0)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA46_copy0" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA44_copy0" ],
+      "parameters" : {
+        "partitionBy" : [ "conference360__Attendee__c" ],
+        "orderBy" : [ {
+          "fieldName" : "COUPERGUILDLUNCHWITHSTUDENTSMembersonlyFri_0",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "COUPERGUILDLUNCHWITHSTUDENTSMembersonlyFri",
+          "label" : "COUPER GUILD LUNCH WITH STUDENTS (Members only) (Fri)",
+          "formulaExpression" : "last_value(COUPERGUILDLUNCHWITHSTUDENTSMembersonlyFri_0)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA47" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA46_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "NOMINATIONSCOMMITTEEMEETINGLUNCHFr_0",
+          "label" : "NOMINATIONS COMMITTEE MEETING & LUNCH (Fri)",
+          "formulaExpression" : "case \r\nwhen \"Question.Name\"='FE-0156'\r\nthen Answer\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA48" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA47" ],
+      "parameters" : {
+        "partitionBy" : [ "conference360__Attendee__c" ],
+        "orderBy" : [ {
+          "fieldName" : "NOMINATIONSCOMMITTEEMEETINGLUNCHFr_0",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "NOMINATIONSCOMMITTEEMEETINGLUNCHFri",
+          "label" : "NOMINATIONS COMMITTEE MEETING & LUNCH (Fri)",
+          "formulaExpression" : "last_value(NOMINATIONSCOMMITTEEMEETINGLUNCHFr_0)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA49" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA48" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "ALUMNICOUNCILCOMMITTEEMEETINGSEICOMMITTEEMEETINGFri_0",
+          "label" : "ALUMNI COUNCIL COMMITTEE MEETINGS - E&I COMMITTEE MEETING (Fri)",
+          "formulaExpression" : "case \r\nwhen \"Question.Name\"='FE-0157'\r\nthen Answer\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA50" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA49" ],
+      "parameters" : {
+        "partitionBy" : [ "conference360__Attendee__c" ],
+        "orderBy" : [ {
+          "fieldName" : "ALUMNICOUNCILCOMMITTEEMEETINGSEICOMMITTEEMEETINGFri_0",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "ALUMNICOUNCILCOMMITTEEMEETINGSEICOMMITTEEMEETINGFri",
+          "label" : "ALUMNI COUNCIL COMMITTEE MEETINGS - E&I COMMITTEE MEETING (Fri)",
+          "formulaExpression" : "last_value(ALUMNICOUNCILCOMMITTEEMEETINGSEICOMMITTEEMEETINGFri_0)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA51" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA50" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "ALUMNICOUNCILCOMMITTEEMEETINGSFri_0",
+          "label" : "ALUMNI COUNCIL COMMITTEE MEETINGS (Fri)",
+          "formulaExpression" : "case \r\nwhen \"Question.Name\"='FE-0158'\r\nthen Answer\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA52" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA51" ],
+      "parameters" : {
+        "partitionBy" : [ "conference360__Attendee__c" ],
+        "orderBy" : [ {
+          "fieldName" : "ALUMNICOUNCILCOMMITTEEMEETINGSFri_0",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "ALUMNICOUNCILCOMMITTEEMEETINGSFri",
+          "label" : "ALUMNI COUNCIL COMMITTEE MEETINGS (Fri)",
+          "formulaExpression" : "last_value(ALUMNICOUNCILCOMMITTEEMEETINGSFri_0)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA53" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA52" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "STUDENTLEDCAMPUSTOURFri_0",
+          "label" : "STUDENT-LED CAMPUS TOUR (Fri)",
+          "formulaExpression" : "case \r\nwhen \"Question.Name\"='FE-0159'\r\nthen Answer\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA54" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA53" ],
+      "parameters" : {
+        "partitionBy" : [ "conference360__Attendee__c" ],
+        "orderBy" : [ {
+          "fieldName" : "STUDENTLEDCAMPUSTOURFri_0",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "STUDENTLEDCAMPUSTOURFri",
+          "label" : "STUDENT-LED CAMPUS TOUR (Fri)",
+          "formulaExpression" : "last_value(STUDENTLEDCAMPUSTOURFri_0)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA55" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA54" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "WELLINMUSEUMTOURFri_0",
+          "label" : "WELLIN MUSEUM TOUR (Fri)",
+          "formulaExpression" : "case \r\nwhen \"Question.Name\"='FE-0160'\r\nthen Answer\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA56" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA55" ],
+      "parameters" : {
+        "partitionBy" : [ "conference360__Attendee__c" ],
+        "orderBy" : [ {
+          "fieldName" : "WELLINMUSEUMTOURFri_0",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "WELLINMUSEUMTOURFri",
+          "label" : "WELLIN MUSEUM TOUR (Fri)",
+          "formulaExpression" : "last_value(WELLINMUSEUMTOURFri_0)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA57" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA56" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "r50THREUNIONALUMNIMEETINGFri_0",
+          "label" : "50TH REUNION ALUMNI MEETING (Fri)",
+          "formulaExpression" : "case \r\nwhen \"Question.Name\"='FE-0162'\r\nthen Answer\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA58" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA57" ],
+      "parameters" : {
+        "partitionBy" : [ "conference360__Attendee__c" ],
+        "orderBy" : [ {
+          "fieldName" : "r50THREUNIONALUMNIMEETINGFri_0",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "r50THREUNIONALUMNIMEETINGFri",
+          "label" : "50TH REUNION ALUMNI MEETING (Fri)",
+          "formulaExpression" : "last_value(r50THREUNIONALUMNIMEETINGFri_0)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA59" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA58" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "FILLIUSJAZZARCHIVEPRESENTATIONFri_0",
+          "label" : "FILLIUS JAZZ ARCHIVE PRESENTATION (Fri)",
+          "formulaExpression" : "case \r\nwhen \"Question.Name\"='FE-0161'\r\nthen Answer\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA60" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA59" ],
+      "parameters" : {
+        "partitionBy" : [ "conference360__Attendee__c" ],
+        "orderBy" : [ {
+          "fieldName" : "FILLIUSJAZZARCHIVEPRESENTATIONFri_0",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "FILLIUSJAZZARCHIVEPRESENTATIONFri",
+          "label" : "FILLIUS JAZZ ARCHIVE PRESENTATION (Fri)",
+          "formulaExpression" : "last_value(FILLIUSJAZZARCHIVEPRESENTATIONFri_0)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA61" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA60" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "GOLDGRADUATESOFTHELASTDECADEDROPINFri_0",
+          "label" : "GOLD (GRADUATES OF THE LAST DECADE) DROP-IN (Fri)",
+          "formulaExpression" : "case \r\nwhen \"Question.Name\"='FE-0163'\r\nthen Answer\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA62" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA61" ],
+      "parameters" : {
+        "partitionBy" : [ "conference360__Attendee__c" ],
+        "orderBy" : [ {
+          "fieldName" : "GOLDGRADUATESOFTHELASTDECADEDROPINFri_0",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "GOLDGRADUATESOFTHELASTDECADEDROPINFri",
+          "label" : "GOLD (GRADUATES OF THE LAST DECADE) DROP-IN (Fri)",
+          "formulaExpression" : "last_value(GOLDGRADUATESOFTHELASTDECADEDROPINFri_0)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA63" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA62" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "MARCMIXERFri_0",
+          "label" : "MARC MIXER (Fri)",
+          "formulaExpression" : "case \r\nwhen \"Question.Name\"='FE-0164'\r\nthen Answer\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA64" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA63" ],
+      "parameters" : {
+        "partitionBy" : [ "conference360__Attendee__c" ],
+        "orderBy" : [ {
+          "fieldName" : "MARCMIXERFri_0",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "MARCMIXERFri",
+          "label" : "MARC MIXER (Fri)",
+          "formulaExpression" : "last_value(MARCMIXERFri_0)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA65" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA64" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "ALUMNIGATHERINGATTHELITTLEPUBFri_0",
+          "label" : "ALUMNI GATHERING AT THE LITTLE PUB (Fri)",
+          "formulaExpression" : "case \r\nwhen \"Question.Name\"='FE-0165'\r\nthen Answer\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA66" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA65" ],
+      "parameters" : {
+        "partitionBy" : [ "conference360__Attendee__c" ],
+        "orderBy" : [ {
+          "fieldName" : "ALUMNIGATHERINGATTHELITTLEPUBFri_0",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "ALUMNIGATHERINGATTHELITTLEPUBFri",
+          "label" : "ALUMNI GATHERING AT THE LITTLE PUB (Fri)",
+          "formulaExpression" : "last_value(ALUMNIGATHERINGATTHELITTLEPUBFri_0)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA67" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA66" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "DINNERAVAILABLEFri_0",
+          "label" : "DINNER AVAILABLE (Fri)",
+          "formulaExpression" : "case \r\nwhen \"Question.Name\"='FE-0153'\r\nthen Answer\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA68" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA67" ],
+      "parameters" : {
+        "partitionBy" : [ "conference360__Attendee__c" ],
+        "orderBy" : [ {
+          "fieldName" : "DINNERAVAILABLEFri_0",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "DINNERAVAILABLEFri",
+          "label" : "DINNER AVAILABLE (Fri)",
+          "formulaExpression" : "last_value(DINNERAVAILABLEFri_0)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA69" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA68" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "ALUMNICOUNCILRETIRINGFACULTYRECOGNITIONDINNERInvitationonlyFri_0",
+          "label" : "ALUMNI COUNCIL & RETIRING FACULTY RECOGNITION DINNER (Invitation only) (Fri)",
+          "formulaExpression" : "case \r\nwhen \"Question.Name\"='FE-0166'\r\nthen Answer\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA70" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA69" ],
+      "parameters" : {
+        "partitionBy" : [ "conference360__Attendee__c" ],
+        "orderBy" : [ {
+          "fieldName" : "ALUMNICOUNCILRETIRINGFACULTYRECOGNITIONDINNERInvitationonlyFri_0",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "ALUMNICOUNCILRETIRINGFACULTYRECOGNITIONDINNERInvitationonlyFri",
+          "label" : "ALUMNI COUNCIL & RETIRING FACULTY RECOGNITION DINNER (Invitation only) (Fri)",
+          "formulaExpression" : "last_value(ALUMNICOUNCILRETIRINGFACULTYRECOGNITIONDINNERInvitationonlyFri_0)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA71" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA70" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "VOLLEYBALLVSAMHERSTFri_0",
+          "label" : "VOLLEYBALL VS. AMHERST (Fri)",
+          "formulaExpression" : "case \r\nwhen \"Question.Name\"='FE-0167'\r\nthen Answer\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA72" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA71" ],
+      "parameters" : {
+        "partitionBy" : [ "conference360__Attendee__c" ],
+        "orderBy" : [ {
+          "fieldName" : "VOLLEYBALLVSAMHERSTFri_0",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "VOLLEYBALLVSAMHERSTFri",
+          "label" : "VOLLEYBALL VS. AMHERST (Fri)",
+          "formulaExpression" : "last_value(VOLLEYBALLVSAMHERSTFri_0)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA73" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA72" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "HOMECOMINGJAZZ2025Fri_0",
+          "label" : "HOMECOMING JAZZ 2025 (Fri)",
+          "formulaExpression" : "case \r\nwhen \"Question.Name\"='FE-0168'\r\nthen Answer\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA74" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA73" ],
+      "parameters" : {
+        "partitionBy" : [ "conference360__Attendee__c" ],
+        "orderBy" : [ {
+          "fieldName" : "HOMECOMINGJAZZ2025Fri_0",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "HOMECOMINGJAZZ2025Fri",
+          "label" : "HOMECOMING JAZZ 2025 (Fri)",
+          "formulaExpression" : "last_value(HOMECOMINGJAZZ2025Fri_0)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA75" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA74" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "CAMPFIRESINGTALENTSHOWANDSMORESFri_0",
+          "label" : "CAMPFIRE SING, TALENT SHOW, AND S’MORES (Fri)",
+          "formulaExpression" : "case \r\nwhen \"Question.Name\"='FE-0169'\r\nthen Answer\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA76" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA75" ],
+      "parameters" : {
+        "partitionBy" : [ "conference360__Attendee__c" ],
+        "orderBy" : [ {
+          "fieldName" : "CAMPFIRESINGTALENTSHOWANDSMORESFri_0",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "CAMPFIRESINGTALENTSHOWANDSMORESFri",
+          "label" : "CAMPFIRE SING, TALENT SHOW, AND S’MORES (Fri)",
+          "formulaExpression" : "last_value(CAMPFIRESINGTALENTSHOWANDSMORESFri_0)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA77" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA76" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "DINERBFri_0",
+          "label" : "DINER B (Fri)",
+          "formulaExpression" : "case \r\nwhen \"Question.Name\"='FE-0170'\r\nthen Answer\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA78" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA77" ],
+      "parameters" : {
+        "partitionBy" : [ "conference360__Attendee__c" ],
+        "orderBy" : [ {
+          "fieldName" : "DINERBFri_0",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "DINERBFri",
+          "label" : "DINER B (Fri)",
+          "formulaExpression" : "last_value(DINERBFri_0)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA79" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA78" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "BREAKFASTAVAILABLESat_0",
+          "label" : "BREAKFAST AVAILABLE (Sat)",
+          "formulaExpression" : "case \r\nwhen \"Question.Name\"='FE-0145'\r\nthen Answer\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA80" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA79" ],
+      "parameters" : {
+        "partitionBy" : [ "conference360__Attendee__c" ],
+        "orderBy" : [ {
+          "fieldName" : "BREAKFASTAVAILABLESat_0",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "BREAKFASTAVAILABLESat",
+          "label" : "BREAKFAST AVAILABLE (Sat)",
+          "formulaExpression" : "last_value(BREAKFASTAVAILABLESat_0)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA81" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA80" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "ALUMNICOUNCILANDCOUPERGUILDBREAKFASTSat_0",
+          "label" : "ALUMNI COUNCIL AND COUPER GUILD BREAKFAST (Sat)",
+          "formulaExpression" : "case \r\nwhen \"Question.Name\"='FE-0173'\r\nthen Answer\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA82" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA81" ],
+      "parameters" : {
+        "partitionBy" : [ "conference360__Attendee__c" ],
+        "orderBy" : [ {
+          "fieldName" : "ALUMNICOUNCILANDCOUPERGUILDBREAKFASTSat_0",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "ALUMNICOUNCILANDCOUPERGUILDBREAKFASTSat",
+          "label" : "ALUMNI COUNCIL AND COUPER GUILD BREAKFAST (Sat)",
+          "formulaExpression" : "last_value(ALUMNICOUNCILANDCOUPERGUILDBREAKFASTSat_0)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA83" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA82" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "ALUMNICOUNCILMEETINGSat_0",
+          "label" : "ALUMNI COUNCIL MEETING (Sat)",
+          "formulaExpression" : "case \r\nwhen \"Question.Name\"='FE-0174'\r\nthen Answer\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA84" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA83" ],
+      "parameters" : {
+        "partitionBy" : [ "conference360__Attendee__c" ],
+        "orderBy" : [ {
+          "fieldName" : "ALUMNICOUNCILMEETINGSat_0",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "ALUMNICOUNCILMEETINGSat",
+          "label" : "ALUMNI COUNCIL MEETING (Sat)",
+          "formulaExpression" : "last_value(ALUMNICOUNCILMEETINGSat_0)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA85" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA84" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "HAMILTONCOLLEGEARBORETUMSATURDAYSPEAKERSERIESSat_0",
+          "label" : "HAMILTON COLLEGE ARBORETUM SATURDAY SPEAKER SERIES (Sat)",
+          "formulaExpression" : "case \r\nwhen \"Question.Name\"='FE-0175'\r\nthen Answer\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA86" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA85" ],
+      "parameters" : {
+        "partitionBy" : [ "conference360__Attendee__c" ],
+        "orderBy" : [ {
+          "fieldName" : "HAMILTONCOLLEGEARBORETUMSATURDAYSPEAKERSERIESSat_0",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "HAMILTONCOLLEGEARBORETUMSATURDAYSPEAKERSERIESSat",
+          "label" : "HAMILTON COLLEGE ARBORETUM SATURDAY SPEAKER SERIES (Sat)",
+          "formulaExpression" : "last_value(HAMILTONCOLLEGEARBORETUMSATURDAYSPEAKERSERIESSat_0)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA87" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA86" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "FIELDHOCKEYVSBOWDOINSat_0",
+          "label" : "FIELD HOCKEY VS. BOWDOIN (Sat)",
+          "formulaExpression" : "case \r\nwhen \"Question.Name\"='FE-0176'\r\nthen Answer\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA88" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA87" ],
+      "parameters" : {
+        "partitionBy" : [ "conference360__Attendee__c" ],
+        "orderBy" : [ {
+          "fieldName" : "FIELDHOCKEYVSBOWDOINSat_0",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "FIELDHOCKEYVSBOWDOINSat",
+          "label" : "FIELD HOCKEY VS. BOWDOIN (Sat)",
+          "formulaExpression" : "last_value(FIELDHOCKEYVSBOWDOINSat_0)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA89" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA88" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "WOMENSSOCCERVSBOWDOINSat_0",
+          "label" : "WOMEN’S SOCCER VS. BOWDOIN (Sat)",
+          "formulaExpression" : "case \r\nwhen \"Question.Name\"='FE-0177'\r\nthen Answer\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA90" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA89" ],
+      "parameters" : {
+        "partitionBy" : [ "conference360__Attendee__c" ],
+        "orderBy" : [ {
+          "fieldName" : "WOMENSSOCCERVSBOWDOINSat_0",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "WOMENSSOCCERVSBOWDOINSat",
+          "label" : "WOMEN’S SOCCER VS. BOWDOIN (Sat)",
+          "formulaExpression" : "last_value(WOMENSSOCCERVSBOWDOINSat_0)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA91" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA90" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "LUNCHAVAILABLESat_0",
+          "label" : "LUNCH AVAILABLE (Sat)",
+          "formulaExpression" : "case \r\nwhen \"Question.Name\"='FE-0147'\r\nthen Answer\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA92" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA91" ],
+      "parameters" : {
+        "partitionBy" : [ "conference360__Attendee__c" ],
+        "orderBy" : [ {
+          "fieldName" : "LUNCHAVAILABLESat_0",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "LUNCHAVAILABLESat",
+          "label" : "LUNCH AVAILABLE (Sat)",
+          "formulaExpression" : "last_value(LUNCHAVAILABLESat_0)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA93" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA92" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "ASPIRATIONALDESIGNSESSIONSat_0",
+          "label" : "ASPIRATIONAL DESIGN SESSION (Sat)",
+          "formulaExpression" : "case \r\nwhen \"Question.Name\"='FE-0178'\r\nthen Answer\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA94" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA93" ],
+      "parameters" : {
+        "partitionBy" : [ "conference360__Attendee__c" ],
+        "orderBy" : [ {
+          "fieldName" : "ASPIRATIONALDESIGNSESSIONSat_0",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "ASPIRATIONALDESIGNSESSIONSat",
+          "label" : "ASPIRATIONAL DESIGN SESSION (Sat)",
+          "formulaExpression" : "last_value(ASPIRATIONALDESIGNSESSIONSat_0)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA95" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA94" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "FALLFESTSat_0",
+          "label" : "FALL FEST (Sat)",
+          "formulaExpression" : "case \r\nwhen \"Question.Name\"='FE-0179'\r\nthen Answer\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA96" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA95" ],
+      "parameters" : {
+        "partitionBy" : [ "conference360__Attendee__c" ],
+        "orderBy" : [ {
+          "fieldName" : "FALLFESTSat_0",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "FALLFESTSat",
+          "label" : "FALL FEST (Sat)",
+          "formulaExpression" : "last_value(FALLFESTSat_0)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA97" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA96" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "OPERATIONBIGSPLASHSat_0",
+          "label" : "OPERATION BIG SPLASH (Sat)",
+          "formulaExpression" : "case \r\nwhen \"Question.Name\"='FE-0180'\r\nthen Answer\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA98" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA97" ],
+      "parameters" : {
+        "partitionBy" : [ "conference360__Attendee__c" ],
+        "orderBy" : [ {
+          "fieldName" : "OPERATIONBIGSPLASHSat_0",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "OPERATIONBIGSPLASHSat",
+          "label" : "OPERATION BIG SPLASH (Sat)",
+          "formulaExpression" : "last_value(OPERATIONBIGSPLASHSat_0)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA99" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA98" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "MENSSOCCERVSBOWDOINSat_0",
+          "label" : "MEN’S SOCCER VS. BOWDOIN (Sat)",
+          "formulaExpression" : "case \r\nwhen \"Question.Name\"='FE-0183'\r\nthen Answer\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA100" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA99" ],
+      "parameters" : {
+        "partitionBy" : [ "conference360__Attendee__c" ],
+        "orderBy" : [ {
+          "fieldName" : "MENSSOCCERVSBOWDOINSat_0",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "MENSSOCCERVSBOWDOINSat",
+          "label" : "MEN’S SOCCER VS. BOWDOIN (Sat)",
+          "formulaExpression" : "last_value(MENSSOCCERVSBOWDOINSat_0)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA101" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA100" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "FOOTBALLVSBOWDOINSat_0",
+          "label" : "FOOTBALL VS. BOWDOIN (Sat)",
+          "formulaExpression" : "case \r\nwhen \"Question.Name\"='FE-0182'\r\nthen Answer\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA102" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA101" ],
+      "parameters" : {
+        "partitionBy" : [ "conference360__Attendee__c" ],
+        "orderBy" : [ {
+          "fieldName" : "FOOTBALLVSBOWDOINSat_0",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "FOOTBALLVSBOWDOINSat",
+          "label" : "FOOTBALL VS. BOWDOIN (Sat)",
+          "formulaExpression" : "last_value(FOOTBALLVSBOWDOINSat_0)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA103" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA102" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "ELSMEETINGSat_0",
+          "label" : "ELS MEETING (Sat)",
+          "formulaExpression" : "case \r\nwhen \"Question.Name\"='FE-0181'\r\nthen Answer\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA104" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA103" ],
+      "parameters" : {
+        "partitionBy" : [ "conference360__Attendee__c" ],
+        "orderBy" : [ {
+          "fieldName" : "ELSMEETINGSat_0",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "ELSMEETINGSat",
+          "label" : "ELS MEETING (Sat)",
+          "formulaExpression" : "last_value(ELSMEETINGSat_0)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA105" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA104" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "WELLINMUSEUMTOURSat_0",
+          "label" : "WELLIN MUSEUM TOUR (Sat)",
+          "formulaExpression" : "case \r\nwhen \"Question.Name\"='FE-0184'\r\nthen Answer\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA106" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA105" ],
+      "parameters" : {
+        "partitionBy" : [ "conference360__Attendee__c" ],
+        "orderBy" : [ {
+          "fieldName" : "WELLINMUSEUMTOURSat_0",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "WELLINMUSEUMTOURSat",
+          "label" : "WELLIN MUSEUM TOUR (Sat)",
+          "formulaExpression" : "last_value(WELLINMUSEUMTOURSat_0)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA107" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA106" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "MENSSOCCERPOSTGAMEGATHERINGSat_0",
+          "label" : "MEN’S SOCCER POSTGAME GATHERING (Sat)",
+          "formulaExpression" : "case \r\nwhen \"Question.Name\"='FE-0185'\r\nthen Answer\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA108" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA107" ],
+      "parameters" : {
+        "partitionBy" : [ "conference360__Attendee__c" ],
+        "orderBy" : [ {
+          "fieldName" : "MENSSOCCERPOSTGAMEGATHERINGSat_0",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "MENSSOCCERPOSTGAMEGATHERINGSat",
+          "label" : "MEN’S SOCCER POSTGAME GATHERING (Sat)",
+          "formulaExpression" : "last_value(MENSSOCCERPOSTGAMEGATHERINGSat_0)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA109" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA108" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "ALUMNISTUDENTNETWORKINGPOWERHOURSat_0",
+          "label" : "ALUMNI-STUDENT NETWORKING POWER HOUR (Sat)",
+          "formulaExpression" : "case \r\nwhen \"Question.Name\"='FE-0187'\r\nthen Answer\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA110" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA109" ],
+      "parameters" : {
+        "partitionBy" : [ "conference360__Attendee__c" ],
+        "orderBy" : [ {
+          "fieldName" : "ALUMNISTUDENTNETWORKINGPOWERHOURSat_0",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "ALUMNISTUDENTNETWORKINGPOWERHOURSat",
+          "label" : "ALUMNI-STUDENT NETWORKING POWER HOUR (Sat)",
+          "formulaExpression" : "last_value(ALUMNISTUDENTNETWORKINGPOWERHOURSat_0)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA111" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA110" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "MEETPRESIDENTTEPPERRECEPTIONSat_0",
+          "label" : "MEET PRESIDENT TEPPER RECEPTION (Sat)",
+          "formulaExpression" : "case \r\nwhen \"Question.Name\"='FE-0188'\r\nthen Answer\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA112" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA111" ],
+      "parameters" : {
+        "partitionBy" : [ "conference360__Attendee__c" ],
+        "orderBy" : [ {
+          "fieldName" : "MEETPRESIDENTTEPPERRECEPTIONSat_0",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "MEETPRESIDENTTEPPERRECEPTIONSat",
+          "label" : "MEET PRESIDENT TEPPER RECEPTION (Sat)",
+          "formulaExpression" : "last_value(MEETPRESIDENTTEPPERRECEPTIONSat_0)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA113" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA112" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "DINNERAVAILABLESat_0",
+          "label" : "DINNER AVAILABLE (Sat)",
+          "formulaExpression" : "case \r\nwhen \"Question.Name\"='FE-0152'\r\nthen Answer\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA114" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA113" ],
+      "parameters" : {
+        "partitionBy" : [ "conference360__Attendee__c" ],
+        "orderBy" : [ {
+          "fieldName" : "DINNERAVAILABLESat_0",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "DINNERAVAILABLESat",
+          "label" : "DINNER AVAILABLE (Sat)",
+          "formulaExpression" : "last_value(DINNERAVAILABLESat_0)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA115" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA114" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "CareerCommunityCategoriesSat_0",
+          "label" : "Career Community Categories: (Sat)",
+          "formulaExpression" : "case \r\nwhen \"Question.Name\"='FE-0186'\r\nthen Answer\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA116" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA115" ],
+      "parameters" : {
+        "partitionBy" : [ "conference360__Attendee__c" ],
+        "orderBy" : [ {
+          "fieldName" : "CareerCommunityCategoriesSat_0",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "CareerCommunityCategoriesSat",
+          "label" : "Career Community Categories: (Sat)",
+          "formulaExpression" : "last_value(CareerCommunityCategoriesSat_0)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA117" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA116" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "GOLDMIXERSat_0",
+          "label" : "GOLD MIXER (Sat)",
+          "formulaExpression" : "case \r\nwhen \"Question.Name\"='FE-0190'\r\nthen Answer\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA118" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA117" ],
+      "parameters" : {
+        "partitionBy" : [ "conference360__Attendee__c" ],
+        "orderBy" : [ {
+          "fieldName" : "GOLDMIXERSat_0",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "GOLDMIXERSat",
+          "label" : "GOLD MIXER (Sat)",
+          "formulaExpression" : "last_value(GOLDMIXERSat_0)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA119" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA118" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "DINERBSat_0",
+          "label" : "DINER B (Sat)",
+          "formulaExpression" : "case \r\nwhen \"Question.Name\"='FE-0193'\r\nthen Answer\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA120" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA119" ],
+      "parameters" : {
+        "partitionBy" : [ "conference360__Attendee__c" ],
+        "orderBy" : [ {
+          "fieldName" : "DINERBSat_0",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "DINERBSat",
+          "label" : "DINER B (Sat)",
+          "formulaExpression" : "last_value(DINERBSat_0)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA121" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA120" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "BREAKFASTAVAILABLESun_0",
+          "label" : "BREAKFAST AVAILABLE (Sun)",
+          "formulaExpression" : "case \r\nwhen \"Question.Name\"='FE-0154'\r\nthen Answer\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA122" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA121" ],
+      "parameters" : {
+        "partitionBy" : [ "conference360__Attendee__c" ],
+        "orderBy" : [ {
+          "fieldName" : "BREAKFASTAVAILABLESun_0",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "BREAKFASTAVAILABLESun",
+          "label" : "BREAKFAST AVAILABLE (Sun)",
+          "formulaExpression" : "last_value(BREAKFASTAVAILABLESun_0)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA123" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA122" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "MENSSOCCERALUMNIATHLETEBRUNCHSun_0",
+          "label" : "MEN’S SOCCER ALUMNI & ATHLETE BRUNCH (Sun)",
+          "formulaExpression" : "case \r\nwhen \"Question.Name\"='FE-0191'\r\nthen Answer\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA124" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA123" ],
+      "parameters" : {
+        "partitionBy" : [ "conference360__Attendee__c" ],
+        "orderBy" : [ {
+          "fieldName" : "MENSSOCCERALUMNIATHLETEBRUNCHSun_0",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "MENSSOCCERALUMNIATHLETEBRUNCHSun",
+          "label" : "MEN’S SOCCER ALUMNI & ATHLETE BRUNCH (Sun)",
+          "formulaExpression" : "last_value(MENSSOCCERALUMNIATHLETEBRUNCHSun_0)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA125" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA124" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "WOMENSSOCCERVSSTLAWRENCESun_0",
+          "label" : "WOMEN’S SOCCER VS. ST. LAWRENCE (Sun)",
+          "formulaExpression" : "case \r\nwhen \"Question.Name\"='FE-0192'\r\nthen Answer\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA126" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA125" ],
+      "parameters" : {
+        "partitionBy" : [ "conference360__Attendee__c" ],
+        "orderBy" : [ {
+          "fieldName" : "WOMENSSOCCERVSSTLAWRENCESun_0",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "WOMENSSOCCERVSSTLAWRENCESun",
+          "label" : "WOMEN’S SOCCER VS. ST. LAWRENCE (Sun)",
+          "formulaExpression" : "last_value(WOMENSSOCCERVSSTLAWRENCESun_0)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "JOIN17" : {
+      "action" : "join",
+      "sources" : [ "JOIN14", "JOIN13_copy0_copy0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "EnrichFiel.conference360__Attendee__c" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Id" ],
+        "rightQualifier" : "EnrichFiel",
+        "rightKeys" : [ "conference360__Attendee__c" ]
+      }
+    },
+    "EXTRACT0_copy0_copy0" : {
+      "action" : "extractGrains",
+      "sources" : [ "DROP_FIELDS4_copy0_copy0" ],
+      "parameters" : {
+        "grainExtractions" : [ ]
+      }
+    },
+    "AGGREGATE1_copy0_copy0" : {
+      "action" : "aggregate",
+      "sources" : [ "EXTRACT0_copy0_copy0" ],
+      "parameters" : {
+        "aggregations" : [ {
+          "action" : "COUNT",
+          "name" : "COUNT_Rows",
+          "label" : "Rows"
+        } ],
+        "groupings" : [ "conference360__Attendee__c" ],
+        "pivots" : [ ],
+        "nodeType" : "STANDARD"
+      }
+    },
+    "JOIN13_copy0_copy0" : {
+      "action" : "join",
+      "sources" : [ "AGGREGATE1_copy0_copy0", "DROP_FIELDS4_copy0_copy0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "COUNT_Rows", "EnrichFiel.conference360__Attendee__c" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "conference360__Attendee__c" ],
+        "rightQualifier" : "EnrichFiel",
+        "rightKeys" : [ "conference360__Attendee__c" ]
+      }
+    }
+  },
+  "ui" : {
+    "nodes" : {
+      "LOAD_DATASET0" : {
+        "label" : "conference360__Attendee__c",
+        "type" : "LOAD_DATASET",
+        "top" : 251.89999999999998,
+        "left" : 112.1,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN0" : {
+        "label" : "Lookup Contact to Attendee",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 251.89999999999998,
+        "left" : 532.1
+      },
+      "OUTPUT0" : {
+        "label" : "Output 0",
+        "type" : "OUTPUT",
+        "top" : 252,
+        "left" : 2352.5
+      },
+      "TRANSFORM0" : {
+        "label" : "Date Format",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 251.89999999999998,
+        "left" : 252.10000000000002,
+        "graph" : {
+          "FORMULA1" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Registration Date"
+          },
+          "FORMULA9" : {
+            "parameters" : {
+              "type" : "DATE_NOW_UI"
+            },
+            "label" : "Updated Date"
+          },
+          "FORMULA10" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Updated Date"
+          },
+          "DROP_FIELDS1" : {
+            "label" : "Drop Columns"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA1",
+          "target" : "FORMULA9"
+        }, {
+          "source" : "FORMULA9",
+          "target" : "FORMULA10"
+        }, {
+          "source" : "FORMULA10",
+          "target" : "DROP_FIELDS1"
+        } ]
+      },
+      "LOAD_DATASET3" : {
+        "label" : "conference360__Attendee_Group__c",
+        "type" : "LOAD_DATASET",
+        "top" : 391.9,
+        "left" : 392.1,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN2" : {
+        "label" : "Lookup Attendee Group to Attendee",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 251.89999999999998,
+        "left" : 392.1
+      },
+      "TRANSFORM1" : {
+        "label" : "Rename",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 252,
+        "left" : 2072.5,
+        "graph" : {
+          "EDIT_ATTRIBUTES0" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES2" : {
+            "label" : "Edit Attributes"
+          }
+        },
+        "connectors" : [ {
+          "source" : "EDIT_ATTRIBUTES0",
+          "target" : "EDIT_ATTRIBUTES2"
+        } ]
+      },
+      "JOIN8" : {
+        "label" : "Lookup Main Registrant Full Name to Attendee",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 251.89999999999998,
+        "left" : 672.1
+      },
+      "TRANSFORM5" : {
+        "label" : "Enrich Fields",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 252,
+        "left" : 2212.5,
+        "graph" : {
+          "FORMULA7" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Main Registrant"
+          },
+          "DROP_FIELDS0" : {
+            "label" : "Drop Columns"
+          },
+          "FORMULA12" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Event Date Plus Event Name"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA7",
+          "target" : "DROP_FIELDS0"
+        }, {
+          "source" : "DROP_FIELDS0",
+          "target" : "FORMULA12"
+        } ]
+      },
+      "LOAD_DATASET6" : {
+        "label" : "conference360__Event__c",
+        "type" : "LOAD_DATASET",
+        "top" : 391.9,
+        "left" : 1092.1,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN9" : {
+        "label" : "Lookup Event Chapter to Attendee",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 251.89999999999998,
+        "left" : 1092.1
+      },
+      "TRANSFORM6" : {
+        "label" : "Transform 6",
+        "type" : "TRANSFORM",
+        "top" : 391.9,
+        "left" : 672.1,
+        "graph" : {
+          "DROP_FIELDS2" : {
+            "label" : "Keep Columns"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "JOIN10" : {
+        "label" : "Lookup Other info to Attendee",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 251.89999999999998,
+        "left" : 812.1
+      },
+      "LOAD_DATASET8" : {
+        "label" : "Account",
+        "type" : "LOAD_DATASET",
+        "top" : 531.9,
+        "left" : 952.1,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN11" : {
+        "label" : "Lookup Employer Name",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 531.9,
+        "left" : 812.1
+      },
+      "TRANSFORM7" : {
+        "label" : "Rename",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 391.9,
+        "left" : 812.1,
+        "graph" : {
+          "EDIT_ATTRIBUTES1" : {
+            "label" : "Edit Attributes"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "LOAD_DATASET9" : {
+        "label" : "Contact",
+        "type" : "LOAD_DATASET",
+        "top" : 671.9,
+        "left" : 812.1,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "LOAD_DATASET10" : {
+        "label" : "Account and Contact Dataset",
+        "type" : "LOAD_DATASET",
+        "top" : 391.9,
+        "left" : 532.1,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "LOAD_DATASET11" : {
+        "label" : "conference360__Event_Item__c",
+        "type" : "LOAD_DATASET",
+        "top" : 391.9,
+        "left" : 1232.1,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "LOAD_DATASET12" : {
+        "label" : "conference360__Form_Submission_Answer__c",
+        "type" : "LOAD_DATASET",
+        "top" : 672,
+        "left" : 1092,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN12" : {
+        "label" : "Lookup Event Item to Attendee",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 251.89999999999998,
+        "left" : 1232.1
+      },
+      "JOIN14" : {
+        "label" : "Lookup QAs",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 252.60000000000002,
+        "left" : 1792.5
+      },
+      "FILTER1" : {
+        "label" : "Filter Baseball",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 672,
+        "left" : 1372
+      },
+      "TRANSFORM8_copy0" : {
+        "label" : "Enrich Fields",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 672,
+        "left" : 1512,
+        "graph" : {
+          "FORMULA13_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Answer"
+          },
+          "DROP_FIELDS3_copy0" : {
+            "label" : "Drop Columns"
+          },
+          "FORMULA14_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Q1"
+          },
+          "FORMULA15_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Q2"
+          },
+          "FORMULA16_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Q3"
+          },
+          "FORMULA17_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Q4"
+          },
+          "FORMULA18_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Q5"
+          },
+          "FORMULA19_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Q6"
+          },
+          "DROP_FIELDS4_copy0" : {
+            "label" : "Keep Columns"
+          },
+          "FORMULA35_copy0" : {
+            "label" : "Q1+"
+          },
+          "FORMULA36_copy0" : {
+            "label" : "Q2+"
+          },
+          "FORMULA37_copy0" : {
+            "label" : "Q3+"
+          },
+          "FORMULA38_copy0" : {
+            "label" : "Q4+"
+          },
+          "FORMULA39_copy0" : {
+            "label" : "Q5+"
+          },
+          "FORMULA40_copy0" : {
+            "label" : "Q6+"
+          },
+          "FORMULA41" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Q7"
+          },
+          "FORMULA42" : {
+            "label" : "Q7+"
+          },
+          "FORMULA43" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Q8"
+          },
+          "FORMULA44" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Q9"
+          },
+          "FORMULA45" : {
+            "label" : "Q8+"
+          },
+          "FORMULA46" : {
+            "label" : "Q9+"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA13_copy0",
+          "target" : "DROP_FIELDS3_copy0"
+        }, {
+          "source" : "DROP_FIELDS3_copy0",
+          "target" : "FORMULA14_copy0"
+        }, {
+          "source" : "FORMULA35_copy0",
+          "target" : "FORMULA15_copy0"
+        }, {
+          "source" : "FORMULA14_copy0",
+          "target" : "FORMULA35_copy0"
+        }, {
+          "source" : "FORMULA36_copy0",
+          "target" : "FORMULA16_copy0"
+        }, {
+          "source" : "FORMULA15_copy0",
+          "target" : "FORMULA36_copy0"
+        }, {
+          "source" : "FORMULA37_copy0",
+          "target" : "FORMULA17_copy0"
+        }, {
+          "source" : "FORMULA16_copy0",
+          "target" : "FORMULA37_copy0"
+        }, {
+          "source" : "FORMULA38_copy0",
+          "target" : "FORMULA18_copy0"
+        }, {
+          "source" : "FORMULA17_copy0",
+          "target" : "FORMULA38_copy0"
+        }, {
+          "source" : "FORMULA39_copy0",
+          "target" : "FORMULA19_copy0"
+        }, {
+          "source" : "FORMULA18_copy0",
+          "target" : "FORMULA39_copy0"
+        }, {
+          "source" : "FORMULA19_copy0",
+          "target" : "FORMULA40_copy0"
+        }, {
+          "source" : "FORMULA40_copy0",
+          "target" : "FORMULA41"
+        }, {
+          "source" : "FORMULA41",
+          "target" : "FORMULA42"
+        }, {
+          "source" : "FORMULA42",
+          "target" : "FORMULA43"
+        }, {
+          "source" : "FORMULA45",
+          "target" : "FORMULA44"
+        }, {
+          "source" : "FORMULA43",
+          "target" : "FORMULA45"
+        }, {
+          "source" : "FORMULA46",
+          "target" : "DROP_FIELDS4_copy0"
+        }, {
+          "source" : "FORMULA44",
+          "target" : "FORMULA46"
+        } ]
+      },
+      "AGGREGATE0_copy0" : {
+        "label" : "Aggregate 0",
+        "description" : "",
+        "type" : "AGGREGATE",
+        "top" : 672,
+        "left" : 1652,
+        "graph" : {
+          "EXTRACT0_copy0" : null,
+          "AGGREGATE1_copy0" : null
+        },
+        "connectors" : [ {
+          "source" : "EXTRACT0_copy0",
+          "target" : "AGGREGATE1_copy0"
+        } ]
+      },
+      "JOIN13_copy0" : {
+        "label" : "Join 13",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 672,
+        "left" : 1792
+      },
+      "LOAD_DATASET14" : {
+        "label" : "conference360__Form_Element__c",
+        "type" : "LOAD_DATASET",
+        "top" : 812,
+        "left" : 1092,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN15" : {
+        "label" : "Join 15",
+        "type" : "JOIN",
+        "top" : 672,
+        "left" : 1232
+      },
+      "LOAD_DATASET15" : {
+        "label" : "conference360__Form__c",
+        "type" : "LOAD_DATASET",
+        "top" : 952,
+        "left" : 1232,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN16" : {
+        "label" : "Join 16",
+        "type" : "JOIN",
+        "top" : 812,
+        "left" : 1232
+      },
+      "FILTER2" : {
+        "label" : "Filter Homecoming",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 812,
+        "left" : 1372
+      },
+      "TRANSFORM8_copy0_copy0" : {
+        "label" : "Enrich Fields",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 812,
+        "left" : 1512,
+        "graph" : {
+          "FORMULA13_copy0_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Answer"
+          },
+          "DROP_FIELDS3_copy0_copy0" : {
+            "label" : "Drop Columns"
+          },
+          "FORMULA14_copy0_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Q1"
+          },
+          "FORMULA15_copy0_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Q2"
+          },
+          "FORMULA16_copy0_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Q3"
+          },
+          "FORMULA17_copy0_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Q4"
+          },
+          "FORMULA18_copy0_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Q5"
+          },
+          "FORMULA19_copy0_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Q6"
+          },
+          "DROP_FIELDS4_copy0_copy0" : {
+            "label" : "Keep Columns"
+          },
+          "FORMULA35_copy0_copy0" : {
+            "label" : "Q1+"
+          },
+          "FORMULA36_copy0_copy0" : {
+            "label" : "Q2+"
+          },
+          "FORMULA37_copy0_copy0" : {
+            "label" : "Q3+"
+          },
+          "FORMULA38_copy0_copy0" : {
+            "label" : "Q4+"
+          },
+          "FORMULA39_copy0_copy0" : {
+            "label" : "Q5+"
+          },
+          "FORMULA40_copy0_copy0" : {
+            "label" : "Q6+"
+          },
+          "FORMULA41_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Q7"
+          },
+          "FORMULA42_copy0" : {
+            "label" : "Q7+"
+          },
+          "FORMULA43_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Q8"
+          },
+          "FORMULA44_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Q9"
+          },
+          "FORMULA45_copy0" : {
+            "label" : "Q8+"
+          },
+          "FORMULA46_copy0" : {
+            "label" : "Q9+"
+          },
+          "FORMULA47" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Q10"
+          },
+          "FORMULA48" : {
+            "label" : "Q10+"
+          },
+          "FORMULA49" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Q11"
+          },
+          "FORMULA50" : {
+            "label" : "Q11+"
+          },
+          "FORMULA51" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Q12"
+          },
+          "FORMULA52" : {
+            "label" : "Q12+"
+          },
+          "FORMULA53" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Q13"
+          },
+          "FORMULA54" : {
+            "label" : "Q13+"
+          },
+          "FORMULA55" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Q14"
+          },
+          "FORMULA56" : {
+            "label" : "Q14+"
+          },
+          "FORMULA57" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Q15"
+          },
+          "FORMULA58" : {
+            "label" : "Q15+"
+          },
+          "FORMULA59" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Q16"
+          },
+          "FORMULA60" : {
+            "label" : "Q16+"
+          },
+          "FORMULA61" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Q17"
+          },
+          "FORMULA62" : {
+            "label" : "Q17+"
+          },
+          "FORMULA63" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Q18"
+          },
+          "FORMULA64" : {
+            "label" : "Q18+"
+          },
+          "FORMULA65" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Q19"
+          },
+          "FORMULA66" : {
+            "label" : "Q19+"
+          },
+          "FORMULA67" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Q20"
+          },
+          "FORMULA68" : {
+            "label" : "Q20+"
+          },
+          "FORMULA69" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Q21"
+          },
+          "FORMULA70" : {
+            "label" : "Q21+"
+          },
+          "FORMULA71" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Q22"
+          },
+          "FORMULA72" : {
+            "label" : "Q22+"
+          },
+          "FORMULA73" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Q23"
+          },
+          "FORMULA74" : {
+            "label" : "Q23+"
+          },
+          "FORMULA75" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Q24"
+          },
+          "FORMULA76" : {
+            "label" : "Q24+"
+          },
+          "FORMULA77" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Q25"
+          },
+          "FORMULA78" : {
+            "label" : "Q25+"
+          },
+          "FORMULA79" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Q26"
+          },
+          "FORMULA80" : {
+            "label" : "Q26+"
+          },
+          "FORMULA81" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Q27"
+          },
+          "FORMULA82" : {
+            "label" : "Q27+"
+          },
+          "FORMULA83" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Q28"
+          },
+          "FORMULA84" : {
+            "label" : "Q28+"
+          },
+          "FORMULA85" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Q29"
+          },
+          "FORMULA86" : {
+            "label" : "Q29+"
+          },
+          "FORMULA87" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Q30"
+          },
+          "FORMULA88" : {
+            "label" : "Q30+"
+          },
+          "FORMULA89" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Q31"
+          },
+          "FORMULA90" : {
+            "label" : "Q31+"
+          },
+          "FORMULA91" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Q32"
+          },
+          "FORMULA92" : {
+            "label" : "Q32+"
+          },
+          "FORMULA93" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Q33"
+          },
+          "FORMULA94" : {
+            "label" : "Q33+"
+          },
+          "FORMULA95" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Q34"
+          },
+          "FORMULA96" : {
+            "label" : "Q34+"
+          },
+          "FORMULA97" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Q35"
+          },
+          "FORMULA98" : {
+            "label" : "Q35+"
+          },
+          "FORMULA99" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Q36"
+          },
+          "FORMULA100" : {
+            "label" : "Q36+"
+          },
+          "FORMULA101" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Q37"
+          },
+          "FORMULA102" : {
+            "label" : "Q37+"
+          },
+          "FORMULA103" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Q38"
+          },
+          "FORMULA104" : {
+            "label" : "Q38+"
+          },
+          "FORMULA105" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Q39"
+          },
+          "FORMULA106" : {
+            "label" : "Q39+"
+          },
+          "FORMULA107" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Q40"
+          },
+          "FORMULA108" : {
+            "label" : "Q40+"
+          },
+          "FORMULA109" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Q41"
+          },
+          "FORMULA110" : {
+            "label" : "Q41+"
+          },
+          "FORMULA111" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Q42"
+          },
+          "FORMULA112" : {
+            "label" : "Q42+"
+          },
+          "FORMULA113" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Q43"
+          },
+          "FORMULA114" : {
+            "label" : "Q43+"
+          },
+          "FORMULA115" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Q44"
+          },
+          "FORMULA116" : {
+            "label" : "Q44+"
+          },
+          "FORMULA117" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Q45"
+          },
+          "FORMULA118" : {
+            "label" : "Q45+"
+          },
+          "FORMULA119" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Q46"
+          },
+          "FORMULA120" : {
+            "label" : "Q46+"
+          },
+          "FORMULA121" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Q47"
+          },
+          "FORMULA122" : {
+            "label" : "Q47+"
+          },
+          "FORMULA123" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Q48"
+          },
+          "FORMULA124" : {
+            "label" : "Q48+"
+          },
+          "FORMULA125" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Q49"
+          },
+          "FORMULA126" : {
+            "label" : "Q49+"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA13_copy0_copy0",
+          "target" : "DROP_FIELDS3_copy0_copy0"
+        }, {
+          "source" : "DROP_FIELDS3_copy0_copy0",
+          "target" : "FORMULA14_copy0_copy0"
+        }, {
+          "source" : "FORMULA35_copy0_copy0",
+          "target" : "FORMULA15_copy0_copy0"
+        }, {
+          "source" : "FORMULA14_copy0_copy0",
+          "target" : "FORMULA35_copy0_copy0"
+        }, {
+          "source" : "FORMULA36_copy0_copy0",
+          "target" : "FORMULA16_copy0_copy0"
+        }, {
+          "source" : "FORMULA15_copy0_copy0",
+          "target" : "FORMULA36_copy0_copy0"
+        }, {
+          "source" : "FORMULA37_copy0_copy0",
+          "target" : "FORMULA17_copy0_copy0"
+        }, {
+          "source" : "FORMULA16_copy0_copy0",
+          "target" : "FORMULA37_copy0_copy0"
+        }, {
+          "source" : "FORMULA38_copy0_copy0",
+          "target" : "FORMULA18_copy0_copy0"
+        }, {
+          "source" : "FORMULA17_copy0_copy0",
+          "target" : "FORMULA38_copy0_copy0"
+        }, {
+          "source" : "FORMULA39_copy0_copy0",
+          "target" : "FORMULA19_copy0_copy0"
+        }, {
+          "source" : "FORMULA18_copy0_copy0",
+          "target" : "FORMULA39_copy0_copy0"
+        }, {
+          "source" : "FORMULA19_copy0_copy0",
+          "target" : "FORMULA40_copy0_copy0"
+        }, {
+          "source" : "FORMULA40_copy0_copy0",
+          "target" : "FORMULA41_copy0"
+        }, {
+          "source" : "FORMULA41_copy0",
+          "target" : "FORMULA42_copy0"
+        }, {
+          "source" : "FORMULA42_copy0",
+          "target" : "FORMULA43_copy0"
+        }, {
+          "source" : "FORMULA45_copy0",
+          "target" : "FORMULA44_copy0"
+        }, {
+          "source" : "FORMULA43_copy0",
+          "target" : "FORMULA45_copy0"
+        }, {
+          "source" : "FORMULA44_copy0",
+          "target" : "FORMULA46_copy0"
+        }, {
+          "source" : "FORMULA46_copy0",
+          "target" : "FORMULA47"
+        }, {
+          "source" : "FORMULA47",
+          "target" : "FORMULA48"
+        }, {
+          "source" : "FORMULA48",
+          "target" : "FORMULA49"
+        }, {
+          "source" : "FORMULA49",
+          "target" : "FORMULA50"
+        }, {
+          "source" : "FORMULA50",
+          "target" : "FORMULA51"
+        }, {
+          "source" : "FORMULA51",
+          "target" : "FORMULA52"
+        }, {
+          "source" : "FORMULA52",
+          "target" : "FORMULA53"
+        }, {
+          "source" : "FORMULA53",
+          "target" : "FORMULA54"
+        }, {
+          "source" : "FORMULA54",
+          "target" : "FORMULA55"
+        }, {
+          "source" : "FORMULA55",
+          "target" : "FORMULA56"
+        }, {
+          "source" : "FORMULA56",
+          "target" : "FORMULA57"
+        }, {
+          "source" : "FORMULA57",
+          "target" : "FORMULA58"
+        }, {
+          "source" : "FORMULA58",
+          "target" : "FORMULA59"
+        }, {
+          "source" : "FORMULA59",
+          "target" : "FORMULA60"
+        }, {
+          "source" : "FORMULA60",
+          "target" : "FORMULA61"
+        }, {
+          "source" : "FORMULA61",
+          "target" : "FORMULA62"
+        }, {
+          "source" : "FORMULA62",
+          "target" : "FORMULA63"
+        }, {
+          "source" : "FORMULA63",
+          "target" : "FORMULA64"
+        }, {
+          "source" : "FORMULA64",
+          "target" : "FORMULA65"
+        }, {
+          "source" : "FORMULA65",
+          "target" : "FORMULA66"
+        }, {
+          "source" : "FORMULA66",
+          "target" : "FORMULA67"
+        }, {
+          "source" : "FORMULA67",
+          "target" : "FORMULA68"
+        }, {
+          "source" : "FORMULA68",
+          "target" : "FORMULA69"
+        }, {
+          "source" : "FORMULA69",
+          "target" : "FORMULA70"
+        }, {
+          "source" : "FORMULA70",
+          "target" : "FORMULA71"
+        }, {
+          "source" : "FORMULA71",
+          "target" : "FORMULA72"
+        }, {
+          "source" : "FORMULA72",
+          "target" : "FORMULA73"
+        }, {
+          "source" : "FORMULA73",
+          "target" : "FORMULA74"
+        }, {
+          "source" : "FORMULA74",
+          "target" : "FORMULA75"
+        }, {
+          "source" : "FORMULA75",
+          "target" : "FORMULA76"
+        }, {
+          "source" : "FORMULA76",
+          "target" : "FORMULA77"
+        }, {
+          "source" : "FORMULA77",
+          "target" : "FORMULA78"
+        }, {
+          "source" : "FORMULA78",
+          "target" : "FORMULA79"
+        }, {
+          "source" : "FORMULA79",
+          "target" : "FORMULA80"
+        }, {
+          "source" : "FORMULA80",
+          "target" : "FORMULA81"
+        }, {
+          "source" : "FORMULA81",
+          "target" : "FORMULA82"
+        }, {
+          "source" : "FORMULA82",
+          "target" : "FORMULA83"
+        }, {
+          "source" : "FORMULA83",
+          "target" : "FORMULA84"
+        }, {
+          "source" : "FORMULA84",
+          "target" : "FORMULA85"
+        }, {
+          "source" : "FORMULA85",
+          "target" : "FORMULA86"
+        }, {
+          "source" : "FORMULA86",
+          "target" : "FORMULA87"
+        }, {
+          "source" : "FORMULA87",
+          "target" : "FORMULA88"
+        }, {
+          "source" : "FORMULA88",
+          "target" : "FORMULA89"
+        }, {
+          "source" : "FORMULA89",
+          "target" : "FORMULA90"
+        }, {
+          "source" : "FORMULA90",
+          "target" : "FORMULA91"
+        }, {
+          "source" : "FORMULA91",
+          "target" : "FORMULA92"
+        }, {
+          "source" : "FORMULA92",
+          "target" : "FORMULA93"
+        }, {
+          "source" : "FORMULA93",
+          "target" : "FORMULA94"
+        }, {
+          "source" : "FORMULA94",
+          "target" : "FORMULA95"
+        }, {
+          "source" : "FORMULA95",
+          "target" : "FORMULA96"
+        }, {
+          "source" : "FORMULA96",
+          "target" : "FORMULA97"
+        }, {
+          "source" : "FORMULA97",
+          "target" : "FORMULA98"
+        }, {
+          "source" : "FORMULA98",
+          "target" : "FORMULA99"
+        }, {
+          "source" : "FORMULA99",
+          "target" : "FORMULA100"
+        }, {
+          "source" : "FORMULA100",
+          "target" : "FORMULA101"
+        }, {
+          "source" : "FORMULA101",
+          "target" : "FORMULA102"
+        }, {
+          "source" : "FORMULA102",
+          "target" : "FORMULA103"
+        }, {
+          "source" : "FORMULA103",
+          "target" : "FORMULA104"
+        }, {
+          "source" : "FORMULA104",
+          "target" : "FORMULA105"
+        }, {
+          "source" : "FORMULA105",
+          "target" : "FORMULA106"
+        }, {
+          "source" : "FORMULA106",
+          "target" : "FORMULA107"
+        }, {
+          "source" : "FORMULA107",
+          "target" : "FORMULA108"
+        }, {
+          "source" : "FORMULA108",
+          "target" : "FORMULA109"
+        }, {
+          "source" : "FORMULA109",
+          "target" : "FORMULA110"
+        }, {
+          "source" : "FORMULA110",
+          "target" : "FORMULA111"
+        }, {
+          "source" : "FORMULA111",
+          "target" : "FORMULA112"
+        }, {
+          "source" : "FORMULA112",
+          "target" : "FORMULA113"
+        }, {
+          "source" : "FORMULA113",
+          "target" : "FORMULA114"
+        }, {
+          "source" : "FORMULA114",
+          "target" : "FORMULA115"
+        }, {
+          "source" : "FORMULA115",
+          "target" : "FORMULA116"
+        }, {
+          "source" : "FORMULA116",
+          "target" : "FORMULA117"
+        }, {
+          "source" : "FORMULA117",
+          "target" : "FORMULA118"
+        }, {
+          "source" : "FORMULA118",
+          "target" : "FORMULA119"
+        }, {
+          "source" : "FORMULA119",
+          "target" : "FORMULA120"
+        }, {
+          "source" : "FORMULA120",
+          "target" : "FORMULA121"
+        }, {
+          "source" : "FORMULA121",
+          "target" : "FORMULA122"
+        }, {
+          "source" : "FORMULA122",
+          "target" : "FORMULA123"
+        }, {
+          "source" : "FORMULA123",
+          "target" : "FORMULA124"
+        }, {
+          "source" : "FORMULA124",
+          "target" : "FORMULA125"
+        }, {
+          "source" : "FORMULA126",
+          "target" : "DROP_FIELDS4_copy0_copy0"
+        }, {
+          "source" : "FORMULA125",
+          "target" : "FORMULA126"
+        } ]
+      },
+      "JOIN17" : {
+        "label" : "Join 17",
+        "type" : "JOIN",
+        "top" : 251.89999999999998,
+        "left" : 1932.5
+      },
+      "AGGREGATE0_copy0_copy0" : {
+        "label" : "Aggregate",
+        "description" : "",
+        "type" : "AGGREGATE",
+        "top" : 812.1,
+        "left" : 1652,
+        "graph" : {
+          "EXTRACT0_copy0_copy0" : null,
+          "AGGREGATE1_copy0_copy0" : null
+        },
+        "connectors" : [ {
+          "source" : "EXTRACT0_copy0_copy0",
+          "target" : "AGGREGATE1_copy0_copy0"
+        } ]
+      },
+      "JOIN13_copy0_copy0" : {
+        "label" : "Join 13",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 812.1,
+        "left" : 1792
+      }
+    },
+    "connectors" : [ {
+      "source" : "LOAD_DATASET9",
+      "target" : "JOIN11"
+    }, {
+      "source" : "TRANSFORM0",
+      "target" : "JOIN2"
+    }, {
+      "source" : "JOIN2",
+      "target" : "JOIN0"
+    }, {
+      "source" : "LOAD_DATASET0",
+      "target" : "TRANSFORM0"
+    }, {
+      "source" : "TRANSFORM5",
+      "target" : "OUTPUT0"
+    }, {
+      "source" : "LOAD_DATASET3",
+      "target" : "JOIN2"
+    }, {
+      "source" : "JOIN0",
+      "target" : "JOIN8"
+    }, {
+      "source" : "TRANSFORM1",
+      "target" : "TRANSFORM5"
+    }, {
+      "source" : "JOIN10",
+      "target" : "JOIN9"
+    }, {
+      "source" : "LOAD_DATASET6",
+      "target" : "JOIN9"
+    }, {
+      "source" : "TRANSFORM6",
+      "target" : "JOIN8"
+    }, {
+      "source" : "JOIN8",
+      "target" : "JOIN10"
+    }, {
+      "source" : "TRANSFORM7",
+      "target" : "JOIN10"
+    }, {
+      "source" : "LOAD_DATASET8",
+      "target" : "JOIN11"
+    }, {
+      "source" : "JOIN11",
+      "target" : "TRANSFORM7"
+    }, {
+      "source" : "LOAD_DATASET10",
+      "target" : "JOIN0"
+    }, {
+      "source" : "LOAD_DATASET10",
+      "target" : "TRANSFORM6"
+    }, {
+      "source" : "JOIN9",
+      "target" : "JOIN12"
+    }, {
+      "source" : "LOAD_DATASET11",
+      "target" : "JOIN12"
+    }, {
+      "source" : "JOIN12",
+      "target" : "JOIN14"
+    }, {
+      "source" : "JOIN15",
+      "target" : "FILTER1"
+    }, {
+      "source" : "TRANSFORM8_copy0",
+      "target" : "AGGREGATE0_copy0"
+    }, {
+      "source" : "AGGREGATE0_copy0",
+      "target" : "JOIN13_copy0"
+    }, {
+      "source" : "TRANSFORM8_copy0",
+      "target" : "JOIN13_copy0"
+    }, {
+      "source" : "FILTER1",
+      "target" : "TRANSFORM8_copy0"
+    }, {
+      "source" : "JOIN13_copy0",
+      "target" : "JOIN14"
+    }, {
+      "source" : "JOIN17",
+      "target" : "TRANSFORM1"
+    }, {
+      "source" : "LOAD_DATASET12",
+      "target" : "JOIN15"
+    }, {
+      "source" : "JOIN16",
+      "target" : "JOIN15"
+    }, {
+      "source" : "LOAD_DATASET14",
+      "target" : "JOIN16"
+    }, {
+      "source" : "LOAD_DATASET15",
+      "target" : "JOIN16"
+    }, {
+      "source" : "JOIN15",
+      "target" : "FILTER2"
+    }, {
+      "source" : "FILTER2",
+      "target" : "TRANSFORM8_copy0_copy0"
+    }, {
+      "source" : "JOIN14",
+      "target" : "JOIN17"
+    }, {
+      "source" : "AGGREGATE0_copy0_copy0",
+      "target" : "JOIN13_copy0_copy0"
+    }, {
+      "source" : "TRANSFORM8_copy0_copy0",
+      "target" : "AGGREGATE0_copy0_copy0"
+    }, {
+      "source" : "TRANSFORM8_copy0_copy0",
+      "target" : "JOIN13_copy0_copy0"
+    }, {
+      "source" : "JOIN13_copy0_copy0",
+      "target" : "JOIN17"
+    } ],
+    "hiddenColumns" : [ ]
+  },
+  "runMode" : "full"
+}

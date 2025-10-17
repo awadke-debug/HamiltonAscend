@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Workflow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fieldUpdates>
+        <fullName>Mogli_SMS__UpdateMogliNumber</fullName>
+        <description>Update Mogli Number based on value in Mobile field (and remove all non-numerical values)</description>
+        <field>Mogli_SMS__Mogli_Number__c</field>
+        <formula>SUBSTITUTE(
+SUBSTITUTE(
+SUBSTITUTE(
+SUBSTITUTE(MobilePhone, &quot;(&quot;, &quot;&quot;), &quot;)&quot;, &quot;&quot;), &quot; &quot;, &quot;&quot;), &quot;-&quot;, &quot;&quot;)</formula>
+        <name>Update Mogli Number</name>
+        <notifyAssignee>false</notifyAssignee>
+        <operation>Formula</operation>
+        <protected>false</protected>
+        <reevaluateOnChange>false</reevaluateOnChange>
+    </fieldUpdates>
+    <fieldUpdates>
+        <fullName>Mogli_SMS__Update_Mogli_Number_with_WITH_PLUS</fullName>
+        <description>Update Mogli Number based on value in Mobile field (remove all non-numerical values) WITH PLUS added to front of Mogli Number</description>
+        <field>Mogli_SMS__Mogli_Number__c</field>
+        <formula>IF(ISBLANK(TRIM(MobilePhone)),&quot;&quot;,
+IF(REGEX(TRIM(MobilePhone),&quot;[\\s\\S\\w\\W]*[a-zA-Z@#$%^&amp;*&lt;&gt;!?\\[\\]_{};:&apos;/~`]+[\\s\\S\\w\\W]*&quot;),&quot;&quot;,
+&quot;+1&quot; &amp; SUBSTITUTE( SUBSTITUTE( SUBSTITUTE( SUBSTITUTE( SUBSTITUTE( SUBSTITUTE( SUBSTITUTE( SUBSTITUTE( 
+(&quot;+&quot;&amp; TRIM(MobilePhone)),&quot;++1&quot;,&quot;&quot;),&quot;+1&quot;,&quot;&quot;),&quot;+&quot;,&quot;&quot;),&quot;(&quot;,&quot;&quot;),&quot;)&quot;,&quot;&quot;),&quot; &quot;,&quot;&quot;),&quot;-&quot;,&quot;&quot;),&quot;.&quot;,&quot;&quot;)))</formula>
+        <name>Update Mogli Number with WITH PLUS</name>
+        <notifyAssignee>false</notifyAssignee>
+        <operation>Formula</operation>
+        <protected>false</protected>
+        <reevaluateOnChange>false</reevaluateOnChange>
+    </fieldUpdates>
+    <rules>
+        <fullName>Mogli_SMS__WITH PLUS - onCreateEditWhenMobileNotNull</fullName>
+        <actions>
+            <name>Mogli_SMS__Update_Mogli_Number_with_WITH_PLUS</name>
+            <type>FieldUpdate</type>
+        </actions>
+        <active>true</active>
+        <description>Update Mogli Number based on value in Mobile field (remove all non-numerical values) WITH PLUS added to front of Mogli Number</description>
+        <formula>ISBLANK(Mogli_SMS__Mogli_Number__c) || ISCHANGED(MobilePhone)</formula>
+        <triggerType>onAllChanges</triggerType>
+    </rules>
+    <rules>
+        <fullName>Mogli_SMS__onCreateEditWhenMobileNotNull</fullName>
+        <actions>
+            <name>Mogli_SMS__UpdateMogliNumber</name>
+            <type>FieldUpdate</type>
+        </actions>
+        <active>false</active>
+        <criteriaItems>
+            <field>Lead.MobilePhone</field>
+            <operation>notEqual</operation>
+        </criteriaItems>
+        <description>Update Mogli Number based on value in Mobile field (and remove all non-numerical values)</description>
+        <triggerType>onAllChanges</triggerType>
+    </rules>
+</Workflow>

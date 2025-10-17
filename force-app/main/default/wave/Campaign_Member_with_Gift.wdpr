@@ -1,0 +1,463 @@
+{
+  "version" : "64.0",
+  "nodes" : {
+    "LOAD_DATASET4_copy0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Id", "Name", "ParentId", "RecordTypeId", "NumberOfContacts", "NumberOfOpportunities", "AmountAllOpportunities", "ucinn_ascendv2__Motivation_Code__c", "HAM_Channel__c", "HAM_Client__c", "HAM_Donor_Public_Goal__c", "HAM_Fiscal_Year__c", "HAM_Initiative__c", "HAM_Purpose__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "Campaign",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "Campaign"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "LOAD_DATASET6_copy0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Id", "Name" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "RecordType",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "RecordType"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN8_copy0" : {
+      "action" : "join",
+      "sources" : [ "EDIT_ATTRIBUTES1", "EDIT_ATTRIBUTES0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "RecordTypeId", "Record_Type.Id" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "RecordTypeId" ],
+        "rightQualifier" : "Record_Type",
+        "rightKeys" : [ "Id" ]
+      }
+    },
+    "EDIT_ATTRIBUTES0" : {
+      "action" : "schema",
+      "sources" : [ "LOAD_DATASET6_copy0" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Name",
+          "newProperties" : {
+            "label" : "Campaign Record Type Name",
+            "name" : "Campaign_Record_Type_Name"
+          }
+        } ]
+      }
+    },
+    "FILTER0" : {
+      "action" : "filter",
+      "sources" : [ "JOIN8_copy0" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "Record_Type.Campaign_Record_Type_Name",
+          "operator" : "EQUAL",
+          "operands" : [ "Appeal" ]
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES1" : {
+      "action" : "schema",
+      "sources" : [ "JOIN7_copy0" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Name",
+          "newProperties" : {
+            "label" : "Campaign Name",
+            "name" : "Campaign_Name"
+          }
+        } ]
+      }
+    },
+    "LOAD_DATASET3_copy0_copy0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Id", "Name" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "Campaign",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "Campaign"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN7_copy0" : {
+      "action" : "join",
+      "sources" : [ "LOAD_DATASET4_copy0", "EDIT_ATTRIBUTES6_copy0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "ParentId", "PCampaign.Id" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "ParentId" ],
+        "rightQualifier" : "PCampaign",
+        "rightKeys" : [ "Id" ]
+      }
+    },
+    "EDIT_ATTRIBUTES6_copy0" : {
+      "action" : "schema",
+      "sources" : [ "LOAD_DATASET3_copy0_copy0" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Name",
+          "newProperties" : {
+            "label" : "Parent Campaign Name",
+            "name" : "Parent_Campaign_Name"
+          }
+        } ]
+      }
+    },
+    "LOAD_DATASET8" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "ucinn_ascendv2__Credit_Type__c", "Designation.ucinn_ascendv2__Areas_of_Giving_CASE_Type__c", "Designation.ucinn_ascendv2__Acknowledgement_Description_Formula__c", "Contact.HAM_Reunion_Year__c", "ucinn_ascendv2__Opportunity__c", "Contact.ucinn_ascendv2__Primary_Contact_Type__c", "Constituent_or_Account_Id", "Cash_Amount", "Fundraising_Amount" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Gift Credit and Payment",
+          "name" : "Gift_Credit_and_Payment"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "LOAD_DATASET2_copy2" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "CampaignId", "Id" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "Opportunity",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "Opportunity"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN1_copy1" : {
+      "action" : "join",
+      "sources" : [ "LOAD_DATASET8", "LOAD_DATASET2_copy2" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Opportunit.Id" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "ucinn_ascendv2__Opportunity__c" ],
+        "rightQualifier" : "Opportunit",
+        "rightKeys" : [ "Id" ]
+      }
+    },
+    "EXTRACT0" : {
+      "action" : "extractGrains",
+      "sources" : [ "JOIN1_copy1" ],
+      "parameters" : {
+        "grainExtractions" : [ ]
+      }
+    },
+    "AGGREGATE1" : {
+      "action" : "aggregate",
+      "sources" : [ "EXTRACT0" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "SUM_Cash_Amount",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        }, {
+          "name" : "SUM_Fundraising_Amount",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        } ]
+      },
+      "parameters" : {
+        "aggregations" : [ {
+          "action" : "SUM",
+          "source" : "Cash_Amount",
+          "name" : "SUM_Cash_Amount",
+          "label" : "Cash Amount"
+        }, {
+          "action" : "SUM",
+          "source" : "Fundraising_Amount",
+          "name" : "SUM_Fundraising_Amount",
+          "label" : "Fundraising Amount"
+        } ],
+        "groupings" : [ "Opportunit.CampaignId", "Designation.ucinn_ascendv2__Areas_of_Giving_CASE_Type__c", "Designation.ucinn_ascendv2__Acknowledgement_Description_Formula__c", "Contact.ucinn_ascendv2__Primary_Contact_Type__c", "Contact.HAM_Reunion_Year__c", "ucinn_ascendv2__Credit_Type__c" ],
+        "pivots" : [ ],
+        "nodeType" : "STANDARD"
+      }
+    },
+    "JOIN11" : {
+      "action" : "join",
+      "sources" : [ "FILTER0", "AGGREGATE1" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Aggregate0.Opportunit.CampaignId" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LEFT_OUTER",
+        "leftKeys" : [ "Id" ],
+        "rightQualifier" : "Aggregate0",
+        "rightKeys" : [ "Opportunit.CampaignId" ]
+      }
+    },
+    "OUTPUT0" : {
+      "action" : "save",
+      "sources" : [ "JOIN11" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Solicitation Success Dataset",
+          "name" : "Solicitation_Success_Dataset",
+          "folderName" : "SharedApp"
+        },
+        "dateConfigurationName" : "July_Fiscal_Year",
+        "measuresToCurrencies" : [ ]
+      }
+    }
+  },
+  "ui" : {
+    "nodes" : {
+      "LOAD_DATASET4_copy0" : {
+        "label" : "Campaign",
+        "type" : "LOAD_DATASET",
+        "top" : 252,
+        "left" : 252.3,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "LOAD_DATASET6_copy0" : {
+        "label" : "RecordType",
+        "type" : "LOAD_DATASET",
+        "top" : 532,
+        "left" : 672.3,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN8_copy0" : {
+        "label" : "Lookup Record Type",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 252,
+        "left" : 672.3
+      },
+      "TRANSFORM0" : {
+        "label" : "Rename",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 392,
+        "left" : 672.3,
+        "graph" : {
+          "EDIT_ATTRIBUTES0" : {
+            "label" : "Edit Attributes"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "FILTER0" : {
+        "label" : "Filter Appeal",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 252,
+        "left" : 812.3
+      },
+      "TRANSFORM1" : {
+        "label" : "Rename",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 252,
+        "left" : 532.3,
+        "graph" : {
+          "EDIT_ATTRIBUTES1" : {
+            "label" : "Edit Attributes"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "LOAD_DATASET3_copy0_copy0" : {
+        "label" : "Campaign Copy1",
+        "type" : "LOAD_DATASET",
+        "top" : 532,
+        "left" : 392.4,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN7_copy0" : {
+        "label" : "Lookup Parent Campaign Name",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 252,
+        "left" : 392.3
+      },
+      "TRANSFORM4_copy0" : {
+        "label" : "Rename",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 392,
+        "left" : 392.3,
+        "graph" : {
+          "EDIT_ATTRIBUTES6_copy0" : {
+            "label" : "Edit Attributes"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "LOAD_DATASET8" : {
+        "label" : "Gift Credit and Payment",
+        "type" : "LOAD_DATASET",
+        "top" : 672,
+        "left" : 952.2,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "LOAD_DATASET2_copy2" : {
+        "label" : "Opportunity",
+        "description" : "",
+        "type" : "LOAD_DATASET",
+        "top" : 532,
+        "left" : 1092.2,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN1_copy1" : {
+        "label" : "Lookup Campaign Id",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 532,
+        "left" : 952.2
+      },
+      "AGGREGATE0" : {
+        "label" : "Aggregate 0",
+        "type" : "AGGREGATE",
+        "top" : 392,
+        "left" : 952.3,
+        "graph" : {
+          "EXTRACT0" : null,
+          "AGGREGATE1" : null
+        },
+        "connectors" : [ {
+          "source" : "EXTRACT0",
+          "target" : "AGGREGATE1"
+        } ]
+      },
+      "JOIN11" : {
+        "label" : "Join 11",
+        "type" : "JOIN",
+        "top" : 252,
+        "left" : 952.3
+      },
+      "OUTPUT0" : {
+        "label" : "Output 0",
+        "type" : "OUTPUT",
+        "top" : 252.10000000000002,
+        "left" : 1512.4
+      }
+    },
+    "connectors" : [ {
+      "source" : "LOAD_DATASET8",
+      "target" : "JOIN1_copy1"
+    }, {
+      "source" : "LOAD_DATASET4_copy0",
+      "target" : "JOIN7_copy0"
+    }, {
+      "source" : "TRANSFORM1",
+      "target" : "JOIN8_copy0"
+    }, {
+      "source" : "TRANSFORM0",
+      "target" : "JOIN8_copy0"
+    }, {
+      "source" : "LOAD_DATASET6_copy0",
+      "target" : "TRANSFORM0"
+    }, {
+      "source" : "TRANSFORM4_copy0",
+      "target" : "JOIN7_copy0"
+    }, {
+      "source" : "LOAD_DATASET3_copy0_copy0",
+      "target" : "TRANSFORM4_copy0"
+    }, {
+      "source" : "JOIN7_copy0",
+      "target" : "TRANSFORM1"
+    }, {
+      "source" : "LOAD_DATASET2_copy2",
+      "target" : "JOIN1_copy1"
+    }, {
+      "source" : "FILTER0",
+      "target" : "JOIN11"
+    }, {
+      "source" : "AGGREGATE0",
+      "target" : "JOIN11"
+    }, {
+      "source" : "JOIN8_copy0",
+      "target" : "FILTER0"
+    }, {
+      "source" : "JOIN1_copy1",
+      "target" : "AGGREGATE0"
+    }, {
+      "source" : "JOIN11",
+      "target" : "OUTPUT0"
+    } ],
+    "hiddenColumns" : [ ]
+  },
+  "runMode" : "full"
+}

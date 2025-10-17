@@ -1,0 +1,927 @@
+{
+  "version" : "64.0",
+  "nodes" : {
+    "LOAD_DATASET0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Contact.ucinn_ascendv2__Full_Name_Formula__c", "ucinn_ascendv2__Credit_Date_Formula__c", "Object", "Constituent_or_Account_Id", "Fundraising_Amount" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Gift Credit and Payment",
+          "name" : "Gift_Credit_and_Payment"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "OUTPUT0" : {
+      "action" : "save",
+      "sources" : [ "FORMULA4" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "test818",
+          "name" : "test818"
+        },
+        "dateConfigurationName" : "July_Fiscal_Year",
+        "measuresToCurrencies" : [ ]
+      }
+    },
+    "EXTRACT0" : {
+      "action" : "extractGrains",
+      "sources" : [ "LOAD_DATASET0" ],
+      "parameters" : {
+        "grainExtractions" : [ {
+          "source" : "ucinn_ascendv2__Credit_Date_Formula__c",
+          "targets" : [ {
+            "name" : "ucinn_ascendv2__Credit_Date_Formula__c_DAY",
+            "label" : "Date Day",
+            "grainType" : "DAY"
+          }, {
+            "name" : "ucinn_ascendv2__Credit_Date_Formula__c_MONTH",
+            "label" : "Date Month",
+            "grainType" : "MONTH"
+          }, {
+            "name" : "ucinn_ascendv2__Credit_Date_Formula__c_YEAR",
+            "label" : "Date Year",
+            "grainType" : "YEAR"
+          } ]
+        } ]
+      }
+    },
+    "AGGREGATE1" : {
+      "action" : "aggregate",
+      "sources" : [ "EXTRACT0" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "SUM_Fundraising_Amount",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        } ]
+      },
+      "parameters" : {
+        "aggregations" : [ {
+          "action" : "SUM",
+          "source" : "Fundraising_Amount",
+          "name" : "SUM_Fundraising_Amount",
+          "label" : "Sum of Fundraising Amount"
+        } ],
+        "groupings" : [ "Constituent_or_Account_Id", "ucinn_ascendv2__Credit_Date_Formula__c_DAY", "ucinn_ascendv2__Credit_Date_Formula__c_MONTH", "ucinn_ascendv2__Credit_Date_Formula__c_YEAR", "Contact.ucinn_ascendv2__Full_Name_Formula__c" ],
+        "pivots" : [ ],
+        "nodeType" : "STANDARD"
+      }
+    },
+    "FORMULA3" : {
+      "action" : "formula",
+      "sources" : [ "AGGREGATE1" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Date",
+          "label" : "Date",
+          "formulaExpression" : "concat(ucinn_ascendv2__Credit_Date_Formula__c_YEAR,'-',ucinn_ascendv2__Credit_Date_Formula__c_MONTH,'-',ucinn_ascendv2__Credit_Date_Formula__c_DAY)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "TO_DATE0" : {
+      "action" : "typeCast",
+      "sources" : [ "FORMULA3" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "Date_to_date",
+          "newProperties" : {
+            "name" : "Date"
+          }
+        } ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Date" ]
+        }
+      },
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Date",
+          "newProperties" : {
+            "label" : "Date",
+            "name" : "Date_to_date",
+            "typeProperties" : {
+              "type" : "DATETIME",
+              "format" : "yyyy-MM-dd"
+            }
+          }
+        } ]
+      }
+    },
+    "DROP_FIELDS0" : {
+      "action" : "schema",
+      "sources" : [ "TO_DATE0" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "ucinn_ascendv2__Credit_Date_Formula__c_DAY", "ucinn_ascendv2__Credit_Date_Formula__c_YEAR", "ucinn_ascendv2__Credit_Date_Formula__c_MONTH" ]
+        }
+      }
+    },
+    "FORMULA5" : {
+      "action" : "computeRelative",
+      "sources" : [ "DROP_FIELDS0" ],
+      "parameters" : {
+        "partitionBy" : [ "Constituent_or_Account_Id" ],
+        "orderBy" : [ {
+          "fieldName" : "Date",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Cumulative_Fundraising_Amount",
+          "label" : "Cumulative Fundraising Amount",
+          "formulaExpression" : "sum(SUM_Fundraising_Amount)\r\n\r\n",
+          "precision" : 10,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA6" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA5" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "DATETIME",
+          "name" : "Date_of_Over_1M",
+          "label" : "Date of Over 1M",
+          "formulaExpression" : "case when Cumulative_Fundraising_Amount>=1000000\r\nthen Date\r\nend\r\n\r\n",
+          "format" : "yyyy-MM-dd",
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FILTER1" : {
+      "action" : "filter",
+      "sources" : [ "FORMULA6" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "DATETIME",
+          "field" : "Date_of_Over_1M",
+          "operator" : "IS_NOT_NULL",
+          "operands" : [ ]
+        } ]
+      }
+    },
+    "FORMULA4" : {
+      "action" : "computeRelative",
+      "sources" : [ "FILTER1" ],
+      "parameters" : {
+        "partitionBy" : [ "Constituent_or_Account_Id" ],
+        "orderBy" : [ {
+          "fieldName" : "Date_of_Over_1M",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "DATETIME",
+          "name" : "FC_Date",
+          "label" : "FC Date",
+          "formulaExpression" : "first_value(Date_of_Over_1M)\r\n\r\n\r\n",
+          "format" : "yyyy-MM-dd",
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "LOAD_DATASET43_copy0_copy0_copy0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Id", "RecordTypeId", "StageName", "Amount", "Type", "ucinn_ascendv2__Frequency__c", "ucinn_ascendv2__Last_Payment_Date_Roll_Up__c", "bt_stripe__Related_Contact__c", "HAM_Soft_Credit_Contact__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "Opportunity",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "Opportunity"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "FILTER83_copy0_copy0_copy0" : {
+      "action" : "filter",
+      "sources" : [ "JOIN115" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "Opportunit.ucinn_ascendv2__Frequency__c",
+          "operator" : "EQUAL",
+          "operands" : [ "Monthly" ]
+        }, {
+          "type" : "TEXT",
+          "field" : "Opportunity.Type",
+          "operator" : "EQUAL",
+          "operands" : [ "Recurring" ]
+        }, {
+          "type" : "TEXT",
+          "field" : "Opportunit.StageName",
+          "operator" : "EQUAL",
+          "operands" : [ "Active" ]
+        }, {
+          "type" : "TEXT",
+          "field" : "Opportunity.RecordType.Name",
+          "operator" : "EQUAL",
+          "operands" : [ "Recurring Gift" ]
+        } ]
+      }
+    },
+    "FILTER84_copy0_copy0_copy0" : {
+      "action" : "filter",
+      "sources" : [ "JOIN115" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "Opportunit.ucinn_ascendv2__Frequency__c",
+          "operator" : "EQUAL",
+          "operands" : [ "Annual" ]
+        }, {
+          "type" : "TEXT",
+          "field" : "Opportunity.Type",
+          "operator" : "EQUAL",
+          "operands" : [ "Recurring" ]
+        }, {
+          "type" : "TEXT",
+          "field" : "Opportunit.StageName",
+          "operator" : "EQUAL",
+          "operands" : [ "Active" ]
+        }, {
+          "type" : "TEXT",
+          "field" : "Opportunity.RecordType.Name",
+          "operator" : "EQUAL",
+          "operands" : [ "Recurring Gift" ]
+        } ]
+      }
+    },
+    "FILTER85_copy0_copy0_copy0" : {
+      "action" : "filter",
+      "sources" : [ "JOIN115" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "Opportunit.ucinn_ascendv2__Frequency__c",
+          "operator" : "EQUAL",
+          "operands" : [ "Weekly" ]
+        }, {
+          "type" : "TEXT",
+          "field" : "Opportunity.Type",
+          "operator" : "EQUAL",
+          "operands" : [ "Recurring" ]
+        }, {
+          "type" : "TEXT",
+          "field" : "Opportunit.StageName",
+          "operator" : "EQUAL",
+          "operands" : [ "Active" ]
+        }, {
+          "type" : "TEXT",
+          "field" : "Opportunity.RecordType.Name",
+          "operator" : "EQUAL",
+          "operands" : [ "Recurring Gift" ]
+        } ]
+      }
+    },
+    "FORMULA318_copy0_copy0_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FILTER84_copy0_copy0_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Recurring_Payment_Projection",
+          "label" : "Recurring Payment Projection",
+          "formulaExpression" : "case \r\nwhen fiscalYear(\"Opportunit.ucinn_ascendv2__Last_Payment_Date_Roll_Up__c\")=fiscalYear(current_date())\r\nthen 0\r\nelse \"Opportunit.Amount\"\r\nend",
+          "precision" : 10,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA324_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA318_copy0_copy0_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Fiscal_Year",
+          "label" : "Fiscal Year",
+          "formulaExpression" : "string(fiscalYear(current_date()))\r\n",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "DROP_FIELDS66_copy0" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA324_copy0" ],
+      "parameters" : {
+        "slice" : {
+          "mode" : "SELECT",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Fiscal_Year", "Recurring_Payment_Projection", "Constituent_or_Account_Id", "Opportunit.Amount", "Opportunit.ucinn_ascendv2__Frequency__c" ]
+        }
+      }
+    },
+    "FORMULA319_copy0_copy0_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FILTER83_copy0_copy0_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Recurring_Payment_Projection",
+          "label" : "Recurring Payment Projection",
+          "formulaExpression" : "case \r\nwhen \r\nfiscalYear(\"Opportunit.ucinn_ascendv2__Last_Payment_Date_Roll_Up__c\")=fiscalYear(current_date())  \r\nand fiscalMonth(\"Opportunit.ucinn_ascendv2__Last_Payment_Date_Roll_Up__c\")=fiscalMonth(current_date()) \r\nthen (12-fiscalMonth(current_date()))*\"Opportunit.Amount\"\r\nelse (12-fiscalMonth(current_date())+1)*\"Opportunit.Amount\"\r\nend",
+          "precision" : 10,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA323_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA319_copy0_copy0_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Fiscal_Year",
+          "label" : "Fiscal Year",
+          "formulaExpression" : "string(fiscalYear(current_date()))\r\n",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "DROP_FIELDS65_copy0" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA323_copy0" ],
+      "parameters" : {
+        "slice" : {
+          "mode" : "SELECT",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Fiscal_Year", "Recurring_Payment_Projection", "Constituent_or_Account_Id", "Opportunit.Amount", "Opportunit.ucinn_ascendv2__Frequency__c" ]
+        }
+      }
+    },
+    "FORMULA320_copy0_copy0_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FILTER85_copy0_copy0_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Recurring_Payment_Projection",
+          "label" : "Recurring Payment Projection",
+          "formulaExpression" : "case \r\nwhen \r\nfiscalYear(\"Opportunit.ucinn_ascendv2__Last_Payment_Date_Roll_Up__c\")=fiscalYear(current_date())  \r\nand fiscalWeek(\"Opportunit.ucinn_ascendv2__Last_Payment_Date_Roll_Up__c\")=fiscalWeek(current_date()) \r\nthen (52-fiscalWeek(current_date()))*\"Opportunit.Amount\"\r\nelse (52-fiscalWeek(current_date())+1)*\"Opportunit.Amount\"\r\nend",
+          "precision" : 10,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA322_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA320_copy0_copy0_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Fiscal_Year",
+          "label" : "Fiscal Year",
+          "formulaExpression" : "string(fiscalYear(current_date()))\r\n",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "DROP_FIELDS64_copy0" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA322_copy0" ],
+      "parameters" : {
+        "slice" : {
+          "mode" : "SELECT",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Fiscal_Year", "Recurring_Payment_Projection", "Constituent_or_Account_Id", "Opportunit.Amount", "Opportunit.ucinn_ascendv2__Frequency__c" ]
+        }
+      }
+    },
+    "LOAD_DATASET45_copy0_copy0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Id", "HAM_Reunion_Year__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "Contact",
+          "connectionName" : "Twice_Daily_Updated_SFDC_LOCAL",
+          "sourceObjectName" : "Contact"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN114_copy0_copy0" : {
+      "action" : "join",
+      "sources" : [ "APPEND2_copy0", "LOAD_DATASET45_copy0_copy0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Contact.Id" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Constituent_or_Account_Id" ],
+        "rightQualifier" : "Contact",
+        "rightKeys" : [ "Id" ]
+      }
+    },
+    "APPEND1_copy0" : {
+      "action" : "appendV2",
+      "sources" : [ "DROP_FIELDS66_copy0", "DROP_FIELDS65_copy0" ],
+      "parameters" : {
+        "fieldMappings" : [ {
+          "top" : "Constituent_or_Account_Id",
+          "bottom" : "Constituent_or_Account_Id"
+        }, {
+          "top" : "Opportunit.Amount",
+          "bottom" : "Opportunit.Amount"
+        }, {
+          "top" : "Opportunit.ucinn_ascendv2__Frequency__c",
+          "bottom" : "Opportunit.ucinn_ascendv2__Frequency__c"
+        }, {
+          "top" : "Recurring_Payment_Projection",
+          "bottom" : "Recurring_Payment_Projection"
+        }, {
+          "top" : "Fiscal_Year",
+          "bottom" : "Fiscal_Year"
+        } ]
+      }
+    },
+    "APPEND2_copy0" : {
+      "action" : "appendV2",
+      "sources" : [ "APPEND1_copy0", "DROP_FIELDS64_copy0" ],
+      "parameters" : {
+        "fieldMappings" : [ {
+          "top" : "Constituent_or_Account_Id",
+          "bottom" : "Constituent_or_Account_Id"
+        }, {
+          "top" : "Opportunit.Amount",
+          "bottom" : "Opportunit.Amount"
+        }, {
+          "top" : "Opportunit.ucinn_ascendv2__Frequency__c",
+          "bottom" : "Opportunit.ucinn_ascendv2__Frequency__c"
+        }, {
+          "top" : "Recurring_Payment_Projection",
+          "bottom" : "Recurring_Payment_Projection"
+        }, {
+          "top" : "Fiscal_Year",
+          "bottom" : "Fiscal_Year"
+        } ]
+      }
+    },
+    "OUTPUT1" : {
+      "action" : "save",
+      "sources" : [ "JOIN114_copy0_copy0" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "test819",
+          "name" : "test819"
+        },
+        "dateConfigurationName" : "July_Fiscal_Year",
+        "measuresToCurrencies" : [ ]
+      }
+    },
+    "LOAD_DATASET0_copy0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "ucinn_ascendv2__Opportunity__c", "Opportunity.RecordType.Name", "Opportunity.Type", "Constituent_or_Account_Id" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Gift Credit and Payment",
+          "name" : "Gift_Credit_and_Payment"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN115" : {
+      "action" : "join",
+      "sources" : [ "AGGREGATE3", "LOAD_DATASET43_copy0_copy0_copy0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Opportunit.HAM_Soft_Credit_Contact__c", "Opportunit.Id", "Opportunit.RecordTypeId", "Opportunit.Type", "Opportunit.bt_stripe__Related_Contact__c" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "ucinn_ascendv2__Opportunity__c" ],
+        "rightQualifier" : "Opportunit",
+        "rightKeys" : [ "Id" ]
+      }
+    },
+    "EXTRACT1" : {
+      "action" : "extractGrains",
+      "sources" : [ "LOAD_DATASET0_copy0" ],
+      "parameters" : {
+        "grainExtractions" : [ ]
+      }
+    },
+    "AGGREGATE3" : {
+      "action" : "aggregate",
+      "sources" : [ "EXTRACT1" ],
+      "parameters" : {
+        "aggregations" : [ {
+          "action" : "UNIQUE",
+          "source" : "Constituent_or_Account_Id",
+          "name" : "UNIQUE_Constituent_or_Account_Id",
+          "label" : "Unique Constituent or Account Id"
+        } ],
+        "groupings" : [ "Constituent_or_Account_Id", "ucinn_ascendv2__Opportunity__c", "Opportunity.RecordType.Name", "Opportunity.Type" ],
+        "pivots" : [ ],
+        "nodeType" : "STANDARD"
+      }
+    }
+  },
+  "ui" : {
+    "nodes" : {
+      "LOAD_DATASET0" : {
+        "label" : "Gift Credit and Payment",
+        "type" : "LOAD_DATASET",
+        "top" : 252.10000000000002,
+        "left" : 393,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "OUTPUT0" : {
+        "label" : "Output 0",
+        "type" : "OUTPUT",
+        "top" : 252.10000000000002,
+        "left" : 1232.1
+      },
+      "AGGREGATE0" : {
+        "label" : "Aggregate 0",
+        "type" : "AGGREGATE",
+        "top" : 252.10000000000002,
+        "left" : 672.1,
+        "graph" : {
+          "EXTRACT0" : null,
+          "AGGREGATE1" : null
+        },
+        "connectors" : [ {
+          "source" : "EXTRACT0",
+          "target" : "AGGREGATE1"
+        } ]
+      },
+      "TRANSFORM1" : {
+        "label" : "Transform 1",
+        "type" : "TRANSFORM",
+        "top" : 252.10000000000002,
+        "left" : 812.1,
+        "graph" : {
+          "FORMULA3" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Date"
+          },
+          "TO_DATE0" : {
+            "label" : "To Date"
+          },
+          "DROP_FIELDS0" : {
+            "label" : "Drop Columns"
+          },
+          "FORMULA5" : {
+            "label" : "Cumulative Fundraising Amount"
+          },
+          "FORMULA6" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Date of Over 1M"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA3",
+          "target" : "TO_DATE0"
+        }, {
+          "source" : "TO_DATE0",
+          "target" : "DROP_FIELDS0"
+        }, {
+          "source" : "DROP_FIELDS0",
+          "target" : "FORMULA5"
+        }, {
+          "source" : "FORMULA5",
+          "target" : "FORMULA6"
+        } ]
+      },
+      "FILTER1" : {
+        "label" : "Filter 1",
+        "type" : "FILTER",
+        "top" : 252.10000000000002,
+        "left" : 952.1
+      },
+      "TRANSFORM2" : {
+        "label" : "Transform 2",
+        "type" : "TRANSFORM",
+        "top" : 252.10000000000002,
+        "left" : 1092.1,
+        "graph" : {
+          "FORMULA4" : {
+            "label" : "FC Date"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "LOAD_DATASET43_copy0_copy0_copy0" : {
+        "label" : "Opportunity",
+        "type" : "LOAD_DATASET",
+        "top" : 1232.1,
+        "left" : 1092,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "FILTER83_copy0_copy0_copy0" : {
+        "label" : "Filter Monthly",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 952,
+        "left" : 952.1
+      },
+      "FILTER84_copy0_copy0_copy0" : {
+        "label" : "Filter Annual",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 952.3,
+        "left" : 1092
+      },
+      "FILTER85_copy0_copy0_copy0" : {
+        "label" : "Filter Weekly",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 954.1,
+        "left" : 1231.9
+      },
+      "TRANSFORM92_copy0_copy0_copy0" : {
+        "label" : "Recurring Payment Projection",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 812.3,
+        "left" : 1092.1,
+        "graph" : {
+          "FORMULA318_copy0_copy0_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Recurring Payment Projection"
+          },
+          "FORMULA324_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Fiscal Year"
+          },
+          "DROP_FIELDS66_copy0" : {
+            "label" : "Keep Columns"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA318_copy0_copy0_copy0",
+          "target" : "FORMULA324_copy0"
+        }, {
+          "source" : "FORMULA324_copy0",
+          "target" : "DROP_FIELDS66_copy0"
+        } ]
+      },
+      "TRANSFORM93_copy0_copy0_copy0" : {
+        "label" : "Recurring Payment Projection Copy",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 812,
+        "left" : 952.1,
+        "graph" : {
+          "FORMULA319_copy0_copy0_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Recurring Payment Projection"
+          },
+          "FORMULA323_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Fiscal Year"
+          },
+          "DROP_FIELDS65_copy0" : {
+            "label" : "Keep Columns"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA319_copy0_copy0_copy0",
+          "target" : "FORMULA323_copy0"
+        }, {
+          "source" : "FORMULA323_copy0",
+          "target" : "DROP_FIELDS65_copy0"
+        } ]
+      },
+      "TRANSFORM94_copy0_copy0_copy0" : {
+        "label" : "Recurring Payment Projection Copy1",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 814.1,
+        "left" : 1231.9,
+        "graph" : {
+          "FORMULA320_copy0_copy0_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Recurring Payment Projection"
+          },
+          "FORMULA322_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Fiscal Year"
+          },
+          "DROP_FIELDS64_copy0" : {
+            "label" : "Keep Columns"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA320_copy0_copy0_copy0",
+          "target" : "FORMULA322_copy0"
+        }, {
+          "source" : "FORMULA322_copy0",
+          "target" : "DROP_FIELDS64_copy0"
+        } ]
+      },
+      "LOAD_DATASET45_copy0_copy0" : {
+        "label" : "Contact",
+        "type" : "LOAD_DATASET",
+        "top" : 392,
+        "left" : 951.9,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN114_copy0_copy0" : {
+        "label" : "Lookup Reunion Year",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 532,
+        "left" : 951.9
+      },
+      "APPEND1_copy0" : {
+        "label" : "Append 1",
+        "type" : "APPEND",
+        "top" : 672,
+        "left" : 1092
+      },
+      "APPEND2_copy0" : {
+        "label" : "Append 2",
+        "type" : "APPEND",
+        "top" : 532,
+        "left" : 1092
+      },
+      "OUTPUT1" : {
+        "label" : "Output 1",
+        "type" : "OUTPUT",
+        "top" : 531.3,
+        "left" : 253.7
+      },
+      "LOAD_DATASET0_copy0" : {
+        "label" : "Gift Credit and Payment",
+        "type" : "LOAD_DATASET",
+        "top" : 1092,
+        "left" : 812.1,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN115" : {
+        "label" : "Join 115",
+        "type" : "JOIN",
+        "top" : 1092,
+        "left" : 1092
+      },
+      "AGGREGATE2" : {
+        "label" : "Aggregate 2",
+        "type" : "AGGREGATE",
+        "top" : 1092,
+        "left" : 952,
+        "graph" : {
+          "EXTRACT1" : null,
+          "AGGREGATE3" : null
+        },
+        "connectors" : [ {
+          "source" : "EXTRACT1",
+          "target" : "AGGREGATE3"
+        } ]
+      }
+    },
+    "connectors" : [ {
+      "source" : "TRANSFORM2",
+      "target" : "OUTPUT0"
+    }, {
+      "source" : "AGGREGATE0",
+      "target" : "TRANSFORM1"
+    }, {
+      "source" : "FILTER1",
+      "target" : "TRANSFORM2"
+    }, {
+      "source" : "TRANSFORM1",
+      "target" : "FILTER1"
+    }, {
+      "source" : "LOAD_DATASET0",
+      "target" : "AGGREGATE0"
+    }, {
+      "source" : "APPEND2_copy0",
+      "target" : "JOIN114_copy0_copy0"
+    }, {
+      "source" : "FILTER84_copy0_copy0_copy0",
+      "target" : "TRANSFORM92_copy0_copy0_copy0"
+    }, {
+      "source" : "FILTER83_copy0_copy0_copy0",
+      "target" : "TRANSFORM93_copy0_copy0_copy0"
+    }, {
+      "source" : "FILTER85_copy0_copy0_copy0",
+      "target" : "TRANSFORM94_copy0_copy0_copy0"
+    }, {
+      "source" : "LOAD_DATASET45_copy0_copy0",
+      "target" : "JOIN114_copy0_copy0"
+    }, {
+      "source" : "TRANSFORM92_copy0_copy0_copy0",
+      "target" : "APPEND1_copy0"
+    }, {
+      "source" : "TRANSFORM93_copy0_copy0_copy0",
+      "target" : "APPEND1_copy0"
+    }, {
+      "source" : "APPEND1_copy0",
+      "target" : "APPEND2_copy0"
+    }, {
+      "source" : "TRANSFORM94_copy0_copy0_copy0",
+      "target" : "APPEND2_copy0"
+    }, {
+      "source" : "JOIN114_copy0_copy0",
+      "target" : "OUTPUT1"
+    }, {
+      "source" : "AGGREGATE2",
+      "target" : "JOIN115"
+    }, {
+      "source" : "LOAD_DATASET43_copy0_copy0_copy0",
+      "target" : "JOIN115"
+    }, {
+      "source" : "JOIN115",
+      "target" : "FILTER83_copy0_copy0_copy0"
+    }, {
+      "source" : "LOAD_DATASET0_copy0",
+      "target" : "AGGREGATE2"
+    }, {
+      "source" : "JOIN115",
+      "target" : "FILTER84_copy0_copy0_copy0"
+    }, {
+      "source" : "JOIN115",
+      "target" : "FILTER85_copy0_copy0_copy0"
+    } ],
+    "hiddenColumns" : [ ]
+  },
+  "runMode" : "full"
+}

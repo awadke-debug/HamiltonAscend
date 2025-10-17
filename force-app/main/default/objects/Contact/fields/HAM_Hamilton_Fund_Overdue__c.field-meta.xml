@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>HAM_Hamilton_Fund_Overdue__c</fullName>
+    <description>If the expected amount for the Hamilton Fund is less than the paid amount and todays date is beyond last year&apos;s anniversary date, this prospect is &quot;Overdue&quot;.</description>
+    <externalId>false</externalId>
+    <formula>IF((HAM_CYR_HF_Exp__c&gt;HAM_Current_Year_Hamilton_Fund_Collected__c)  &amp;&amp;   (TODAY()-365) &gt; HAM_HF_Anniversary_Date_1YR__c,&quot;Overdue&quot;,&quot;&quot;)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <inlineHelpText>If the expected amount for the Hamilton Fund is less than the paid amount and todays date is beyond last year&apos;s anniversary date, this prospect is &quot;Overdue&quot;.</inlineHelpText>
+    <label>Hamilton Fund Overdue</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

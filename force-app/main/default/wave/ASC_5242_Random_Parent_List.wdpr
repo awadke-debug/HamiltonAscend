@@ -1,0 +1,445 @@
+{
+  "version" : "61.0",
+  "nodes" : {
+    "LOAD_DATASET1" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "HAM_Reunion_Year__c", "Constituent_Type_String", "HAM_Institutional_Suffix__c", "Preferred_Email.ucinn_ascendv2__Email_Address__c", "Preferred_Address.ucinn_ascendv2__Full_Address_Formula__c", "Is_Contactable_By_Email", "Is_Contactable_By_Mail", "Name", "Account.Id" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Account and Contact Dataset",
+          "name" : "Account_and_Contact_Dataset"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "FILTER0" : {
+      "action" : "filter",
+      "sources" : [ "LOAD_DATASET1" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "Constituent_Type_String",
+          "operator" : "CONTAINS",
+          "operands" : [ "Current Parent" ]
+        }, {
+          "type" : "TEXT",
+          "field" : "HAM_Institutional_Suffix__c",
+          "operator" : "CONTAINS",
+          "operands" : [ "'25" ]
+        }, {
+          "type" : "TEXT",
+          "field" : "HAM_Institutional_Suffix__c",
+          "operator" : "CONTAINS",
+          "operands" : [ "'26" ]
+        }, {
+          "type" : "TEXT",
+          "field" : "HAM_Institutional_Suffix__c",
+          "operator" : "CONTAINS",
+          "operands" : [ "'27" ]
+        }, {
+          "type" : "TEXT",
+          "field" : "HAM_Institutional_Suffix__c",
+          "operator" : "CONTAINS",
+          "operands" : [ "'28" ]
+        } ],
+        "filterBooleanLogic" : "1 AND (2 or 3 or 4 or 5)"
+      }
+    },
+    "JOIN0" : {
+      "action" : "join",
+      "sources" : [ "LOAD_DATASET5", "FILTER0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "FilterCurr.Account.Id" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LEFT_OUTER",
+        "leftKeys" : [ "Account_Id" ],
+        "rightQualifier" : "FilterCurr",
+        "rightKeys" : [ "Account.Id" ]
+      }
+    },
+    "OUTPUT0" : {
+      "action" : "save",
+      "sources" : [ "FILTER2" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Random Parent Group B and C",
+          "name" : "Random_Parent_Group_B_and_C",
+          "folderName" : "SharedApp"
+        },
+        "dateConfigurationName" : "July_Fiscal_Year"
+      }
+    },
+    "LOAD_DATASET3" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Account_Id", "Count_of_Contact" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Account Id for Parent ASC 5242",
+          "name" : "Account_Id_for_Parent_ASC_5242"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "LOAD_DATASET4" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Account_Id" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Group A and Supplemental for ASC 5242",
+          "name" : "Group_A_and_Supplemental_for_ASC_5242"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "FORMULA0" : {
+      "action" : "formula",
+      "sources" : [ "LOAD_DATASET4" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Group_A",
+          "label" : "Group A",
+          "formulaExpression" : "1",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "JOIN1" : {
+      "action" : "join",
+      "sources" : [ "LOAD_DATASET3", "FORMULA0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Transform0.Account_Id" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Account_Id" ],
+        "rightQualifier" : "Transform0",
+        "rightKeys" : [ "Account_Id" ]
+      }
+    },
+    "FILTER1" : {
+      "action" : "filter",
+      "sources" : [ "JOIN1" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "NUMBER",
+          "field" : "Transform0.Group_A",
+          "operator" : "EQUAL",
+          "operands" : [ "0" ]
+        } ]
+      }
+    },
+    "DROP_FIELDS0" : {
+      "action" : "schema",
+      "sources" : [ "FILTER1" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Transform0.Group_A" ]
+        }
+      }
+    },
+    "OUTPUT1" : {
+      "action" : "save",
+      "sources" : [ "DROP_FIELDS0" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Parent Account List Exclude Group A",
+          "name" : "Parent_Account_List_Exclude_Group_A",
+          "folderName" : "SharedApp"
+        },
+        "dateConfigurationName" : "July_Fiscal_Year",
+        "measuresToCurrencies" : [ ]
+      }
+    },
+    "LOAD_DATASET5" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Group", "Account_Id", "Random_Contact", "Count_of_Contacts" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Random Group B and C ASC 5242",
+          "name" : "Random_Group_B_and_C_ASC_5242"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "FORMULA1" : {
+      "action" : "computeRelative",
+      "sources" : [ "JOIN0" ],
+      "parameters" : {
+        "partitionBy" : [ "Account_Id" ],
+        "orderBy" : [ {
+          "fieldName" : "FilterCurr.Name",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Row_Number",
+          "label" : "Row Number",
+          "formulaExpression" : "row_number()",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA2" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA1" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Is_Selected",
+          "label" : "Is Selected",
+          "formulaExpression" : "case \r\nwhen \r\n\"Row_Number\"=Random_Contact \r\nor Random_Contact=0\r\nthen 1 \r\nend",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "DROP_FIELDS1" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA2" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Row_Number", "Random_Contact", "Count_of_Contacts" ]
+        }
+      }
+    },
+    "FILTER2" : {
+      "action" : "filter",
+      "sources" : [ "DROP_FIELDS1" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "NUMBER",
+          "field" : "Is_Selected",
+          "operator" : "EQUAL",
+          "operands" : [ "1" ]
+        } ]
+      }
+    }
+  },
+  "ui" : {
+    "nodes" : {
+      "LOAD_DATASET1" : {
+        "label" : "Account and Contact Dataset",
+        "type" : "LOAD_DATASET",
+        "top" : 672.1,
+        "left" : 811.1,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "FILTER0" : {
+        "label" : "Filter Current Parent",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 532.1,
+        "left" : 811.4
+      },
+      "JOIN0" : {
+        "label" : "Lookup Details to Random List",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 392.1,
+        "left" : 811.4
+      },
+      "OUTPUT0" : {
+        "label" : "Output 0",
+        "type" : "OUTPUT",
+        "top" : 392.6,
+        "left" : 1232.4
+      },
+      "LOAD_DATASET3" : {
+        "label" : "Account Id for Parent ASC 5242",
+        "type" : "LOAD_DATASET",
+        "top" : 112,
+        "left" : 112,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "LOAD_DATASET4" : {
+        "label" : "Group A and Supplemental for ASC 5242",
+        "type" : "LOAD_DATASET",
+        "top" : 391.9,
+        "left" : 252.3,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "TRANSFORM0" : {
+        "label" : "Transform 0",
+        "type" : "TRANSFORM",
+        "top" : 252,
+        "left" : 252,
+        "graph" : {
+          "FORMULA0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Group A"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "JOIN1" : {
+        "label" : "Join 1",
+        "type" : "JOIN",
+        "top" : 112.1,
+        "left" : 251.8
+      },
+      "FILTER1" : {
+        "label" : "Filter 1",
+        "type" : "FILTER",
+        "top" : 112,
+        "left" : 392
+      },
+      "TRANSFORM1" : {
+        "label" : "Transform 1",
+        "type" : "TRANSFORM",
+        "top" : 112,
+        "left" : 532,
+        "graph" : {
+          "DROP_FIELDS0" : {
+            "label" : "Drop Columns"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "OUTPUT1" : {
+        "label" : "Output 1",
+        "type" : "OUTPUT",
+        "top" : 112,
+        "left" : 672
+      },
+      "LOAD_DATASET5" : {
+        "label" : "Random Group B and C ASC 5242",
+        "type" : "LOAD_DATASET",
+        "top" : 390.7,
+        "left" : 671,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "TRANSFORM2" : {
+        "label" : "Transform 2",
+        "type" : "TRANSFORM",
+        "top" : 392,
+        "left" : 952,
+        "graph" : {
+          "FORMULA1" : {
+            "label" : "Row Number"
+          },
+          "FORMULA2" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Is Selected"
+          },
+          "DROP_FIELDS1" : {
+            "label" : "Drop Columns"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA1",
+          "target" : "FORMULA2"
+        }, {
+          "source" : "FORMULA2",
+          "target" : "DROP_FIELDS1"
+        } ]
+      },
+      "FILTER2" : {
+        "label" : "Filter 2",
+        "type" : "FILTER",
+        "top" : 392,
+        "left" : 1092
+      }
+    },
+    "connectors" : [ {
+      "source" : "LOAD_DATASET5",
+      "target" : "JOIN0"
+    }, {
+      "source" : "LOAD_DATASET1",
+      "target" : "FILTER0"
+    }, {
+      "source" : "FILTER0",
+      "target" : "JOIN0"
+    }, {
+      "source" : "FILTER2",
+      "target" : "OUTPUT0"
+    }, {
+      "source" : "LOAD_DATASET4",
+      "target" : "TRANSFORM0"
+    }, {
+      "source" : "LOAD_DATASET3",
+      "target" : "JOIN1"
+    }, {
+      "source" : "TRANSFORM0",
+      "target" : "JOIN1"
+    }, {
+      "source" : "JOIN1",
+      "target" : "FILTER1"
+    }, {
+      "source" : "FILTER1",
+      "target" : "TRANSFORM1"
+    }, {
+      "source" : "TRANSFORM1",
+      "target" : "OUTPUT1"
+    }, {
+      "source" : "JOIN0",
+      "target" : "TRANSFORM2"
+    }, {
+      "source" : "TRANSFORM2",
+      "target" : "FILTER2"
+    } ],
+    "hiddenColumns" : [ ]
+  },
+  "runMode" : "full"
+}

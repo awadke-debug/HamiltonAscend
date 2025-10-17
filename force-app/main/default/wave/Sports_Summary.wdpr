@@ -1,0 +1,4029 @@
+{
+  "version" : "65.0",
+  "nodes" : {
+    "LOAD_DATASET7_copy0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "ucinn_ascendv2__Contact__c", "ucinn_ascendv2__Involvement_Code__c", "ucinn_ascendv2__Status__c", "ucinn_ascendv2__Involvement_Code_Description_Formula__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "ucinn_ascendv2__Involvement__c",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "ucinn_ascendv2__Involvement__c"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        },
+        "preserveCurrencyFields" : [ ]
+      }
+    },
+    "LOAD_DATASET19_copy0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Id", "HAM_Category__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "ucinn_ascendv2__Involvement_Value__c",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "ucinn_ascendv2__Involvement_Value__c"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        },
+        "preserveCurrencyFields" : [ ]
+      }
+    },
+    "JOIN27_copy0" : {
+      "action" : "join",
+      "sources" : [ "LOAD_DATASET7_copy0", "LOAD_DATASET19_copy0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Involvement_Code.Id", "ucinn_ascendv2__Involvement_Code__c" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "ucinn_ascendv2__Involvement_Code__c" ],
+        "rightQualifier" : "Involvement_Code",
+        "rightKeys" : [ "Id" ]
+      }
+    },
+    "FILTER8_copy0" : {
+      "action" : "filter",
+      "sources" : [ "JOIN27_copy0" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "Involvement_Code.HAM_Category__c",
+          "operator" : "EQUAL",
+          "operands" : [ "Student NCAA Athletics" ]
+        }, {
+          "type" : "TEXT",
+          "field" : "ucinn_ascendv2__Status__c",
+          "operator" : "EQUAL",
+          "operands" : [ "Current" ]
+        } ]
+      }
+    },
+    "DROP_FIELDS7_copy0" : {
+      "action" : "schema",
+      "sources" : [ "FILTER8_copy0" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "SELECT",
+          "ignoreMissingFields" : true,
+          "fields" : [ "ucinn_ascendv2__Involvement_Code_Description_Formula__c", "ucinn_ascendv2__Contact__c" ]
+        }
+      }
+    },
+    "LOAD_DATASET20" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "HAM_Reunion_Year__c", "Account_or_Contact_Id" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Account and Contact Dataset",
+          "name" : "Account_and_Contact_Dataset"
+        },
+        "sampleDetails" : {
+          "type" : "Random",
+          "sortBy" : [ ]
+        },
+        "preserveCurrencyFields" : [ ]
+      }
+    },
+    "JOIN28" : {
+      "action" : "join",
+      "sources" : [ "DROP_FIELDS7_copy0", "LOAD_DATASET20" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Accountand.Account_or_Contact_Id" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "ucinn_ascendv2__Contact__c" ],
+        "rightQualifier" : "Accountand",
+        "rightKeys" : [ "Account_or_Contact_Id" ]
+      }
+    },
+    "FILTER9" : {
+      "action" : "filter",
+      "sources" : [ "JOIN28" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "Accountand.HAM_Reunion_Year__c",
+          "operator" : "EQUAL",
+          "operands" : [ "2010", "2011", "2012", "2013", "2014", "2015", "2016", "2017", "2018", "2019", "2020" ]
+        } ]
+      }
+    },
+    "LOAD_DATASET21" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Cash_Amount", "Fiscal_Year", "Constituent_or_Account_Id" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Gift Credit and Payment",
+          "name" : "Gift_Credit_and_Payment"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        },
+        "preserveCurrencyFields" : [ ]
+      }
+    },
+    "FILTER10" : {
+      "action" : "filter",
+      "sources" : [ "LOAD_DATASET21" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "Fiscal_Year",
+          "operator" : "EQUAL",
+          "operands" : [ "2021", "2022", "2023", "2024", "2025" ]
+        } ]
+      }
+    },
+    "EXTRACT0" : {
+      "action" : "extractGrains",
+      "sources" : [ "FILTER10" ],
+      "parameters" : {
+        "grainExtractions" : [ ]
+      }
+    },
+    "AGGREGATE1" : {
+      "action" : "aggregate",
+      "sources" : [ "EXTRACT0" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "SUM_Cash_Amount",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        } ]
+      },
+      "parameters" : {
+        "aggregations" : [ {
+          "action" : "SUM",
+          "source" : "Cash_Amount",
+          "name" : "SUM_Cash_Amount",
+          "label" : "Cash Amount"
+        } ],
+        "groupings" : [ "Fiscal_Year", "Constituent_or_Account_Id" ],
+        "pivots" : [ ],
+        "nodeType" : "STANDARD"
+      }
+    },
+    "JOIN29" : {
+      "action" : "join",
+      "sources" : [ "FILTER9", "FORMULA11" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Accountand.HAM_Reunion_Year__c", "GiftCredit.Constituent_or_Account_Id", "GiftCredit.Id_FY" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LEFT_OUTER",
+        "leftKeys" : [ "ucinn_ascendv2__Contact__c" ],
+        "rightQualifier" : "GiftCredit",
+        "rightKeys" : [ "Constituent_or_Account_Id" ]
+      }
+    },
+    "EXTRACT1" : {
+      "action" : "extractGrains",
+      "sources" : [ "JOIN29" ],
+      "parameters" : {
+        "grainExtractions" : [ ]
+      }
+    },
+    "AGGREGATE3" : {
+      "action" : "aggregate",
+      "sources" : [ "EXTRACT1" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "SUM_GiftCredit.SUM_Cash_Amount",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        } ]
+      },
+      "parameters" : {
+        "aggregations" : [ {
+          "action" : "SUM",
+          "source" : "GiftCredit.SUM_Cash_Amount",
+          "name" : "SUM_GiftCredit.SUM_Cash_Amount",
+          "label" : "Cash Amount"
+        } ],
+        "groupings" : [ "ucinn_ascendv2__Involvement_Code_Description_Formula__c", "GiftCredit.Fiscal_Year" ],
+        "pivots" : [ ],
+        "nodeType" : "STANDARD"
+      }
+    },
+    "FORMULA0" : {
+      "action" : "formula",
+      "sources" : [ "AGGREGATE3" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Metric",
+          "label" : "Metric",
+          "formulaExpression" : "'Dollars'",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA1" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA0" ],
+      "parameters" : {
+        "partitionBy" : [ "GiftCredit.Fiscal_Year" ],
+        "orderBy" : [ {
+          "fieldName" : "SUM_GiftCredit.SUM_Cash_Amount",
+          "direction" : "DESC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Rank",
+          "label" : "Rank",
+          "formulaExpression" : "row_number()",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FILTER11" : {
+      "action" : "filter",
+      "sources" : [ "FORMULA1" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "NUMBER",
+          "field" : "Rank",
+          "operator" : "EQUAL",
+          "operands" : [ "1" ]
+        } ]
+      }
+    },
+    "FILTER12" : {
+      "action" : "filter",
+      "sources" : [ "FORMULA1" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "ucinn_ascendv2__Involvement_Code_Description_Formula__c",
+          "operator" : "EQUAL",
+          "operands" : [ "Men's Ice Hockey" ]
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES0" : {
+      "action" : "schema",
+      "sources" : [ "JOIN31" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "ucinn_ascendv2__Involvement_Code_Description_Formula__c",
+          "newProperties" : {
+            "label" : "Top Sport",
+            "name" : "ucinn_ascendv2__Involvement_Code_Description_Formula__c"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES1" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES0" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "SUM_GiftCredit.SUM_Cash_Amount",
+          "newProperties" : {
+            "label" : "Top",
+            "name" : "Top"
+          }
+        } ]
+      }
+    },
+    "DROP_FIELDS8" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES1" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Rank" ]
+        }
+      }
+    },
+    "JOIN30" : {
+      "action" : "join",
+      "sources" : [ "FILTER11", "EDIT_ATTRIBUTES3" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "MIH.ucinn_ascendv2__Involvement_Code_Description_Formula__c", "MIH.GiftCredit.Fiscal_Year", "MIH.Metric" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "GiftCredit.Fiscal_Year" ],
+        "rightQualifier" : "MIH",
+        "rightKeys" : [ "GiftCredit.Fiscal_Year" ]
+      }
+    },
+    "EDIT_ATTRIBUTES2" : {
+      "action" : "schema",
+      "sources" : [ "FILTER12" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "SUM_GiftCredit.SUM_Cash_Amount",
+          "newProperties" : {
+            "label" : "Hockey",
+            "name" : "Hockey"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES3" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES2" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Rank",
+          "newProperties" : {
+            "label" : "Hockey Rank",
+            "name" : "Rank"
+          }
+        } ]
+      }
+    },
+    "EXTRACT2" : {
+      "action" : "extractGrains",
+      "sources" : [ "AGGREGATE3" ],
+      "parameters" : {
+        "grainExtractions" : [ ]
+      }
+    },
+    "AGGREGATE5" : {
+      "action" : "aggregate",
+      "sources" : [ "EXTRACT2" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "Average",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        }, {
+          "name" : "SUM_SUM_GiftCredit.SUM_Cash_Amount",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        } ]
+      },
+      "parameters" : {
+        "aggregations" : [ {
+          "action" : "AVG",
+          "source" : "SUM_GiftCredit.SUM_Cash_Amount",
+          "name" : "Average",
+          "label" : "Average"
+        }, {
+          "action" : "SUM",
+          "source" : "SUM_GiftCredit.SUM_Cash_Amount",
+          "name" : "SUM_SUM_GiftCredit.SUM_Cash_Amount",
+          "label" : "Sum of Cash Amount"
+        } ],
+        "groupings" : [ "GiftCredit.Fiscal_Year" ],
+        "pivots" : [ ],
+        "nodeType" : "STANDARD"
+      }
+    },
+    "JOIN31" : {
+      "action" : "join",
+      "sources" : [ "JOIN30", "AGGREGATE5" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Avg.GiftCredit.Fiscal_Year", "Avg.SUM_SUM_GiftCredit.SUM_Cash_Amount" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "GiftCredit.Fiscal_Year" ],
+        "rightQualifier" : "Avg",
+        "rightKeys" : [ "GiftCredit.Fiscal_Year" ]
+      }
+    },
+    "FILTER13" : {
+      "action" : "filter",
+      "sources" : [ "JOIN29" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "NUMBER",
+          "field" : "GiftCredit.SUM_Cash_Amount",
+          "operator" : "GREATER_THAN",
+          "operands" : [ "0" ]
+        } ]
+      }
+    },
+    "EXTRACT3" : {
+      "action" : "extractGrains",
+      "sources" : [ "FILTER13" ],
+      "parameters" : {
+        "grainExtractions" : [ ]
+      }
+    },
+    "AGGREGATE7" : {
+      "action" : "aggregate",
+      "sources" : [ "EXTRACT3" ],
+      "parameters" : {
+        "aggregations" : [ {
+          "action" : "UNIQUE",
+          "source" : "ucinn_ascendv2__Contact__c",
+          "name" : "UNIQUE_ucinn_ascendv2__Contact__c",
+          "label" : "# of Donors"
+        } ],
+        "groupings" : [ "ucinn_ascendv2__Involvement_Code_Description_Formula__c", "GiftCredit.Fiscal_Year" ],
+        "pivots" : [ ],
+        "nodeType" : "STANDARD"
+      }
+    },
+    "FORMULA0_copy0" : {
+      "action" : "formula",
+      "sources" : [ "AGGREGATE7" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Metric",
+          "label" : "Metric",
+          "formulaExpression" : "'Donors'",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA1_copy0" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA0_copy0" ],
+      "parameters" : {
+        "partitionBy" : [ "GiftCredit.Fiscal_Year" ],
+        "orderBy" : [ {
+          "fieldName" : "UNIQUE_ucinn_ascendv2__Contact__c",
+          "direction" : "DESC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Rank",
+          "label" : "Rank",
+          "formulaExpression" : "row_number()",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FILTER11_copy0" : {
+      "action" : "filter",
+      "sources" : [ "FORMULA1_copy0" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "NUMBER",
+          "field" : "Rank",
+          "operator" : "EQUAL",
+          "operands" : [ "1" ]
+        } ]
+      }
+    },
+    "FILTER12_copy0" : {
+      "action" : "filter",
+      "sources" : [ "FORMULA1_copy0" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "ucinn_ascendv2__Involvement_Code_Description_Formula__c",
+          "operator" : "EQUAL",
+          "operands" : [ "Men's Ice Hockey" ]
+        } ]
+      }
+    },
+    "JOIN30_copy0" : {
+      "action" : "join",
+      "sources" : [ "FILTER11_copy0", "EDIT_ATTRIBUTES3_copy0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "MIH.ucinn_ascendv2__Involvement_Code_Description_Formula__c", "MIH.GiftCredit.Fiscal_Year", "MIH.Metric" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "GiftCredit.Fiscal_Year" ],
+        "rightQualifier" : "MIH",
+        "rightKeys" : [ "GiftCredit.Fiscal_Year" ]
+      }
+    },
+    "EDIT_ATTRIBUTES3_copy0" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES4" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Rank",
+          "newProperties" : {
+            "label" : "Hockey Rank",
+            "name" : "Rank"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES4" : {
+      "action" : "schema",
+      "sources" : [ "FILTER12_copy0" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "UNIQUE_ucinn_ascendv2__Contact__c",
+          "newProperties" : {
+            "label" : "Hockey",
+            "name" : "Hockey"
+          }
+        } ]
+      }
+    },
+    "EXTRACT4" : {
+      "action" : "extractGrains",
+      "sources" : [ "AGGREGATE7" ],
+      "parameters" : {
+        "grainExtractions" : [ ]
+      }
+    },
+    "AGGREGATE9" : {
+      "action" : "aggregate",
+      "sources" : [ "EXTRACT4" ],
+      "parameters" : {
+        "aggregations" : [ {
+          "action" : "AVG",
+          "source" : "UNIQUE_ucinn_ascendv2__Contact__c",
+          "name" : "Average",
+          "label" : "Average"
+        } ],
+        "groupings" : [ "GiftCredit.Fiscal_Year" ],
+        "pivots" : [ ],
+        "nodeType" : "STANDARD"
+      }
+    },
+    "JOIN32" : {
+      "action" : "join",
+      "sources" : [ "JOIN30_copy0", "AGGREGATE9" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Avg.GiftCredit.Fiscal_Year" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "GiftCredit.Fiscal_Year" ],
+        "rightQualifier" : "Avg",
+        "rightKeys" : [ "GiftCredit.Fiscal_Year" ]
+      }
+    },
+    "EDIT_ATTRIBUTES0_copy0" : {
+      "action" : "schema",
+      "sources" : [ "JOIN32" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "ucinn_ascendv2__Involvement_Code_Description_Formula__c",
+          "newProperties" : {
+            "label" : "Top Sport",
+            "name" : "ucinn_ascendv2__Involvement_Code_Description_Formula__c"
+          }
+        } ]
+      }
+    },
+    "DROP_FIELDS8_copy0" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES5" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Rank" ]
+        }
+      }
+    },
+    "EDIT_ATTRIBUTES5" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES0_copy0" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "UNIQUE_ucinn_ascendv2__Contact__c",
+          "newProperties" : {
+            "label" : "Top",
+            "name" : "Top"
+          }
+        } ]
+      }
+    },
+    "APPEND0" : {
+      "action" : "appendV2",
+      "sources" : [ "DROP_FIELDS8_copy1", "JOIN36" ],
+      "parameters" : {
+        "fieldMappings" : [ {
+          "top" : "GiftCredit.Fiscal_Year",
+          "bottom" : "GiftCredit.Fiscal_Year"
+        }, {
+          "top" : "ucinn_ascendv2__Involvement_Code_Description_Formula__c",
+          "bottom" : "ucinn_ascendv2__Involvement_Code_Description_Formula__c"
+        }, {
+          "top" : "Metric",
+          "bottom" : "Metric"
+        }, {
+          "top" : "Top",
+          "bottom" : "Top"
+        }, {
+          "top" : "MIH.Hockey",
+          "bottom" : "MIH.Hockey"
+        }, {
+          "top" : "MIH.Rank",
+          "bottom" : "MIH.Rank"
+        }, {
+          "top" : "Avg.Average",
+          "bottom" : "Avg.Average"
+        }, {
+          "bottom" : "PercentofTotal.Hockey_of_Total"
+        } ]
+      }
+    },
+    "EXTRACT5" : {
+      "action" : "extractGrains",
+      "sources" : [ "JOIN29" ],
+      "parameters" : {
+        "grainExtractions" : [ ]
+      }
+    },
+    "AGGREGATE11" : {
+      "action" : "aggregate",
+      "sources" : [ "EXTRACT5" ],
+      "parameters" : {
+        "aggregations" : [ {
+          "action" : "UNIQUE",
+          "source" : "ucinn_ascendv2__Contact__c",
+          "name" : "UNIQUE_ucinn_ascendv2__Contact__c",
+          "label" : "# of Players"
+        } ],
+        "groupings" : [ "ucinn_ascendv2__Involvement_Code_Description_Formula__c" ],
+        "pivots" : [ ],
+        "nodeType" : "STANDARD"
+      }
+    },
+    "JOIN33" : {
+      "action" : "join",
+      "sources" : [ "AGGREGATE7", "AGGREGATE11" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "NumberPlayers.ucinn_ascendv2__Involvement_Code_Description_Formula__c" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "ucinn_ascendv2__Involvement_Code_Description_Formula__c" ],
+        "rightQualifier" : "NumberPlayers",
+        "rightKeys" : [ "ucinn_ascendv2__Involvement_Code_Description_Formula__c" ]
+      }
+    },
+    "FORMULA0_copy0_copy0" : {
+      "action" : "formula",
+      "sources" : [ "JOIN33" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Metric",
+          "label" : "Metric",
+          "formulaExpression" : "'Participation Rate'",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA1_copy0_copy0" : {
+      "action" : "computeRelative",
+      "sources" : [ "DROP_FIELDS14" ],
+      "parameters" : {
+        "partitionBy" : [ "GiftCredit.Fiscal_Year" ],
+        "orderBy" : [ {
+          "fieldName" : "Participation_Rate",
+          "direction" : "DESC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Rank",
+          "label" : "Rank",
+          "formulaExpression" : "row_number()",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA2" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA0_copy0_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Participation_Rate",
+          "label" : "Participation Rate",
+          "formulaExpression" : "UNIQUE_ucinn_ascendv2__Contact__c/\"NumberPlayers.UNIQUE_ucinn_ascendv2__Contact__c\"\r\n\r\n",
+          "precision" : 10,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "DROP_FIELDS14" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA2" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "UNIQUE_ucinn_ascendv2__Contact__c", "NumberPlayers.UNIQUE_ucinn_ascendv2__Contact__c" ]
+        }
+      }
+    },
+    "FILTER11_copy0_copy0" : {
+      "action" : "filter",
+      "sources" : [ "FORMULA1_copy0_copy0" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "NUMBER",
+          "field" : "Rank",
+          "operator" : "EQUAL",
+          "operands" : [ "1" ]
+        } ]
+      }
+    },
+    "FILTER12_copy0_copy0" : {
+      "action" : "filter",
+      "sources" : [ "FORMULA1_copy0_copy0" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "ucinn_ascendv2__Involvement_Code_Description_Formula__c",
+          "operator" : "EQUAL",
+          "operands" : [ "Men's Ice Hockey" ]
+        } ]
+      }
+    },
+    "JOIN30_copy0_copy0" : {
+      "action" : "join",
+      "sources" : [ "FILTER11_copy0_copy0", "EDIT_ATTRIBUTES3_copy0_copy0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "MIH.ucinn_ascendv2__Involvement_Code_Description_Formula__c", "MIH.GiftCredit.Fiscal_Year", "MIH.Metric" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "GiftCredit.Fiscal_Year" ],
+        "rightQualifier" : "MIH",
+        "rightKeys" : [ "GiftCredit.Fiscal_Year" ]
+      }
+    },
+    "EDIT_ATTRIBUTES3_copy0_copy0" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES18" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Rank",
+          "newProperties" : {
+            "label" : "Hockey Rank",
+            "name" : "Rank"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES18" : {
+      "action" : "schema",
+      "sources" : [ "FILTER12_copy0_copy0" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Participation_Rate",
+          "newProperties" : {
+            "label" : "Hockey",
+            "name" : "Hockey"
+          }
+        } ]
+      }
+    },
+    "EXTRACT4_copy0" : {
+      "action" : "extractGrains",
+      "sources" : [ "JOIN33" ],
+      "parameters" : {
+        "grainExtractions" : [ ]
+      }
+    },
+    "AGGREGATE9_copy0" : {
+      "action" : "aggregate",
+      "sources" : [ "EXTRACT4_copy0" ],
+      "parameters" : {
+        "aggregations" : [ {
+          "action" : "SUM",
+          "source" : "UNIQUE_ucinn_ascendv2__Contact__c",
+          "name" : "SUM_UNIQUE_ucinn_ascendv2__Contact__c",
+          "label" : "Sum of # of Donors"
+        }, {
+          "action" : "SUM",
+          "source" : "NumberPlayers.UNIQUE_ucinn_ascendv2__Contact__c",
+          "name" : "SUM_NumberPlayers.UNIQUE_ucinn_ascendv2__Contact__c",
+          "label" : "Sum of # of Players"
+        } ],
+        "groupings" : [ "GiftCredit.Fiscal_Year" ],
+        "pivots" : [ ],
+        "nodeType" : "STANDARD"
+      }
+    },
+    "JOIN32_copy0" : {
+      "action" : "join",
+      "sources" : [ "JOIN30_copy0_copy0", "EDIT_ATTRIBUTES17" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Avg.GiftCredit.Fiscal_Year", "Avg.SUM_UNIQUE_ucinn_ascendv2__Contact__c", "Avg.SUM_NumberPlayers.UNIQUE_ucinn_ascendv2__Contact__c" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "GiftCredit.Fiscal_Year" ],
+        "rightQualifier" : "Avg",
+        "rightKeys" : [ "GiftCredit.Fiscal_Year" ]
+      }
+    },
+    "EDIT_ATTRIBUTES0_copy0_copy0" : {
+      "action" : "schema",
+      "sources" : [ "JOIN32_copy0" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "ucinn_ascendv2__Involvement_Code_Description_Formula__c",
+          "newProperties" : {
+            "label" : "Top Sport",
+            "name" : "ucinn_ascendv2__Involvement_Code_Description_Formula__c"
+          }
+        } ]
+      }
+    },
+    "DROP_FIELDS8_copy0_copy0" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES7" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Rank" ]
+        }
+      }
+    },
+    "EDIT_ATTRIBUTES7" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES0_copy0_copy0" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Participation_Rate",
+          "newProperties" : {
+            "label" : "Top",
+            "name" : "Top"
+          }
+        } ]
+      }
+    },
+    "FORMULA3" : {
+      "action" : "formula",
+      "sources" : [ "AGGREGATE9_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Average",
+          "label" : "Average",
+          "formulaExpression" : "SUM_UNIQUE_ucinn_ascendv2__Contact__c/\"SUM_NumberPlayers.UNIQUE_ucinn_ascendv2__Contact__c\"",
+          "precision" : 10,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES16" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA3" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "SUM_UNIQUE_ucinn_ascendv2__Contact__c",
+          "newProperties" : {
+            "label" : "Total Donors",
+            "name" : "SUM_UNIQUE_ucinn_ascendv2__Contact__c"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES17" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES16" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "SUM_NumberPlayers.UNIQUE_ucinn_ascendv2__Contact__c",
+          "newProperties" : {
+            "label" : "Total Players",
+            "name" : "SUM_NumberPlayers.UNIQUE_ucinn_ascendv2__Contact__c"
+          }
+        } ]
+      }
+    },
+    "APPEND1" : {
+      "action" : "appendV2",
+      "sources" : [ "APPEND0", "DROP_FIELDS8_copy0_copy0" ],
+      "parameters" : {
+        "fieldMappings" : [ {
+          "top" : "GiftCredit.Fiscal_Year",
+          "bottom" : "GiftCredit.Fiscal_Year"
+        }, {
+          "top" : "ucinn_ascendv2__Involvement_Code_Description_Formula__c",
+          "bottom" : "ucinn_ascendv2__Involvement_Code_Description_Formula__c"
+        }, {
+          "top" : "Metric",
+          "bottom" : "Metric"
+        }, {
+          "top" : "Top",
+          "bottom" : "Top"
+        }, {
+          "top" : "MIH.Hockey",
+          "bottom" : "MIH.Hockey"
+        }, {
+          "top" : "MIH.Rank",
+          "bottom" : "MIH.Rank"
+        }, {
+          "top" : "Avg.Average",
+          "bottom" : "Avg.Average"
+        } ]
+      }
+    },
+    "EXTRACT6" : {
+      "action" : "extractGrains",
+      "sources" : [ "FILTER13" ],
+      "parameters" : {
+        "grainExtractions" : [ ]
+      }
+    },
+    "AGGREGATE13" : {
+      "action" : "aggregate",
+      "sources" : [ "EXTRACT6" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "SUM_GiftCredit.SUM_Cash_Amount",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        } ]
+      },
+      "parameters" : {
+        "aggregations" : [ {
+          "action" : "SUM",
+          "source" : "GiftCredit.SUM_Cash_Amount",
+          "name" : "SUM_GiftCredit.SUM_Cash_Amount",
+          "label" : "Cash Amount"
+        }, {
+          "action" : "UNIQUE",
+          "source" : "ucinn_ascendv2__Contact__c",
+          "name" : "UNIQUE_ucinn_ascendv2__Contact__c",
+          "label" : "Donors"
+        } ],
+        "groupings" : [ "GiftCredit.Fiscal_Year", "ucinn_ascendv2__Involvement_Code_Description_Formula__c" ],
+        "pivots" : [ ],
+        "nodeType" : "STANDARD"
+      }
+    },
+    "FORMULA0_copy1" : {
+      "action" : "formula",
+      "sources" : [ "AGGREGATE13" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Metric",
+          "label" : "Metric",
+          "formulaExpression" : "'Dollars/Donor'",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA1_copy1" : {
+      "action" : "computeRelative",
+      "sources" : [ "DROP_FIELDS11" ],
+      "parameters" : {
+        "partitionBy" : [ "GiftCredit.Fiscal_Year" ],
+        "orderBy" : [ {
+          "fieldName" : "Dollars_per_Donor",
+          "direction" : "DESC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Rank",
+          "label" : "Rank",
+          "formulaExpression" : "row_number()",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA4" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA0_copy1" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Dollars_per_Donor",
+          "label" : "Dollars per Donor",
+          "formulaExpression" : "\"SUM_GiftCredit.SUM_Cash_Amount\"/UNIQUE_ucinn_ascendv2__Contact__c",
+          "precision" : 10,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "DROP_FIELDS11" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA4" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "UNIQUE_ucinn_ascendv2__Contact__c", "SUM_GiftCredit.SUM_Cash_Amount" ]
+        }
+      }
+    },
+    "FILTER11_copy1" : {
+      "action" : "filter",
+      "sources" : [ "FORMULA1_copy1" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "NUMBER",
+          "field" : "Rank",
+          "operator" : "EQUAL",
+          "operands" : [ "1" ]
+        } ]
+      }
+    },
+    "FILTER12_copy1" : {
+      "action" : "filter",
+      "sources" : [ "FORMULA1_copy1" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "ucinn_ascendv2__Involvement_Code_Description_Formula__c",
+          "operator" : "EQUAL",
+          "operands" : [ "Men's Ice Hockey" ]
+        } ]
+      }
+    },
+    "JOIN30_copy1" : {
+      "action" : "join",
+      "sources" : [ "FILTER11_copy1", "EDIT_ATTRIBUTES3_copy1" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "MIH.ucinn_ascendv2__Involvement_Code_Description_Formula__c", "MIH.GiftCredit.Fiscal_Year", "MIH.Metric" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "GiftCredit.Fiscal_Year" ],
+        "rightQualifier" : "MIH",
+        "rightKeys" : [ "GiftCredit.Fiscal_Year" ]
+      }
+    },
+    "EDIT_ATTRIBUTES3_copy1" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES8" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Rank",
+          "newProperties" : {
+            "label" : "Hockey Rank",
+            "name" : "Rank"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES8" : {
+      "action" : "schema",
+      "sources" : [ "FILTER12_copy1" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Dollars_per_Donor",
+          "newProperties" : {
+            "label" : "Hockey",
+            "name" : "Hockey"
+          }
+        } ]
+      }
+    },
+    "EXTRACT2_copy0" : {
+      "action" : "extractGrains",
+      "sources" : [ "AGGREGATE13" ],
+      "parameters" : {
+        "grainExtractions" : [ ]
+      }
+    },
+    "AGGREGATE5_copy0" : {
+      "action" : "aggregate",
+      "sources" : [ "EXTRACT2_copy0" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "SUM_SUM_GiftCredit.SUM_Cash_Amount",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        } ]
+      },
+      "parameters" : {
+        "aggregations" : [ {
+          "action" : "SUM",
+          "source" : "SUM_GiftCredit.SUM_Cash_Amount",
+          "name" : "SUM_SUM_GiftCredit.SUM_Cash_Amount",
+          "label" : "Sum of Cash Amount"
+        }, {
+          "action" : "SUM",
+          "source" : "UNIQUE_ucinn_ascendv2__Contact__c",
+          "name" : "SUM_UNIQUE_ucinn_ascendv2__Contact__c",
+          "label" : "Sum of Donors"
+        } ],
+        "groupings" : [ "GiftCredit.Fiscal_Year" ],
+        "pivots" : [ ],
+        "nodeType" : "STANDARD"
+      }
+    },
+    "JOIN31_copy0" : {
+      "action" : "join",
+      "sources" : [ "JOIN30_copy1", "DROP_FIELDS9_copy0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Avg.GiftCredit.Fiscal_Year" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "GiftCredit.Fiscal_Year" ],
+        "rightQualifier" : "Avg",
+        "rightKeys" : [ "GiftCredit.Fiscal_Year" ]
+      }
+    },
+    "FORMULA3_copy0" : {
+      "action" : "formula",
+      "sources" : [ "AGGREGATE5_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Average",
+          "label" : "Average",
+          "formulaExpression" : "\"SUM_SUM_GiftCredit.SUM_Cash_Amount\"/SUM_UNIQUE_ucinn_ascendv2__Contact__c",
+          "precision" : 10,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "DROP_FIELDS9_copy0" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA3_copy0" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "SUM_UNIQUE_ucinn_ascendv2__Contact__c", "SUM_SUM_GiftCredit.SUM_Cash_Amount" ]
+        }
+      }
+    },
+    "EDIT_ATTRIBUTES0_copy1" : {
+      "action" : "schema",
+      "sources" : [ "JOIN31_copy0" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "ucinn_ascendv2__Involvement_Code_Description_Formula__c",
+          "newProperties" : {
+            "label" : "Top Sport",
+            "name" : "ucinn_ascendv2__Involvement_Code_Description_Formula__c"
+          }
+        } ]
+      }
+    },
+    "DROP_FIELDS8_copy1" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES9" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Rank" ]
+        }
+      }
+    },
+    "EDIT_ATTRIBUTES9" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES0_copy1" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Dollars_per_Donor",
+          "newProperties" : {
+            "label" : "Top",
+            "name" : "Top"
+          }
+        } ]
+      }
+    },
+    "APPEND2" : {
+      "action" : "appendV2",
+      "sources" : [ "APPEND5", "JOIN38" ],
+      "parameters" : {
+        "fieldMappings" : [ {
+          "top" : "GiftCredit.Fiscal_Year",
+          "bottom" : "GiftCredit.Fiscal_Year"
+        }, {
+          "top" : "ucinn_ascendv2__Involvement_Code_Description_Formula__c",
+          "bottom" : "ucinn_ascendv2__Involvement_Code_Description_Formula__c"
+        }, {
+          "top" : "Metric",
+          "bottom" : "Metric"
+        }, {
+          "top" : "Top",
+          "bottom" : "Top"
+        }, {
+          "top" : "MIH.Hockey",
+          "bottom" : "MIH.Hockey"
+        }, {
+          "top" : "MIH.Rank",
+          "bottom" : "MIH.Rank"
+        }, {
+          "top" : "Avg.Average",
+          "bottom" : "Avg.Average"
+        }, {
+          "top" : "PercentofTotal.Hockey_of_Total",
+          "bottom" : "PercentofTotal.Hockey_of_Total"
+        } ]
+      }
+    },
+    "FORMULA5" : {
+      "action" : "formula",
+      "sources" : [ "JOIN29" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Previous_Year",
+          "label" : "Previous Year",
+          "formulaExpression" : "\"GiftCredit.Fiscal_Year\"-1",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "TO_DIMENSION0" : {
+      "action" : "typeCast",
+      "sources" : [ "FORMULA5" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "Previous_Year_to_dimension",
+          "newProperties" : {
+            "name" : "Previous_Year"
+          }
+        } ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Previous_Year" ]
+        }
+      },
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Previous_Year",
+          "newProperties" : {
+            "label" : "Previous Year",
+            "name" : "Previous_Year_to_dimension",
+            "typeProperties" : {
+              "type" : "TEXT",
+              "length" : 255
+            }
+          }
+        } ]
+      }
+    },
+    "FORMULA12" : {
+      "action" : "formula",
+      "sources" : [ "TO_DIMENSION0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Id_Previous_Year",
+          "label" : "Id+Previous Year",
+          "formulaExpression" : "concat(ucinn_ascendv2__Contact__c, Previous_Year)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "JOIN34" : {
+      "action" : "join",
+      "sources" : [ "FORMULA12", "FORMULA11" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Previous_Year", "Id_Previous_Year", "PreviousYear.Fiscal_Year", "PreviousYear.Constituent_or_Account_Id", "PreviousYear.Id_FY" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Id_Previous_Year" ],
+        "rightQualifier" : "PreviousYear",
+        "rightKeys" : [ "Id_FY" ]
+      }
+    },
+    "FORMULA6" : {
+      "action" : "formula",
+      "sources" : [ "EDIT_ATTRIBUTES19" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Is_Increased",
+          "label" : "Is Increased",
+          "formulaExpression" : "case \r\nwhen \"GiftCredit.SUM_Cash_Amount\">Previous_Year_Cash_Amount\r\n\r\nthen ucinn_ascendv2__Contact__c\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA7" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA6" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Is_Increased_25",
+          "label" : "Is Increased 25%",
+          "formulaExpression" : "case \r\nwhen Previous_Year_Cash_Amount=0 and \"GiftCredit.SUM_Cash_Amount\">0\r\nthen ucinn_ascendv2__Contact__c\r\nwhen (\"GiftCredit.SUM_Cash_Amount\"-Previous_Year_Cash_Amount)/Previous_Year_Cash_Amount>=0.25\r\nthen ucinn_ascendv2__Contact__c\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES19" : {
+      "action" : "schema",
+      "sources" : [ "FILTER14" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "PreviousYear.SUM_Cash_Amount",
+          "newProperties" : {
+            "label" : "Previous Year Cash Amount",
+            "name" : "Previous_Year_Cash_Amount"
+          }
+        } ]
+      }
+    },
+    "FILTER14" : {
+      "action" : "filter",
+      "sources" : [ "JOIN34" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "GiftCredit.Fiscal_Year",
+          "operator" : "NOT",
+          "operands" : [ "2021" ]
+        } ]
+      }
+    },
+    "EXTRACT1_copy0" : {
+      "action" : "extractGrains",
+      "sources" : [ "FORMULA7" ],
+      "parameters" : {
+        "grainExtractions" : [ ]
+      }
+    },
+    "AGGREGATE3_copy0" : {
+      "action" : "aggregate",
+      "sources" : [ "EXTRACT1_copy0" ],
+      "parameters" : {
+        "aggregations" : [ {
+          "action" : "UNIQUE",
+          "source" : "Is_Increased",
+          "name" : "UNIQUE_Is_Increased",
+          "label" : "Donors (Increasing Giving)"
+        } ],
+        "groupings" : [ "ucinn_ascendv2__Involvement_Code_Description_Formula__c", "GiftCredit.Fiscal_Year" ],
+        "pivots" : [ ],
+        "nodeType" : "STANDARD"
+      }
+    },
+    "FORMULA0_copy2" : {
+      "action" : "formula",
+      "sources" : [ "AGGREGATE3_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Metric",
+          "label" : "Metric",
+          "formulaExpression" : "'Donor(Increasing Giving)'",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA1_copy2" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA0_copy2" ],
+      "parameters" : {
+        "partitionBy" : [ "GiftCredit.Fiscal_Year" ],
+        "orderBy" : [ {
+          "fieldName" : "UNIQUE_Is_Increased",
+          "direction" : "DESC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Rank",
+          "label" : "Rank",
+          "formulaExpression" : "row_number()",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FILTER11_copy2" : {
+      "action" : "filter",
+      "sources" : [ "FORMULA1_copy2" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "NUMBER",
+          "field" : "Rank",
+          "operator" : "EQUAL",
+          "operands" : [ "1" ]
+        } ]
+      }
+    },
+    "FILTER12_copy2" : {
+      "action" : "filter",
+      "sources" : [ "FORMULA1_copy2" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "ucinn_ascendv2__Involvement_Code_Description_Formula__c",
+          "operator" : "EQUAL",
+          "operands" : [ "Men's Ice Hockey" ]
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES0_copy2" : {
+      "action" : "schema",
+      "sources" : [ "JOIN31_copy1" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "ucinn_ascendv2__Involvement_Code_Description_Formula__c",
+          "newProperties" : {
+            "label" : "Top Sport",
+            "name" : "ucinn_ascendv2__Involvement_Code_Description_Formula__c"
+          }
+        } ]
+      }
+    },
+    "DROP_FIELDS8_copy2" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES13" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Rank" ]
+        }
+      }
+    },
+    "EDIT_ATTRIBUTES13" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES0_copy2" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "UNIQUE_Is_Increased",
+          "newProperties" : {
+            "label" : "Top",
+            "name" : "Top"
+          }
+        } ]
+      }
+    },
+    "JOIN30_copy2" : {
+      "action" : "join",
+      "sources" : [ "FILTER11_copy2", "EDIT_ATTRIBUTES3_copy2" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "MIH.ucinn_ascendv2__Involvement_Code_Description_Formula__c", "MIH.GiftCredit.Fiscal_Year", "MIH.Metric" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "GiftCredit.Fiscal_Year" ],
+        "rightQualifier" : "MIH",
+        "rightKeys" : [ "GiftCredit.Fiscal_Year" ]
+      }
+    },
+    "EDIT_ATTRIBUTES3_copy2" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES12" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Rank",
+          "newProperties" : {
+            "label" : "Hockey Rank",
+            "name" : "Rank"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES12" : {
+      "action" : "schema",
+      "sources" : [ "FILTER12_copy2" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "UNIQUE_Is_Increased",
+          "newProperties" : {
+            "label" : "Hockey",
+            "name" : "Hockey"
+          }
+        } ]
+      }
+    },
+    "EXTRACT2_copy1" : {
+      "action" : "extractGrains",
+      "sources" : [ "AGGREGATE3_copy0" ],
+      "parameters" : {
+        "grainExtractions" : [ ]
+      }
+    },
+    "AGGREGATE5_copy1" : {
+      "action" : "aggregate",
+      "sources" : [ "EXTRACT2_copy1" ],
+      "parameters" : {
+        "aggregations" : [ {
+          "action" : "AVG",
+          "source" : "UNIQUE_Is_Increased",
+          "name" : "Average",
+          "label" : "Average"
+        }, {
+          "action" : "SUM",
+          "source" : "UNIQUE_Is_Increased",
+          "name" : "SUM_UNIQUE_Is_Increased",
+          "label" : "Sum of Donors (Increasing Giving)"
+        } ],
+        "groupings" : [ "GiftCredit.Fiscal_Year" ],
+        "pivots" : [ ],
+        "nodeType" : "STANDARD"
+      }
+    },
+    "JOIN31_copy1" : {
+      "action" : "join",
+      "sources" : [ "JOIN30_copy2", "AGGREGATE5_copy1" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Avg.GiftCredit.Fiscal_Year", "Avg.SUM_UNIQUE_Is_Increased" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "GiftCredit.Fiscal_Year" ],
+        "rightQualifier" : "Avg",
+        "rightKeys" : [ "GiftCredit.Fiscal_Year" ]
+      }
+    },
+    "EXTRACT1_copy0_copy0" : {
+      "action" : "extractGrains",
+      "sources" : [ "FORMULA7" ],
+      "parameters" : {
+        "grainExtractions" : [ ]
+      }
+    },
+    "AGGREGATE3_copy0_copy0" : {
+      "action" : "aggregate",
+      "sources" : [ "EXTRACT1_copy0_copy0" ],
+      "parameters" : {
+        "aggregations" : [ {
+          "action" : "UNIQUE",
+          "source" : "Is_Increased_25",
+          "name" : "UNIQUE_Is_Increased_25",
+          "label" : "Unique Is Increased 25%"
+        } ],
+        "groupings" : [ "ucinn_ascendv2__Involvement_Code_Description_Formula__c", "GiftCredit.Fiscal_Year" ],
+        "pivots" : [ ],
+        "nodeType" : "STANDARD"
+      }
+    },
+    "FORMULA0_copy2_copy0" : {
+      "action" : "formula",
+      "sources" : [ "AGGREGATE3_copy0_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Metric",
+          "label" : "Metric",
+          "formulaExpression" : "'Donor(Increasing Giving 25%)'",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA1_copy2_copy0" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA0_copy2_copy0" ],
+      "parameters" : {
+        "partitionBy" : [ "GiftCredit.Fiscal_Year" ],
+        "orderBy" : [ {
+          "fieldName" : "UNIQUE_Is_Increased_25",
+          "direction" : "DESC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Rank",
+          "label" : "Rank",
+          "formulaExpression" : "row_number()",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FILTER11_copy2_copy0" : {
+      "action" : "filter",
+      "sources" : [ "FORMULA1_copy2_copy0" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "NUMBER",
+          "field" : "Rank",
+          "operator" : "EQUAL",
+          "operands" : [ "1" ]
+        } ]
+      }
+    },
+    "FILTER12_copy2_copy0" : {
+      "action" : "filter",
+      "sources" : [ "FORMULA1_copy2_copy0" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "ucinn_ascendv2__Involvement_Code_Description_Formula__c",
+          "operator" : "EQUAL",
+          "operands" : [ "Men's Ice Hockey" ]
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES0_copy2_copy0" : {
+      "action" : "schema",
+      "sources" : [ "JOIN31_copy1_copy0" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "ucinn_ascendv2__Involvement_Code_Description_Formula__c",
+          "newProperties" : {
+            "label" : "Top Sport",
+            "name" : "ucinn_ascendv2__Involvement_Code_Description_Formula__c"
+          }
+        } ]
+      }
+    },
+    "DROP_FIELDS8_copy2_copy0" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES15" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Rank" ]
+        }
+      }
+    },
+    "EDIT_ATTRIBUTES15" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES0_copy2_copy0" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "UNIQUE_Is_Increased_25",
+          "newProperties" : {
+            "label" : "Top",
+            "name" : "Top"
+          }
+        } ]
+      }
+    },
+    "JOIN30_copy2_copy0" : {
+      "action" : "join",
+      "sources" : [ "FILTER11_copy2_copy0", "EDIT_ATTRIBUTES3_copy2_copy0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "MIH.ucinn_ascendv2__Involvement_Code_Description_Formula__c", "MIH.GiftCredit.Fiscal_Year", "MIH.Metric" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "GiftCredit.Fiscal_Year" ],
+        "rightQualifier" : "MIH",
+        "rightKeys" : [ "GiftCredit.Fiscal_Year" ]
+      }
+    },
+    "EDIT_ATTRIBUTES3_copy2_copy0" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES14" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Rank",
+          "newProperties" : {
+            "label" : "Hockey Rank",
+            "name" : "Rank"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES14" : {
+      "action" : "schema",
+      "sources" : [ "FILTER12_copy2_copy0" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "UNIQUE_Is_Increased_25",
+          "newProperties" : {
+            "label" : "Hockey",
+            "name" : "Hockey"
+          }
+        } ]
+      }
+    },
+    "EXTRACT2_copy1_copy0" : {
+      "action" : "extractGrains",
+      "sources" : [ "AGGREGATE3_copy0_copy0" ],
+      "parameters" : {
+        "grainExtractions" : [ ]
+      }
+    },
+    "AGGREGATE5_copy1_copy0" : {
+      "action" : "aggregate",
+      "sources" : [ "EXTRACT2_copy1_copy0" ],
+      "parameters" : {
+        "aggregations" : [ {
+          "action" : "AVG",
+          "source" : "UNIQUE_Is_Increased_25",
+          "name" : "Average",
+          "label" : "Average"
+        }, {
+          "action" : "SUM",
+          "source" : "UNIQUE_Is_Increased_25",
+          "name" : "SUM_UNIQUE_Is_Increased_25",
+          "label" : "Sum of Unique Is Increased 25%"
+        } ],
+        "groupings" : [ "GiftCredit.Fiscal_Year" ],
+        "pivots" : [ ],
+        "nodeType" : "STANDARD"
+      }
+    },
+    "JOIN31_copy1_copy0" : {
+      "action" : "join",
+      "sources" : [ "JOIN30_copy2_copy0", "AGGREGATE5_copy1_copy0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Avg.GiftCredit.Fiscal_Year", "Avg.SUM_UNIQUE_Is_Increased_25" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "GiftCredit.Fiscal_Year" ],
+        "rightQualifier" : "Avg",
+        "rightKeys" : [ "GiftCredit.Fiscal_Year" ]
+      }
+    },
+    "APPEND3" : {
+      "action" : "appendV2",
+      "sources" : [ "APPEND2", "JOIN39" ],
+      "parameters" : {
+        "fieldMappings" : [ {
+          "top" : "GiftCredit.Fiscal_Year",
+          "bottom" : "GiftCredit.Fiscal_Year"
+        }, {
+          "top" : "ucinn_ascendv2__Involvement_Code_Description_Formula__c",
+          "bottom" : "ucinn_ascendv2__Involvement_Code_Description_Formula__c"
+        }, {
+          "top" : "Metric",
+          "bottom" : "Metric"
+        }, {
+          "top" : "Top",
+          "bottom" : "Top"
+        }, {
+          "top" : "MIH.Hockey",
+          "bottom" : "MIH.Hockey"
+        }, {
+          "top" : "MIH.Rank",
+          "bottom" : "MIH.Rank"
+        }, {
+          "top" : "Avg.Average",
+          "bottom" : "Avg.Average"
+        }, {
+          "top" : "PercentofTotal.Hockey_of_Total",
+          "bottom" : "PercentofTotal.Hockey_of_Total"
+        } ]
+      }
+    },
+    "APPEND4" : {
+      "action" : "appendV2",
+      "sources" : [ "APPEND3", "JOIN40" ],
+      "parameters" : {
+        "fieldMappings" : [ {
+          "top" : "GiftCredit.Fiscal_Year",
+          "bottom" : "GiftCredit.Fiscal_Year"
+        }, {
+          "top" : "ucinn_ascendv2__Involvement_Code_Description_Formula__c",
+          "bottom" : "ucinn_ascendv2__Involvement_Code_Description_Formula__c"
+        }, {
+          "top" : "Metric",
+          "bottom" : "Metric"
+        }, {
+          "top" : "Top",
+          "bottom" : "Top"
+        }, {
+          "top" : "MIH.Hockey",
+          "bottom" : "MIH.Hockey"
+        }, {
+          "top" : "MIH.Rank",
+          "bottom" : "MIH.Rank"
+        }, {
+          "top" : "Avg.Average",
+          "bottom" : "Avg.Average"
+        }, {
+          "top" : "PercentofTotal.Hockey_of_Total",
+          "bottom" : "PercentofTotal.Hockey_of_Total"
+        } ]
+      }
+    },
+    "FORMULA8" : {
+      "action" : "formula",
+      "sources" : [ "JOIN35" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Hockey_of_Total",
+          "label" : "Hockey % of Total",
+          "formulaExpression" : "\"NumberPlayers.UNIQUE_ucinn_ascendv2__Contact__c\"/\"Transform1.SUM_NumberPlayers.UNIQUE_ucinn_ascendv2__Contact__c\"",
+          "precision" : 10,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "DROP_FIELDS12" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA8" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "ucinn_ascendv2__Involvement_Code_Description_Formula__c", "UNIQUE_ucinn_ascendv2__Contact__c", "NumberPlayers.UNIQUE_ucinn_ascendv2__Contact__c", "Transform1.SUM_UNIQUE_ucinn_ascendv2__Contact__c", "Transform1.SUM_NumberPlayers.UNIQUE_ucinn_ascendv2__Contact__c" ]
+        }
+      }
+    },
+    "FORMULA9" : {
+      "action" : "formula",
+      "sources" : [ "DROP_FIELDS12" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Metric",
+          "label" : "Metric",
+          "formulaExpression" : "'Players'",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FILTER15" : {
+      "action" : "filter",
+      "sources" : [ "JOIN33" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "ucinn_ascendv2__Involvement_Code_Description_Formula__c",
+          "operator" : "EQUAL",
+          "operands" : [ "Men's Ice Hockey" ]
+        } ]
+      }
+    },
+    "JOIN35" : {
+      "action" : "join",
+      "sources" : [ "FILTER15", "EDIT_ATTRIBUTES17" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Transform1.GiftCredit.Fiscal_Year", "Transform1.Average" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "GiftCredit.Fiscal_Year" ],
+        "rightQualifier" : "Transform1",
+        "rightKeys" : [ "GiftCredit.Fiscal_Year" ]
+      }
+    },
+    "FORMULA8_copy0" : {
+      "action" : "formula",
+      "sources" : [ "JOIN35" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Hockey_of_Total",
+          "label" : "Hockey % of Total",
+          "formulaExpression" : "UNIQUE_ucinn_ascendv2__Contact__c/\"Transform1.SUM_UNIQUE_ucinn_ascendv2__Contact__c\"",
+          "precision" : 10,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "DROP_FIELDS12_copy0" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA8_copy0" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "ucinn_ascendv2__Involvement_Code_Description_Formula__c", "UNIQUE_ucinn_ascendv2__Contact__c", "NumberPlayers.UNIQUE_ucinn_ascendv2__Contact__c", "Transform1.SUM_UNIQUE_ucinn_ascendv2__Contact__c", "Transform1.SUM_NumberPlayers.UNIQUE_ucinn_ascendv2__Contact__c" ]
+        }
+      }
+    },
+    "JOIN36" : {
+      "action" : "join",
+      "sources" : [ "DROP_FIELDS8_copy0", "DROP_FIELDS12_copy0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "PercentofTotal.GiftCredit.Fiscal_Year", "PercentofTotal.Metric" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "GiftCredit.Fiscal_Year" ],
+        "rightQualifier" : "PercentofTotal",
+        "rightKeys" : [ "GiftCredit.Fiscal_Year" ]
+      }
+    },
+    "APPEND5" : {
+      "action" : "appendV2",
+      "sources" : [ "APPEND1", "FORMULA9" ],
+      "parameters" : {
+        "fieldMappings" : [ {
+          "top" : "GiftCredit.Fiscal_Year",
+          "bottom" : "GiftCredit.Fiscal_Year"
+        }, {
+          "top" : "Metric",
+          "bottom" : "Metric"
+        }, {
+          "top" : "PercentofTotal.Hockey_of_Total",
+          "bottom" : "Hockey_of_Total"
+        } ]
+      }
+    },
+    "FILTER16" : {
+      "action" : "filter",
+      "sources" : [ "AGGREGATE3" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "ucinn_ascendv2__Involvement_Code_Description_Formula__c",
+          "operator" : "EQUAL",
+          "operands" : [ "Men's Ice Hockey" ]
+        } ]
+      }
+    },
+    "JOIN37" : {
+      "action" : "join",
+      "sources" : [ "FILTER16", "AGGREGATE5" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Aggregate4.GiftCredit.Fiscal_Year" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "GiftCredit.Fiscal_Year" ],
+        "rightQualifier" : "Aggregate4",
+        "rightKeys" : [ "GiftCredit.Fiscal_Year" ]
+      }
+    },
+    "FORMULA10" : {
+      "action" : "formula",
+      "sources" : [ "JOIN37" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Hockey_of_Total",
+          "label" : "Hockey % of Total",
+          "formulaExpression" : "\"SUM_GiftCredit.SUM_Cash_Amount\"/\"Aggregate4.SUM_SUM_GiftCredit.SUM_Cash_Amount\"",
+          "precision" : 10,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "DROP_FIELDS13" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA10" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "ucinn_ascendv2__Involvement_Code_Description_Formula__c", "SUM_GiftCredit.SUM_Cash_Amount", "Aggregate4.Average", "Aggregate4.SUM_SUM_GiftCredit.SUM_Cash_Amount" ]
+        }
+      }
+    },
+    "JOIN38" : {
+      "action" : "join",
+      "sources" : [ "DROP_FIELDS8", "DROP_FIELDS13" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "PercentofTotal.GiftCredit.Fiscal_Year" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "GiftCredit.Fiscal_Year" ],
+        "rightQualifier" : "PercentofTotal",
+        "rightKeys" : [ "GiftCredit.Fiscal_Year" ]
+      }
+    },
+    "FILTER16_copy0" : {
+      "action" : "filter",
+      "sources" : [ "AGGREGATE3_copy0" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "ucinn_ascendv2__Involvement_Code_Description_Formula__c",
+          "operator" : "EQUAL",
+          "operands" : [ "Men's Ice Hockey" ]
+        } ]
+      }
+    },
+    "JOIN37_copy0" : {
+      "action" : "join",
+      "sources" : [ "FILTER16_copy0", "AGGREGATE5_copy1" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Aggregate4.GiftCredit.Fiscal_Year" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "GiftCredit.Fiscal_Year" ],
+        "rightQualifier" : "Aggregate4",
+        "rightKeys" : [ "GiftCredit.Fiscal_Year" ]
+      }
+    },
+    "FORMULA10_copy0" : {
+      "action" : "formula",
+      "sources" : [ "JOIN37_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Hockey_of_Total",
+          "label" : "Hockey % of Total",
+          "formulaExpression" : "UNIQUE_Is_Increased/\"Aggregate4.SUM_UNIQUE_Is_Increased\"",
+          "precision" : 10,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "DROP_FIELDS13_copy0" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA10_copy0" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "ucinn_ascendv2__Involvement_Code_Description_Formula__c", "Aggregate4.Average", "UNIQUE_Is_Increased", "Aggregate4.SUM_UNIQUE_Is_Increased" ]
+        }
+      }
+    },
+    "FILTER16_copy1" : {
+      "action" : "filter",
+      "sources" : [ "AGGREGATE3_copy0_copy0" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "ucinn_ascendv2__Involvement_Code_Description_Formula__c",
+          "operator" : "EQUAL",
+          "operands" : [ "Men's Ice Hockey" ]
+        } ]
+      }
+    },
+    "JOIN37_copy1" : {
+      "action" : "join",
+      "sources" : [ "FILTER16_copy1", "AGGREGATE5_copy1_copy0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Aggregate4.GiftCredit.Fiscal_Year" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "GiftCredit.Fiscal_Year" ],
+        "rightQualifier" : "Aggregate4",
+        "rightKeys" : [ "GiftCredit.Fiscal_Year" ]
+      }
+    },
+    "FORMULA10_copy1" : {
+      "action" : "formula",
+      "sources" : [ "JOIN37_copy1" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Hockey_of_Total",
+          "label" : "Hockey % of Total",
+          "formulaExpression" : "UNIQUE_Is_Increased_25/\"Aggregate4.SUM_UNIQUE_Is_Increased_25\"",
+          "precision" : 10,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "DROP_FIELDS13_copy1" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA10_copy1" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "ucinn_ascendv2__Involvement_Code_Description_Formula__c", "Aggregate4.Average", "UNIQUE_Is_Increased_25", "Aggregate4.SUM_UNIQUE_Is_Increased_25" ]
+        }
+      }
+    },
+    "JOIN39" : {
+      "action" : "join",
+      "sources" : [ "DROP_FIELDS8_copy2", "DROP_FIELDS13_copy0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "PercentofTotal.GiftCredit.Fiscal_Year" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "GiftCredit.Fiscal_Year" ],
+        "rightQualifier" : "PercentofTotal",
+        "rightKeys" : [ "GiftCredit.Fiscal_Year" ]
+      }
+    },
+    "JOIN40" : {
+      "action" : "join",
+      "sources" : [ "DROP_FIELDS8_copy2_copy0", "DROP_FIELDS13_copy1" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "PercentofTotal.GiftCredit.Fiscal_Year" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "GiftCredit.Fiscal_Year" ],
+        "rightQualifier" : "PercentofTotal",
+        "rightKeys" : [ "GiftCredit.Fiscal_Year" ]
+      }
+    },
+    "OUTPUT0" : {
+      "action" : "save",
+      "sources" : [ "APPEND4" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Hockey Players Summary",
+          "name" : "Hockey_Players_Summary",
+          "folderName" : "SharedApp"
+        },
+        "dateConfigurationName" : "July_Fiscal_Year",
+        "measuresToCurrencies" : [ ]
+      }
+    },
+    "OUTPUT1" : {
+      "action" : "save",
+      "sources" : [ "EDIT_ATTRIBUTES3_copy0_copy0" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "test1013",
+          "name" : "test1013"
+        }
+      }
+    },
+    "FORMULA11" : {
+      "action" : "formula",
+      "sources" : [ "AGGREGATE1" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Id_FY",
+          "label" : "Id+FY",
+          "formulaExpression" : "concat(Constituent_or_Account_Id,Fiscal_Year)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    }
+  },
+  "ui" : {
+    "nodes" : {
+      "LOAD_DATASET7_copy0" : {
+        "label" : "ucinn_ascendv2__Involvement__c",
+        "type" : "LOAD_DATASET",
+        "top" : 252.3,
+        "left" : 251.89999999999998,
+        "parameters" : {
+          "sampleSize" : 10000
+        }
+      },
+      "LOAD_DATASET19_copy0" : {
+        "label" : "ucinn_ascendv2__Involvement_Value__c",
+        "type" : "LOAD_DATASET",
+        "top" : 392.3,
+        "left" : 391.8,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN27_copy0" : {
+        "label" : "Lookup Involvement Code To Involvement",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 252.3,
+        "left" : 391.9
+      },
+      "FILTER8_copy0" : {
+        "label" : "Filter Current NCAA Involvements",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 252.3,
+        "left" : 531.9
+      },
+      "TRANSFORM9_copy0" : {
+        "label" : "Keep NCAA Involvements",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 252.2,
+        "left" : 671.9,
+        "graph" : {
+          "DROP_FIELDS7_copy0" : {
+            "label" : "Keep Columns"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "LOAD_DATASET20" : {
+        "label" : "Account and Contact Dataset",
+        "type" : "LOAD_DATASET",
+        "top" : 392.2,
+        "left" : 811.8,
+        "parameters" : {
+          "sampleSize" : 10000
+        }
+      },
+      "JOIN28" : {
+        "label" : "Lookup Reunion Year",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 252.2,
+        "left" : 811.9
+      },
+      "FILTER9" : {
+        "label" : "Filter Reunion Year",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 252.2,
+        "left" : 951.9
+      },
+      "LOAD_DATASET21" : {
+        "label" : "Gift Credit and Payment",
+        "type" : "LOAD_DATASET",
+        "top" : 812.2,
+        "left" : 1092,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "FILTER10" : {
+        "label" : "Filter 5FY",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 672.2,
+        "left" : 1092
+      },
+      "AGGREGATE0" : {
+        "label" : "Aggregate 0",
+        "type" : "AGGREGATE",
+        "top" : 532.2,
+        "left" : 1092,
+        "graph" : {
+          "EXTRACT0" : null,
+          "AGGREGATE1" : null
+        },
+        "connectors" : [ {
+          "source" : "EXTRACT0",
+          "target" : "AGGREGATE1"
+        } ]
+      },
+      "JOIN29" : {
+        "label" : "Lookup Dollars",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 252.2,
+        "left" : 1091.9
+      },
+      "AGGREGATE2" : {
+        "label" : "Aggregate Dollars",
+        "description" : "",
+        "type" : "AGGREGATE",
+        "top" : 1792.6,
+        "left" : 1232.3,
+        "graph" : {
+          "EXTRACT1" : null,
+          "AGGREGATE3" : null
+        },
+        "connectors" : [ {
+          "source" : "EXTRACT1",
+          "target" : "AGGREGATE3"
+        } ]
+      },
+      "TRANSFORM10" : {
+        "label" : "Enrich Fields",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 1792.6,
+        "left" : 1512.3,
+        "graph" : {
+          "FORMULA0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Metric"
+          },
+          "FORMULA1" : {
+            "label" : "Rank"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA0",
+          "target" : "FORMULA1"
+        } ]
+      },
+      "FILTER11" : {
+        "label" : "Filter Top",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 1792.6,
+        "left" : 1652.3
+      },
+      "FILTER12" : {
+        "label" : "Filter Men's Ice Hockey",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 1932.6,
+        "left" : 1652.3
+      },
+      "TRANSFORM11" : {
+        "label" : "Enrich Fields",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 1792.6,
+        "left" : 2072.3,
+        "graph" : {
+          "EDIT_ATTRIBUTES0" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES1" : {
+            "label" : "Edit Attributes"
+          },
+          "DROP_FIELDS8" : {
+            "label" : "Drop Columns"
+          }
+        },
+        "connectors" : [ {
+          "source" : "EDIT_ATTRIBUTES0",
+          "target" : "EDIT_ATTRIBUTES1"
+        }, {
+          "source" : "EDIT_ATTRIBUTES1",
+          "target" : "DROP_FIELDS8"
+        } ]
+      },
+      "JOIN30" : {
+        "label" : "Lookup Men's Ice Hockey",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 1792.6,
+        "left" : 1792.3
+      },
+      "TRANSFORM12" : {
+        "label" : "Transform 12",
+        "type" : "TRANSFORM",
+        "top" : 1932.6,
+        "left" : 1792.3,
+        "graph" : {
+          "EDIT_ATTRIBUTES2" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES3" : {
+            "label" : "Edit Attributes"
+          }
+        },
+        "connectors" : [ {
+          "source" : "EDIT_ATTRIBUTES2",
+          "target" : "EDIT_ATTRIBUTES3"
+        } ]
+      },
+      "AGGREGATE4" : {
+        "label" : "Aggregate 4",
+        "type" : "AGGREGATE",
+        "top" : 2072,
+        "left" : 1652,
+        "graph" : {
+          "EXTRACT2" : null,
+          "AGGREGATE5" : null
+        },
+        "connectors" : [ {
+          "source" : "EXTRACT2",
+          "target" : "AGGREGATE5"
+        } ]
+      },
+      "JOIN31" : {
+        "label" : "Lookup Avg Paid",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 1792.6,
+        "left" : 1932.3
+      },
+      "FILTER13" : {
+        "label" : "Filter Donors",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 251.7,
+        "left" : 1232
+      },
+      "AGGREGATE6" : {
+        "label" : "Aggregate Donors",
+        "description" : "",
+        "type" : "AGGREGATE",
+        "top" : 672.6,
+        "left" : 1371.7,
+        "graph" : {
+          "EXTRACT3" : null,
+          "AGGREGATE7" : null
+        },
+        "connectors" : [ {
+          "source" : "EXTRACT3",
+          "target" : "AGGREGATE7"
+        } ]
+      },
+      "TRANSFORM10_copy0" : {
+        "label" : "Enrich Fields",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 672.6,
+        "left" : 1511.7,
+        "graph" : {
+          "FORMULA0_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Metric"
+          },
+          "FORMULA1_copy0" : {
+            "label" : "Rank"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA0_copy0",
+          "target" : "FORMULA1_copy0"
+        } ]
+      },
+      "FILTER11_copy0" : {
+        "label" : "Filter Top",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 672,
+        "left" : 1652
+      },
+      "FILTER12_copy0" : {
+        "label" : "Filter Men's Ice Hockey",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 812.6,
+        "left" : 1651.7
+      },
+      "JOIN30_copy0" : {
+        "label" : "Lookup Men's Ice Hockey",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 672.6,
+        "left" : 1791.7
+      },
+      "TRANSFORM12_copy0" : {
+        "label" : "Transform 12",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 812.6,
+        "left" : 1791.7,
+        "graph" : {
+          "EDIT_ATTRIBUTES3_copy0" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES4" : {
+            "label" : "Edit Attributes"
+          }
+        },
+        "connectors" : [ {
+          "source" : "EDIT_ATTRIBUTES4",
+          "target" : "EDIT_ATTRIBUTES3_copy0"
+        } ]
+      },
+      "AGGREGATE8" : {
+        "label" : "Aggregate 8",
+        "type" : "AGGREGATE",
+        "top" : 952.6,
+        "left" : 1511.7,
+        "graph" : {
+          "EXTRACT4" : null,
+          "AGGREGATE9" : null
+        },
+        "connectors" : [ {
+          "source" : "EXTRACT4",
+          "target" : "AGGREGATE9"
+        } ]
+      },
+      "JOIN32" : {
+        "label" : "Lookup Avg # of Donors",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 672.6,
+        "left" : 1931.7
+      },
+      "TRANSFORM11_copy0" : {
+        "label" : "Enrich Fields",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 672.6,
+        "left" : 2071.7,
+        "graph" : {
+          "EDIT_ATTRIBUTES0_copy0" : {
+            "label" : "Edit Attributes"
+          },
+          "DROP_FIELDS8_copy0" : {
+            "label" : "Drop Columns"
+          },
+          "EDIT_ATTRIBUTES5" : {
+            "label" : "Edit Attributes"
+          }
+        },
+        "connectors" : [ {
+          "source" : "EDIT_ATTRIBUTES5",
+          "target" : "DROP_FIELDS8_copy0"
+        }, {
+          "source" : "EDIT_ATTRIBUTES0_copy0",
+          "target" : "EDIT_ATTRIBUTES5"
+        } ]
+      },
+      "APPEND0" : {
+        "label" : "Append 0",
+        "type" : "APPEND",
+        "top" : 252.10000000000002,
+        "left" : 2212
+      },
+      "AGGREGATE10" : {
+        "label" : "Aggregate # of Players",
+        "description" : "",
+        "type" : "AGGREGATE",
+        "top" : 1092.6,
+        "left" : 1231.7,
+        "graph" : {
+          "EXTRACT5" : null,
+          "AGGREGATE11" : null
+        },
+        "connectors" : [ {
+          "source" : "EXTRACT5",
+          "target" : "AGGREGATE11"
+        } ]
+      },
+      "JOIN33" : {
+        "label" : "Lookup Number of Players",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 1092.6,
+        "left" : 1371.7
+      },
+      "TRANSFORM10_copy0_copy0" : {
+        "label" : "Enrich Fields Copy",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 1092.6,
+        "left" : 1511.7,
+        "graph" : {
+          "FORMULA0_copy0_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Metric"
+          },
+          "FORMULA1_copy0_copy0" : {
+            "label" : "Rank"
+          },
+          "FORMULA2" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Participation Rate"
+          },
+          "DROP_FIELDS14" : {
+            "label" : "Drop Columns"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA0_copy0_copy0",
+          "target" : "FORMULA2"
+        }, {
+          "source" : "DROP_FIELDS14",
+          "target" : "FORMULA1_copy0_copy0"
+        }, {
+          "source" : "FORMULA2",
+          "target" : "DROP_FIELDS14"
+        } ]
+      },
+      "FILTER11_copy0_copy0" : {
+        "label" : "Filter Top Copy",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 1092.6,
+        "left" : 1651.7
+      },
+      "FILTER12_copy0_copy0" : {
+        "label" : "Filter Men's Ice Hockey Copy",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 1232.6,
+        "left" : 1651.7
+      },
+      "JOIN30_copy0_copy0" : {
+        "label" : "Lookup Men's Ice Hockey Copy",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 1092.6,
+        "left" : 1791.7
+      },
+      "TRANSFORM12_copy0_copy0" : {
+        "label" : "Transform 12",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 1232.6,
+        "left" : 1791.7,
+        "graph" : {
+          "EDIT_ATTRIBUTES3_copy0_copy0" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES18" : {
+            "label" : "Edit Attributes"
+          }
+        },
+        "connectors" : [ {
+          "source" : "EDIT_ATTRIBUTES18",
+          "target" : "EDIT_ATTRIBUTES3_copy0_copy0"
+        } ]
+      },
+      "AGGREGATE8_copy0" : {
+        "label" : "Aggregate 8",
+        "description" : "",
+        "type" : "AGGREGATE",
+        "top" : 1372.6,
+        "left" : 1511.7,
+        "graph" : {
+          "EXTRACT4_copy0" : null,
+          "AGGREGATE9_copy0" : null
+        },
+        "connectors" : [ {
+          "source" : "EXTRACT4_copy0",
+          "target" : "AGGREGATE9_copy0"
+        } ]
+      },
+      "JOIN32_copy0" : {
+        "label" : "Lookup Avg # of Donors Copy",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 1092.6,
+        "left" : 1931.7
+      },
+      "TRANSFORM11_copy0_copy0" : {
+        "label" : "Enrich Fields",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 1092.6,
+        "left" : 2071.7,
+        "graph" : {
+          "EDIT_ATTRIBUTES0_copy0_copy0" : {
+            "label" : "Edit Attributes"
+          },
+          "DROP_FIELDS8_copy0_copy0" : {
+            "label" : "Drop Columns"
+          },
+          "EDIT_ATTRIBUTES7" : {
+            "label" : "Edit Attributes"
+          }
+        },
+        "connectors" : [ {
+          "source" : "EDIT_ATTRIBUTES0_copy0_copy0",
+          "target" : "EDIT_ATTRIBUTES7"
+        }, {
+          "source" : "EDIT_ATTRIBUTES7",
+          "target" : "DROP_FIELDS8_copy0_copy0"
+        } ]
+      },
+      "TRANSFORM13" : {
+        "label" : "Transform 13",
+        "type" : "TRANSFORM",
+        "top" : 1372.6,
+        "left" : 1651.7,
+        "graph" : {
+          "FORMULA3" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Average"
+          },
+          "EDIT_ATTRIBUTES16" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES17" : {
+            "label" : "Edit Attributes"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA3",
+          "target" : "EDIT_ATTRIBUTES16"
+        }, {
+          "source" : "EDIT_ATTRIBUTES16",
+          "target" : "EDIT_ATTRIBUTES17"
+        } ]
+      },
+      "APPEND1" : {
+        "label" : "Append 1",
+        "type" : "APPEND",
+        "top" : 252.10000000000002,
+        "left" : 2352
+      },
+      "AGGREGATE12" : {
+        "label" : "Aggregate Donors and Dollars",
+        "description" : "",
+        "type" : "AGGREGATE",
+        "top" : 252.60000000000002,
+        "left" : 1371.8,
+        "graph" : {
+          "EXTRACT6" : null,
+          "AGGREGATE13" : null
+        },
+        "connectors" : [ {
+          "source" : "EXTRACT6",
+          "target" : "AGGREGATE13"
+        } ]
+      },
+      "TRANSFORM10_copy1" : {
+        "label" : "Enrich Fields",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 252.60000000000002,
+        "left" : 1511.8,
+        "graph" : {
+          "FORMULA0_copy1" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Metric"
+          },
+          "FORMULA1_copy1" : {
+            "label" : "Rank"
+          },
+          "FORMULA4" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Dollars per Donor"
+          },
+          "DROP_FIELDS11" : {
+            "label" : "Drop Columns"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA0_copy1",
+          "target" : "FORMULA4"
+        }, {
+          "source" : "DROP_FIELDS11",
+          "target" : "FORMULA1_copy1"
+        }, {
+          "source" : "FORMULA4",
+          "target" : "DROP_FIELDS11"
+        } ]
+      },
+      "FILTER11_copy1" : {
+        "label" : "Filter Top Copy1",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 252,
+        "left" : 1652
+      },
+      "FILTER12_copy1" : {
+        "label" : "Filter Men's Ice Hockey Copy1",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 392,
+        "left" : 1512.1
+      },
+      "JOIN30_copy1" : {
+        "label" : "Lookup Men's Ice Hockey Copy1",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 252.60000000000002,
+        "left" : 1791.8
+      },
+      "TRANSFORM12_copy1" : {
+        "label" : "Transform 12 Copy",
+        "type" : "TRANSFORM",
+        "top" : 392,
+        "left" : 1652,
+        "graph" : {
+          "EDIT_ATTRIBUTES3_copy1" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES8" : {
+            "label" : "Edit Attributes"
+          }
+        },
+        "connectors" : [ {
+          "source" : "EDIT_ATTRIBUTES8",
+          "target" : "EDIT_ATTRIBUTES3_copy1"
+        } ]
+      },
+      "AGGREGATE4_copy0" : {
+        "label" : "Aggregate 4 Copy",
+        "type" : "AGGREGATE",
+        "top" : 532.6,
+        "left" : 1511.7,
+        "graph" : {
+          "EXTRACT2_copy0" : null,
+          "AGGREGATE5_copy0" : null
+        },
+        "connectors" : [ {
+          "source" : "EXTRACT2_copy0",
+          "target" : "AGGREGATE5_copy0"
+        } ]
+      },
+      "JOIN31_copy0" : {
+        "label" : "Lookup Avg Paid Copy",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 252.60000000000002,
+        "left" : 1931.8
+      },
+      "TRANSFORM13_copy0" : {
+        "label" : "Transform 13 Copy",
+        "type" : "TRANSFORM",
+        "top" : 532.2,
+        "left" : 1652.2,
+        "graph" : {
+          "FORMULA3_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Average"
+          },
+          "DROP_FIELDS9_copy0" : {
+            "label" : "Drop Columns"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA3_copy0",
+          "target" : "DROP_FIELDS9_copy0"
+        } ]
+      },
+      "TRANSFORM11_copy1" : {
+        "label" : "Enrich Fields Copy1",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 252.60000000000002,
+        "left" : 2071.8,
+        "graph" : {
+          "EDIT_ATTRIBUTES0_copy1" : {
+            "label" : "Edit Attributes"
+          },
+          "DROP_FIELDS8_copy1" : {
+            "label" : "Drop Columns"
+          },
+          "EDIT_ATTRIBUTES9" : {
+            "label" : "Edit Attributes"
+          }
+        },
+        "connectors" : [ {
+          "source" : "EDIT_ATTRIBUTES0_copy1",
+          "target" : "EDIT_ATTRIBUTES9"
+        }, {
+          "source" : "EDIT_ATTRIBUTES9",
+          "target" : "DROP_FIELDS8_copy1"
+        } ]
+      },
+      "APPEND2" : {
+        "label" : "Append 2",
+        "type" : "APPEND",
+        "top" : 252,
+        "left" : 2632
+      },
+      "TRANSFORM14" : {
+        "label" : "Enrich Fields",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 2352.7,
+        "left" : 1232.4,
+        "graph" : {
+          "FORMULA5" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Previous Year"
+          },
+          "TO_DIMENSION0" : {
+            "label" : "To Text"
+          },
+          "FORMULA12" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Id+Previous Year"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA5",
+          "target" : "TO_DIMENSION0"
+        }, {
+          "source" : "TO_DIMENSION0",
+          "target" : "FORMULA12"
+        } ]
+      },
+      "JOIN34" : {
+        "label" : "Lookup Previous Year Amount",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 2352.7,
+        "left" : 1372.4
+      },
+      "TRANSFORM15" : {
+        "label" : "Enrich Fields",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 2352.7,
+        "left" : 1652.4,
+        "graph" : {
+          "FORMULA6" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Is Increased"
+          },
+          "FORMULA7" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Is Increased 25%"
+          },
+          "EDIT_ATTRIBUTES19" : {
+            "label" : "Edit Attributes"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA6",
+          "target" : "FORMULA7"
+        }, {
+          "source" : "EDIT_ATTRIBUTES19",
+          "target" : "FORMULA6"
+        } ]
+      },
+      "FILTER14" : {
+        "label" : "Filter FY",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 2352.7,
+        "left" : 1512.4
+      },
+      "AGGREGATE2_copy0" : {
+        "label" : "Aggregate Increased",
+        "description" : "",
+        "type" : "AGGREGATE",
+        "top" : 2352.7,
+        "left" : 1792.4,
+        "graph" : {
+          "EXTRACT1_copy0" : null,
+          "AGGREGATE3_copy0" : null
+        },
+        "connectors" : [ {
+          "source" : "EXTRACT1_copy0",
+          "target" : "AGGREGATE3_copy0"
+        } ]
+      },
+      "TRANSFORM10_copy2" : {
+        "label" : "Enrich Fields",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 2352.7,
+        "left" : 1932.4,
+        "graph" : {
+          "FORMULA0_copy2" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Metric"
+          },
+          "FORMULA1_copy2" : {
+            "label" : "Rank"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA0_copy2",
+          "target" : "FORMULA1_copy2"
+        } ]
+      },
+      "FILTER11_copy2" : {
+        "label" : "Filter Top Copy2",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 2352.7,
+        "left" : 2072.4
+      },
+      "FILTER12_copy2" : {
+        "label" : "Filter Men's Ice Hockey Copy2",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 2492.7,
+        "left" : 2072.4
+      },
+      "TRANSFORM11_copy2" : {
+        "label" : "Enrich Fields Copy3",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 2352.7,
+        "left" : 2492.4,
+        "graph" : {
+          "EDIT_ATTRIBUTES0_copy2" : {
+            "label" : "Edit Attributes"
+          },
+          "DROP_FIELDS8_copy2" : {
+            "label" : "Drop Columns"
+          },
+          "EDIT_ATTRIBUTES13" : {
+            "label" : "Edit Attributes"
+          }
+        },
+        "connectors" : [ {
+          "source" : "EDIT_ATTRIBUTES13",
+          "target" : "DROP_FIELDS8_copy2"
+        }, {
+          "source" : "EDIT_ATTRIBUTES0_copy2",
+          "target" : "EDIT_ATTRIBUTES13"
+        } ]
+      },
+      "JOIN30_copy2" : {
+        "label" : "Lookup Men's Ice Hockey Copy2",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 2352.7,
+        "left" : 2212.4
+      },
+      "TRANSFORM12_copy2" : {
+        "label" : "Transform 12 Copy1",
+        "type" : "TRANSFORM",
+        "top" : 2492.7,
+        "left" : 2212.4,
+        "graph" : {
+          "EDIT_ATTRIBUTES3_copy2" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES12" : {
+            "label" : "Edit Attributes"
+          }
+        },
+        "connectors" : [ {
+          "source" : "EDIT_ATTRIBUTES12",
+          "target" : "EDIT_ATTRIBUTES3_copy2"
+        } ]
+      },
+      "AGGREGATE4_copy1" : {
+        "label" : "Aggregate 4 Copy1",
+        "type" : "AGGREGATE",
+        "top" : 2632.7,
+        "left" : 1932.4,
+        "graph" : {
+          "EXTRACT2_copy1" : null,
+          "AGGREGATE5_copy1" : null
+        },
+        "connectors" : [ {
+          "source" : "EXTRACT2_copy1",
+          "target" : "AGGREGATE5_copy1"
+        } ]
+      },
+      "JOIN31_copy1" : {
+        "label" : "Lookup Avg Paid Copy1",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 2352.7,
+        "left" : 2352.4
+      },
+      "AGGREGATE2_copy0_copy0" : {
+        "label" : "Aggregate Increased 25%",
+        "description" : "",
+        "type" : "AGGREGATE",
+        "top" : 2912.8,
+        "left" : 1792.6,
+        "graph" : {
+          "EXTRACT1_copy0_copy0" : null,
+          "AGGREGATE3_copy0_copy0" : null
+        },
+        "connectors" : [ {
+          "source" : "EXTRACT1_copy0_copy0",
+          "target" : "AGGREGATE3_copy0_copy0"
+        } ]
+      },
+      "TRANSFORM10_copy2_copy0" : {
+        "label" : "Enrich Fields Copy2",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 2912.8,
+        "left" : 1932.6,
+        "graph" : {
+          "FORMULA0_copy2_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Metric"
+          },
+          "FORMULA1_copy2_copy0" : {
+            "label" : "Rank"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA0_copy2_copy0",
+          "target" : "FORMULA1_copy2_copy0"
+        } ]
+      },
+      "FILTER11_copy2_copy0" : {
+        "label" : "Filter Top Copy2 Copy",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 2912.8,
+        "left" : 2072.6
+      },
+      "FILTER12_copy2_copy0" : {
+        "label" : "Filter Men's Ice Hockey Copy2 Copy",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 3052.8,
+        "left" : 2072.6
+      },
+      "TRANSFORM11_copy2_copy0" : {
+        "label" : "Enrich Fields Copy3 Copy",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 2912.8,
+        "left" : 2492.6,
+        "graph" : {
+          "EDIT_ATTRIBUTES0_copy2_copy0" : {
+            "label" : "Edit Attributes"
+          },
+          "DROP_FIELDS8_copy2_copy0" : {
+            "label" : "Drop Columns"
+          },
+          "EDIT_ATTRIBUTES15" : {
+            "label" : "Edit Attributes"
+          }
+        },
+        "connectors" : [ {
+          "source" : "EDIT_ATTRIBUTES15",
+          "target" : "DROP_FIELDS8_copy2_copy0"
+        }, {
+          "source" : "EDIT_ATTRIBUTES0_copy2_copy0",
+          "target" : "EDIT_ATTRIBUTES15"
+        } ]
+      },
+      "JOIN30_copy2_copy0" : {
+        "label" : "Lookup Men's Ice Hockey Copy2 Copy",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 2912.8,
+        "left" : 2212.6
+      },
+      "TRANSFORM12_copy2_copy0" : {
+        "label" : "Transform 12 Copy1 Copy",
+        "type" : "TRANSFORM",
+        "top" : 3193,
+        "left" : 2212,
+        "graph" : {
+          "EDIT_ATTRIBUTES3_copy2_copy0" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES14" : {
+            "label" : "Edit Attributes"
+          }
+        },
+        "connectors" : [ {
+          "source" : "EDIT_ATTRIBUTES14",
+          "target" : "EDIT_ATTRIBUTES3_copy2_copy0"
+        } ]
+      },
+      "AGGREGATE4_copy1_copy0" : {
+        "label" : "Aggregate 4 Copy1 Copy",
+        "type" : "AGGREGATE",
+        "top" : 3192.8,
+        "left" : 1932.6,
+        "graph" : {
+          "EXTRACT2_copy1_copy0" : null,
+          "AGGREGATE5_copy1_copy0" : null
+        },
+        "connectors" : [ {
+          "source" : "EXTRACT2_copy1_copy0",
+          "target" : "AGGREGATE5_copy1_copy0"
+        } ]
+      },
+      "JOIN31_copy1_copy0" : {
+        "label" : "Lookup Avg Paid Copy1 Copy",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 2912.8,
+        "left" : 2352.6
+      },
+      "APPEND3" : {
+        "label" : "Append 3",
+        "type" : "APPEND",
+        "top" : 252,
+        "left" : 2772
+      },
+      "APPEND4" : {
+        "label" : "Append 4",
+        "type" : "APPEND",
+        "top" : 252,
+        "left" : 2912
+      },
+      "TRANSFORM16" : {
+        "label" : "Percent of Total Players",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 1512,
+        "left" : 1792.1,
+        "graph" : {
+          "FORMULA8" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Hockey % of Total"
+          },
+          "DROP_FIELDS12" : {
+            "label" : "Drop Columns"
+          },
+          "FORMULA9" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Metric"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA8",
+          "target" : "DROP_FIELDS12"
+        }, {
+          "source" : "DROP_FIELDS12",
+          "target" : "FORMULA9"
+        } ]
+      },
+      "FILTER15" : {
+        "label" : "Filter Men's Ice Hockey",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 1512,
+        "left" : 1512
+      },
+      "JOIN35" : {
+        "label" : "Lookup Total #",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 1512,
+        "left" : 1652
+      },
+      "TRANSFORM16_copy0" : {
+        "label" : "Percent of Total Donors",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 1652,
+        "left" : 1792,
+        "graph" : {
+          "FORMULA8_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Hockey % of Total"
+          },
+          "DROP_FIELDS12_copy0" : {
+            "label" : "Drop Columns"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA8_copy0",
+          "target" : "DROP_FIELDS12_copy0"
+        } ]
+      },
+      "JOIN36" : {
+        "label" : "Join 36",
+        "type" : "JOIN",
+        "top" : 672,
+        "left" : 2212
+      },
+      "APPEND5" : {
+        "label" : "Append 5",
+        "type" : "APPEND",
+        "top" : 251.89999999999998,
+        "left" : 2492
+      },
+      "FILTER16" : {
+        "label" : "Filter Men's Ice Hockey",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 2212.1,
+        "left" : 1512.1
+      },
+      "JOIN37" : {
+        "label" : "Lookup Total Dollars",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 2212,
+        "left" : 1652.1
+      },
+      "TRANSFORM17" : {
+        "label" : "Transform 17",
+        "type" : "TRANSFORM",
+        "top" : 2212,
+        "left" : 1792,
+        "graph" : {
+          "FORMULA10" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Hockey % of Total"
+          },
+          "DROP_FIELDS13" : {
+            "label" : "Drop Columns"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA10",
+          "target" : "DROP_FIELDS13"
+        } ]
+      },
+      "JOIN38" : {
+        "label" : "Join 38",
+        "type" : "JOIN",
+        "top" : 1792,
+        "left" : 2212
+      },
+      "FILTER16_copy0" : {
+        "label" : "Filter Men's Ice Hockey Copy3",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 2772,
+        "left" : 1932
+      },
+      "JOIN37_copy0" : {
+        "label" : "Lookup Total Number of Increasing Giving",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 2772,
+        "left" : 2072
+      },
+      "TRANSFORM17_copy0" : {
+        "label" : "Transform 17 Copy",
+        "type" : "TRANSFORM",
+        "top" : 2772,
+        "left" : 2212,
+        "graph" : {
+          "FORMULA10_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Hockey % of Total"
+          },
+          "DROP_FIELDS13_copy0" : {
+            "label" : "Drop Columns"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA10_copy0",
+          "target" : "DROP_FIELDS13_copy0"
+        } ]
+      },
+      "FILTER16_copy1" : {
+        "label" : "Filter Men's Ice Hockey Copy4",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 3332,
+        "left" : 1932.3
+      },
+      "JOIN37_copy1" : {
+        "label" : "Lookup Total Dollars Copy1",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 3332,
+        "left" : 2072.3
+      },
+      "TRANSFORM17_copy1" : {
+        "label" : "Transform 17 Copy1",
+        "type" : "TRANSFORM",
+        "top" : 3332.1,
+        "left" : 2212.3,
+        "graph" : {
+          "FORMULA10_copy1" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Hockey % of Total"
+          },
+          "DROP_FIELDS13_copy1" : {
+            "label" : "Drop Columns"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA10_copy1",
+          "target" : "DROP_FIELDS13_copy1"
+        } ]
+      },
+      "JOIN39" : {
+        "label" : "Join 39",
+        "type" : "JOIN",
+        "top" : 2352,
+        "left" : 2632
+      },
+      "JOIN40" : {
+        "label" : "Join 40",
+        "type" : "JOIN",
+        "top" : 2912,
+        "left" : 2632
+      },
+      "OUTPUT0" : {
+        "label" : "Output 0",
+        "type" : "OUTPUT",
+        "top" : 252,
+        "left" : 3052
+      },
+      "OUTPUT1" : {
+        "label" : "Output 1",
+        "type" : "OUTPUT",
+        "top" : 1232.2,
+        "left" : 2072
+      },
+      "TRANSFORM18" : {
+        "label" : "Id+FY",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 392,
+        "left" : 1092,
+        "graph" : {
+          "FORMULA11" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Id+FY"
+          }
+        },
+        "connectors" : [ ]
+      }
+    },
+    "connectors" : [ {
+      "source" : "TRANSFORM11_copy1",
+      "target" : "APPEND0"
+    }, {
+      "source" : "LOAD_DATASET7_copy0",
+      "target" : "JOIN27_copy0"
+    }, {
+      "source" : "LOAD_DATASET19_copy0",
+      "target" : "JOIN27_copy0"
+    }, {
+      "source" : "FILTER8_copy0",
+      "target" : "TRANSFORM9_copy0"
+    }, {
+      "source" : "JOIN27_copy0",
+      "target" : "FILTER8_copy0"
+    }, {
+      "source" : "TRANSFORM9_copy0",
+      "target" : "JOIN28"
+    }, {
+      "source" : "LOAD_DATASET20",
+      "target" : "JOIN28"
+    }, {
+      "source" : "JOIN28",
+      "target" : "FILTER9"
+    }, {
+      "source" : "LOAD_DATASET21",
+      "target" : "FILTER10"
+    }, {
+      "source" : "FILTER10",
+      "target" : "AGGREGATE0"
+    }, {
+      "source" : "FILTER9",
+      "target" : "JOIN29"
+    }, {
+      "source" : "TRANSFORM18",
+      "target" : "JOIN29"
+    }, {
+      "source" : "JOIN29",
+      "target" : "AGGREGATE2"
+    }, {
+      "source" : "AGGREGATE2",
+      "target" : "TRANSFORM10"
+    }, {
+      "source" : "TRANSFORM10",
+      "target" : "FILTER11"
+    }, {
+      "source" : "TRANSFORM10",
+      "target" : "FILTER12"
+    }, {
+      "source" : "JOIN31",
+      "target" : "TRANSFORM11"
+    }, {
+      "source" : "FILTER11",
+      "target" : "JOIN30"
+    }, {
+      "source" : "TRANSFORM12",
+      "target" : "JOIN30"
+    }, {
+      "source" : "FILTER12",
+      "target" : "TRANSFORM12"
+    }, {
+      "source" : "JOIN30",
+      "target" : "JOIN31"
+    }, {
+      "source" : "AGGREGATE4",
+      "target" : "JOIN31"
+    }, {
+      "source" : "JOIN29",
+      "target" : "FILTER13"
+    }, {
+      "source" : "FILTER13",
+      "target" : "AGGREGATE6"
+    }, {
+      "source" : "FILTER11_copy0",
+      "target" : "JOIN30_copy0"
+    }, {
+      "source" : "TRANSFORM12_copy0",
+      "target" : "JOIN30_copy0"
+    }, {
+      "source" : "FILTER12_copy0",
+      "target" : "TRANSFORM12_copy0"
+    }, {
+      "source" : "TRANSFORM10_copy0",
+      "target" : "FILTER11_copy0"
+    }, {
+      "source" : "TRANSFORM10_copy0",
+      "target" : "FILTER12_copy0"
+    }, {
+      "source" : "AGGREGATE2",
+      "target" : "AGGREGATE4"
+    }, {
+      "source" : "JOIN30_copy0",
+      "target" : "JOIN32"
+    }, {
+      "source" : "AGGREGATE8",
+      "target" : "JOIN32"
+    }, {
+      "source" : "JOIN32",
+      "target" : "TRANSFORM11_copy0"
+    }, {
+      "source" : "JOIN36",
+      "target" : "APPEND0"
+    }, {
+      "source" : "JOIN29",
+      "target" : "AGGREGATE10"
+    }, {
+      "source" : "AGGREGATE6",
+      "target" : "JOIN33"
+    }, {
+      "source" : "AGGREGATE10",
+      "target" : "JOIN33"
+    }, {
+      "source" : "AGGREGATE6",
+      "target" : "TRANSFORM10_copy0"
+    }, {
+      "source" : "AGGREGATE6",
+      "target" : "AGGREGATE8"
+    }, {
+      "source" : "FILTER11_copy0_copy0",
+      "target" : "JOIN30_copy0_copy0"
+    }, {
+      "source" : "TRANSFORM12_copy0_copy0",
+      "target" : "JOIN30_copy0_copy0"
+    }, {
+      "source" : "FILTER12_copy0_copy0",
+      "target" : "TRANSFORM12_copy0_copy0"
+    }, {
+      "source" : "TRANSFORM10_copy0_copy0",
+      "target" : "FILTER11_copy0_copy0"
+    }, {
+      "source" : "TRANSFORM10_copy0_copy0",
+      "target" : "FILTER12_copy0_copy0"
+    }, {
+      "source" : "JOIN30_copy0_copy0",
+      "target" : "JOIN32_copy0"
+    }, {
+      "source" : "TRANSFORM13",
+      "target" : "JOIN32_copy0"
+    }, {
+      "source" : "JOIN32_copy0",
+      "target" : "TRANSFORM11_copy0_copy0"
+    }, {
+      "source" : "JOIN33",
+      "target" : "TRANSFORM10_copy0_copy0"
+    }, {
+      "source" : "JOIN33",
+      "target" : "AGGREGATE8_copy0"
+    }, {
+      "source" : "AGGREGATE8_copy0",
+      "target" : "TRANSFORM13"
+    }, {
+      "source" : "APPEND0",
+      "target" : "APPEND1"
+    }, {
+      "source" : "TRANSFORM11_copy0_copy0",
+      "target" : "APPEND1"
+    }, {
+      "source" : "FILTER13",
+      "target" : "AGGREGATE12"
+    }, {
+      "source" : "TRANSFORM10_copy1",
+      "target" : "FILTER11_copy1"
+    }, {
+      "source" : "TRANSFORM10_copy1",
+      "target" : "FILTER12_copy1"
+    }, {
+      "source" : "FILTER11_copy1",
+      "target" : "JOIN30_copy1"
+    }, {
+      "source" : "TRANSFORM12_copy1",
+      "target" : "JOIN30_copy1"
+    }, {
+      "source" : "FILTER12_copy1",
+      "target" : "TRANSFORM12_copy1"
+    }, {
+      "source" : "JOIN30_copy1",
+      "target" : "JOIN31_copy0"
+    }, {
+      "source" : "AGGREGATE12",
+      "target" : "TRANSFORM10_copy1"
+    }, {
+      "source" : "AGGREGATE12",
+      "target" : "AGGREGATE4_copy0"
+    }, {
+      "source" : "AGGREGATE4_copy0",
+      "target" : "TRANSFORM13_copy0"
+    }, {
+      "source" : "TRANSFORM13_copy0",
+      "target" : "JOIN31_copy0"
+    }, {
+      "source" : "JOIN31_copy0",
+      "target" : "TRANSFORM11_copy1"
+    }, {
+      "source" : "APPEND5",
+      "target" : "APPEND2"
+    }, {
+      "source" : "JOIN38",
+      "target" : "APPEND2"
+    }, {
+      "source" : "TRANSFORM14",
+      "target" : "JOIN34"
+    }, {
+      "source" : "JOIN34",
+      "target" : "FILTER14"
+    }, {
+      "source" : "FILTER14",
+      "target" : "TRANSFORM15"
+    }, {
+      "source" : "JOIN29",
+      "target" : "TRANSFORM14"
+    }, {
+      "source" : "AGGREGATE2_copy0",
+      "target" : "TRANSFORM10_copy2"
+    }, {
+      "source" : "TRANSFORM10_copy2",
+      "target" : "FILTER11_copy2"
+    }, {
+      "source" : "TRANSFORM10_copy2",
+      "target" : "FILTER12_copy2"
+    }, {
+      "source" : "JOIN31_copy1",
+      "target" : "TRANSFORM11_copy2"
+    }, {
+      "source" : "FILTER11_copy2",
+      "target" : "JOIN30_copy2"
+    }, {
+      "source" : "TRANSFORM12_copy2",
+      "target" : "JOIN30_copy2"
+    }, {
+      "source" : "FILTER12_copy2",
+      "target" : "TRANSFORM12_copy2"
+    }, {
+      "source" : "JOIN30_copy2",
+      "target" : "JOIN31_copy1"
+    }, {
+      "source" : "AGGREGATE4_copy1",
+      "target" : "JOIN31_copy1"
+    }, {
+      "source" : "AGGREGATE2_copy0",
+      "target" : "AGGREGATE4_copy1"
+    }, {
+      "source" : "TRANSFORM15",
+      "target" : "AGGREGATE2_copy0"
+    }, {
+      "source" : "AGGREGATE2_copy0_copy0",
+      "target" : "TRANSFORM10_copy2_copy0"
+    }, {
+      "source" : "TRANSFORM10_copy2_copy0",
+      "target" : "FILTER11_copy2_copy0"
+    }, {
+      "source" : "TRANSFORM10_copy2_copy0",
+      "target" : "FILTER12_copy2_copy0"
+    }, {
+      "source" : "JOIN31_copy1_copy0",
+      "target" : "TRANSFORM11_copy2_copy0"
+    }, {
+      "source" : "FILTER11_copy2_copy0",
+      "target" : "JOIN30_copy2_copy0"
+    }, {
+      "source" : "TRANSFORM12_copy2_copy0",
+      "target" : "JOIN30_copy2_copy0"
+    }, {
+      "source" : "FILTER12_copy2_copy0",
+      "target" : "TRANSFORM12_copy2_copy0"
+    }, {
+      "source" : "JOIN30_copy2_copy0",
+      "target" : "JOIN31_copy1_copy0"
+    }, {
+      "source" : "AGGREGATE4_copy1_copy0",
+      "target" : "JOIN31_copy1_copy0"
+    }, {
+      "source" : "AGGREGATE2_copy0_copy0",
+      "target" : "AGGREGATE4_copy1_copy0"
+    }, {
+      "source" : "TRANSFORM15",
+      "target" : "AGGREGATE2_copy0_copy0"
+    }, {
+      "source" : "APPEND2",
+      "target" : "APPEND3"
+    }, {
+      "source" : "JOIN39",
+      "target" : "APPEND3"
+    }, {
+      "source" : "APPEND3",
+      "target" : "APPEND4"
+    }, {
+      "source" : "JOIN40",
+      "target" : "APPEND4"
+    }, {
+      "source" : "JOIN35",
+      "target" : "TRANSFORM16"
+    }, {
+      "source" : "JOIN33",
+      "target" : "FILTER15"
+    }, {
+      "source" : "FILTER15",
+      "target" : "JOIN35"
+    }, {
+      "source" : "TRANSFORM13",
+      "target" : "JOIN35"
+    }, {
+      "source" : "JOIN35",
+      "target" : "TRANSFORM16_copy0"
+    }, {
+      "source" : "TRANSFORM11_copy0",
+      "target" : "JOIN36"
+    }, {
+      "source" : "TRANSFORM16_copy0",
+      "target" : "JOIN36"
+    }, {
+      "source" : "APPEND1",
+      "target" : "APPEND5"
+    }, {
+      "source" : "TRANSFORM16",
+      "target" : "APPEND5"
+    }, {
+      "source" : "AGGREGATE2",
+      "target" : "FILTER16"
+    }, {
+      "source" : "FILTER16",
+      "target" : "JOIN37"
+    }, {
+      "source" : "AGGREGATE4",
+      "target" : "JOIN37"
+    }, {
+      "source" : "JOIN37",
+      "target" : "TRANSFORM17"
+    }, {
+      "source" : "TRANSFORM11",
+      "target" : "JOIN38"
+    }, {
+      "source" : "TRANSFORM17",
+      "target" : "JOIN38"
+    }, {
+      "source" : "FILTER16_copy0",
+      "target" : "JOIN37_copy0"
+    }, {
+      "source" : "JOIN37_copy0",
+      "target" : "TRANSFORM17_copy0"
+    }, {
+      "source" : "FILTER16_copy1",
+      "target" : "JOIN37_copy1"
+    }, {
+      "source" : "JOIN37_copy1",
+      "target" : "TRANSFORM17_copy1"
+    }, {
+      "source" : "AGGREGATE2_copy0",
+      "target" : "FILTER16_copy0"
+    }, {
+      "source" : "AGGREGATE4_copy1",
+      "target" : "JOIN37_copy0"
+    }, {
+      "source" : "TRANSFORM11_copy2",
+      "target" : "JOIN39"
+    }, {
+      "source" : "TRANSFORM17_copy0",
+      "target" : "JOIN39"
+    }, {
+      "source" : "AGGREGATE2_copy0_copy0",
+      "target" : "FILTER16_copy1"
+    }, {
+      "source" : "AGGREGATE4_copy1_copy0",
+      "target" : "JOIN37_copy1"
+    }, {
+      "source" : "TRANSFORM11_copy2_copy0",
+      "target" : "JOIN40"
+    }, {
+      "source" : "TRANSFORM17_copy1",
+      "target" : "JOIN40"
+    }, {
+      "source" : "APPEND4",
+      "target" : "OUTPUT0"
+    }, {
+      "source" : "AGGREGATE0",
+      "target" : "TRANSFORM18"
+    }, {
+      "source" : "TRANSFORM18",
+      "target" : "JOIN34"
+    }, {
+      "source" : "TRANSFORM12_copy0_copy0",
+      "target" : "OUTPUT1"
+    } ],
+    "hiddenColumns" : [ ]
+  },
+  "runMode" : "full"
+}

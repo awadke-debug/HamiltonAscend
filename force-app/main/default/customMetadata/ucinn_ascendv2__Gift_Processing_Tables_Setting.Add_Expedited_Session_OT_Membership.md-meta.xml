@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>Add Expedited Session OT Membership</label>
+    <protected>false</protected>
+    <values>
+        <field>ucinn_ascendv2__Additional_Fields_To_Query__c</field>
+        <value xsi:type="xsd:string">[&quot;Name&quot;, &quot;ucinn_ascendv2__Source_Contact__c&quot;, &quot;ucinn_ascendv2__Contact__c&quot;, &quot;AccountId&quot;, &quot;ucinn_ascendv2__Payment_Group_ID__c&quot;, &quot;Id&quot;,&quot;ucinn_ascendv2__Session__c&quot;,&quot;RecordType.DeveloperName&quot;]</value>
+    </values>
+    <values>
+        <field>ucinn_ascendv2__Donor_Type__c</field>
+        <value xsi:type="xsd:string">Both</value>
+    </values>
+    <values>
+        <field>ucinn_ascendv2__Enable_Filter__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>ucinn_ascendv2__Enable_Multiple_Row_Selection__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>ucinn_ascendv2__Enable_Search_Bar__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>ucinn_ascendv2__Enable_Single_Row_Selection__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>ucinn_ascendv2__Enable_Table_Refresh__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>ucinn_ascendv2__Expanded_Row_Info__c</field>
+        <value xsi:type="xsd:string">{
+&quot;Opportunity&quot;: {
+&quot;ucinn_ascendv2__Designation_Detail__c&quot;: {
+&quot;childRelationshipName&quot;:&quot;ucinn_ascendv2__Designation_Details_Opportunity__r&quot;,
+&quot;enableSingleSelectionRowClicked&quot;:false,
+&quot;enableMultiSelectionRowClicked&quot;:false,
+&quot;fieldsToDisplay&quot;: [
+&quot;Name&quot;,
+&quot;ucinn_ascendv2__Amount__c&quot;,
+&quot;ucinn_ascendv2__Amount_Paid_to_Date_Roll_Up__c&quot;,
+&quot;ucinn_ascendv2__Designation__r.Name&quot;,
+&quot;ucinn_ascendv2__Designation__r.ucinn_ascendv2__Designation_Name__c&quot;,
+&quot;ucinn_ascendv2__Designation__r.ucinn_ascendv2__Department_Formula__c&quot;
+],
+&quot;headers&quot;: [
+&quot;Designation Detail Name&quot;,
+&quot;Amount&quot;,
+&quot;Amount Paid to Date&quot;,
+&quot;Designation Code&quot;,
+&quot;Designation&quot;,
+&quot;Department&quot;
+],
+&quot;orderBy&quot;: &quot;Name&quot;,
+&quot;orderByDirection&quot;: &quot;DESC&quot;,
+&quot;fieldTypeDict&quot;: {
+&quot;Name&quot;: &quot;Id&quot;,
+&quot;ucinn_ascendv2__Designation__r.Name&quot;: &quot;REFERENCE-URL&quot;,
+&quot;ucinn_ascendv2__Amount__c&quot;: &quot;CURRENCY-READONLY&quot;,
+&quot;ucinn_ascendv2__Amount_Paid_to_Date_Roll_Up__c&quot;: &quot;CURRENCY-READONLY&quot;,
+&quot;ucinn_ascendv2__Designation__r.ucinn_ascendv2__Designation_Name__c&quot;: &quot;READONLY&quot;,
+&quot;ucinn_ascendv2__Designation__r.ucinn_ascendv2__Department_Formula__c&quot;: &quot;READONLY&quot;
+},
+&quot;enableSearchBar&quot;: &quot;true&quot;,
+&quot;enableFilter&quot;: &quot;true&quot;,
+&quot;searchBarLabel&quot;: &quot;Search Designation Detail&quot;,
+&quot;additionalConditions&quot;: &quot;ucinn_ascendv2__Opportunity__c = parentRecord.Id&quot;,
+&quot;tableObjectSearchFilterInfoList&quot;: [
+{
+&quot;label&quot;: &quot;Designation Detail&quot;,
+&quot;objectApi&quot;: &quot;ucinn_ascendv2__Designation_Detail__c&quot;,
+&quot;referenceApi&quot;: null,
+&quot;allowFilter&quot;: true,
+&quot;displayTab&quot;: false,
+&quot;fieldsToQuery&quot;: null
+}
+]
+}
+}
+}</value>
+    </values>
+    <values>
+        <field>ucinn_ascendv2__Field_Type_Dict__c</field>
+        <value xsi:type="xsd:string">{&quot;Name&quot;:&quot;Id&quot;,&quot;ucinn_ascendv2__Contact__r.Name&quot; : &quot;REFERENCE-URL&quot;,&quot;Account.Name&quot; : &quot;REFERENCE-URL&quot;,&quot;ucinn_ascendv2__Credit_Date__c&quot; : &quot;DATE-READONLY&quot;,&quot;Amount&quot; : &quot;CURRENCY-READONLY&quot;,&quot;ucinn_ascendv2__Designation__r.Name&quot; : &quot;REFERENCE-URL&quot;}</value>
+    </values>
+    <values>
+        <field>ucinn_ascendv2__Fields_To_Display__c</field>
+        <value xsi:type="xsd:string">[&quot;Name&quot;,&quot;ucinn_ascendv2__Credit_Date__c&quot;,&quot;ucinn_ascendv2__Contact__r.Name&quot;,&quot;Account.Name&quot;,&quot;Amount&quot;,&quot;ucinn_ascendv2__Designation__r.Name&quot;]</value>
+    </values>
+    <values>
+        <field>ucinn_ascendv2__Filter_Criteria_Designation_Detail__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>ucinn_ascendv2__Filter_Criteria_Opportunity__c</field>
+        <value xsi:type="xsd:string">Session__c = $COMPONENT.DONATION_ExpeditedTransactionTable.Attribute.sessionId AND Adjustment_Reason_v1__c = null</value>
+    </values>
+    <values>
+        <field>ucinn_ascendv2__Gift_Type__c</field>
+        <value xsi:type="xsd:string">Additional Expedited Session One-Time Membership</value>
+    </values>
+    <values>
+        <field>ucinn_ascendv2__Headers__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>ucinn_ascendv2__Hover_Text_Information__c</field>
+        <value xsi:type="xsd:string">{
+&quot;Opportunity&quot;: {
+&quot;ucinn_ascendv2__Designation__r.Name&quot;: {
+&quot;displayValue&quot;: &quot;ucinn_ascendv2__Designation__r.Name&quot;,
+&quot;textInfo&quot;: {
+&quot;ucinn_ascendv2__Designation__r.Name&quot;: &quot;Designation Code&quot;,
+&quot;ucinn_ascendv2__Designation__r.ucinn_ascendv2__Designation_Name__c&quot;: &quot;Designation&quot;,
+&quot;ucinn_ascendv2__Designation__r.ucinn_ascendv2__Department_Formula__c&quot;: &quot;Dept&quot;,
+&quot;ucinn_ascendv2__Amount__c&quot;: &quot;Amount&quot;
+},
+&quot;fieldTypeDict&quot;: {
+&quot;Name&quot;: &quot;Id&quot;,
+&quot;ucinn_ascendv2__Designation__r.Name&quot;: &quot;REFERENCE-URL&quot;,
+&quot;ucinn_ascendv2__Amount__c&quot;: &quot;CURRENCY-READONLY&quot;,
+&quot;ucinn_ascendv2__Amount_Paid_to_Date_Roll_Up__c&quot;: &quot;CURRENCY-READONLY&quot;,
+&quot;ucinn_ascendv2__Designation__r.ucinn_ascendv2__Designation_Name__c&quot;: &quot;READONLY&quot;,
+&quot;ucinn_ascendv2__Designation__r.ucinn_ascendv2__Department_Formula__c&quot;: &quot;READONLY&quot;
+},
+&quot;idField&quot;: &quot;ucinn_ascendv2__Designation__c&quot;,
+&quot;sobject&quot;: &quot;ucinn_ascendv2__Designation_Detail__c&quot;
+}
+}
+}</value>
+    </values>
+    <values>
+        <field>ucinn_ascendv2__Is_Table_Disabled__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>ucinn_ascendv2__Lightning_Action_Icons__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>ucinn_ascendv2__Number_of_Records_Per_Page__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>ucinn_ascendv2__Order_By__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>ucinn_ascendv2__Order_by_Direction__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>ucinn_ascendv2__Other_Filter_Criteria__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>ucinn_ascendv2__Other_Object_Name__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>ucinn_ascendv2__Record_Type_Name__c</field>
+        <value xsi:type="xsd:string">One_Time_Membership</value>
+    </values>
+    <values>
+        <field>ucinn_ascendv2__Search_Bar_Label__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>ucinn_ascendv2__Table_Column__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>ucinn_ascendv2__Table_Object_Search_Filter_Info_List__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>ucinn_ascendv2__Table_Title__c</field>
+        <value xsi:nil="true"/>
+    </values>
+</CustomMetadata>

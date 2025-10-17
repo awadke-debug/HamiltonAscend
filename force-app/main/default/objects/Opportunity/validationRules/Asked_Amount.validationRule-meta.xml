@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Asked_Amount</fullName>
+    <active>true</active>
+    <description>When stage is asked, asked amount must be populated.</description>
+    <errorConditionFormula>$Setup.ucinn_ascendv2__Bypass_Settings__c.ucinn_ascendv2__Bypass_Validation_Rules__c &lt;&gt; TRUE &amp;&amp; ISPICKVAL(StageName, &quot;Asked&quot;) &amp;&amp; ISBLANK(ucinn_ascendv2__Submitted_Amount__c) &amp;&amp; RecordType.DeveloperName = &quot;Proposal&quot; &amp;&amp;
+RecordType.NamespacePrefix = &apos;ucinn_ascendv2&apos;</errorConditionFormula>
+    <errorDisplayField>ucinn_ascendv2__Submitted_Amount__c</errorDisplayField>
+    <errorMessage>Ask amount must be entered when the stage is &quot;Asked&quot;.</errorMessage>
+</ValidationRule>

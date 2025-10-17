@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>ucinn_ascendv2__Page_Load_Mod_of_Record_Load_Not_Zero</fullName>
+    <active>true</active>
+    <errorConditionFormula>MOD( ucinn_ascendv2__Number_of_Records_Per_Load__c ,  ucinn_ascendv2__Number_of_Records_Per_Page__c ) != 0</errorConditionFormula>
+    <errorMessage>Number of Records Per Load is not a multiple of  Number of Records Per Page.</errorMessage>
+</ValidationRule>

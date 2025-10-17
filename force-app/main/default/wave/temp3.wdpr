@@ -1,0 +1,220 @@
+{
+  "version" : "62.0",
+  "nodes" : {
+    "LOAD_DATASET2_copy0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Id", "Name", "ucinn_ascendv2__Contact__c", "ucinn_ascendv2__Related_Contact_Role__c", "ucinn_ascendv2__Related_Contact__c", "ucinn_ascendv2__Contact_Role_Formula__c", "ucinn_ascendv2__Related_Contact_Donor_ID_Formula__c", "ucinn_ascendv2__Related_Contact_Name_Formula__c", "Related_Constituent_Reunion_Year__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "ucinn_ascendv2__Relationship__c",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "ucinn_ascendv2__Relationship__c"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "FILTER2_copy0" : {
+      "action" : "filter",
+      "sources" : [ "LOAD_DATASET2_copy0" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "ucinn_ascendv2__Contact_Role_Formula__c",
+          "operator" : "EQUAL",
+          "operands" : [ "Guardian", "Parent", "Ward", "Step-Parent" ]
+        }, {
+          "type" : "TEXT",
+          "field" : "Related_Constituent_Reunion_Year__c",
+          "operator" : "IS_NOT_NULL",
+          "operands" : [ ]
+        } ]
+      }
+    },
+    "LOAD_DATASET26_copy0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "HAM_Name_w_Suffix__c", "HAM_Institutional_Suffix__c", "Id" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "Contact",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "Contact"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN41_copy0" : {
+      "action" : "join",
+      "sources" : [ "FILTER2_copy0", "LOAD_DATASET26_copy0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "ucinn_ascendv2__Related_Contact__c" ],
+        "rightQualifier" : "related",
+        "rightKeys" : [ "Id" ]
+      }
+    },
+    "FORMULA19_copy0" : {
+      "action" : "computeRelative",
+      "sources" : [ "JOIN41_copy0" ],
+      "parameters" : {
+        "partitionBy" : [ "ucinn_ascendv2__Contact__c" ],
+        "orderBy" : [ {
+          "fieldName" : "ucinn_ascendv2__Contact__c",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "MULTIVALUE",
+          "name" : "All_Children_Multivalue",
+          "label" : "All Children Multivalue",
+          "formulaExpression" : "collect_set(\"related.HAM_Name_w_Suffix__c\")"
+        } ]
+      }
+    },
+    "FORMULA20_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA19_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "All_Children",
+          "label" : "All Children",
+          "formulaExpression" : "array_join(All_Children_Multivalue, ', ')",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "DROP_FIELDS5_copy0" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA20_copy0" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "SELECT",
+          "ignoreMissingFields" : true,
+          "fields" : [ "ucinn_ascendv2__Contact__c", "All_Children" ]
+        }
+      }
+    },
+    "OUTPUT2_copy0" : {
+      "action" : "save",
+      "sources" : [ "DROP_FIELDS5_copy0" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "temp",
+          "name" : "temp"
+        },
+        "measuresToCurrencies" : [ ]
+      }
+    }
+  },
+  "ui" : {
+    "nodes" : {
+      "LOAD_DATASET2_copy0" : {
+        "label" : "ucinn_ascendv2__Relationship__c",
+        "type" : "LOAD_DATASET",
+        "top" : 812.0999999999999,
+        "left" : 112,
+        "parameters" : {
+          "sampleSize" : 10000
+        }
+      },
+      "FILTER2_copy0" : {
+        "label" : "Filter to Parents",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 672,
+        "left" : 112.39999999999998
+      },
+      "LOAD_DATASET26_copy0" : {
+        "label" : "Contact",
+        "type" : "LOAD_DATASET",
+        "top" : 812.5999999999999,
+        "left" : 390.4,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN41_copy0" : {
+        "label" : "Join related to contact for suffix",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 671.8,
+        "left" : 391.9
+      },
+      "TRANSFORM7_copy0" : {
+        "label" : "All Children",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 531.8,
+        "left" : 392,
+        "graph" : {
+          "FORMULA19_copy0" : {
+            "label" : "All Children Multivalue"
+          },
+          "FORMULA20_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "All Children"
+          },
+          "DROP_FIELDS5_copy0" : {
+            "label" : "Drop Columns"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA19_copy0",
+          "target" : "FORMULA20_copy0"
+        }, {
+          "source" : "FORMULA20_copy0",
+          "target" : "DROP_FIELDS5_copy0"
+        } ]
+      },
+      "OUTPUT2_copy0" : {
+        "label" : "Output 2",
+        "type" : "OUTPUT",
+        "top" : 531.5999999999999,
+        "left" : 532.0999999999999
+      }
+    },
+    "connectors" : [ {
+      "source" : "LOAD_DATASET2_copy0",
+      "target" : "FILTER2_copy0"
+    }, {
+      "source" : "FILTER2_copy0",
+      "target" : "JOIN41_copy0"
+    }, {
+      "source" : "LOAD_DATASET26_copy0",
+      "target" : "JOIN41_copy0"
+    }, {
+      "source" : "JOIN41_copy0",
+      "target" : "TRANSFORM7_copy0"
+    }, {
+      "source" : "TRANSFORM7_copy0",
+      "target" : "OUTPUT2_copy0"
+    } ],
+    "hiddenColumns" : [ ]
+  },
+  "runMode" : "full"
+}

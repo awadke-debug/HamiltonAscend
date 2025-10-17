@@ -1,0 +1,737 @@
+{
+  "version" : "64.0",
+  "nodes" : {
+    "LOAD_DATASET0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Constituent_or_Account_Id", "ucinn_ascendv2__Credit_Type__c", "Object", "ucinn_ascendv2__Gift_Type_Formula__c", "Fiscal_Year", "Opportunity.Type", "Fundraising_Amount", "Cash_Amount" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Gift Credit and Payment",
+          "name" : "Gift_Credit_and_Payment"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "FILTER0" : {
+      "action" : "filter",
+      "sources" : [ "LOAD_DATASET0" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "Fiscal_Year",
+          "operator" : "EQUAL",
+          "operands" : [ "2023", "2024", "2025" ]
+        } ]
+      }
+    },
+    "LOAD_DATASET1" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "ucinn_ascendv2__Is_Deceased__c", "Is_Contactable", "Is_Active", "Account.Type", "Account_or_Contact_Id", "Is_Alumni", "Is_Solicitable", "Birthdate", "HAM_Reunion_Year__c", "ucinn_ascendv2__Primary_Contact_Type__c" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Account and Contact Dataset",
+          "name" : "Account_and_Contact_Dataset"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN0" : {
+      "action" : "join",
+      "sources" : [ "APPEND2", "LOAD_DATASET1" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Accountand.Account_or_Contact_Id" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Constituent_or_Account_Id" ],
+        "rightQualifier" : "Accountand",
+        "rightKeys" : [ "Account_or_Contact_Id" ]
+      }
+    },
+    "FORMULA13" : {
+      "action" : "formula",
+      "sources" : [ "JOIN0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Is_Alumni_in_FY",
+          "label" : "Is Alumni in FY",
+          "formulaExpression" : "case \r\nwhen \r\n\"Accountand.Is_Alumni\"='true'\r\nand \"Accountand.HAM_Reunion_Year__c\"<=Fiscal_Year\r\nthen 'true'\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA48" : {
+      "action" : "formula",
+      "sources" : [ "TO_DATE0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Is_65_by_the_End_of_FY",
+          "label" : "Is 65 by the End of FY",
+          "formulaExpression" : "case \r\nwhen\r\n\"Accountand.Birthdate\" is not null\r\nand \"Accountand.Birthdate\"<=Last_Day_of_Fiscal_Year-interval 65 year \r\nthen 'true'\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA49" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA13" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Last_Day_of_Fiscal_Year",
+          "label" : "Last Day of Fiscal Year",
+          "formulaExpression" : "concat(Fiscal_Year,'-06-30')",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "TO_DATE0" : {
+      "action" : "typeCast",
+      "sources" : [ "FORMULA49" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "Last_Day_of_Fiscal_Year_to_date",
+          "newProperties" : {
+            "name" : "Last_Day_of_Fiscal_Year"
+          }
+        } ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Last_Day_of_Fiscal_Year" ]
+        }
+      },
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Last_Day_of_Fiscal_Year",
+          "newProperties" : {
+            "label" : "Last Day of Fiscal Year",
+            "name" : "Last_Day_of_Fiscal_Year_to_date",
+            "typeProperties" : {
+              "type" : "DATETIME",
+              "format" : "yyyy-MM-dd"
+            }
+          }
+        } ]
+      }
+    },
+    "FILTER4" : {
+      "action" : "filter",
+      "sources" : [ "LOAD_DATASET1" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "Is_Alumni",
+          "operator" : "EQUAL",
+          "operands" : [ "true" ]
+        }, {
+          "type" : "TEXT",
+          "field" : "HAM_Reunion_Year__c",
+          "operator" : "LESS_OR_EQUAL",
+          "operands" : [ "2023" ]
+        } ]
+      }
+    },
+    "FILTER5" : {
+      "action" : "filter",
+      "sources" : [ "LOAD_DATASET1" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "Is_Alumni",
+          "operator" : "EQUAL",
+          "operands" : [ "true" ]
+        }, {
+          "type" : "TEXT",
+          "field" : "HAM_Reunion_Year__c",
+          "operator" : "LESS_OR_EQUAL",
+          "operands" : [ "2024" ]
+        } ]
+      }
+    },
+    "FORMULA45" : {
+      "action" : "formula",
+      "sources" : [ "FILTER4" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Fiscal_Year",
+          "label" : "Fiscal Year",
+          "formulaExpression" : "'2023'",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA46" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA45" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Key_of_Id_and_FY",
+          "label" : "Key of Id and FY",
+          "formulaExpression" : "concat(Account_or_Contact_Id,'-',Fiscal_Year)\r\n",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA45_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FILTER5" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Fiscal_Year",
+          "label" : "Fiscal Year",
+          "formulaExpression" : "'2024'",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA47" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA45_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Key_of_Id_and_FY",
+          "label" : "Key of Id and FY",
+          "formulaExpression" : "concat(Account_or_Contact_Id,'-',Fiscal_Year)\r\n\r\n",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA42_copy0_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FILTER0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Key_of_Id_and_FY",
+          "label" : "Key of Id and FY",
+          "formulaExpression" : "concat(Constituent_or_Account_Id,'-',Fiscal_Year)\r\n",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "APPEND1" : {
+      "action" : "appendV2",
+      "sources" : [ "FORMULA46", "FORMULA47" ],
+      "parameters" : {
+        "fieldMappings" : [ {
+          "top" : "Account.Type",
+          "bottom" : "Account.Type"
+        }, {
+          "top" : "Is_Contactable",
+          "bottom" : "Is_Contactable"
+        }, {
+          "top" : "Is_Active",
+          "bottom" : "Is_Active"
+        }, {
+          "top" : "Account_or_Contact_Id",
+          "bottom" : "Account_or_Contact_Id"
+        }, {
+          "top" : "Is_Alumni",
+          "bottom" : "Is_Alumni"
+        }, {
+          "top" : "Is_Solicitable",
+          "bottom" : "Is_Solicitable"
+        }, {
+          "top" : "Birthdate",
+          "bottom" : "Birthdate"
+        }, {
+          "top" : "HAM_Reunion_Year__c",
+          "bottom" : "HAM_Reunion_Year__c"
+        }, {
+          "top" : "ucinn_ascendv2__Primary_Contact_Type__c",
+          "bottom" : "ucinn_ascendv2__Primary_Contact_Type__c"
+        }, {
+          "top" : "Fiscal_Year",
+          "bottom" : "Fiscal_Year"
+        }, {
+          "top" : "Key_of_Id_and_FY",
+          "bottom" : "Key_of_Id_and_FY"
+        } ]
+      }
+    },
+    "JOIN4" : {
+      "action" : "join",
+      "sources" : [ "APPEND3", "FORMULA42_copy0_copy0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "TRANSFORM8.Contact.ucinn_ascendv2__Primary_Contact_Type__c", "TRANSFORM8.Account.Type", "TRANSFORM8.ucinn_ascendv2__Credit_Type__c", "TRANSFORM8.ucinn_ascendv2__Gift_Type_Formula__c", "TRANSFORM8.Fiscal_Year", "TRANSFORM8.Opportunity.Type", "TRANSFORM8.Constituent_or_Account_Id", "TRANSFORM8.Fundraising_Amount", "TRANSFORM8.Cash_Amount", "TRANSFORM8.Key_of_Id_and_FY" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Key_of_Id_and_FY" ],
+        "rightQualifier" : "TRANSFORM8",
+        "rightKeys" : [ "Key_of_Id_and_FY" ]
+      }
+    },
+    "FILTER2_copy0_copy0" : {
+      "action" : "filter",
+      "sources" : [ "JOIN4" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "TRANSFORM8.Object",
+          "operator" : "IS_NULL",
+          "operands" : [ ]
+        } ]
+      }
+    },
+    "APPEND2" : {
+      "action" : "appendV2",
+      "sources" : [ "FORMULA42_copy0_copy0", "FILTER2_copy0_copy0" ],
+      "parameters" : {
+        "fieldMappings" : [ {
+          "top" : "Constituent_or_Account_Id",
+          "bottom" : "Account_or_Contact_Id"
+        }, {
+          "top" : "Object",
+          "bottom" : "TRANSFORM8.Object"
+        }, {
+          "top" : "Fiscal_Year",
+          "bottom" : "Fiscal_Year"
+        }, {
+          "top" : "Key_of_Id_and_FY",
+          "bottom" : "Key_of_Id_and_FY"
+        } ]
+      }
+    },
+    "OUTPUT0" : {
+      "action" : "save",
+      "sources" : [ "FORMULA48" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "CASE VSE Survey",
+          "name" : "CASE_VSE_Survey",
+          "folderName" : "SharedApp"
+        },
+        "dateConfigurationName" : "July_Fiscal_Year",
+        "measuresToCurrencies" : [ ]
+      }
+    },
+    "FILTER5_copy0" : {
+      "action" : "filter",
+      "sources" : [ "LOAD_DATASET1" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "Is_Alumni",
+          "operator" : "EQUAL",
+          "operands" : [ "true" ]
+        }, {
+          "type" : "TEXT",
+          "field" : "HAM_Reunion_Year__c",
+          "operator" : "LESS_OR_EQUAL",
+          "operands" : [ "2025" ]
+        } ]
+      }
+    },
+    "FORMULA45_copy0_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FILTER5_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Fiscal_Year",
+          "label" : "Fiscal Year",
+          "formulaExpression" : "'2025'",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA47_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA45_copy0_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Key_of_Id_and_FY",
+          "label" : "Key of Id and FY",
+          "formulaExpression" : "concat(Account_or_Contact_Id,'-',Fiscal_Year)\r\n\r\n",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "APPEND3" : {
+      "action" : "appendV2",
+      "sources" : [ "APPEND1", "FORMULA47_copy0" ],
+      "parameters" : {
+        "fieldMappings" : [ {
+          "top" : "ucinn_ascendv2__Is_Deceased__c",
+          "bottom" : "ucinn_ascendv2__Is_Deceased__c"
+        }, {
+          "top" : "Is_Contactable",
+          "bottom" : "Is_Contactable"
+        }, {
+          "top" : "Is_Active",
+          "bottom" : "Is_Active"
+        }, {
+          "top" : "Account.Type",
+          "bottom" : "Account.Type"
+        }, {
+          "top" : "Account_or_Contact_Id",
+          "bottom" : "Account_or_Contact_Id"
+        }, {
+          "top" : "Is_Alumni",
+          "bottom" : "Is_Alumni"
+        }, {
+          "top" : "Is_Solicitable",
+          "bottom" : "Is_Solicitable"
+        }, {
+          "top" : "Birthdate",
+          "bottom" : "Birthdate"
+        }, {
+          "top" : "HAM_Reunion_Year__c",
+          "bottom" : "HAM_Reunion_Year__c"
+        }, {
+          "top" : "ucinn_ascendv2__Primary_Contact_Type__c",
+          "bottom" : "ucinn_ascendv2__Primary_Contact_Type__c"
+        }, {
+          "top" : "Fiscal_Year",
+          "bottom" : "Fiscal_Year"
+        }, {
+          "top" : "Key_of_Id_and_FY",
+          "bottom" : "Key_of_Id_and_FY"
+        } ]
+      }
+    }
+  },
+  "ui" : {
+    "nodes" : {
+      "LOAD_DATASET0" : {
+        "label" : "Gift Credit and Payment",
+        "type" : "LOAD_DATASET",
+        "top" : 112,
+        "left" : 112,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "FILTER0" : {
+        "label" : "Filter FY",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 112.1,
+        "left" : 252
+      },
+      "LOAD_DATASET1" : {
+        "label" : "Account and Contact Dataset",
+        "type" : "LOAD_DATASET",
+        "top" : 952.2,
+        "left" : 392.1,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN0" : {
+        "label" : "Lookup Contact to Credit",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 112.19999999999999,
+        "left" : 1232
+      },
+      "TRANSFORM2" : {
+        "label" : "Enrich Fields",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 112.19999999999999,
+        "left" : 1372,
+        "graph" : {
+          "FORMULA13" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Is Alumni in FY"
+          },
+          "FORMULA48" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Is 65 by the End of FY"
+          },
+          "FORMULA49" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Last Day of Fiscal Year"
+          },
+          "TO_DATE0" : {
+            "label" : "To Date"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA13",
+          "target" : "FORMULA49"
+        }, {
+          "source" : "TO_DATE0",
+          "target" : "FORMULA48"
+        }, {
+          "source" : "FORMULA49",
+          "target" : "TO_DATE0"
+        } ]
+      },
+      "FILTER4" : {
+        "label" : "Filter 2023 Alumni",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 812.2,
+        "left" : 392.1
+      },
+      "FILTER5" : {
+        "label" : "Filter 2024 Alumni",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 812.1,
+        "left" : 532.1
+      },
+      "TRANSFORM10" : {
+        "label" : "Enrich Fields",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 672.2,
+        "left" : 392.1,
+        "graph" : {
+          "FORMULA45" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Fiscal Year"
+          },
+          "FORMULA46" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Key of Id and FY"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA45",
+          "target" : "FORMULA46"
+        } ]
+      },
+      "TRANSFORM10_copy0" : {
+        "label" : "Enrich Fields",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 672.1,
+        "left" : 532.1,
+        "graph" : {
+          "FORMULA45_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Fiscal Year"
+          },
+          "FORMULA47" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Key of Id and FY"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA45_copy0",
+          "target" : "FORMULA47"
+        } ]
+      },
+      "TRANSFORM8_copy0_copy0" : {
+        "label" : "Key Id+FY",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 112.30000000000001,
+        "left" : 392.1,
+        "graph" : {
+          "FORMULA42_copy0_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Key of Id and FY"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "APPEND1" : {
+        "label" : "Append 1",
+        "type" : "APPEND",
+        "top" : 532.1,
+        "left" : 392.1
+      },
+      "JOIN4" : {
+        "label" : "Lookup Credit to Alumni",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 252.2,
+        "left" : 392.3
+      },
+      "FILTER2_copy0_copy0" : {
+        "label" : "Filter Contacts not in Credit in FY",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 252.2,
+        "left" : 532.3
+      },
+      "APPEND2" : {
+        "label" : "Append 2",
+        "type" : "APPEND",
+        "top" : 112.19999999999999,
+        "left" : 532.1
+      },
+      "OUTPUT0" : {
+        "label" : "Output 0",
+        "type" : "OUTPUT",
+        "top" : 112.19999999999999,
+        "left" : 1512
+      },
+      "FILTER5_copy0" : {
+        "label" : "Filter 2025 Alumni",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 812.1,
+        "left" : 672.1
+      },
+      "TRANSFORM10_copy0_copy0" : {
+        "label" : "Enrich Fields",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 672.1,
+        "left" : 672.1,
+        "graph" : {
+          "FORMULA45_copy0_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Fiscal Year"
+          },
+          "FORMULA47_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Key of Id and FY"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA45_copy0_copy0",
+          "target" : "FORMULA47_copy0"
+        } ]
+      },
+      "APPEND3" : {
+        "label" : "Append 3",
+        "type" : "APPEND",
+        "top" : 392,
+        "left" : 392.1
+      }
+    },
+    "connectors" : [ {
+      "source" : "APPEND2",
+      "target" : "JOIN0"
+    }, {
+      "source" : "TRANSFORM8_copy0_copy0",
+      "target" : "APPEND2"
+    }, {
+      "source" : "LOAD_DATASET1",
+      "target" : "JOIN0"
+    }, {
+      "source" : "LOAD_DATASET0",
+      "target" : "FILTER0"
+    }, {
+      "source" : "LOAD_DATASET1",
+      "target" : "FILTER4"
+    }, {
+      "source" : "LOAD_DATASET1",
+      "target" : "FILTER5"
+    }, {
+      "source" : "FILTER4",
+      "target" : "TRANSFORM10"
+    }, {
+      "source" : "FILTER5",
+      "target" : "TRANSFORM10_copy0"
+    }, {
+      "source" : "FILTER0",
+      "target" : "TRANSFORM8_copy0_copy0"
+    }, {
+      "source" : "TRANSFORM10",
+      "target" : "APPEND1"
+    }, {
+      "source" : "TRANSFORM10_copy0",
+      "target" : "APPEND1"
+    }, {
+      "source" : "APPEND3",
+      "target" : "JOIN4"
+    }, {
+      "source" : "TRANSFORM8_copy0_copy0",
+      "target" : "JOIN4"
+    }, {
+      "source" : "JOIN4",
+      "target" : "FILTER2_copy0_copy0"
+    }, {
+      "source" : "FILTER2_copy0_copy0",
+      "target" : "APPEND2"
+    }, {
+      "source" : "JOIN0",
+      "target" : "TRANSFORM2"
+    }, {
+      "source" : "TRANSFORM2",
+      "target" : "OUTPUT0"
+    }, {
+      "source" : "FILTER5_copy0",
+      "target" : "TRANSFORM10_copy0_copy0"
+    }, {
+      "source" : "LOAD_DATASET1",
+      "target" : "FILTER5_copy0"
+    }, {
+      "source" : "APPEND1",
+      "target" : "APPEND3"
+    }, {
+      "source" : "TRANSFORM10_copy0_copy0",
+      "target" : "APPEND3"
+    } ],
+    "hiddenColumns" : [ ]
+  },
+  "runMode" : "full"
+}

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Accepted_Suffix_Values_Only</fullName>
+    <active>false</active>
+    <description>Prevents invalid suffix values from being entered in the text suffix field</description>
+    <errorConditionFormula>AND(
+  NOT(ISBLANK(Suffix)),
+  NOT(
+    OR(
+      Suffix = &quot;, Jr.&quot;,
+      Suffix = &quot;, Sr.&quot;,
+      Suffix = &quot;III&quot;,
+      Suffix = &quot;I&quot;,
+      Suffix = &quot;II&quot;,
+      Suffix = &quot;IV&quot;,
+      Suffix = &quot;V&quot;,
+      Suffix = &quot;VI&quot;,
+      Suffix = &quot;VII&quot;,
+      Suffix = &quot;VIII&quot;,
+      Suffix = &quot;IX&quot;,
+      Suffix = &quot;X&quot;
+
+    )
+  )
+)</errorConditionFormula>
+    <errorDisplayField>Suffix</errorDisplayField>
+    <errorMessage>A valid suffix value has not been entered.</errorMessage>
+</ValidationRule>

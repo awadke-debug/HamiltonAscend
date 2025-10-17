@@ -1,0 +1,108 @@
+{
+  "version" : "60.0",
+  "nodes" : {
+    "LOAD_DATASET0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Id", "Name", "CreatedById", "LastModifiedDate", "ucinn_ascendv2__Designation_Detail__c", "ucinn_ascendv2__Account__c", "ucinn_ascendv2__Constituent_Type__c", "ucinn_ascendv2__Contact__c", "ucinn_ascendv2__Credit_Date__c", "ucinn_ascendv2__Designation__c", "ucinn_ascendv2__External_System_ID__c", "ucinn_ascendv2__Opportunity__c", "ucinn_ascendv2__Payment_Amount__c", "ucinn_ascendv2__Status__c", "ucinn_ascendv2__Transaction_ID__c", "ucinn_ascendv2__Transaction_Type__c", "ucinn_ascendv2__Contributor_Formula__c", "ucinn_ascendv2__Designation_Description_Formula__c", "ucinn_ascendv2__Fiscal_Year_Formula__c", "ucinn_ascendv2__Fiscal_Year_Text_Formula__c", "ucinn_ascendv2__Opportunity_Record_Type__c", "ucinn_ascendv2__Opportunity_Stage__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "ucinn_ascendv2__Payment__c",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "ucinn_ascendv2__Payment__c"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "OUTPUT0" : {
+      "action" : "save",
+      "sources" : [ "LOAD_DATASET0" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "validation payment",
+          "name" : "validation_payment",
+          "folderName" : "SharedApp"
+        },
+        "measuresToCurrencies" : [ ]
+      }
+    },
+    "LOAD_DATASET1" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Id", "Name", "CreatedDate", "CreatedById", "LastModifiedDate", "ucinn_ascendv2__Designation_Detail__c", "ucinn_ascendv2__Account__c", "ucinn_ascendv2__Amount_Before_Written_Off_Cancelled_Void__c", "ucinn_ascendv2__Contact__c", "ucinn_ascendv2__Credit_Amount__c", "ucinn_ascendv2__Credit_ID__c", "ucinn_ascendv2__Credit_Subtype__c", "ucinn_ascendv2__Credit_Type__c", "ucinn_ascendv2__Default_Spouse_Soft_Credit__c", "ucinn_ascendv2__Designation__c", "ucinn_ascendv2__External_System_ID__c", "ucinn_ascendv2__Hard_Credit_Recipient_Account__c", "ucinn_ascendv2__Hard_Credit_Recipient_Contact__c", "ucinn_ascendv2__Hard_and_Soft_Credit_Name_Auto_Number__c", "ucinn_ascendv2__Is_Donor_Control__c", "ucinn_ascendv2__Opportunity__c", "ucinn_ascendv2__Payment_Group_ID__c", "ucinn_ascendv2__Payment__c", "ucinn_ascendv2__Receipt_Number__c", "ucinn_ascendv2__Review_Transaction_v2__c", "ucinn_ascendv2__Source__c", "ucinn_ascendv2__Contact_Name_and_Donor_ID_Formula__c", "ucinn_ascendv2__Credit_Date_Formula__c", "ucinn_ascendv2__Designation_Code_Formula__c", "ucinn_ascendv2__Designation_Description_Formula__c", "ucinn_ascendv2__Designation_Unit_Formula__c", "ucinn_ascendv2__Gift_Type_Formula__c", "ucinn_ascendv2__Is_Deceased_Formula__c", "ucinn_ascendv2__Is_Ready_for_G_L_Formula__c", "ucinn_ascendv2__Name_of_Creditee_Formula__c", "ucinn_ascendv2__Pledge_Gift_Stage_Formula__c", "ucinn_ascendv2__Trustee_Formula__c", "ucinn_ascendv2__Amount_Formula__c", "ucinn_ascendv2__Gift_No_Formula__c", "ucinn_ascendv2__Hard_Credit_Formula__c", "ucinn_ascendv2__Is_Anon_Formula__c", "ucinn_ascendv2__Non_Gift_Amount_Formula__c", "ucinn_ascendv2__Pledge_Id_Formula__c", "HAM_Constituent_Type__c", "HAM_GOLD_Flag__c", "HAM_Reunion_Milestone_Year__c", "HAM_Reunion_Milestone__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "ucinn_ascendv2__Hard_and_Soft_Credit__c",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "ucinn_ascendv2__Hard_and_Soft_Credit__c"
+        },
+        "sampleDetails" : {
+          "type" : "TopN"
+        }
+      }
+    },
+    "OUTPUT1" : {
+      "action" : "save",
+      "sources" : [ "LOAD_DATASET1" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Credit Validation",
+          "name" : "Credit_Validation",
+          "folderName" : "SharedApp"
+        }
+      }
+    }
+  },
+  "ui" : {
+    "nodes" : {
+      "LOAD_DATASET0" : {
+        "label" : "ucinn_ascendv2__Payment__c",
+        "type" : "LOAD_DATASET",
+        "top" : 112,
+        "left" : 112,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "OUTPUT0" : {
+        "label" : "Output 0",
+        "type" : "OUTPUT",
+        "top" : 112,
+        "left" : 252
+      },
+      "LOAD_DATASET1" : {
+        "label" : "ucinn_ascendv2__Hard_and_Soft_Credit__c",
+        "type" : "LOAD_DATASET",
+        "top" : 252,
+        "left" : 112,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "OUTPUT1" : {
+        "label" : "Output 1",
+        "type" : "OUTPUT",
+        "top" : 252,
+        "left" : 252
+      }
+    },
+    "connectors" : [ {
+      "source" : "LOAD_DATASET0",
+      "target" : "OUTPUT0"
+    }, {
+      "source" : "LOAD_DATASET1",
+      "target" : "OUTPUT1"
+    } ],
+    "hiddenColumns" : [ ]
+  },
+  "runMode" : "full"
+}

@@ -1,0 +1,174 @@
+{
+  "version" : "63.0",
+  "nodes" : {
+    "LOAD_DATASET0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Private_Societies_Edited", "HAM_Name_w_Suffix__c", "NCAA_Edited", "Account_or_Contact_Id", "Preferred_Address.ucinn_ascendv2__Address_State_Formula__c_bucket", "Is_500_HF_DONOR", "Primary_Relationship_Manager.Assigned_User_Name", "Wealth_Rating.HAM_Wealth_Rating_Number__c_bucket", "Persistence_500_HF_Flag", "Aggregate.SUM_FY01_Collected_Amount_HF", "HF_Change_1YR_percent", "Age_Edited_1YR", "Aggregate.SUM_FY00_Collected_Amount_HF", "Is_500HF_Donor_int", "HF_Change_2YR_percent", "Lifetime_Cash_Collected_as_of_1YR", "Aggregate.SUM_FY02_Collected_Amount_HF", "Persistence_HF_Flag", "Aggregate.SUM_FY03_Collected_Amount_HF" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Model 500 CYR Version 2",
+          "name" : "Model_500_CYR_Version_2"
+        },
+        "sampleDetails" : {
+          "type" : "TopN"
+        }
+      }
+    },
+    "LOAD_DATASET1" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Account_or_Contact_Id", "Primary_Relationship_Manager.HAM_Role__c", "HAM_Reunion_Year__c", "ucinn_ascendv2__Wealth_Rating__c", "HAM_CYR_HF_Ask__c", "Ask_Expected.MAX_HAM_Expected_Amount__c", "Expected_Minus_CYR_HF_Collected", "Aggregate.SUM_FY00_Committed_Amount_HF", "Aggregate.Sum.Lifetime_Collected_Amount", "Aggregate_02.Sum.Is_Consecutive_Year", "Ask_Expected.MAX_HAM_Ask_Amount__c" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Account and Contact Dataset",
+          "name" : "Account_and_Contact_Dataset"
+        },
+        "sampleDetails" : {
+          "type" : "TopN"
+        }
+      }
+    },
+    "JOIN0" : {
+      "action" : "join",
+      "sources" : [ "LOAD_DATASET0", "LOAD_DATASET1" ],
+      "schema" : {
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Account_or_Contact_Id" ],
+        "rightQualifier" : "Accountand",
+        "rightKeys" : [ "Account_or_Contact_Id" ]
+      }
+    },
+    "DISCOVERY_PREDICT0" : {
+      "action" : "smartDataDiscoveryPredict",
+      "sources" : [ "JOIN0" ],
+      "parameters" : {
+        "predictSource" : {
+          "type" : "PRED_DEF",
+          "name" : "Predicted_Is_5k_HF_Donor3"
+        },
+        "columnMapping" : {
+          "Private_Societies_Edited" : "Private_Societies_Edited",
+          "NCAA_Edited" : "NCAA_Edited",
+          "Preferred_Address.ucinn_ascendv2__Address_State_Formula__c_bucket" : "Preferred_Address.ucinn_ascendv2__Address_State_Formula__c_bucket",
+          "Wealth_Rating.HAM_Wealth_Rating_Number__c_bucket" : "Wealth_Rating.HAM_Wealth_Rating_Number__c_bucket",
+          "Persistence_500_HF_Flag" : "Persistence_500_HF_Flag",
+          "Age_Edited_1YR" : "Age_Edited_1YR",
+          "Persistence_HF_Flag" : "Persistence_HF_Flag",
+          "Lifetime_Cash_Collected_as_of_2YR" : "Lifetime_Cash_Collected_as_of_1YR"
+        },
+        "predictionField" : {
+          "name" : "Predicted_Is_5k_HF_Donor3_prediction",
+          "label" : "Predicted Is .5k HF Donor"
+        },
+        "predictionFactorFields" : [ {
+          "field" : {
+            "name" : "Predicted_Is_5k_HF_Donor3_predictor",
+            "label" : "Predictor 1"
+          },
+          "impact" : {
+            "name" : "Predicted_Is_5k_HF_Donor3_predictor_impact",
+            "label" : "Predictor 1 Impact"
+          }
+        }, {
+          "field" : {
+            "name" : "Predicted_Is_5k_HF_Donor3_predictor1",
+            "label" : "Predictor 2"
+          },
+          "impact" : {
+            "name" : "Predicted_Is_5k_HF_Donor3_predictor_impact1",
+            "label" : "Predictor 2 Impact"
+          }
+        }, {
+          "field" : {
+            "name" : "Predicted_Is_5k_HF_Donor3_predictor2",
+            "label" : "Predictor 3"
+          },
+          "impact" : {
+            "name" : "Predicted_Is_5k_HF_Donor3_predictor_impact2",
+            "label" : "Predictor 3 Impact"
+          }
+        } ],
+        "prescriptionFields" : [ ]
+      }
+    },
+    "OUTPUT0" : {
+      "action" : "save",
+      "sources" : [ "DISCOVERY_PREDICT0" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Model 500 Deployed Version 0",
+          "name" : "Model_500_Deployed_Version_0",
+          "folderName" : "SharedApp"
+        }
+      }
+    }
+  },
+  "ui" : {
+    "nodes" : {
+      "LOAD_DATASET0" : {
+        "label" : "Model 500 CYR Version 2",
+        "type" : "LOAD_DATASET",
+        "top" : 112,
+        "left" : 112,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "LOAD_DATASET1" : {
+        "label" : "Account and Contact Dataset",
+        "type" : "LOAD_DATASET",
+        "top" : 252,
+        "left" : 112,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN0" : {
+        "label" : "Join 0",
+        "type" : "JOIN",
+        "top" : 112,
+        "left" : 252
+      },
+      "DISCOVERY_PREDICT0" : {
+        "label" : "XGBOOST Model",
+        "description" : "Used XGBOOST algorithm and LYR dataset (with validation split 65;35).",
+        "type" : "DISCOVERY_PREDICT",
+        "top" : 112,
+        "left" : 392
+      },
+      "OUTPUT0" : {
+        "label" : "Output 0",
+        "type" : "OUTPUT",
+        "top" : 112,
+        "left" : 532
+      }
+    },
+    "connectors" : [ {
+      "source" : "LOAD_DATASET0",
+      "target" : "JOIN0"
+    }, {
+      "source" : "LOAD_DATASET1",
+      "target" : "JOIN0"
+    }, {
+      "source" : "JOIN0",
+      "target" : "DISCOVERY_PREDICT0"
+    }, {
+      "source" : "DISCOVERY_PREDICT0",
+      "target" : "OUTPUT0"
+    } ],
+    "hiddenColumns" : [ ]
+  },
+  "runMode" : "full"
+}

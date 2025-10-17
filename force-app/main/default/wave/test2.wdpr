@@ -1,0 +1,58 @@
+{
+  "version" : "64.0",
+  "nodes" : {
+    "LOAD_DATASET0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Id", "Name", "et4ae5__Contact__c", "et4ae5__DateOpened__c", "et4ae5__DateSent__c", "et4ae5__NumberOfTotalClicks__c", "et4ae5__Opened__c", "et4ae5__Clicked__c", "et4ae5__Contact_ID__c", "et4ae5__Email__c", "Campaign_Email__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "et4ae5__IndividualEmailResult__c",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "et4ae5__IndividualEmailResult__c"
+        },
+        "sampleDetails" : {
+          "type" : "TopN"
+        }
+      }
+    },
+    "OUTPUT0" : {
+      "action" : "save",
+      "sources" : [ "LOAD_DATASET0" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "test",
+          "name" : "test"
+        }
+      }
+    }
+  },
+  "ui" : {
+    "nodes" : {
+      "LOAD_DATASET0" : {
+        "label" : "et4ae5__IndividualEmailResult__c",
+        "type" : "LOAD_DATASET",
+        "top" : 112,
+        "left" : 112,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "OUTPUT0" : {
+        "label" : "Output 0",
+        "type" : "OUTPUT",
+        "top" : 112,
+        "left" : 252
+      }
+    },
+    "connectors" : [ {
+      "source" : "LOAD_DATASET0",
+      "target" : "OUTPUT0"
+    } ],
+    "hiddenColumns" : [ ]
+  },
+  "runMode" : "full"
+}

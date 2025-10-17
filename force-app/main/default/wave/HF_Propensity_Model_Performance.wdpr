@@ -1,0 +1,914 @@
+{
+  "version" : "62.0",
+  "nodes" : {
+    "LOAD_DATASET0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "HAM_Reunion_Year__c", "Primary_Relationship_Manager.Assigned_User_Name", "ucinn_ascendv2__Primary_Contact_Type__c", "HF_Model.HF_Decile_String", "Account_or_Contact_Id", "Is_ISB_LFY.Is_ISB_Campaign_Member", "HF_Model.HAM_Decile_Number__c" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Account and Contact Dataset",
+          "name" : "Account_and_Contact_Dataset"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "LOAD_DATASET1" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Fiscal_Year", "Cash_Amount", "ucinn_ascendv2__Credit_Date_Formula__c", "Constituent_or_Account_Id" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Gift Credit and Payment",
+          "name" : "Gift_Credit_and_Payment"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "FILTER0" : {
+      "action" : "filter",
+      "sources" : [ "LOAD_DATASET1" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "NUMBER",
+          "field" : "Cash_Amount",
+          "operator" : "GREATER_THAN",
+          "operands" : [ "0" ]
+        }, {
+          "type" : "DATETIME",
+          "field" : "ucinn_ascendv2__Credit_Date_Formula__c",
+          "operator" : "IN_RANGE",
+          "operands" : [ "1688169600000", "1717891200000" ]
+        } ]
+      }
+    },
+    "EXTRACT0" : {
+      "action" : "extractGrains",
+      "sources" : [ "FILTER0" ],
+      "parameters" : {
+        "grainExtractions" : [ ]
+      }
+    },
+    "AGGREGATE1" : {
+      "action" : "aggregate",
+      "sources" : [ "EXTRACT0" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "SUM_Cash_Amount",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        } ]
+      },
+      "parameters" : {
+        "aggregations" : [ {
+          "action" : "SUM",
+          "source" : "Cash_Amount",
+          "name" : "SUM_Cash_Amount",
+          "label" : "Cash Amount"
+        } ],
+        "groupings" : [ "Constituent_or_Account_Id" ],
+        "pivots" : [ ],
+        "nodeType" : "STANDARD"
+      }
+    },
+    "JOIN0" : {
+      "action" : "join",
+      "sources" : [ "LOAD_DATASET0", "FORMULA0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Pre_Period.Constituent_or_Account_Id", "Pre_Period.SUM_Cash_Amount" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Account_or_Contact_Id" ],
+        "rightQualifier" : "Pre_Period",
+        "rightKeys" : [ "Constituent_or_Account_Id" ]
+      }
+    },
+    "FORMULA0" : {
+      "action" : "formula",
+      "sources" : [ "AGGREGATE1" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Pre_Period_Flag",
+          "label" : "Pre Period Flag",
+          "formulaExpression" : "'true'",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FILTER0_copy0" : {
+      "action" : "filter",
+      "sources" : [ "LOAD_DATASET1" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "NUMBER",
+          "field" : "Cash_Amount",
+          "operator" : "GREATER_THAN",
+          "operands" : [ "0" ]
+        }, {
+          "type" : "DATETIME",
+          "field" : "ucinn_ascendv2__Credit_Date_Formula__c",
+          "operator" : "IN_RANGE",
+          "operands" : [ "1717977600000", "1719705600000" ]
+        } ]
+      }
+    },
+    "EXTRACT0_copy0" : {
+      "action" : "extractGrains",
+      "sources" : [ "FILTER0_copy0" ],
+      "parameters" : {
+        "grainExtractions" : [ ]
+      }
+    },
+    "AGGREGATE1_copy0" : {
+      "action" : "aggregate",
+      "sources" : [ "EXTRACT0_copy0" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "SUM_Cash_Amount",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        } ]
+      },
+      "parameters" : {
+        "aggregations" : [ {
+          "action" : "SUM",
+          "source" : "Cash_Amount",
+          "name" : "SUM_Cash_Amount",
+          "label" : "Cash Amount"
+        } ],
+        "groupings" : [ "Constituent_or_Account_Id" ],
+        "pivots" : [ ],
+        "nodeType" : "STANDARD"
+      }
+    },
+    "FORMULA0_copy0" : {
+      "action" : "formula",
+      "sources" : [ "AGGREGATE1_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Post_Period_Flag",
+          "label" : "Post Period Flag",
+          "formulaExpression" : "'true'",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "JOIN1" : {
+      "action" : "join",
+      "sources" : [ "JOIN0", "FORMULA0_copy0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Post_Period.Constituent_or_Account_Id", "Post_Period.SUM_Cash_Amount" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Account_or_Contact_Id" ],
+        "rightQualifier" : "Post_Period",
+        "rightKeys" : [ "Constituent_or_Account_Id" ]
+      }
+    },
+    "FILTER0_copy0_copy0" : {
+      "action" : "filter",
+      "sources" : [ "LOAD_DATASET1" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "NUMBER",
+          "field" : "Cash_Amount",
+          "operator" : "GREATER_THAN",
+          "operands" : [ "0" ]
+        }, {
+          "type" : "TEXT",
+          "field" : "Fiscal_Year",
+          "operator" : "EQUAL",
+          "operands" : [ "2023" ]
+        } ]
+      }
+    },
+    "EXTRACT0_copy0_copy0" : {
+      "action" : "extractGrains",
+      "sources" : [ "FILTER0_copy0_copy0" ],
+      "parameters" : {
+        "grainExtractions" : [ ]
+      }
+    },
+    "AGGREGATE1_copy0_copy0" : {
+      "action" : "aggregate",
+      "sources" : [ "EXTRACT0_copy0_copy0" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "SUM_Cash_Amount",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        } ]
+      },
+      "parameters" : {
+        "aggregations" : [ {
+          "action" : "SUM",
+          "source" : "Cash_Amount",
+          "name" : "SUM_Cash_Amount",
+          "label" : "Cash Amount"
+        } ],
+        "groupings" : [ "Constituent_or_Account_Id" ],
+        "pivots" : [ ],
+        "nodeType" : "STANDARD"
+      }
+    },
+    "FORMULA0_copy0_copy0" : {
+      "action" : "formula",
+      "sources" : [ "AGGREGATE1_copy0_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "FY23_Donor_Flag",
+          "label" : "FY23 Donor Flag",
+          "formulaExpression" : "'true'",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "JOIN2" : {
+      "action" : "join",
+      "sources" : [ "JOIN1", "FORMULA0_copy0_copy0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "FY23_Donor.Constituent_or_Account_Id", "FY23_Donor.SUM_Cash_Amount" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Account_or_Contact_Id" ],
+        "rightQualifier" : "FY23_Donor",
+        "rightKeys" : [ "Constituent_or_Account_Id" ]
+      }
+    },
+    "FORMULA1" : {
+      "action" : "formula",
+      "sources" : [ "JOIN3" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Assigned_Flag",
+          "label" : "Assigned Flag",
+          "formulaExpression" : "case when \"Primary_Relationship_Manager.Assigned_User_Name\" is not null then 'true' end",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "BUCKET0" : {
+      "action" : "bucket",
+      "sources" : [ "FORMULA1" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "Is_ISB_LFY.Is_ISB_Campaign_Member_bucket",
+          "newProperties" : {
+            "name" : "Is_ISB_LFY.Is_ISB_Campaign_Member"
+          }
+        } ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Is_ISB_LFY.Is_ISB_Campaign_Member" ]
+        }
+      },
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Is_ISB_LFY.Is_ISB_Campaign_Member_bucket",
+          "label" : "Is ISB Member in LFY",
+          "type" : "TEXT",
+          "bucketsSetup" : {
+            "nullBucketValue" : "false",
+            "isPassthroughEnabled" : true,
+            "sourceField" : {
+              "name" : "Is_ISB_LFY.Is_ISB_Campaign_Member",
+              "type" : "TEXT"
+            },
+            "buckets" : [ {
+              "value" : "true",
+              "sourceValues" : [ "true" ]
+            } ]
+          }
+        } ]
+      }
+    },
+    "BUCKET1" : {
+      "action" : "bucket",
+      "sources" : [ "BUCKET0" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "Pre_Period.Pre_Period_Flag_bucket",
+          "newProperties" : {
+            "name" : "Pre_Period.Pre_Period_Flag"
+          }
+        } ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Pre_Period.Pre_Period_Flag" ]
+        }
+      },
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Pre_Period.Pre_Period_Flag_bucket",
+          "label" : "Pre Period Flag",
+          "type" : "TEXT",
+          "bucketsSetup" : {
+            "nullBucketValue" : "false",
+            "isPassthroughEnabled" : true,
+            "sourceField" : {
+              "name" : "Pre_Period.Pre_Period_Flag",
+              "type" : "TEXT"
+            },
+            "buckets" : [ {
+              "value" : "true",
+              "sourceValues" : [ "true" ]
+            } ]
+          }
+        } ]
+      }
+    },
+    "BUCKET2" : {
+      "action" : "bucket",
+      "sources" : [ "BUCKET1" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "Post_Period.Post_Period_Flag_bucket",
+          "newProperties" : {
+            "name" : "Post_Period.Post_Period_Flag"
+          }
+        } ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Post_Period.Post_Period_Flag" ]
+        }
+      },
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Post_Period.Post_Period_Flag_bucket",
+          "label" : "Post Period Flag",
+          "type" : "TEXT",
+          "bucketsSetup" : {
+            "nullBucketValue" : "false",
+            "isPassthroughEnabled" : true,
+            "sourceField" : {
+              "name" : "Post_Period.Post_Period_Flag",
+              "type" : "TEXT"
+            },
+            "buckets" : [ {
+              "value" : "true",
+              "sourceValues" : [ "true" ]
+            } ]
+          }
+        } ]
+      }
+    },
+    "BUCKET3" : {
+      "action" : "bucket",
+      "sources" : [ "BUCKET2" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "FY23_Donor.FY23_Donor_Flag_bucket",
+          "newProperties" : {
+            "name" : "FY23_Donor.FY23_Donor_Flag"
+          }
+        } ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "FY23_Donor.FY23_Donor_Flag" ]
+        }
+      },
+      "parameters" : {
+        "fields" : [ {
+          "name" : "FY23_Donor.FY23_Donor_Flag_bucket",
+          "label" : "FY23 Donor Flag",
+          "type" : "TEXT",
+          "bucketsSetup" : {
+            "nullBucketValue" : "false",
+            "isPassthroughEnabled" : true,
+            "sourceField" : {
+              "name" : "FY23_Donor.FY23_Donor_Flag",
+              "type" : "TEXT"
+            },
+            "buckets" : [ {
+              "value" : "true",
+              "sourceValues" : [ "true" ]
+            } ]
+          }
+        } ]
+      }
+    },
+    "BUCKET4" : {
+      "action" : "bucket",
+      "sources" : [ "BUCKET3" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "Contact_Flag.Contact_Flag_bucket",
+          "newProperties" : {
+            "name" : "Contact_Flag.Contact_Flag"
+          }
+        } ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Contact_Flag.Contact_Flag" ]
+        }
+      },
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Contact_Flag.Contact_Flag_bucket",
+          "label" : "Contact Flag",
+          "type" : "TEXT",
+          "bucketsSetup" : {
+            "nullBucketValue" : "false",
+            "isPassthroughEnabled" : true,
+            "sourceField" : {
+              "name" : "Contact_Flag.Contact_Flag",
+              "type" : "TEXT"
+            },
+            "buckets" : [ {
+              "value" : "true",
+              "sourceValues" : [ "true" ]
+            } ]
+          }
+        } ]
+      }
+    },
+    "BUCKET5" : {
+      "action" : "bucket",
+      "sources" : [ "BUCKET4" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "Assigned_Flag_bucket",
+          "newProperties" : {
+            "name" : "Assigned_Flag"
+          }
+        } ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Assigned_Flag" ]
+        }
+      },
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Assigned_Flag_bucket",
+          "label" : "Assigned Flag",
+          "type" : "TEXT",
+          "bucketsSetup" : {
+            "nullBucketValue" : "false",
+            "isPassthroughEnabled" : true,
+            "sourceField" : {
+              "name" : "Assigned_Flag",
+              "type" : "TEXT"
+            },
+            "buckets" : [ {
+              "value" : "true",
+              "sourceValues" : [ "true" ]
+            } ]
+          }
+        } ]
+      }
+    },
+    "LOAD_DATASET2" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Account_or_Contact_Id" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Contact List From Shauna",
+          "name" : "Contact_List_From_Shauna"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "FORMULA2" : {
+      "action" : "formula",
+      "sources" : [ "FILTER1" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Contact_Flag",
+          "label" : "Contact Flag",
+          "formulaExpression" : "'true'",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FILTER1" : {
+      "action" : "filter",
+      "sources" : [ "LOAD_DATASET2" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "Account_or_Contact_Id",
+          "operator" : "IS_NOT_NULL",
+          "operands" : [ ]
+        } ]
+      }
+    },
+    "JOIN3" : {
+      "action" : "join",
+      "sources" : [ "JOIN2", "FORMULA2" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Account_or_Contact_Id" ],
+        "rightQualifier" : "Contact_Flag",
+        "rightKeys" : [ "Account_or_Contact_Id" ]
+      }
+    },
+    "OUTPUT0" : {
+      "action" : "save",
+      "sources" : [ "BUCKET5" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "HF Propensity Model Performance",
+          "name" : "HF_Propensity_Model_Performance",
+          "folderName" : "SharedApp"
+        },
+        "dateConfigurationName" : "July_Fiscal_Year",
+        "measuresToCurrencies" : [ ]
+      }
+    }
+  },
+  "ui" : {
+    "nodes" : {
+      "LOAD_DATASET0" : {
+        "label" : "Account and Contact Dataset",
+        "type" : "LOAD_DATASET",
+        "top" : 112,
+        "left" : 112,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "LOAD_DATASET1" : {
+        "label" : "Gift Credit and Payment",
+        "type" : "LOAD_DATASET",
+        "top" : 671.8,
+        "left" : 252.2,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "FILTER0" : {
+        "label" : "Filter Pre Period",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 530.2,
+        "left" : 252
+      },
+      "AGGREGATE0" : {
+        "label" : "Aggregate 0",
+        "type" : "AGGREGATE",
+        "top" : 390.2,
+        "left" : 252,
+        "graph" : {
+          "EXTRACT0" : null,
+          "AGGREGATE1" : null
+        },
+        "connectors" : [ {
+          "source" : "EXTRACT0",
+          "target" : "AGGREGATE1"
+        } ]
+      },
+      "JOIN0" : {
+        "label" : "Lookup Pre Period Flag",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 112,
+        "left" : 252.3
+      },
+      "TRANSFORM0" : {
+        "label" : "Enrich Fields",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 250.2,
+        "left" : 252,
+        "graph" : {
+          "FORMULA0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Pre Period Flag"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "FILTER0_copy0" : {
+        "label" : "Filter Post Period",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 532,
+        "left" : 392
+      },
+      "AGGREGATE0_copy0" : {
+        "label" : "Aggregate 0",
+        "description" : "",
+        "type" : "AGGREGATE",
+        "top" : 392.1,
+        "left" : 392,
+        "graph" : {
+          "EXTRACT0_copy0" : null,
+          "AGGREGATE1_copy0" : null
+        },
+        "connectors" : [ {
+          "source" : "EXTRACT0_copy0",
+          "target" : "AGGREGATE1_copy0"
+        } ]
+      },
+      "TRANSFORM0_copy0" : {
+        "label" : "Enrich Fields",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 252.10000000000002,
+        "left" : 392,
+        "graph" : {
+          "FORMULA0_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Post Period Flag"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "JOIN1" : {
+        "label" : "Lookup Post Period Flag",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 112.1,
+        "left" : 392.1
+      },
+      "FILTER0_copy0_copy0" : {
+        "label" : "Filter FY23",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 531.9,
+        "left" : 532
+      },
+      "AGGREGATE0_copy0_copy0" : {
+        "label" : "Aggregate 0",
+        "description" : "",
+        "type" : "AGGREGATE",
+        "top" : 392.7,
+        "left" : 532,
+        "graph" : {
+          "EXTRACT0_copy0_copy0" : null,
+          "AGGREGATE1_copy0_copy0" : null
+        },
+        "connectors" : [ {
+          "source" : "EXTRACT0_copy0_copy0",
+          "target" : "AGGREGATE1_copy0_copy0"
+        } ]
+      },
+      "TRANSFORM0_copy0_copy0" : {
+        "label" : "Enrich Fields",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 252.7,
+        "left" : 532,
+        "graph" : {
+          "FORMULA0_copy0_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "FY23 Donor Flag"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "JOIN2" : {
+        "label" : "Lookup FY23 Donor Flag",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 112.1,
+        "left" : 532
+      },
+      "TRANSFORM1" : {
+        "label" : "Enrich Fields",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 112.30000000000001,
+        "left" : 813.2,
+        "graph" : {
+          "FORMULA1" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Assigned Flag"
+          },
+          "BUCKET0" : {
+            "label" : "Bucket"
+          },
+          "BUCKET1" : {
+            "label" : "Bucket"
+          },
+          "BUCKET2" : {
+            "label" : "Bucket"
+          },
+          "BUCKET3" : {
+            "label" : "Bucket"
+          },
+          "BUCKET4" : {
+            "label" : "Bucket"
+          },
+          "BUCKET5" : {
+            "label" : "Bucket"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA1",
+          "target" : "BUCKET0"
+        }, {
+          "source" : "BUCKET0",
+          "target" : "BUCKET1"
+        }, {
+          "source" : "BUCKET1",
+          "target" : "BUCKET2"
+        }, {
+          "source" : "BUCKET2",
+          "target" : "BUCKET3"
+        }, {
+          "source" : "BUCKET3",
+          "target" : "BUCKET4"
+        }, {
+          "source" : "BUCKET4",
+          "target" : "BUCKET5"
+        } ]
+      },
+      "LOAD_DATASET2" : {
+        "label" : "Contact List From Shauna",
+        "type" : "LOAD_DATASET",
+        "top" : 672.2,
+        "left" : 672,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "TRANSFORM2" : {
+        "label" : "Enrich Fields",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 252,
+        "left" : 672,
+        "graph" : {
+          "FORMULA2" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Contact Flag"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "FILTER1" : {
+        "label" : "Filter 1",
+        "type" : "FILTER",
+        "top" : 532,
+        "left" : 672
+      },
+      "JOIN3" : {
+        "label" : "Lookup Contact Flag",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 112,
+        "left" : 672
+      },
+      "OUTPUT0" : {
+        "label" : "Output 0",
+        "type" : "OUTPUT",
+        "top" : 112.30000000000001,
+        "left" : 1093.5
+      }
+    },
+    "connectors" : [ {
+      "source" : "LOAD_DATASET1",
+      "target" : "FILTER0"
+    }, {
+      "source" : "FILTER0",
+      "target" : "AGGREGATE0"
+    }, {
+      "source" : "LOAD_DATASET0",
+      "target" : "JOIN0"
+    }, {
+      "source" : "TRANSFORM0",
+      "target" : "JOIN0"
+    }, {
+      "source" : "AGGREGATE0",
+      "target" : "TRANSFORM0"
+    }, {
+      "source" : "FILTER0_copy0",
+      "target" : "AGGREGATE0_copy0"
+    }, {
+      "source" : "AGGREGATE0_copy0",
+      "target" : "TRANSFORM0_copy0"
+    }, {
+      "source" : "LOAD_DATASET1",
+      "target" : "FILTER0_copy0"
+    }, {
+      "source" : "JOIN0",
+      "target" : "JOIN1"
+    }, {
+      "source" : "TRANSFORM0_copy0",
+      "target" : "JOIN1"
+    }, {
+      "source" : "FILTER0_copy0_copy0",
+      "target" : "AGGREGATE0_copy0_copy0"
+    }, {
+      "source" : "AGGREGATE0_copy0_copy0",
+      "target" : "TRANSFORM0_copy0_copy0"
+    }, {
+      "source" : "LOAD_DATASET1",
+      "target" : "FILTER0_copy0_copy0"
+    }, {
+      "source" : "JOIN1",
+      "target" : "JOIN2"
+    }, {
+      "source" : "TRANSFORM0_copy0_copy0",
+      "target" : "JOIN2"
+    }, {
+      "source" : "JOIN3",
+      "target" : "TRANSFORM1"
+    }, {
+      "source" : "FILTER1",
+      "target" : "TRANSFORM2"
+    }, {
+      "source" : "LOAD_DATASET2",
+      "target" : "FILTER1"
+    }, {
+      "source" : "JOIN2",
+      "target" : "JOIN3"
+    }, {
+      "source" : "TRANSFORM2",
+      "target" : "JOIN3"
+    }, {
+      "source" : "TRANSFORM1",
+      "target" : "OUTPUT0"
+    } ],
+    "hiddenColumns" : [ ]
+  },
+  "runMode" : "full"
+}

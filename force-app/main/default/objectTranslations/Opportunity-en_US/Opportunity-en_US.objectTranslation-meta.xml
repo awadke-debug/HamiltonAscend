@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObjectTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <layouts>
+        <layout>Planned Gift</layout>
+        <sections>
+            <label><!-- Gift Planning --></label>
+            <section>Gift Planning</section>
+        </sections>
+    </layouts>
+    <quickActions>
+        <label><!-- Print Receipts &amp; Acknowledgements --></label>
+        <name>Print_Receipts_Acknowledgements</name>
+    </quickActions>
+    <recordTypes>
+        <description><!-- Used for Grant Proposals --></description>
+        <label><!-- Grant Proposal --></label>
+        <name>Grant_Proposal</name>
+    </recordTypes>
+    <recordTypes>
+        <label><!-- Planned Gift --></label>
+        <name>Planned_Gift</name>
+    </recordTypes>
+    <recordTypes>
+        <description><!-- Auto Renewing Membership --></description>
+        <label><!-- Auto Renewing Membership --></label>
+        <name>ucinn_ascendv2__Auto_Renewing_Membership</name>
+    </recordTypes>
+    <recordTypes>
+        <label><!-- Auto Renewing POS --></label>
+        <name>ucinn_ascendv2__Auto_Renewing_POS</name>
+    </recordTypes>
+    <recordTypes>
+        <description><!-- For all Gifts --></description>
+        <label><!-- Gift --></label>
+        <name>ucinn_ascendv2__Gift</name>
+    </recordTypes>
+    <recordTypes>
+        <description><!-- Installment Based Membership --></description>
+        <label><!-- Installment Based Membership --></label>
+        <name>ucinn_ascendv2__Installment_Based_Membership</name>
+    </recordTypes>
+    <recordTypes>
+        <label><!-- Installment Based POS --></label>
+        <name>ucinn_ascendv2__Installment_Based_POS</name>
+    </recordTypes>
+    <recordTypes>
+        <description><!-- For all Matching Gifts --></description>
+        <label><!-- Matching Gift --></label>
+        <name>ucinn_ascendv2__Matching_Gift</name>
+    </recordTypes>
+    <recordTypes>
+        <description><!-- One-Time Membership --></description>
+        <label><!-- One-Time Membership --></label>
+        <name>ucinn_ascendv2__One_Time_Membership</name>
+    </recordTypes>
+    <recordTypes>
+        <label><!-- One-Time POS --></label>
+        <name>ucinn_ascendv2__One_Time_POS</name>
+    </recordTypes>
+    <recordTypes>
+        <label><!-- Partial Payment POS --></label>
+        <name>ucinn_ascendv2__Partial_Payment_POS</name>
+    </recordTypes>
+    <recordTypes>
+        <description><!-- Pledge --></description>
+        <label><!-- Pledge --></label>
+        <name>ucinn_ascendv2__Pledge</name>
+    </recordTypes>
+    <recordTypes>
+        <description><!-- Proposal --></description>
+        <label><!-- Proposal --></label>
+        <name>ucinn_ascendv2__Proposal</name>
+    </recordTypes>
+    <recordTypes>
+        <description><!-- For all Recurring Gifts --></description>
+        <label><!-- Recurring Gift --></label>
+        <name>ucinn_ascendv2__Recurring_Gift</name>
+    </recordTypes>
+    <validationRules>
+        <errorMessage><!-- Ask date must be entered when the ask amount field is populated. --></errorMessage>
+        <name>Ask_Amount_Date</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Ask date must be entered when the stage is &quot;Asked&quot;. --></errorMessage>
+        <name>Ask_Date</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Ask amount must be entered when the ask date field is populated. --></errorMessage>
+        <name>Ask_Date_Amount</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Ask amount must be entered when the stage is &quot;Asked&quot;. --></errorMessage>
+        <name>Asked_Amount</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Days Until Due field should be populated when Billing Method is &apos;Send Invoice&apos;. --></errorMessage>
+        <name>bt_stripe__Days_Until_Due_Set</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Amount field should be populated when the stage is &quot;Funded&quot;. --></errorMessage>
+        <name>ucinn_ascendv2__Amount_Gift_or_Matching_Gift</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- A constituent associated with a bequest must be deceased. --></errorMessage>
+        <name>ucinn_ascendv2__Bequest_must_be_Deceased</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- The sum of faculty/research endowment, academic support, capital projects, and scholarship endowment must total 100%. --></errorMessage>
+        <name>ucinn_ascendv2__Campaign_Percentage_Total</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Confirmation Date and Confirmation Method must be filled out if stage is &quot;Confirmed.&quot; --></errorMessage>
+        <name>ucinn_ascendv2__Confirmed_Stage_AND_Confirm_Date_Method</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Expected close date must be entered when the stage is &quot;Submitted&quot;. --></errorMessage>
+        <name>ucinn_ascendv2__Expected_Close_Date</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Funded amount must be entered when the funded date field is populated. --></errorMessage>
+        <name>ucinn_ascendv2__Fund_Date_Amount</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Funded amount must be entered when stage is &quot;Funded&quot;. --></errorMessage>
+        <name>ucinn_ascendv2__Funded_Amount</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- When the funded amount is populated, the funded date must also be entered. --></errorMessage>
+        <name>ucinn_ascendv2__Funded_Amount_Populated_with_Date</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Funded date must be entered when the stage is &quot;Funded&quot;. --></errorMessage>
+        <name>ucinn_ascendv2__Funded_Date</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- A grant must only be associated with an Organization. --></errorMessage>
+        <name>ucinn_ascendv2__Grants_Only_From_Organization</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Planned giving type must be specified when the planned giving checkbox is checked. --></errorMessage>
+        <name>ucinn_ascendv2__Planned_Giving_Type_Must_Be_Selected</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Please enter a valid amount --></errorMessage>
+        <name>ucinn_ascendv2__Recurring_Gift_Amount_Check</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- End Date must be set in the future --></errorMessage>
+        <name>ucinn_ascendv2__Recurring_Gift_End_Date</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- The Start Date cannot be empty or set in the past --></errorMessage>
+        <name>ucinn_ascendv2__Recurring_Gift_Start_Date</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- A proposal may only be related to either a constituent or an organization. --></errorMessage>
+        <name>ucinn_ascendv2__Relate_to_Only_Constitutent_Or_Org</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- A proposal must be associated with an organization or a constituent. --></errorMessage>
+        <name>ucinn_ascendv2__Required_Organization_or_Constituent</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Stage must equal &quot;Funded&quot; if funded date and funded amount are populated. --></errorMessage>
+        <name>ucinn_ascendv2__Stage_Cannot_Equal_Decline</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Stage cannot equal &quot;Planned&quot; if submitted date and submitted amount are populated. --></errorMessage>
+        <name>ucinn_ascendv2__Stage_Cannot_Equal_Planned</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Stage must equal &quot;Funded&quot; if funded date and funded amount are populated. --></errorMessage>
+        <name>ucinn_ascendv2__Stage_Must_Equal_Funded</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Submitted date must be entered when the submitted amount field is populated. --></errorMessage>
+        <name>ucinn_ascendv2__Submit_Amount_Date</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Submitted amount must be entered when the submitted date field is populated. --></errorMessage>
+        <name>ucinn_ascendv2__Submit_Date_Amount</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Submitted amount must be entered when the stage is &quot;Submitted&quot;. --></errorMessage>
+        <name>ucinn_ascendv2__Submitted_Amount</name>
+    </validationRules>
+    <validationRules>
+        <errorMessage><!-- Submitted date must be entered when the stage is &quot;Submitted&quot;. --></errorMessage>
+        <name>ucinn_ascendv2__Submitted_Date</name>
+    </validationRules>
+    <webLinks>
+        <label><!-- LOOP --></label>
+        <name>Loop__LOOP</name>
+    </webLinks>
+    <webLinks>
+        <label><!-- LOOP_Merge --></label>
+        <name>Loop__LOOP_Merge</name>
+    </webLinks>
+    <webLinks>
+        <label><!-- LOOPlus --></label>
+        <name>Loop__LOOPlus</name>
+    </webLinks>
+    <webLinks>
+        <label><!-- Mass_LOOP_Merge --></label>
+        <name>Loop__Mass_LOOP_Merge</name>
+    </webLinks>
+    <webLinks>
+        <label><!-- Mass_LOOPlus --></label>
+        <name>Loop__Mass_LOOPlus</name>
+    </webLinks>
+    <webLinks>
+        <label><!-- Print_Documents --></label>
+        <name>Print_Documents</name>
+    </webLinks>
+    <webLinks>
+        <label><!-- Create_Invoice --></label>
+        <name>bt_stripe__Create_Invoice</name>
+    </webLinks>
+    <webLinks>
+        <label><!-- Create_Subscription --></label>
+        <name>bt_stripe__Create_Subscription</name>
+    </webLinks>
+</CustomObjectTranslation>

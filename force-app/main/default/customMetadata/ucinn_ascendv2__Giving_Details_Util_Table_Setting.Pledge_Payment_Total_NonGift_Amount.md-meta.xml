@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>Pledge Payment Total Non-Gift Amount</label>
+    <protected>false</protected>
+    <values>
+        <field>ucinn_ascendv2__Constituent_Page__c</field>
+        <value xsi:type="xsd:string">ucinn_ascendv2__Constituent</value>
+    </values>
+    <values>
+        <field>ucinn_ascendv2__Enable_Field__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>ucinn_ascendv2__Field_Path_From_HardSoft_Credit__c</field>
+        <value xsi:type="xsd:string">ucinn_ascendv2__Opportunity__r.ucinn_ascendv2__Non_Gift_Amount_Roll_Up__c</value>
+    </values>
+    <values>
+        <field>ucinn_ascendv2__Field_Type__c</field>
+        <value xsi:type="xsd:string">CURRENCY-READONLY</value>
+    </values>
+    <values>
+        <field>ucinn_ascendv2__Header_Label__c</field>
+        <value xsi:type="xsd:string">Total Non-Gift Amount</value>
+    </values>
+    <values>
+        <field>ucinn_ascendv2__Household_Page__c</field>
+        <value xsi:type="xsd:string">ucinn_ascendv2__Household</value>
+    </values>
+    <values>
+        <field>ucinn_ascendv2__Organization_Page__c</field>
+        <value xsi:type="xsd:string">ucinn_ascendv2__Organization</value>
+    </values>
+    <values>
+        <field>ucinn_ascendv2__Transaction_Type__c</field>
+        <value xsi:type="xsd:string">ucinn_ascendv2__Pledge_Payment</value>
+    </values>
+</CustomMetadata>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>HAM_Annual_Total__c</fullName>
+    <formula>IF(
+    ISPICKVAL(ucinn_ascendv2__Frequency__c, &quot;Monthly&quot;),
+    Amount * 12,
+    IF(
+        ISPICKVAL(ucinn_ascendv2__Frequency__c, &quot;Weekly&quot;),
+        Amount * 52,
+	    IF(
+      		  ISPICKVAL(ucinn_ascendv2__Frequency__c, &quot;Bi-Weekly&quot;),
+       		 Amount * 26,
+		    IF(
+      		 	 ISPICKVAL(ucinn_ascendv2__Frequency__c, &quot;Quarterly&quot;),
+       		 Amount * 4,
+        Amount
+		)
+	)
+    )
+)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Annual Total</label>
+    <precision>18</precision>
+    <required>false</required>
+    <scale>2</scale>
+    <trackTrending>false</trackTrending>
+    <type>Currency</type>
+</CustomField>

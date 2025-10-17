@@ -1,0 +1,133 @@
+{
+  "version" : "64.0",
+  "nodes" : {
+    "LOAD_DATASET0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Constituent_or_Account_Id", "Designation.ucinn_ascendv2__Designation_Name__c", "Pledge_Balance", "Constituent_or_Account_Id_formula" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Pledge Balance",
+          "name" : "Pledge_Balance"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "OUTPUT0" : {
+      "action" : "outputExternal",
+      "sources" : [ "FORMULA0" ],
+      "parameters" : {
+        "connectionName" : "SFDCconnectorHAM",
+        "object" : "HAM_Pledge_Balance__c",
+        "operation" : "upsert",
+        "externalIdFieldName" : "Id",
+        "hyperFileName" : "",
+        "fieldsMapping" : [ {
+          "sourceField" : "Constituent_or_Account_Id",
+          "targetField" : "Constituent__c"
+        }, {
+          "sourceField" : "Designation.ucinn_ascendv2__Designation_Name__c",
+          "targetField" : "HAM_Designation__c"
+        }, {
+          "sourceField" : "Pledge_Balance",
+          "targetField" : "HAM_Pledge_Balance__c"
+        }, {
+          "sourceField" : "Constituent_or_Account_Id_formula",
+          "targetField" : "Id"
+        }, {
+          "sourceField" : "Constituent_or_Account_Id_formula_formula",
+          "targetField" : "Name"
+        } ],
+        "connectorType" : "SALESFORCE_OUTPUT"
+      }
+    },
+    "FILTER0" : {
+      "action" : "filter",
+      "sources" : [ "LOAD_DATASET0" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "Designation.ucinn_ascendv2__Designation_Name__c",
+          "operator" : "EQUAL",
+          "operands" : [ "Innovation Center" ]
+        }, {
+          "type" : "TEXT",
+          "field" : "Constituent_or_Account_Id",
+          "operator" : "EQUAL",
+          "operands" : [ "003U1000004f01WIAQ" ]
+        } ]
+      }
+    },
+    "FORMULA0" : {
+      "action" : "formula",
+      "sources" : [ "FILTER0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Constituent_or_Account_Id_formula_formula",
+          "label" : "Name",
+          "formulaExpression" : "'A'",
+          "precision" : 10,
+          "defaultValue" : ""
+        } ]
+      }
+    }
+  },
+  "ui" : {
+    "nodes" : {
+      "LOAD_DATASET0" : {
+        "label" : "Pledge Balance",
+        "type" : "LOAD_DATASET",
+        "top" : 112,
+        "left" : 112,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "OUTPUT0" : {
+        "label" : "Output 0",
+        "type" : "OUTPUT",
+        "top" : 112,
+        "left" : 532
+      },
+      "FILTER0" : {
+        "label" : "Filter 0",
+        "type" : "FILTER",
+        "top" : 112,
+        "left" : 252
+      },
+      "TRANSFORM0" : {
+        "label" : "Transform 0",
+        "type" : "TRANSFORM",
+        "top" : 112,
+        "left" : 392,
+        "graph" : {
+          "FORMULA0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Name"
+          }
+        },
+        "connectors" : [ ]
+      }
+    },
+    "connectors" : [ {
+      "source" : "TRANSFORM0",
+      "target" : "OUTPUT0"
+    }, {
+      "source" : "LOAD_DATASET0",
+      "target" : "FILTER0"
+    }, {
+      "source" : "FILTER0",
+      "target" : "TRANSFORM0"
+    } ],
+    "hiddenColumns" : [ ]
+  },
+  "runMode" : "full"
+}

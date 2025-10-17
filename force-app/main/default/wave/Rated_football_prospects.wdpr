@@ -1,0 +1,2001 @@
+{
+  "version" : "64.0",
+  "nodes" : {
+    "LOAD_DATASET1" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Cash_Amount", "Designation.Name", "Constituent_or_Account_Id" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Gift Credit and Payment",
+          "name" : "Gift_Credit_and_Payment"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "FILTER0" : {
+      "action" : "filter",
+      "sources" : [ "LOAD_DATASET43" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "All_NCAA_Involvements",
+          "operator" : "CONTAINS",
+          "operands" : [ "Football" ]
+        } ]
+      }
+    },
+    "LOAD_DATASET42_copy0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "ucinn_ascendv2__Contact__c", "ucinn_ascendv2__Related_Contact__c", "ucinn_ascendv2__Contact_Role_Formula__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "ucinn_ascendv2__Relationship__c",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "ucinn_ascendv2__Relationship__c"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "FILTER2_copy1_copy0" : {
+      "action" : "filter",
+      "sources" : [ "LOAD_DATASET42_copy0" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "ucinn_ascendv2__Contact_Role_Formula__c",
+          "operator" : "EQUAL",
+          "operands" : [ "Child", "Grandchild", "In-law/Child" ]
+        } ]
+      }
+    },
+    "DROP_FIELDS5_copy0_copy0" : {
+      "action" : "schema",
+      "sources" : [ "FILTER2_copy1_copy0" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "SELECT",
+          "ignoreMissingFields" : true,
+          "fields" : [ "ucinn_ascendv2__Contact__c", "ucinn_ascendv2__Related_Contact__c" ]
+        }
+      }
+    },
+    "JOIN42_copy0_copy0" : {
+      "action" : "join",
+      "sources" : [ "FILTER0", "DROP_FIELDS5_copy0_copy0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "all_parents.ucinn_ascendv2__Contact__c" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LEFT_OUTER",
+        "leftKeys" : [ "Account_or_Contact_Id" ],
+        "rightQualifier" : "all_parents",
+        "rightKeys" : [ "ucinn_ascendv2__Contact__c" ]
+      }
+    },
+    "APPEND0" : {
+      "action" : "appendV2",
+      "sources" : [ "FILTER0", "FILTER6" ],
+      "parameters" : {
+        "fieldMappings" : [ {
+          "top" : "Account_or_Contact_Id",
+          "bottom" : "all_parents.ucinn_ascendv2__Related_Contact__c"
+        } ]
+      }
+    },
+    "LOAD_DATASET0_copy0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Wealth_Rating.HAM_Wealth_Rating_Number__c", "Account_or_Contact_Id" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Account and Contact Dataset",
+          "name" : "Account_and_Contact_Dataset"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN43" : {
+      "action" : "join",
+      "sources" : [ "APPEND0", "LOAD_DATASET0_copy0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Rating.Account_or_Contact_Id" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Account_or_Contact_Id" ],
+        "rightQualifier" : "Rating",
+        "rightKeys" : [ "Account_or_Contact_Id" ]
+      }
+    },
+    "FILTER3" : {
+      "action" : "filter",
+      "sources" : [ "TO_MEASURE0" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "NUMBER",
+          "field" : "Wealth_Rating",
+          "operator" : "LESS_OR_EQUAL",
+          "operands" : [ "10" ]
+        } ]
+      }
+    },
+    "FILTER4" : {
+      "action" : "filter",
+      "sources" : [ "LOAD_DATASET1" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "Designation.Name",
+          "operator" : "EQUAL",
+          "operands" : [ "ATH-FOOTBALL", "ATH-SCOREBOARD", "PLT-FOOTBALL", "PLT-STEUBEN-FLD" ]
+        } ]
+      }
+    },
+    "EXTRACT0" : {
+      "action" : "extractGrains",
+      "sources" : [ "FILTER4" ],
+      "parameters" : {
+        "grainExtractions" : [ ]
+      }
+    },
+    "AGGREGATE1" : {
+      "action" : "aggregate",
+      "sources" : [ "EXTRACT0" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "SUM_Cash_Amount",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        } ]
+      },
+      "parameters" : {
+        "aggregations" : [ {
+          "action" : "SUM",
+          "source" : "Cash_Amount",
+          "name" : "SUM_Cash_Amount",
+          "label" : "Cash Amount"
+        } ],
+        "groupings" : [ "Constituent_or_Account_Id" ],
+        "pivots" : [ ],
+        "nodeType" : "STANDARD"
+      }
+    },
+    "FILTER5" : {
+      "action" : "filter",
+      "sources" : [ "AGGREGATE1" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "NUMBER",
+          "field" : "SUM_Cash_Amount",
+          "operator" : "GREATER_OR_EQUAL",
+          "operands" : [ "100000" ]
+        } ]
+      }
+    },
+    "APPEND1" : {
+      "action" : "appendV2",
+      "sources" : [ "DROP_FIELDS6", "FILTER5" ],
+      "parameters" : {
+        "fieldMappings" : [ {
+          "top" : "Account_or_Contact_Id",
+          "bottom" : "Constituent_or_Account_Id"
+        } ]
+      }
+    },
+    "EXTRACT1" : {
+      "action" : "extractGrains",
+      "sources" : [ "APPEND1" ],
+      "parameters" : {
+        "grainExtractions" : [ ]
+      }
+    },
+    "AGGREGATE3" : {
+      "action" : "aggregate",
+      "sources" : [ "EXTRACT1" ],
+      "parameters" : {
+        "aggregations" : [ {
+          "action" : "COUNT",
+          "name" : "COUNT_Rows",
+          "label" : "Rows"
+        } ],
+        "groupings" : [ "Account_or_Contact_Id" ],
+        "pivots" : [ ],
+        "nodeType" : "STANDARD"
+      }
+    },
+    "LOAD_DATASET0_copy0_copy0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "ucinn_ascendv2__Wealth_Rating__c", "All_NCAA_Involvements", "HAM_Name_w_Suffix__c", "HAM_Reunion_Year__c", "ucinn_ascendv2__Primary_Contact_Type__c", "Account_or_Contact_Id" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Account and Contact Dataset",
+          "name" : "Account_and_Contact_Dataset"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN44" : {
+      "action" : "join",
+      "sources" : [ "AGGREGATE3", "LOAD_DATASET0_copy0_copy0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "COntactInfo.Account_or_Contact_Id" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Account_or_Contact_Id" ],
+        "rightQualifier" : "COntactInfo",
+        "rightKeys" : [ "Account_or_Contact_Id" ]
+      }
+    },
+    "OUTPUT0" : {
+      "action" : "save",
+      "sources" : [ "JOIN45" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Rated Football Prospects",
+          "name" : "Rated_Football_Prospects",
+          "folderName" : "SharedApp"
+        },
+        "dateConfigurationName" : "July_Fiscal_Year",
+        "measuresToCurrencies" : [ ]
+      }
+    },
+    "FORMULA0" : {
+      "action" : "formula",
+      "sources" : [ "JOIN43" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Wealth_Rating",
+          "label" : "Wealth Rating",
+          "formulaExpression" : "case when \"Rating.Wealth_Rating.HAM_Wealth_Rating_Number__c\" is null\r\nthen '99'\r\nelse \"Rating.Wealth_Rating.HAM_Wealth_Rating_Number__c\"\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "TO_MEASURE0" : {
+      "action" : "typeCast",
+      "sources" : [ "FORMULA0" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "Wealth_Rating_to_measure",
+          "newProperties" : {
+            "name" : "Wealth_Rating"
+          }
+        } ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Wealth_Rating" ]
+        }
+      },
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Wealth_Rating",
+          "newProperties" : {
+            "label" : "Wealth Rating",
+            "name" : "Wealth_Rating_to_measure",
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 0,
+              "precision" : 18
+            }
+          }
+        } ]
+      }
+    },
+    "LOAD_DATASET43" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "ucinn_ascendv2__Contact_Type__c", "All_NCAA_Involvements", "ucinn_ascendv2__Wealth_Rating__c", "Account_or_Contact_Id" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Account and Contact Dataset",
+          "name" : "Account_and_Contact_Dataset"
+        },
+        "sampleDetails" : {
+          "type" : "Unique",
+          "uniqueSampleFieldName" : "All_NCAA_Involvements",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "DROP_FIELDS6" : {
+      "action" : "schema",
+      "sources" : [ "FILTER3" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "ucinn_ascendv2__Wealth_Rating__c", "All_NCAA_Involvements", "Rating.Wealth_Rating.HAM_Wealth_Rating_Number__c", "Wealth_Rating", "ucinn_ascendv2__Contact_Type__c" ]
+        }
+      }
+    },
+    "JOIN45" : {
+      "action" : "join",
+      "sources" : [ "JOIN44", "AGGREGATE1" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "COUNT_Rows", "Aggregate0.Constituent_or_Account_Id" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Account_or_Contact_Id" ],
+        "rightQualifier" : "Aggregate0",
+        "rightKeys" : [ "Constituent_or_Account_Id" ]
+      }
+    },
+    "FILTER6" : {
+      "action" : "filter",
+      "sources" : [ "JOIN42_copy0_copy0" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "ucinn_ascendv2__Contact_Type__c",
+          "operator" : "ARRAY_CONTAINS",
+          "operands" : [ "Current Parent" ]
+        } ]
+      }
+    },
+    "LOAD_DATASET1_copy0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Cash_Amount", "Designation.Name", "Constituent_or_Account_Id" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Gift Credit and Payment",
+          "name" : "Gift_Credit_and_Payment"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "FILTER0_copy0" : {
+      "action" : "filter",
+      "sources" : [ "LOAD_DATASET43_copy0" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "All_NCAA_Involvements",
+          "operator" : "CONTAINS",
+          "operands" : [ "Lacrosse" ]
+        } ]
+      }
+    },
+    "LOAD_DATASET42_copy0_copy0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "ucinn_ascendv2__Contact__c", "ucinn_ascendv2__Related_Contact__c", "ucinn_ascendv2__Contact_Role_Formula__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "ucinn_ascendv2__Relationship__c",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "ucinn_ascendv2__Relationship__c"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "FILTER2_copy1_copy0_copy0" : {
+      "action" : "filter",
+      "sources" : [ "LOAD_DATASET42_copy0_copy0" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "ucinn_ascendv2__Contact_Role_Formula__c",
+          "operator" : "EQUAL",
+          "operands" : [ "Child", "Grandchild", "In-law/Child" ]
+        } ]
+      }
+    },
+    "DROP_FIELDS5_copy0_copy0_copy0" : {
+      "action" : "schema",
+      "sources" : [ "FILTER2_copy1_copy0_copy0" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "SELECT",
+          "ignoreMissingFields" : true,
+          "fields" : [ "ucinn_ascendv2__Contact__c", "ucinn_ascendv2__Related_Contact__c" ]
+        }
+      }
+    },
+    "JOIN42_copy0_copy0_copy0" : {
+      "action" : "join",
+      "sources" : [ "FILTER0_copy0", "DROP_FIELDS5_copy0_copy0_copy0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "all_parents.ucinn_ascendv2__Contact__c" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LEFT_OUTER",
+        "leftKeys" : [ "Account_or_Contact_Id" ],
+        "rightQualifier" : "all_parents",
+        "rightKeys" : [ "ucinn_ascendv2__Contact__c" ]
+      }
+    },
+    "APPEND0_copy0" : {
+      "action" : "appendV2",
+      "sources" : [ "FILTER0_copy0", "FILTER6_copy0" ],
+      "parameters" : {
+        "fieldMappings" : [ {
+          "top" : "Account_or_Contact_Id",
+          "bottom" : "all_parents.ucinn_ascendv2__Related_Contact__c"
+        } ]
+      }
+    },
+    "LOAD_DATASET0_copy0_copy1" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Wealth_Rating.HAM_Wealth_Rating_Number__c", "Account_or_Contact_Id" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Account and Contact Dataset",
+          "name" : "Account_and_Contact_Dataset"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN43_copy0" : {
+      "action" : "join",
+      "sources" : [ "APPEND0_copy0", "LOAD_DATASET0_copy0_copy1" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Rating.Account_or_Contact_Id" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Account_or_Contact_Id" ],
+        "rightQualifier" : "Rating",
+        "rightKeys" : [ "Account_or_Contact_Id" ]
+      }
+    },
+    "FILTER3_copy0" : {
+      "action" : "filter",
+      "sources" : [ "TO_MEASURE0_copy0" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "NUMBER",
+          "field" : "Wealth_Rating",
+          "operator" : "LESS_OR_EQUAL",
+          "operands" : [ "10" ]
+        } ]
+      }
+    },
+    "FILTER4_copy0" : {
+      "action" : "filter",
+      "sources" : [ "LOAD_DATASET1_copy0" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "Designation.Name",
+          "operator" : "EQUAL",
+          "operands" : [ "ATH-LACROSSE", "ATH-M-LACROSSE", "ATH-W-LACROSSE", "FND-HAMLACROSSE", "FND-LACROSSE-BARTON" ]
+        } ]
+      }
+    },
+    "EXTRACT0_copy0" : {
+      "action" : "extractGrains",
+      "sources" : [ "FILTER4_copy0" ],
+      "parameters" : {
+        "grainExtractions" : [ ]
+      }
+    },
+    "AGGREGATE1_copy0" : {
+      "action" : "aggregate",
+      "sources" : [ "EXTRACT0_copy0" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "SUM_Cash_Amount",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        } ]
+      },
+      "parameters" : {
+        "aggregations" : [ {
+          "action" : "SUM",
+          "source" : "Cash_Amount",
+          "name" : "SUM_Cash_Amount",
+          "label" : "Cash Amount"
+        } ],
+        "groupings" : [ "Constituent_or_Account_Id" ],
+        "pivots" : [ ],
+        "nodeType" : "STANDARD"
+      }
+    },
+    "FILTER5_copy0" : {
+      "action" : "filter",
+      "sources" : [ "AGGREGATE1_copy0" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "NUMBER",
+          "field" : "SUM_Cash_Amount",
+          "operator" : "GREATER_OR_EQUAL",
+          "operands" : [ "100000" ]
+        } ]
+      }
+    },
+    "APPEND1_copy0" : {
+      "action" : "appendV2",
+      "sources" : [ "DROP_FIELDS6_copy0", "FILTER5_copy0" ],
+      "parameters" : {
+        "fieldMappings" : [ {
+          "top" : "Account_or_Contact_Id",
+          "bottom" : "Constituent_or_Account_Id"
+        } ]
+      }
+    },
+    "EXTRACT1_copy0" : {
+      "action" : "extractGrains",
+      "sources" : [ "APPEND1_copy0" ],
+      "parameters" : {
+        "grainExtractions" : [ ]
+      }
+    },
+    "AGGREGATE3_copy0" : {
+      "action" : "aggregate",
+      "sources" : [ "EXTRACT1_copy0" ],
+      "parameters" : {
+        "aggregations" : [ {
+          "action" : "COUNT",
+          "name" : "COUNT_Rows",
+          "label" : "Rows"
+        } ],
+        "groupings" : [ "Account_or_Contact_Id" ],
+        "pivots" : [ ],
+        "nodeType" : "STANDARD"
+      }
+    },
+    "LOAD_DATASET0_copy0_copy0_copy0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "ucinn_ascendv2__Wealth_Rating__c", "All_NCAA_Involvements", "HAM_Name_w_Suffix__c", "HAM_Reunion_Year__c", "ucinn_ascendv2__Primary_Contact_Type__c", "Account_or_Contact_Id" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Account and Contact Dataset",
+          "name" : "Account_and_Contact_Dataset"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN44_copy0" : {
+      "action" : "join",
+      "sources" : [ "AGGREGATE3_copy0", "LOAD_DATASET0_copy0_copy0_copy0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "COntactInfo.Account_or_Contact_Id" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Account_or_Contact_Id" ],
+        "rightQualifier" : "COntactInfo",
+        "rightKeys" : [ "Account_or_Contact_Id" ]
+      }
+    },
+    "OUTPUT0_copy0" : {
+      "action" : "save",
+      "sources" : [ "JOIN45_copy0" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Rated Lacrosse Prospects",
+          "name" : "Rated_Lacrosse_Prospects",
+          "folderName" : "SharedApp"
+        },
+        "dateConfigurationName" : "July_Fiscal_Year",
+        "measuresToCurrencies" : [ ]
+      }
+    },
+    "FORMULA0_copy0" : {
+      "action" : "formula",
+      "sources" : [ "JOIN43_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Wealth_Rating",
+          "label" : "Wealth Rating",
+          "formulaExpression" : "case when \"Rating.Wealth_Rating.HAM_Wealth_Rating_Number__c\" is null\r\nthen '99'\r\nelse \"Rating.Wealth_Rating.HAM_Wealth_Rating_Number__c\"\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "TO_MEASURE0_copy0" : {
+      "action" : "typeCast",
+      "sources" : [ "FORMULA0_copy0" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "Wealth_Rating_to_measure",
+          "newProperties" : {
+            "name" : "Wealth_Rating"
+          }
+        } ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Wealth_Rating" ]
+        }
+      },
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Wealth_Rating",
+          "newProperties" : {
+            "label" : "Wealth Rating",
+            "name" : "Wealth_Rating_to_measure",
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 0,
+              "precision" : 18
+            }
+          }
+        } ]
+      }
+    },
+    "LOAD_DATASET43_copy0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "ucinn_ascendv2__Contact_Type__c", "All_NCAA_Involvements", "ucinn_ascendv2__Wealth_Rating__c", "Account_or_Contact_Id" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Account and Contact Dataset",
+          "name" : "Account_and_Contact_Dataset"
+        },
+        "sampleDetails" : {
+          "type" : "Unique",
+          "uniqueSampleFieldName" : "All_NCAA_Involvements",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "DROP_FIELDS6_copy0" : {
+      "action" : "schema",
+      "sources" : [ "FILTER3_copy0" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "ucinn_ascendv2__Wealth_Rating__c", "All_NCAA_Involvements", "Rating.Wealth_Rating.HAM_Wealth_Rating_Number__c", "Wealth_Rating", "ucinn_ascendv2__Contact_Type__c" ]
+        }
+      }
+    },
+    "JOIN45_copy0" : {
+      "action" : "join",
+      "sources" : [ "JOIN44_copy0", "AGGREGATE1_copy0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "COUNT_Rows", "Aggregate0.Constituent_or_Account_Id" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Account_or_Contact_Id" ],
+        "rightQualifier" : "Aggregate0",
+        "rightKeys" : [ "Constituent_or_Account_Id" ]
+      }
+    },
+    "FILTER6_copy0" : {
+      "action" : "filter",
+      "sources" : [ "JOIN42_copy0_copy0_copy0" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "ucinn_ascendv2__Contact_Type__c",
+          "operator" : "ARRAY_CONTAINS",
+          "operands" : [ "Current Parent" ]
+        } ]
+      }
+    },
+    "LOAD_DATASET1_copy1" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Cash_Amount", "Designation.Name", "Constituent_or_Account_Id" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Gift Credit and Payment",
+          "name" : "Gift_Credit_and_Payment"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "FILTER0_copy1" : {
+      "action" : "filter",
+      "sources" : [ "LOAD_DATASET43_copy1" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "All_NCAA_Involvements",
+          "operator" : "CONTAINS",
+          "operands" : [ "Soccer" ]
+        } ]
+      }
+    },
+    "LOAD_DATASET42_copy0_copy1" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "ucinn_ascendv2__Contact__c", "ucinn_ascendv2__Related_Contact__c", "ucinn_ascendv2__Contact_Role_Formula__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "ucinn_ascendv2__Relationship__c",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "ucinn_ascendv2__Relationship__c"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "FILTER2_copy1_copy0_copy1" : {
+      "action" : "filter",
+      "sources" : [ "LOAD_DATASET42_copy0_copy1" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "ucinn_ascendv2__Contact_Role_Formula__c",
+          "operator" : "EQUAL",
+          "operands" : [ "Child", "Grandchild", "In-law/Child" ]
+        } ]
+      }
+    },
+    "DROP_FIELDS5_copy0_copy0_copy1" : {
+      "action" : "schema",
+      "sources" : [ "FILTER2_copy1_copy0_copy1" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "SELECT",
+          "ignoreMissingFields" : true,
+          "fields" : [ "ucinn_ascendv2__Contact__c", "ucinn_ascendv2__Related_Contact__c" ]
+        }
+      }
+    },
+    "JOIN42_copy0_copy0_copy1" : {
+      "action" : "join",
+      "sources" : [ "FILTER0_copy1", "DROP_FIELDS5_copy0_copy0_copy1" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "all_parents.ucinn_ascendv2__Contact__c" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LEFT_OUTER",
+        "leftKeys" : [ "Account_or_Contact_Id" ],
+        "rightQualifier" : "all_parents",
+        "rightKeys" : [ "ucinn_ascendv2__Contact__c" ]
+      }
+    },
+    "APPEND0_copy1" : {
+      "action" : "appendV2",
+      "sources" : [ "FILTER0_copy1", "FILTER6_copy1" ],
+      "parameters" : {
+        "fieldMappings" : [ {
+          "top" : "Account_or_Contact_Id",
+          "bottom" : "all_parents.ucinn_ascendv2__Related_Contact__c"
+        } ]
+      }
+    },
+    "LOAD_DATASET0_copy0_copy2" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Wealth_Rating.HAM_Wealth_Rating_Number__c", "Account_or_Contact_Id" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Account and Contact Dataset",
+          "name" : "Account_and_Contact_Dataset"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN43_copy1" : {
+      "action" : "join",
+      "sources" : [ "APPEND0_copy1", "LOAD_DATASET0_copy0_copy2" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Rating.Account_or_Contact_Id" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Account_or_Contact_Id" ],
+        "rightQualifier" : "Rating",
+        "rightKeys" : [ "Account_or_Contact_Id" ]
+      }
+    },
+    "FILTER3_copy1" : {
+      "action" : "filter",
+      "sources" : [ "TO_MEASURE0_copy1" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "NUMBER",
+          "field" : "Wealth_Rating",
+          "operator" : "LESS_OR_EQUAL",
+          "operands" : [ "10" ]
+        } ]
+      }
+    },
+    "FILTER4_copy1" : {
+      "action" : "filter",
+      "sources" : [ "LOAD_DATASET1_copy1" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "Designation.Name",
+          "operator" : "EQUAL",
+          "operands" : [ "ATH-M-SOCCER", "ATH-SOCCER", "ATH-W-SOCCER", "PLT-WITHIAM-FLD" ]
+        } ]
+      }
+    },
+    "EXTRACT0_copy1" : {
+      "action" : "extractGrains",
+      "sources" : [ "FILTER4_copy1" ],
+      "parameters" : {
+        "grainExtractions" : [ ]
+      }
+    },
+    "AGGREGATE1_copy1" : {
+      "action" : "aggregate",
+      "sources" : [ "EXTRACT0_copy1" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "SUM_Cash_Amount",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        } ]
+      },
+      "parameters" : {
+        "aggregations" : [ {
+          "action" : "SUM",
+          "source" : "Cash_Amount",
+          "name" : "SUM_Cash_Amount",
+          "label" : "Cash Amount"
+        } ],
+        "groupings" : [ "Constituent_or_Account_Id" ],
+        "pivots" : [ ],
+        "nodeType" : "STANDARD"
+      }
+    },
+    "FILTER5_copy1" : {
+      "action" : "filter",
+      "sources" : [ "AGGREGATE1_copy1" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "NUMBER",
+          "field" : "SUM_Cash_Amount",
+          "operator" : "GREATER_OR_EQUAL",
+          "operands" : [ "100000" ]
+        } ]
+      }
+    },
+    "APPEND1_copy1" : {
+      "action" : "appendV2",
+      "sources" : [ "DROP_FIELDS6_copy1", "FILTER5_copy1" ],
+      "parameters" : {
+        "fieldMappings" : [ {
+          "top" : "Account_or_Contact_Id",
+          "bottom" : "Constituent_or_Account_Id"
+        } ]
+      }
+    },
+    "EXTRACT1_copy1" : {
+      "action" : "extractGrains",
+      "sources" : [ "APPEND1_copy1" ],
+      "parameters" : {
+        "grainExtractions" : [ ]
+      }
+    },
+    "AGGREGATE3_copy1" : {
+      "action" : "aggregate",
+      "sources" : [ "EXTRACT1_copy1" ],
+      "parameters" : {
+        "aggregations" : [ {
+          "action" : "COUNT",
+          "name" : "COUNT_Rows",
+          "label" : "Rows"
+        } ],
+        "groupings" : [ "Account_or_Contact_Id" ],
+        "pivots" : [ ],
+        "nodeType" : "STANDARD"
+      }
+    },
+    "LOAD_DATASET0_copy0_copy0_copy1" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "ucinn_ascendv2__Wealth_Rating__c", "All_NCAA_Involvements", "HAM_Name_w_Suffix__c", "HAM_Reunion_Year__c", "ucinn_ascendv2__Primary_Contact_Type__c", "Account_or_Contact_Id" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Account and Contact Dataset",
+          "name" : "Account_and_Contact_Dataset"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN44_copy1" : {
+      "action" : "join",
+      "sources" : [ "AGGREGATE3_copy1", "LOAD_DATASET0_copy0_copy0_copy1" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "COntactInfo.Account_or_Contact_Id" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Account_or_Contact_Id" ],
+        "rightQualifier" : "COntactInfo",
+        "rightKeys" : [ "Account_or_Contact_Id" ]
+      }
+    },
+    "OUTPUT0_copy1" : {
+      "action" : "save",
+      "sources" : [ "JOIN45_copy1" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Rated Soccer Prospects",
+          "name" : "Rated_Soccer_Prospects",
+          "folderName" : "SharedApp"
+        },
+        "dateConfigurationName" : "July_Fiscal_Year",
+        "measuresToCurrencies" : [ ]
+      }
+    },
+    "FORMULA0_copy1" : {
+      "action" : "formula",
+      "sources" : [ "JOIN43_copy1" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Wealth_Rating",
+          "label" : "Wealth Rating",
+          "formulaExpression" : "case when \"Rating.Wealth_Rating.HAM_Wealth_Rating_Number__c\" is null\r\nthen '99'\r\nelse \"Rating.Wealth_Rating.HAM_Wealth_Rating_Number__c\"\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "TO_MEASURE0_copy1" : {
+      "action" : "typeCast",
+      "sources" : [ "FORMULA0_copy1" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "Wealth_Rating_to_measure",
+          "newProperties" : {
+            "name" : "Wealth_Rating"
+          }
+        } ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Wealth_Rating" ]
+        }
+      },
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Wealth_Rating",
+          "newProperties" : {
+            "label" : "Wealth Rating",
+            "name" : "Wealth_Rating_to_measure",
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 0,
+              "precision" : 18
+            }
+          }
+        } ]
+      }
+    },
+    "LOAD_DATASET43_copy1" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "ucinn_ascendv2__Contact_Type__c", "All_NCAA_Involvements", "ucinn_ascendv2__Wealth_Rating__c", "Account_or_Contact_Id" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Account and Contact Dataset",
+          "name" : "Account_and_Contact_Dataset"
+        },
+        "sampleDetails" : {
+          "type" : "Unique",
+          "uniqueSampleFieldName" : "All_NCAA_Involvements",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "DROP_FIELDS6_copy1" : {
+      "action" : "schema",
+      "sources" : [ "FILTER3_copy1" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "ucinn_ascendv2__Wealth_Rating__c", "All_NCAA_Involvements", "Rating.Wealth_Rating.HAM_Wealth_Rating_Number__c", "Wealth_Rating", "ucinn_ascendv2__Contact_Type__c" ]
+        }
+      }
+    },
+    "JOIN45_copy1" : {
+      "action" : "join",
+      "sources" : [ "JOIN44_copy1", "AGGREGATE1_copy1" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "COUNT_Rows", "Aggregate0.Constituent_or_Account_Id" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Account_or_Contact_Id" ],
+        "rightQualifier" : "Aggregate0",
+        "rightKeys" : [ "Constituent_or_Account_Id" ]
+      }
+    },
+    "FILTER6_copy1" : {
+      "action" : "filter",
+      "sources" : [ "JOIN42_copy0_copy0_copy1" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "ucinn_ascendv2__Contact_Type__c",
+          "operator" : "ARRAY_CONTAINS",
+          "operands" : [ "Current Parent" ]
+        } ]
+      }
+    }
+  },
+  "ui" : {
+    "nodes" : {
+      "LOAD_DATASET1" : {
+        "label" : "Gift Credit and Payment",
+        "type" : "LOAD_DATASET",
+        "top" : 392,
+        "left" : 1092,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "FILTER0" : {
+        "label" : "Filter Football",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 112.6,
+        "left" : 392.7
+      },
+      "LOAD_DATASET42_copy0" : {
+        "label" : "ucinn_ascendv2__Relationship__c",
+        "type" : "LOAD_DATASET",
+        "top" : 392.6,
+        "left" : 252.7,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "FILTER2_copy1_copy0" : {
+        "label" : "Filter to Children",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 392.6,
+        "left" : 392.7
+      },
+      "TRANSFORM7_copy0_copy0" : {
+        "label" : "All Parents",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 392.6,
+        "left" : 532.7,
+        "graph" : {
+          "DROP_FIELDS5_copy0_copy0" : {
+            "label" : "Keep Columns"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "JOIN42_copy0_copy0" : {
+        "label" : "Lookup all Parents",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 252,
+        "left" : 532
+      },
+      "APPEND0" : {
+        "label" : "Append 0",
+        "type" : "APPEND",
+        "top" : 112.6,
+        "left" : 672.7
+      },
+      "LOAD_DATASET0_copy0" : {
+        "label" : "Account and Contact Dataset",
+        "type" : "LOAD_DATASET",
+        "top" : 252.60000000000002,
+        "left" : 812.7,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN43" : {
+        "label" : "Join 43",
+        "type" : "JOIN",
+        "top" : 112.6,
+        "left" : 812.7
+      },
+      "FILTER3" : {
+        "label" : "Filter Rating",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 112.6,
+        "left" : 1092.7
+      },
+      "FILTER4" : {
+        "label" : "Filter Football",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 392,
+        "left" : 1232
+      },
+      "AGGREGATE0" : {
+        "label" : "Aggregate 0",
+        "type" : "AGGREGATE",
+        "top" : 392,
+        "left" : 1372,
+        "graph" : {
+          "EXTRACT0" : null,
+          "AGGREGATE1" : null
+        },
+        "connectors" : [ {
+          "source" : "EXTRACT0",
+          "target" : "AGGREGATE1"
+        } ]
+      },
+      "FILTER5" : {
+        "label" : "Filter Cash",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 252,
+        "left" : 1372
+      },
+      "APPEND1" : {
+        "label" : "Append 1",
+        "type" : "APPEND",
+        "top" : 112.6,
+        "left" : 1372.7
+      },
+      "AGGREGATE2" : {
+        "label" : "Aggregate 2",
+        "type" : "AGGREGATE",
+        "top" : 112.6,
+        "left" : 1512.7,
+        "graph" : {
+          "EXTRACT1" : null,
+          "AGGREGATE3" : null
+        },
+        "connectors" : [ {
+          "source" : "EXTRACT1",
+          "target" : "AGGREGATE3"
+        } ]
+      },
+      "LOAD_DATASET0_copy0_copy0" : {
+        "label" : "Account and Contact Dataset",
+        "description" : "",
+        "type" : "LOAD_DATASET",
+        "top" : 252.60000000000002,
+        "left" : 1652.7,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN44" : {
+        "label" : "Join 44",
+        "type" : "JOIN",
+        "top" : 112.6,
+        "left" : 1652.7
+      },
+      "OUTPUT0" : {
+        "label" : "Output 0",
+        "type" : "OUTPUT",
+        "top" : 112.6,
+        "left" : 1932.7
+      },
+      "TRANSFORM8" : {
+        "label" : "Transform 8",
+        "type" : "TRANSFORM",
+        "top" : 112.6,
+        "left" : 952.7,
+        "graph" : {
+          "FORMULA0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Wealth Rating"
+          },
+          "TO_MEASURE0" : {
+            "label" : "To Number"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA0",
+          "target" : "TO_MEASURE0"
+        } ]
+      },
+      "LOAD_DATASET43" : {
+        "label" : "Account and Contact Dataset",
+        "type" : "LOAD_DATASET",
+        "top" : 112.6,
+        "left" : 252.7,
+        "parameters" : {
+          "sampleSize" : 10000
+        }
+      },
+      "TRANSFORM9" : {
+        "label" : "Transform 9",
+        "type" : "TRANSFORM",
+        "top" : 112.6,
+        "left" : 1232.7,
+        "graph" : {
+          "DROP_FIELDS6" : {
+            "label" : "Drop Columns"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "JOIN45" : {
+        "label" : "Join 45",
+        "type" : "JOIN",
+        "top" : 112.6,
+        "left" : 1792.7
+      },
+      "FILTER6" : {
+        "label" : "Filter Current Parent",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 252.60000000000002,
+        "left" : 672.7
+      },
+      "LOAD_DATASET1_copy0" : {
+        "label" : "Gift Credit and Payment Copy",
+        "type" : "LOAD_DATASET",
+        "top" : 812,
+        "left" : 1092,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "FILTER0_copy0" : {
+        "label" : "Filter Lacrosse",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 532.1,
+        "left" : 392
+      },
+      "LOAD_DATASET42_copy0_copy0" : {
+        "label" : "ucinn_ascendv2__Relationship__c Copy",
+        "type" : "LOAD_DATASET",
+        "top" : 812.2,
+        "left" : 252,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "FILTER2_copy1_copy0_copy0" : {
+        "label" : "Filter to Children Copy",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 812.1,
+        "left" : 392
+      },
+      "TRANSFORM7_copy0_copy0_copy0" : {
+        "label" : "All Parents Copy",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 812.1,
+        "left" : 532.1,
+        "graph" : {
+          "DROP_FIELDS5_copy0_copy0_copy0" : {
+            "label" : "Keep Columns"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "JOIN42_copy0_copy0_copy0" : {
+        "label" : "Lookup all Parents Copy",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 672.1,
+        "left" : 532
+      },
+      "APPEND0_copy0" : {
+        "label" : "Append 0 Copy",
+        "type" : "APPEND",
+        "top" : 532.1,
+        "left" : 672
+      },
+      "LOAD_DATASET0_copy0_copy1" : {
+        "label" : "Account and Contact Dataset Copy",
+        "type" : "LOAD_DATASET",
+        "top" : 672.1,
+        "left" : 812,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN43_copy0" : {
+        "label" : "Join 43 Copy",
+        "type" : "JOIN",
+        "top" : 532.1,
+        "left" : 812
+      },
+      "FILTER3_copy0" : {
+        "label" : "Filter Rating Copy",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 532,
+        "left" : 1092
+      },
+      "FILTER4_copy0" : {
+        "label" : "Filter Lacrosse",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 812,
+        "left" : 1232
+      },
+      "AGGREGATE0_copy0" : {
+        "label" : "Aggregate 0 Copy",
+        "type" : "AGGREGATE",
+        "top" : 812,
+        "left" : 1372.1,
+        "graph" : {
+          "EXTRACT0_copy0" : null,
+          "AGGREGATE1_copy0" : null
+        },
+        "connectors" : [ {
+          "source" : "EXTRACT0_copy0",
+          "target" : "AGGREGATE1_copy0"
+        } ]
+      },
+      "FILTER5_copy0" : {
+        "label" : "Filter Cash Copy",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 672,
+        "left" : 1372
+      },
+      "APPEND1_copy0" : {
+        "label" : "Append 1 Copy",
+        "type" : "APPEND",
+        "top" : 532,
+        "left" : 1372
+      },
+      "AGGREGATE2_copy0" : {
+        "label" : "Aggregate 2 Copy",
+        "type" : "AGGREGATE",
+        "top" : 532.2,
+        "left" : 1512,
+        "graph" : {
+          "EXTRACT1_copy0" : null,
+          "AGGREGATE3_copy0" : null
+        },
+        "connectors" : [ {
+          "source" : "EXTRACT1_copy0",
+          "target" : "AGGREGATE3_copy0"
+        } ]
+      },
+      "LOAD_DATASET0_copy0_copy0_copy0" : {
+        "label" : "Account and Contact Dataset Copy1",
+        "description" : "",
+        "type" : "LOAD_DATASET",
+        "top" : 672.2,
+        "left" : 1652.1,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN44_copy0" : {
+        "label" : "Join 44 Copy",
+        "type" : "JOIN",
+        "top" : 532.2,
+        "left" : 1652
+      },
+      "OUTPUT0_copy0" : {
+        "label" : "Output 0 Copy",
+        "type" : "OUTPUT",
+        "top" : 532.2,
+        "left" : 1932
+      },
+      "TRANSFORM8_copy0" : {
+        "label" : "Transform 8 Copy",
+        "type" : "TRANSFORM",
+        "top" : 532.1,
+        "left" : 952,
+        "graph" : {
+          "FORMULA0_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Wealth Rating"
+          },
+          "TO_MEASURE0_copy0" : {
+            "label" : "To Number"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA0_copy0",
+          "target" : "TO_MEASURE0_copy0"
+        } ]
+      },
+      "LOAD_DATASET43_copy0" : {
+        "label" : "Account and Contact Dataset Copy2",
+        "type" : "LOAD_DATASET",
+        "top" : 532.1,
+        "left" : 252,
+        "parameters" : {
+          "sampleSize" : 10000
+        }
+      },
+      "TRANSFORM9_copy0" : {
+        "label" : "Transform 9 Copy",
+        "type" : "TRANSFORM",
+        "top" : 532,
+        "left" : 1232,
+        "graph" : {
+          "DROP_FIELDS6_copy0" : {
+            "label" : "Drop Columns"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "JOIN45_copy0" : {
+        "label" : "Join 45 Copy",
+        "type" : "JOIN",
+        "top" : 532.2,
+        "left" : 1792
+      },
+      "FILTER6_copy0" : {
+        "label" : "Filter Current Parent Copy",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 672.1,
+        "left" : 672
+      },
+      "LOAD_DATASET1_copy1" : {
+        "label" : "Gift Credit and Payment Copy1",
+        "type" : "LOAD_DATASET",
+        "top" : 1231.9,
+        "left" : 1092,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "FILTER0_copy1" : {
+        "label" : "Filter Soccer",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 951.8,
+        "left" : 392
+      },
+      "LOAD_DATASET42_copy0_copy1" : {
+        "label" : "ucinn_ascendv2__Relationship__c Copy1",
+        "type" : "LOAD_DATASET",
+        "top" : 1232.4,
+        "left" : 252,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "FILTER2_copy1_copy0_copy1" : {
+        "label" : "Filter to Children Copy1",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 1231.9,
+        "left" : 392
+      },
+      "TRANSFORM7_copy0_copy0_copy1" : {
+        "label" : "All Parents Copy1",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 1231.9,
+        "left" : 532,
+        "graph" : {
+          "DROP_FIELDS5_copy0_copy0_copy1" : {
+            "label" : "Keep Columns"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "JOIN42_copy0_copy0_copy1" : {
+        "label" : "Lookup all Parents Copy1",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 1091.9,
+        "left" : 532
+      },
+      "APPEND0_copy1" : {
+        "label" : "Append 0 Copy1",
+        "type" : "APPEND",
+        "top" : 951.9,
+        "left" : 672
+      },
+      "LOAD_DATASET0_copy0_copy2" : {
+        "label" : "Account and Contact Dataset Copy3",
+        "type" : "LOAD_DATASET",
+        "top" : 1091.9,
+        "left" : 812,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN43_copy1" : {
+        "label" : "Join 43 Copy1",
+        "type" : "JOIN",
+        "top" : 951.9,
+        "left" : 812
+      },
+      "FILTER3_copy1" : {
+        "label" : "Filter Rating Copy1",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 951.9,
+        "left" : 1092
+      },
+      "FILTER4_copy1" : {
+        "label" : "Filter Soccer",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 1232,
+        "left" : 1232
+      },
+      "AGGREGATE0_copy1" : {
+        "label" : "Aggregate 0 Copy1",
+        "type" : "AGGREGATE",
+        "top" : 1232,
+        "left" : 1372.1,
+        "graph" : {
+          "EXTRACT0_copy1" : null,
+          "AGGREGATE1_copy1" : null
+        },
+        "connectors" : [ {
+          "source" : "EXTRACT0_copy1",
+          "target" : "AGGREGATE1_copy1"
+        } ]
+      },
+      "FILTER5_copy1" : {
+        "label" : "Filter Cash Copy1",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 1092,
+        "left" : 1372
+      },
+      "APPEND1_copy1" : {
+        "label" : "Append 1 Copy1",
+        "type" : "APPEND",
+        "top" : 952.4,
+        "left" : 1372
+      },
+      "AGGREGATE2_copy1" : {
+        "label" : "Aggregate 2 Copy1",
+        "type" : "AGGREGATE",
+        "top" : 952.4,
+        "left" : 1512,
+        "graph" : {
+          "EXTRACT1_copy1" : null,
+          "AGGREGATE3_copy1" : null
+        },
+        "connectors" : [ {
+          "source" : "EXTRACT1_copy1",
+          "target" : "AGGREGATE3_copy1"
+        } ]
+      },
+      "LOAD_DATASET0_copy0_copy0_copy1" : {
+        "label" : "Account and Contact Dataset Copy4",
+        "description" : "",
+        "type" : "LOAD_DATASET",
+        "top" : 1092.4,
+        "left" : 1652,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN44_copy1" : {
+        "label" : "Join 44 Copy1",
+        "type" : "JOIN",
+        "top" : 952.4,
+        "left" : 1652
+      },
+      "OUTPUT0_copy1" : {
+        "label" : "Output 0 Copy1",
+        "type" : "OUTPUT",
+        "top" : 952.4,
+        "left" : 1932
+      },
+      "TRANSFORM8_copy1" : {
+        "label" : "Transform 8 Copy1",
+        "type" : "TRANSFORM",
+        "top" : 952,
+        "left" : 952,
+        "graph" : {
+          "FORMULA0_copy1" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Wealth Rating"
+          },
+          "TO_MEASURE0_copy1" : {
+            "label" : "To Number"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA0_copy1",
+          "target" : "TO_MEASURE0_copy1"
+        } ]
+      },
+      "LOAD_DATASET43_copy1" : {
+        "label" : "Account and Contact Dataset Copy5",
+        "type" : "LOAD_DATASET",
+        "top" : 951.8,
+        "left" : 252,
+        "parameters" : {
+          "sampleSize" : 10000
+        }
+      },
+      "TRANSFORM9_copy1" : {
+        "label" : "Transform 9 Copy1",
+        "type" : "TRANSFORM",
+        "top" : 952.4,
+        "left" : 1232,
+        "graph" : {
+          "DROP_FIELDS6_copy1" : {
+            "label" : "Drop Columns"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "JOIN45_copy1" : {
+        "label" : "Join 45 Copy1",
+        "type" : "JOIN",
+        "top" : 952.4,
+        "left" : 1792
+      },
+      "FILTER6_copy1" : {
+        "label" : "Filter Current Parent Copy1",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 1091.9,
+        "left" : 672
+      }
+    },
+    "connectors" : [ {
+      "source" : "FILTER0",
+      "target" : "JOIN42_copy0_copy0"
+    }, {
+      "source" : "TRANSFORM7_copy0_copy0",
+      "target" : "JOIN42_copy0_copy0"
+    }, {
+      "source" : "FILTER2_copy1_copy0",
+      "target" : "TRANSFORM7_copy0_copy0"
+    }, {
+      "source" : "LOAD_DATASET42_copy0",
+      "target" : "FILTER2_copy1_copy0"
+    }, {
+      "source" : "FILTER0",
+      "target" : "APPEND0"
+    }, {
+      "source" : "FILTER6",
+      "target" : "APPEND0"
+    }, {
+      "source" : "APPEND0",
+      "target" : "JOIN43"
+    }, {
+      "source" : "LOAD_DATASET0_copy0",
+      "target" : "JOIN43"
+    }, {
+      "source" : "TRANSFORM8",
+      "target" : "FILTER3"
+    }, {
+      "source" : "LOAD_DATASET1",
+      "target" : "FILTER4"
+    }, {
+      "source" : "FILTER4",
+      "target" : "AGGREGATE0"
+    }, {
+      "source" : "AGGREGATE0",
+      "target" : "FILTER5"
+    }, {
+      "source" : "TRANSFORM9",
+      "target" : "APPEND1"
+    }, {
+      "source" : "FILTER5",
+      "target" : "APPEND1"
+    }, {
+      "source" : "APPEND1",
+      "target" : "AGGREGATE2"
+    }, {
+      "source" : "AGGREGATE2",
+      "target" : "JOIN44"
+    }, {
+      "source" : "LOAD_DATASET0_copy0_copy0",
+      "target" : "JOIN44"
+    }, {
+      "source" : "JOIN45",
+      "target" : "OUTPUT0"
+    }, {
+      "source" : "JOIN43",
+      "target" : "TRANSFORM8"
+    }, {
+      "source" : "LOAD_DATASET43",
+      "target" : "FILTER0"
+    }, {
+      "source" : "FILTER3",
+      "target" : "TRANSFORM9"
+    }, {
+      "source" : "JOIN44",
+      "target" : "JOIN45"
+    }, {
+      "source" : "AGGREGATE0",
+      "target" : "JOIN45"
+    }, {
+      "source" : "JOIN42_copy0_copy0",
+      "target" : "FILTER6"
+    }, {
+      "source" : "FILTER0_copy0",
+      "target" : "JOIN42_copy0_copy0_copy0"
+    }, {
+      "source" : "TRANSFORM7_copy0_copy0_copy0",
+      "target" : "JOIN42_copy0_copy0_copy0"
+    }, {
+      "source" : "FILTER2_copy1_copy0_copy0",
+      "target" : "TRANSFORM7_copy0_copy0_copy0"
+    }, {
+      "source" : "LOAD_DATASET42_copy0_copy0",
+      "target" : "FILTER2_copy1_copy0_copy0"
+    }, {
+      "source" : "FILTER0_copy0",
+      "target" : "APPEND0_copy0"
+    }, {
+      "source" : "FILTER6_copy0",
+      "target" : "APPEND0_copy0"
+    }, {
+      "source" : "APPEND0_copy0",
+      "target" : "JOIN43_copy0"
+    }, {
+      "source" : "LOAD_DATASET0_copy0_copy1",
+      "target" : "JOIN43_copy0"
+    }, {
+      "source" : "TRANSFORM8_copy0",
+      "target" : "FILTER3_copy0"
+    }, {
+      "source" : "LOAD_DATASET1_copy0",
+      "target" : "FILTER4_copy0"
+    }, {
+      "source" : "FILTER4_copy0",
+      "target" : "AGGREGATE0_copy0"
+    }, {
+      "source" : "AGGREGATE0_copy0",
+      "target" : "FILTER5_copy0"
+    }, {
+      "source" : "TRANSFORM9_copy0",
+      "target" : "APPEND1_copy0"
+    }, {
+      "source" : "FILTER5_copy0",
+      "target" : "APPEND1_copy0"
+    }, {
+      "source" : "APPEND1_copy0",
+      "target" : "AGGREGATE2_copy0"
+    }, {
+      "source" : "AGGREGATE2_copy0",
+      "target" : "JOIN44_copy0"
+    }, {
+      "source" : "LOAD_DATASET0_copy0_copy0_copy0",
+      "target" : "JOIN44_copy0"
+    }, {
+      "source" : "JOIN45_copy0",
+      "target" : "OUTPUT0_copy0"
+    }, {
+      "source" : "JOIN43_copy0",
+      "target" : "TRANSFORM8_copy0"
+    }, {
+      "source" : "LOAD_DATASET43_copy0",
+      "target" : "FILTER0_copy0"
+    }, {
+      "source" : "FILTER3_copy0",
+      "target" : "TRANSFORM9_copy0"
+    }, {
+      "source" : "JOIN44_copy0",
+      "target" : "JOIN45_copy0"
+    }, {
+      "source" : "AGGREGATE0_copy0",
+      "target" : "JOIN45_copy0"
+    }, {
+      "source" : "JOIN42_copy0_copy0_copy0",
+      "target" : "FILTER6_copy0"
+    }, {
+      "source" : "FILTER0_copy1",
+      "target" : "JOIN42_copy0_copy0_copy1"
+    }, {
+      "source" : "TRANSFORM7_copy0_copy0_copy1",
+      "target" : "JOIN42_copy0_copy0_copy1"
+    }, {
+      "source" : "FILTER2_copy1_copy0_copy1",
+      "target" : "TRANSFORM7_copy0_copy0_copy1"
+    }, {
+      "source" : "LOAD_DATASET42_copy0_copy1",
+      "target" : "FILTER2_copy1_copy0_copy1"
+    }, {
+      "source" : "FILTER0_copy1",
+      "target" : "APPEND0_copy1"
+    }, {
+      "source" : "FILTER6_copy1",
+      "target" : "APPEND0_copy1"
+    }, {
+      "source" : "APPEND0_copy1",
+      "target" : "JOIN43_copy1"
+    }, {
+      "source" : "LOAD_DATASET0_copy0_copy2",
+      "target" : "JOIN43_copy1"
+    }, {
+      "source" : "TRANSFORM8_copy1",
+      "target" : "FILTER3_copy1"
+    }, {
+      "source" : "LOAD_DATASET1_copy1",
+      "target" : "FILTER4_copy1"
+    }, {
+      "source" : "FILTER4_copy1",
+      "target" : "AGGREGATE0_copy1"
+    }, {
+      "source" : "AGGREGATE0_copy1",
+      "target" : "FILTER5_copy1"
+    }, {
+      "source" : "TRANSFORM9_copy1",
+      "target" : "APPEND1_copy1"
+    }, {
+      "source" : "FILTER5_copy1",
+      "target" : "APPEND1_copy1"
+    }, {
+      "source" : "APPEND1_copy1",
+      "target" : "AGGREGATE2_copy1"
+    }, {
+      "source" : "AGGREGATE2_copy1",
+      "target" : "JOIN44_copy1"
+    }, {
+      "source" : "LOAD_DATASET0_copy0_copy0_copy1",
+      "target" : "JOIN44_copy1"
+    }, {
+      "source" : "JOIN45_copy1",
+      "target" : "OUTPUT0_copy1"
+    }, {
+      "source" : "JOIN43_copy1",
+      "target" : "TRANSFORM8_copy1"
+    }, {
+      "source" : "LOAD_DATASET43_copy1",
+      "target" : "FILTER0_copy1"
+    }, {
+      "source" : "FILTER3_copy1",
+      "target" : "TRANSFORM9_copy1"
+    }, {
+      "source" : "JOIN44_copy1",
+      "target" : "JOIN45_copy1"
+    }, {
+      "source" : "AGGREGATE0_copy1",
+      "target" : "JOIN45_copy1"
+    }, {
+      "source" : "JOIN42_copy0_copy0_copy1",
+      "target" : "FILTER6_copy1"
+    } ],
+    "hiddenColumns" : [ ]
+  },
+  "runMode" : "full"
+}

@@ -1,0 +1,116 @@
+{
+  "version" : "64.0",
+  "nodes" : {
+    "LOAD_DATASET0_copy0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "HAM_Campaign_Priority__c", "Id", "CreatedDate", "CreatedById", "LastModifiedDate", "ucinn_ascendv2__Designation_Detail__c", "ucinn_ascendv2__Account__c", "ucinn_ascendv2__Contact__c", "ucinn_ascendv2__Credit_Amount__c", "ucinn_ascendv2__Credit_Type__c", "ucinn_ascendv2__Designation__c", "ucinn_ascendv2__External_System_ID__c", "ucinn_ascendv2__Hard_Credit_Recipient_Account__c", "ucinn_ascendv2__Hard_Credit_Recipient_Contact__c", "ucinn_ascendv2__Opportunity__c", "ucinn_ascendv2__Payment__c", "ucinn_ascendv2__Session__c", "ucinn_ascendv2__Source__c", "ucinn_ascendv2__Credit_Date_Formula__c", "ucinn_ascendv2__G_L_Account_Formula__c", "ucinn_ascendv2__Gift_Type_Formula__c", "ucinn_ascendv2__Is_Ready_for_G_L_Formula__c", "ucinn_ascendv2__Pledge_Gift_Stage_Formula__c", "ucinn_ascendv2__Gift_No_Formula__c", "HAM_Constituent_Type__c", "HAM_GOLD_Flag__c", "HAM_Gift_Receipt_Generated__c", "HAM_IRA_Acknowledgement_Generated__c", "HAM_Reunion_Milestone_Year__c", "HAM_Reunion_Milestone__c", "HAM_VP_Acknowledgement_Generated__c", "HAM_Tender_Type__c", "Ham_Designation_Label_Name__c", "HAM_Is_Primary_Donor__c", "HAM_Primary_Donor_Constituent_Type__c", "HAM_Primary_Donor_Sources__c", "HAM_Pledge_Gift_Adjusted_Pledge_Gift__c", "HAM_Pledge_Gift_Opportunity_Record_Type__c", "HAM_Soft_Credit_Acknowledgment_Generated__c", "HAM_Historical_Is_Primary_Donor__c", "HAM_Historical_Primary_Donor_Sources__c", "HAM_Old_Primary_Donor_Constituent_Type__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "ucinn_ascendv2__Hard_and_Soft_Credit__c",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "ucinn_ascendv2__Hard_and_Soft_Credit__c"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "OUTPUT0" : {
+      "action" : "save",
+      "sources" : [ "FILTER0" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "dump credit",
+          "name" : "dump_credit"
+        },
+        "measuresToCurrencies" : [ ]
+      }
+    },
+    "FORMULA0" : {
+      "action" : "formula",
+      "sources" : [ "LOAD_DATASET0_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "fiscal_year",
+          "label" : "fiscal_year",
+          "formulaExpression" : "fiscalYear(ucinn_ascendv2__Credit_Date_Formula__c)",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FILTER0" : {
+      "action" : "filter",
+      "sources" : [ "FORMULA0" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "NUMBER",
+          "field" : "fiscal_year",
+          "operator" : "EQUAL",
+          "operands" : [ "2025" ]
+        } ]
+      }
+    }
+  },
+  "ui" : {
+    "nodes" : {
+      "LOAD_DATASET0_copy0" : {
+        "label" : "ucinn_ascendv2__Hard_and_Soft_Credit__c",
+        "description" : "",
+        "type" : "LOAD_DATASET",
+        "top" : 112,
+        "left" : 112,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "OUTPUT0" : {
+        "label" : "Output 0",
+        "type" : "OUTPUT",
+        "top" : 112,
+        "left" : 532
+      },
+      "TRANSFORM0" : {
+        "label" : "Transform 0",
+        "type" : "TRANSFORM",
+        "top" : 112,
+        "left" : 252,
+        "graph" : {
+          "FORMULA0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Formula"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "FILTER0" : {
+        "label" : "Filter 0",
+        "type" : "FILTER",
+        "top" : 112,
+        "left" : 392
+      }
+    },
+    "connectors" : [ {
+      "source" : "FILTER0",
+      "target" : "OUTPUT0"
+    }, {
+      "source" : "LOAD_DATASET0_copy0",
+      "target" : "TRANSFORM0"
+    }, {
+      "source" : "TRANSFORM0",
+      "target" : "FILTER0"
+    } ],
+    "hiddenColumns" : [ ]
+  },
+  "runMode" : "full"
+}

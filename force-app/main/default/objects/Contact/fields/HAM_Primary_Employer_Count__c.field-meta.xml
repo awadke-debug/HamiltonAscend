@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>HAM_Primary_Employer_Count__c</fullName>
+    <description>This field drives the &quot;only one primary employer per constituent&quot; validation rule for affiliations.</description>
+    <label>Primary Employer Count</label>
+    <summaryFilterItems>
+        <field>ucinn_ascendv2__Affiliation__c.HAM_Primary_Employer__c</field>
+        <operation>equals</operation>
+        <value>True</value>
+    </summaryFilterItems>
+    <summaryFilterItems>
+        <field>ucinn_ascendv2__Affiliation__c.ucinn_ascendv2__Status__c</field>
+        <operation>equals</operation>
+        <value>Current</value>
+    </summaryFilterItems>
+    <summaryForeignKey>ucinn_ascendv2__Affiliation__c.ucinn_ascendv2__Contact__c</summaryForeignKey>
+    <summaryOperation>count</summaryOperation>
+    <trackHistory>false</trackHistory>
+    <type>Summary</type>
+</CustomField>

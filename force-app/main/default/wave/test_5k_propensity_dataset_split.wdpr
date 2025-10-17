@@ -1,0 +1,374 @@
+{
+  "version" : "63.0",
+  "nodes" : {
+    "LOAD_DATASET0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Preferred_Address_Region", "HAM_Name_w_Suffix__c", "Account_or_Contact_Id", "ChildReuni.Is_Hamilton_Parent_ft", "Is_5K_HF_Donor_CYR", "NCAA_Involvements", "Wealth_Rating_Number_Ed_bucket", "Private_Societies_Involvements", "Lifetime_Cash_Collected_as_of_1YR", "Persistence_HF_Flag", "Persistence_5K_HF_Flag", "Age_Edited" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Model 5K HF Donors Predictors CYR",
+          "name" : "Model_5K_HF_Donors_Predictors_OnlyFY25"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "LOAD_DATASET1" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Preferred_Address_Region", "HAM_Name_w_Suffix__c", "Account_or_Contact_Id", "ChildReuni.Is_Hamilton_Parent_ft", "Is_5K_HF_Donor_CYR", "NCAA_Involvements", "Wealth_Rating_Number_Ed_bucket", "Private_Societies_Involvements", "Lifetime_Cash_Collected_as_of_1YR", "Persistence_HF_Flag", "Persistence_5K_HF_Flag", "Age_Edited" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Model 5K HF Donors Predictors LYR",
+          "name" : "Model_5K_HF_Donors_Predictors_OnlyFY24"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "FORMULA0" : {
+      "action" : "formula",
+      "sources" : [ "LOAD_DATASET0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "dataset",
+          "label" : "dataset",
+          "formulaExpression" : "'dev'",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA3" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Lifetime_Cash_Collected_as_of_1YR_grouped",
+          "label" : "Lifetime_Cash_Collected_as_of_1YR grouped",
+          "formulaExpression" : "case  \r\n \r\n    when Lifetime_Cash_Collected_as_of_1YR<2500 then 2500\r\n    when Lifetime_Cash_Collected_as_of_1YR<5000 then 5000    \r\n    when Lifetime_Cash_Collected_as_of_1YR<10000 then 10000    \r\n    when Lifetime_Cash_Collected_as_of_1YR<25000 then 25000  \r\n    when Lifetime_Cash_Collected_as_of_1YR>=25000 then 25001  \r\n   \r\n        else\r\n    0\r\nend\r\n",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA1" : {
+      "action" : "formula",
+      "sources" : [ "LOAD_DATASET1" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "dataset",
+          "label" : "dataset",
+          "formulaExpression" : "'val'",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA2" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA1" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Lifetime_Cash_Collected_as_of_1YR_grouped",
+          "label" : "Lifetime_Cash_Collected_as_of_1YR grouped",
+          "formulaExpression" : "case  \r\n \r\n    when Lifetime_Cash_Collected_as_of_1YR<2500 then 2500\r\n    when Lifetime_Cash_Collected_as_of_1YR<5000 then 5000    \r\n    when Lifetime_Cash_Collected_as_of_1YR<10000 then 10000    \r\n    when Lifetime_Cash_Collected_as_of_1YR<25000 then 25000  \r\n    when Lifetime_Cash_Collected_as_of_1YR>=25000 then 25001  \r\n   \r\n        else\r\n    0\r\nend\r\n",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "APPEND0" : {
+      "action" : "appendV2",
+      "sources" : [ "FORMULA3", "FORMULA2" ],
+      "parameters" : {
+        "fieldMappings" : [ {
+          "top" : "Preferred_Address_Region",
+          "bottom" : "Preferred_Address_Region"
+        }, {
+          "top" : "HAM_Name_w_Suffix__c",
+          "bottom" : "HAM_Name_w_Suffix__c"
+        }, {
+          "top" : "Account_or_Contact_Id",
+          "bottom" : "Account_or_Contact_Id"
+        }, {
+          "top" : "ChildReuni.Is_Hamilton_Parent_ft",
+          "bottom" : "ChildReuni.Is_Hamilton_Parent_ft"
+        }, {
+          "top" : "Is_5K_HF_Donor_CYR",
+          "bottom" : "Is_5K_HF_Donor_CYR"
+        }, {
+          "top" : "NCAA_Involvements",
+          "bottom" : "NCAA_Involvements"
+        }, {
+          "top" : "Wealth_Rating_Number_Ed_bucket",
+          "bottom" : "Wealth_Rating_Number_Ed_bucket"
+        }, {
+          "top" : "Private_Societies_Involvements",
+          "bottom" : "Private_Societies_Involvements"
+        }, {
+          "top" : "Lifetime_Cash_Collected_as_of_1YR",
+          "bottom" : "Lifetime_Cash_Collected_as_of_1YR"
+        }, {
+          "top" : "Persistence_HF_Flag",
+          "bottom" : "Persistence_HF_Flag"
+        }, {
+          "top" : "Persistence_5K_HF_Flag",
+          "bottom" : "Persistence_5K_HF_Flag"
+        }, {
+          "top" : "Age_Edited",
+          "bottom" : "Age_Edited"
+        }, {
+          "top" : "dataset",
+          "bottom" : "dataset"
+        }, {
+          "top" : "Lifetime_Cash_Collected_as_of_1YR_grouped",
+          "bottom" : "Lifetime_Cash_Collected_as_of_1YR_grouped"
+        } ]
+      }
+    },
+    "FILTER0" : {
+      "action" : "filter",
+      "sources" : [ "APPEND0" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "dataset",
+          "operator" : "EQUAL",
+          "operands" : [ "dev" ]
+        } ]
+      }
+    },
+    "OUTPUT0" : {
+      "action" : "save",
+      "sources" : [ "FILTER0" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "model_dev",
+          "name" : "model_dev",
+          "folderName" : "SharedApp"
+        },
+        "measuresToCurrencies" : [ ]
+      }
+    },
+    "FILTER1" : {
+      "action" : "filter",
+      "sources" : [ "APPEND0" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "dataset",
+          "operator" : "EQUAL",
+          "operands" : [ "val" ]
+        } ]
+      }
+    },
+    "OUTPUT1" : {
+      "action" : "save",
+      "sources" : [ "FILTER1" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "model_val",
+          "name" : "model_val",
+          "folderName" : "SharedApp"
+        },
+        "measuresToCurrencies" : [ ]
+      }
+    },
+    "FILTER2" : {
+      "action" : "filter",
+      "sources" : [ "FILTER1" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "NUMBER",
+          "field" : "Lifetime_Cash_Collected_as_of_1YR",
+          "operator" : "GREATER_OR_EQUAL",
+          "operands" : [ "2500" ]
+        } ]
+      }
+    },
+    "OUTPUT2" : {
+      "action" : "save",
+      "sources" : [ "FILTER2" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "hf_propensity_5k_fy24_2500plus_LT_paid",
+          "name" : "hf_propensity_5k_fy24_2500plus_LT_paid",
+          "folderName" : "SharedApp"
+        },
+        "measuresToCurrencies" : [ ]
+      }
+    }
+  },
+  "ui" : {
+    "nodes" : {
+      "LOAD_DATASET0" : {
+        "label" : "Model 5K HF Donors Predictors CYR",
+        "type" : "LOAD_DATASET",
+        "top" : 112,
+        "left" : 112,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "LOAD_DATASET1" : {
+        "label" : "Model 5K HF Donors Predictors LYR",
+        "type" : "LOAD_DATASET",
+        "top" : 252,
+        "left" : 112,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "TRANSFORM0" : {
+        "label" : "Transform 0",
+        "type" : "TRANSFORM",
+        "top" : 112,
+        "left" : 252,
+        "graph" : {
+          "FORMULA0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "dataset"
+          },
+          "FORMULA3" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Lifetime_Cash_Collected_as_of_1YR grouped"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA0",
+          "target" : "FORMULA3"
+        } ]
+      },
+      "TRANSFORM1" : {
+        "label" : "Transform 1",
+        "type" : "TRANSFORM",
+        "top" : 252,
+        "left" : 252,
+        "graph" : {
+          "FORMULA1" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "dataset"
+          },
+          "FORMULA2" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Lifetime_Cash_Collected_as_of_1YR grouped"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA1",
+          "target" : "FORMULA2"
+        } ]
+      },
+      "APPEND0" : {
+        "label" : "Append 0",
+        "type" : "APPEND",
+        "top" : 112,
+        "left" : 392
+      },
+      "FILTER0" : {
+        "label" : "Filter to dev",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 112.1,
+        "left" : 813
+      },
+      "OUTPUT0" : {
+        "label" : "Output 0",
+        "type" : "OUTPUT",
+        "top" : 112,
+        "left" : 952
+      },
+      "FILTER1" : {
+        "label" : "Filter to val",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 252.10000000000002,
+        "left" : 810.7
+      },
+      "OUTPUT1" : {
+        "label" : "Output 1",
+        "type" : "OUTPUT",
+        "top" : 252,
+        "left" : 952
+      },
+      "FILTER2" : {
+        "label" : "Filter to Lifetime giving $2500+",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 392.2,
+        "left" : 812.1
+      },
+      "OUTPUT2" : {
+        "label" : "Output 2",
+        "type" : "OUTPUT",
+        "top" : 392,
+        "left" : 952
+      }
+    },
+    "connectors" : [ {
+      "source" : "LOAD_DATASET0",
+      "target" : "TRANSFORM0"
+    }, {
+      "source" : "LOAD_DATASET1",
+      "target" : "TRANSFORM1"
+    }, {
+      "source" : "TRANSFORM0",
+      "target" : "APPEND0"
+    }, {
+      "source" : "TRANSFORM1",
+      "target" : "APPEND0"
+    }, {
+      "source" : "APPEND0",
+      "target" : "FILTER0"
+    }, {
+      "source" : "FILTER0",
+      "target" : "OUTPUT0"
+    }, {
+      "source" : "APPEND0",
+      "target" : "FILTER1"
+    }, {
+      "source" : "FILTER1",
+      "target" : "OUTPUT1"
+    }, {
+      "source" : "FILTER1",
+      "target" : "FILTER2"
+    }, {
+      "source" : "FILTER2",
+      "target" : "OUTPUT2"
+    } ],
+    "hiddenColumns" : [ ]
+  },
+  "runMode" : "full"
+}

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>ucinn_ascendv2__When_No_Pledge_Gift_Found__c</fullName>
+    <deprecated>false</deprecated>
+    <fieldManageability>SubscriberControlled</fieldManageability>
+    <inlineHelpText>Handles the case when both Create Gift If Pledge Is Not Found and Match Designation If No Pledge/Gift is checked. It will prioritize the option selected when no pledge/gift is found.</inlineHelpText>
+    <label>When No Pledge/Gift Found (DEPR)</label>
+    <required>false</required>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Create Gift</fullName>
+                <default>true</default>
+                <label>Create Gift</label>
+            </value>
+            <value>
+                <fullName>Match Designation Before Create Gift</fullName>
+                <default>false</default>
+                <label>Match Designation Before Create Gift</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

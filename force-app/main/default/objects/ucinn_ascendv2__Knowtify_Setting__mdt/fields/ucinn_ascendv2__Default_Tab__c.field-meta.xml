@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>ucinn_ascendv2__Default_Tab__c</fullName>
+    <deprecated>false</deprecated>
+    <description>Determines which tab (Bio Demo, Gift Processing, Interim, Review Transaction (v2)) is active when Knowtify modal is opened.  If blank, use the enabled tab field (Enable Bio Demo Tab, Enable Gift Processing Tab, Enable Interim Tab, Enable Review Transaction (v2) Tab) based on the specified context.</description>
+    <fieldManageability>SubscriberControlled</fieldManageability>
+    <inlineHelpText>Determines which tab (Bio Demo, Gift Processing, Interim, Review Transaction (v2)) is active when Knowtify modal is opened.  If blank, use the enabled tab field (Enable Bio Demo Tab, Enable Gift Processing Tab, Enable Interim Tab, Enable Review Transaction (v2) Tab) based on the specified context.</inlineHelpText>
+    <label>Default Tab</label>
+    <required>false</required>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Bio Demo</fullName>
+                <default>true</default>
+                <label>Bio Demo</label>
+            </value>
+            <value>
+                <fullName>Gift Processing</fullName>
+                <default>false</default>
+                <label>Gift Processing</label>
+            </value>
+            <value>
+                <fullName>Interim</fullName>
+                <default>false</default>
+                <label>Interim</label>
+            </value>
+            <value>
+                <fullName>Review Transaction</fullName>
+                <default>false</default>
+                <label>Review Transaction</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

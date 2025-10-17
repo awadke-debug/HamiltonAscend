@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Workflow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fieldUpdates>
+        <fullName>ucinn_ascendv2__Comments</fullName>
+        <description>Add Comments text from long text value to Text (255) for display</description>
+        <field>ucinn_ascendv2__Comments__c</field>
+        <formula>LEFT(Description,255)</formula>
+        <name>Comments</name>
+        <notifyAssignee>false</notifyAssignee>
+        <operation>Formula</operation>
+        <protected>false</protected>
+        <reevaluateOnChange>false</reevaluateOnChange>
+    </fieldUpdates>
+    <fieldUpdates>
+        <fullName>ucinn_ascendv2__Set_Stewardship_Flag</fullName>
+        <field>ucinn_ascendv2__Is_Stewardship__c</field>
+        <literalValue>1</literalValue>
+        <name>Set Stewardship Flag</name>
+        <notifyAssignee>false</notifyAssignee>
+        <operation>Literal</operation>
+        <protected>false</protected>
+        <reevaluateOnChange>false</reevaluateOnChange>
+    </fieldUpdates>
+    <rules>
+        <fullName>ucinn_ascendv2__Populate Comment</fullName>
+        <actions>
+            <name>ucinn_ascendv2__Comments</name>
+            <type>FieldUpdate</type>
+        </actions>
+        <active>true</active>
+        <description>Populate Comments custom field with Description for display</description>
+        <formula>AND($Setup.ucinn_ascendv2__Bypass_Settings__c.ucinn_ascendv2__Bypass_Workflows__c  &lt;&gt; TRUE, NOT(ISNULL( Subject)))</formula>
+        <triggerType>onAllChanges</triggerType>
+    </rules>
+    <rules>
+        <fullName>ucinn_ascendv2__Set Stewardship Flg</fullName>
+        <actions>
+            <name>ucinn_ascendv2__Set_Stewardship_Flag</name>
+            <type>FieldUpdate</type>
+        </actions>
+        <active>true</active>
+        <formula>AND( $Setup.ucinn_ascendv2__Bypass_Settings__c.ucinn_ascendv2__Bypass_Workflows__c  &lt;&gt; TRUE , $Profile.Name = &quot;Stewardship Officer&quot;)</formula>
+        <triggerType>onCreateOnly</triggerType>
+    </rules>
+</Workflow>

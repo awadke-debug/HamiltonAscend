@@ -1,0 +1,2358 @@
+{
+  "version" : "61.0",
+  "nodes" : {
+    "LOAD_DATASET2_copy0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Id", "Name" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "RecordType",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "RecordType"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "LOAD_DATASET18_copy0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Id", "Name" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "RecordType",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "RecordType"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "LOAD_DATASET26_copy0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "HAM_Because_Hamilton__c", "Id", "Name", "Type", "RecordTypeId", "ucinn_ascendv2__Donor_ID__c", "ucinn_ascendv2__External_System_ID__c", "ucinn_ascendv2__Lifetime_Cash__c", "ucinn_ascendv2__Lifetime_Fundraising__c", "ucinn_ascendv2__Primary_Contact__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "Account",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "Account"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "LOAD_DATASET27_copy0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "HAM_JBA__c", "HAM_JBA_Anonymous__c", "Id", "AccountId", "LastName", "FirstName", "Salutation", "Name", "RecordTypeId", "Title", "Birthdate", "ucinn_ascendv2__Amount_of_Most_Recent_Gift__c", "ucinn_ascendv2__Amount_of_Most_Recent_Pledge_Payment__c", "ucinn_ascendv2__Amount_of_Most_Recent_Pledge__c", "ucinn_ascendv2__Contact_Type__c", "ucinn_ascendv2__Current_FY_Giving__c", "ucinn_ascendv2__Date_Marked_Deceased__c", "ucinn_ascendv2__Date_of_Most_Recent_Gift__c", "ucinn_ascendv2__Date_of_Most_Recent_Pledge_Payment__c", "ucinn_ascendv2__Date_of_Most_Recent_Pledge__c", "ucinn_ascendv2__Deceased_Date__c", "ucinn_ascendv2__Donor_ID__c", "ucinn_ascendv2__Ethnicity__c", "ucinn_ascendv2__External_System_ID__c", "ucinn_ascendv2__Full_Name_Formula__c", "ucinn_ascendv2__Gender__c", "ucinn_ascendv2__Is_Anonymous__c", "ucinn_ascendv2__Is_Deceased__c", "ucinn_ascendv2__Last_FY_Giving__c", "ucinn_ascendv2__Lifetime_Cash__c", "ucinn_ascendv2__Lifetime_Fundraising__c", "ucinn_ascendv2__Preferred_Address_Country__c", "ucinn_ascendv2__Preferred_Class_Year__c", "ucinn_ascendv2__Preferred_Spouse__c", "ucinn_ascendv2__Primary_Contact_Type__c", "ucinn_ascendv2__Recognition_Name__c", "ucinn_ascendv2__Age_Formula__c", "HAM_1812__c", "HAM_Consecutive_Years_of_Giving__c", "HAM_Preferred_Chapter__c", "HAM_Reunion_Year__c", "HAM_Secondary_Chapter__c", "Job_Title__c", "HAM_Institutional_Suffix__c", "HAM_CareerArea__c", "HAM_Privacy_Flag__c", "HAM_Because_Hamilton__c", "HAM_Name_w_Suffix__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "Contact",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "Contact"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "FORMULA73_copy0" : {
+      "action" : "formula",
+      "sources" : [ "JOIN47_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Account_or_Contact_Id",
+          "label" : "Account or Contact Id",
+          "formulaExpression" : "coalesce(Id,\"Account.Id\")",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA136_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA73_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Account_or_Contact_Donor_Id",
+          "label" : "Account or Contact Donor Id",
+          "formulaExpression" : "coalesce(ucinn_ascendv2__Donor_ID__c,\"Account.ucinn_ascendv2__Donor_ID__c\")",
+          "precision" : 10,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA266_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA136_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Account_or_Contact_Because_Hamilton_Fundraising",
+          "label" : "Account or Contact Because Hamilton Fundraising",
+          "formulaExpression" : "coalesce(HAM_Because_Hamilton__c,\"Account.HAM_Because_Hamilton__c\")",
+          "precision" : 10,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "DROP_FIELDS57_copy0" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA266_copy0" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "HAM_Because_Hamilton__c", "Account.HAM_Because_Hamilton__c" ]
+        }
+      }
+    },
+    "FORMULA10_copy0_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FILTER35_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Is_In_Period",
+          "label" : "Is In Period",
+          "formulaExpression" : "case\r\nwhen\r\n    ucinn_ascendv2__Credit_Date_Formula__c is null \r\n        then \r\n    'false'\r\nwhen\r\n    fiscalMonth (ucinn_ascendv2__Credit_Date_Formula__c) < fiscalMonth(current_date())\r\n        then \r\n    'true'\r\nwhen\r\n    fiscalMonth(ucinn_ascendv2__Credit_Date_Formula__c) = fiscalMonth(current_date()) \r\n    and \r\n    day(ucinn_ascendv2__Credit_Date_Formula__c) <= day(current_date())\r\n        then \r\n    'true'\r\nelse \r\n    'false' \r\nend",
+          "precision" : 10,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA52_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA120_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "FY00_Committed_Amount",
+          "label" : "FY00 Committed Amount",
+          "formulaExpression" : "case\r\nwhen\r\n    Number_of_Year_Past = 0\r\nthen\r\n    Fundraising_Amount\r\nelse\r\n    0\r\nend",
+          "precision" : 18,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA53_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA52_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "FY01_Committed_Amount",
+          "label" : "FY01 Committed Amount",
+          "formulaExpression" : "case\r\nwhen\r\n    Number_of_Year_Past = 1\r\nthen\r\n    Fundraising_Amount\r\nelse\r\n    0\r\nend",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA54_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA53_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "FY02_Committed_Amount",
+          "label" : "FY02 Committed Amount",
+          "formulaExpression" : "case\r\nwhen\r\n    Number_of_Year_Past = 2\r\nthen\r\n    Fundraising_Amount\r\nelse\r\n    0\r\nend",
+          "precision" : 18,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA55_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA54_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "FY03_Committed_Amount",
+          "label" : "FY03 Committed Amount",
+          "formulaExpression" : "case\r\nwhen\r\n    Number_of_Year_Past = 3\r\nthen\r\n    Fundraising_Amount\r\nelse\r\n    0\r\nend",
+          "precision" : 18,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA56_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA55_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "FY04_Committed_Amount",
+          "label" : "FY04 Committed Amount",
+          "formulaExpression" : "case\r\nwhen\r\n    Number_of_Year_Past = 4\r\nthen\r\n    Fundraising_Amount\r\nelse\r\n    0\r\nend",
+          "precision" : 18,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA57_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA166_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "FY00_Collected_Amount",
+          "label" : "FY00 Collected Amount",
+          "formulaExpression" : "case\r\nwhen\r\n    Number_of_Year_Past = 0\r\nthen\r\n    Cash_Amount\r\nelse\r\n    0\r\nend",
+          "precision" : 18,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA58_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA147_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "FY01_Collected_Amount",
+          "label" : "FY01 Collected Amount",
+          "formulaExpression" : "case\r\nwhen\r\n    Number_of_Year_Past = 1\r\nthen\r\n    Cash_Amount\r\nelse\r\n    0\r\nend",
+          "precision" : 18,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA59_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA58_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "FY02_Collected_Amount",
+          "label" : "FY02 Collected Amount",
+          "formulaExpression" : "case\r\nwhen\r\n    Number_of_Year_Past = 2\r\nthen\r\n    Cash_Amount\r\nelse\r\n    0\r\nend",
+          "precision" : 18,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA60_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA59_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "FY03_Collected_Amount",
+          "label" : "FY03 Collected Amount",
+          "formulaExpression" : "case\r\nwhen\r\n    Number_of_Year_Past = 3\r\nthen\r\n    Cash_Amount\r\nelse\r\n    0\r\nend",
+          "precision" : 18,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA61_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA60_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "FY04_Collected_Amount",
+          "label" : "FY04 Collected Amount",
+          "formulaExpression" : "case\r\nwhen\r\n    Number_of_Year_Past = 4\r\nthen\r\n    Cash_Amount\r\nelse\r\n    0\r\nend",
+          "precision" : 18,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA86_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA150_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "FY00_Collected_Amount_HF",
+          "label" : "FY00 Collected Amount(HF)",
+          "formulaExpression" : "case\r\nwhen\r\n    Number_of_Year_Past = 0\r\n    and\r\n    contains(\"Designation.ucinn_ascendv2__Areas_of_Giving_CASE_Type__c\",'Hamilton Fund')\r\nthen\r\n    Cash_Amount\r\nelse\r\n    0\r\nend",
+          "precision" : 10,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA87_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA164_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "FY00_Collect_Amount_Restricted",
+          "label" : "FY00 Collect Amount(Restricted)",
+          "formulaExpression" : "coalesce(FY00_Collected_Amount,0)-coalesce(FY00_Collected_Amount_HF,0)",
+          "precision" : 10,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA95_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA10_copy0_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Bequest_Intention",
+          "label" : "Bequest Intention",
+          "formulaExpression" : "case \r\nwhen \r\n    Object='Hard and Soft Credit'\r\nand \r\n    \"Opportunity.Type\"='PGBEQ (Revocable Bequest)'\r\nthen \r\n    Fundraising_Amount\r\nelse 0 \r\nend",
+          "precision" : 10,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA118_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA95_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "FY00_Hamilton_Fund_Cash_Amount",
+          "label" : "FY00 Hamilton Fund Cash Amount",
+          "formulaExpression" : "case when\r\n    Number_of_Year_Past=0\r\n    and\r\n    \"Opportunity.Type\" not in ('Event Fee','Matching','Round Up')\r\n    and\r\n    \"Designation.ucinn_ascendv2__Designation_Name__c\" != 'Misc. Gifts-In-Kind'\r\n    and\r\n    contains(\"Designation.ucinn_ascendv2__Areas_of_Giving_CASE_Type__c\",'Hamilton Fund')\r\nthen\r\n    Cash_Amount\r\nelse\r\n    0\r\nend",
+          "precision" : 18,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA119_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA174_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "FY00_Hamilton_Fund_Fundraising_Amount",
+          "label" : "FY00 Hamilton Fund Fundraising Amount",
+          "formulaExpression" : "case  \r\n    when FY00_Hamilton_Fund_Fundraising_Amount_Temp-FY00_Hamilton_Fund_Cash_Amount>0\r\n    then FY00_Hamilton_Fund_Fundraising_Amount_Temp\r\n    else\r\n    FY00_Hamilton_Fund_Cash_Amount\r\nend",
+          "precision" : 18,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA120_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA121_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "FY00_Fundraising_Amount_CYR_Solicitable",
+          "label" : "FY00 Fundraising Amount CYR Solicitable",
+          "formulaExpression" : "case when\r\n    Fiscal_Year = fiscalyear(current_date())\r\n    and\r\n    \"Opportunity.Type\" not in ('Event Fee','Matching','Round Up')\r\n    and\r\n    \"Designation.ucinn_ascendv2__Designation_Name__c\" != 'Misc. Gifts-In-Kind'\r\nthen\r\n    Cash_Amount\r\nelse\r\n    0\r\nend",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA121_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA119_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "FY00_Cash_Amount_CYR_Solicitable",
+          "label" : "FY00 Cash Amount CYR Solicitable",
+          "formulaExpression" : "case when\r\n    Fiscal_Year = fiscalyear(current_date())\r\n    and\r\n    \"Opportunity.Type\" not in ('Event Fee','Matching','Round Up')\r\n    and\r\n    \"Designation.ucinn_ascendv2__Designation_Name__c\" != 'Misc. Gifts-In-Kind'\r\nthen\r\n    Cash_Amount\r\nelse\r\n    0\r\nend",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES65_copy0" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA259_copy0" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Constituent_or_Account_Id",
+          "newProperties" : {
+            "label" : "Account or Contact Id",
+            "name" : "Account_or_Contact_Id"
+          }
+        } ]
+      }
+    },
+    "FORMULA147_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA156_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "FY00_thru_Apr2_Collected_Amount",
+          "label" : "FY00  thru Apr 2 Collected Amount",
+          "formulaExpression" : "case\r\nwhen\r\n    Number_of_Year_Past = 0 and ucinn_ascendv2__Credit_Date_Formula__c<='4/2/2024'\r\nthen\r\n    Cash_Amount\r\nelse\r\n    0\r\nend",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA148_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA57_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "FY00_Collected_Amount_No_Event_Fee_Gifts",
+          "label" : "FY00 Collected Amount No Event Fee Gifts",
+          "formulaExpression" : "case\r\nwhen\r\n    Number_of_Year_Past = 0 and \"Opportunity.Type\" not in ('Event Fee')\r\nthen\r\n    Cash_Amount\r\nelse\r\n    0\r\nend",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA149_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA155_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "FY00_Committed_Amount_HF",
+          "label" : "FY00 Committed Amount(HF)",
+          "formulaExpression" : "case\r\nwhen\r\n    Number_of_Year_Past = 0\r\n    and\r\n    contains(\"Designation.ucinn_ascendv2__Areas_of_Giving_CASE_Type__c\",'Hamilton Fund')\r\nthen\r\n    Fundraising_Amount\r\nelse\r\n    0\r\nend",
+          "precision" : 10,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA150_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA61_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "FY05_Collected_Amount",
+          "label" : "FY05 Collected Amount",
+          "formulaExpression" : "case\r\nwhen\r\n    Number_of_Year_Past = 5\r\nthen\r\n    Cash_Amount\r\nelse\r\n    0\r\nend",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA151_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA86_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "FY01_Collected_Amount_HF",
+          "label" : "FY01 Collected Amount(HF)",
+          "formulaExpression" : "case\r\nwhen\r\n    Number_of_Year_Past = 1\r\n    and\r\n    contains(\"Designation.ucinn_ascendv2__Areas_of_Giving_CASE_Type__c\",'Hamilton Fund')\r\nthen\r\n    Cash_Amount\r\nelse\r\n    0\r\nend",
+          "precision" : 10,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA152_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA151_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "FY02_Collected_Amount_HF",
+          "label" : "FY02 Collected Amount(HF)",
+          "formulaExpression" : "case\r\nwhen\r\n    Number_of_Year_Past = 2\r\n    and\r\n    contains(\"Designation.ucinn_ascendv2__Areas_of_Giving_CASE_Type__c\",'Hamilton Fund')\r\nthen\r\n    Cash_Amount\r\nelse\r\n    0\r\nend",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA153_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA152_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "FY03_Collected_Amount_HF",
+          "label" : "FY03 Collected Amount(HF)",
+          "formulaExpression" : "case\r\nwhen\r\n    Number_of_Year_Past = 3\r\n    and\r\n    contains(\"Designation.ucinn_ascendv2__Areas_of_Giving_CASE_Type__c\",'Hamilton Fund')\r\nthen\r\n    Cash_Amount\r\nelse\r\n    0\r\nend",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA154_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA153_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "FY04_Collected_Amount_HF",
+          "label" : "FY04 Collected Amount(HF)",
+          "formulaExpression" : "case\r\nwhen\r\n    Number_of_Year_Past = 4\r\n    and\r\n    contains(\"Designation.ucinn_ascendv2__Areas_of_Giving_CASE_Type__c\",'Hamilton Fund')\r\nthen\r\n    Cash_Amount\r\nelse\r\n    0\r\nend",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA155_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA154_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "FY05_Collected_Amount_HF",
+          "label" : "FY05 Collected Amount(HF)",
+          "formulaExpression" : "case\r\nwhen\r\n    Number_of_Year_Past = 5\r\n    and\r\n    contains(\"Designation.ucinn_ascendv2__Areas_of_Giving_CASE_Type__c\",'Hamilton Fund')\r\nthen\r\n    Cash_Amount\r\nelse\r\n    0\r\nend",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA156_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA148_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "FY01_Collected_Amount_No_Event_Fee_Gifts",
+          "label" : "FY01 Collected Amount No Event Fee Gifts",
+          "formulaExpression" : "case\r\nwhen\r\n    Number_of_Year_Past = 1 and \"Opportunity.Type\" not in ('Event Fee')\r\nthen\r\n    Cash_Amount\r\nelse\r\n    0\r\nend",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA163_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA149_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Lifetime_Fundraising_Amount_Endowment",
+          "label" : "Lifetime Fundraising Amount-Endowment",
+          "formulaExpression" : "case\r\nwhen\r\n    Number_of_Year_Past = 0\r\n    and\r\n    contains(\"Designation.ucinn_ascendv2__Areas_of_Giving_CASE_Type__c\",'Endowment')\r\n    and \"Designation.ucinn_ascendv2__CASE_Type__c\"='Student Financial Aid'\r\nthen\r\n    Fundraising_Amount\r\nelse\r\n    0\r\nend",
+          "precision" : 10,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA164_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA163_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Lifetime_Cash_Amount_Endowment",
+          "label" : "Lifetime Cash Amount-Endowment",
+          "formulaExpression" : "case\r\nwhen\r\n    Number_of_Year_Past = 0\r\n    and\r\n    contains(\"Designation.ucinn_ascendv2__Areas_of_Giving_CASE_Type__c\",'Endowment')\r\n    and \"Designation.ucinn_ascendv2__CASE_Type__c\"='Student Financial Aid'\r\nthen\r\n    Cash_Amount\r\nelse\r\n    0\r\nend",
+          "precision" : 10,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA166_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA56_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "FY05_Committed_Amount",
+          "label" : "FY05 Committed Amount",
+          "formulaExpression" : "case\r\nwhen\r\n    Number_of_Year_Past = 5\r\nthen\r\n    Fundraising_Amount\r\nelse\r\n    0\r\nend",
+          "precision" : 10,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA174_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA118_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "FY00_Hamilton_Fund_Fundraising_Amount_Temp",
+          "label" : "FY00 Hamilton Fund Fundraising Amount Temp",
+          "formulaExpression" : "case when\r\n    Number_of_Year_Past=0\r\n    and\r\n    \"Opportunity.Type\" not in ('Event Fee','Matching','Round Up')\r\n    and\r\n    \"Designation.ucinn_ascendv2__Designation_Name__c\" != 'Misc. Gifts-In-Kind'\r\n    and\r\n    contains(\"Designation.ucinn_ascendv2__Areas_of_Giving_CASE_Type__c\",'Hamilton Fund')\r\nthen\r\n    Fundraising_Amount\r\nelse\r\n    0\r\nend",
+          "precision" : 10,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA259_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA261_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Tribute_Fundraising",
+          "label" : "Tribute Fundraising",
+          "formulaExpression" : "case \r\n    when (\"Opportunity.ucinn_asce.ucinn_ascendv2__Tribute_Type__c\") =null\r\n    then Fundraising_Amount\r\n    else 0\r\nend",
+          "precision" : 10,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA261_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA87_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "FY01_Collected_Amount_Restricted",
+          "label" : "FY01 Collected Amount(Restricted)",
+          "formulaExpression" : "coalesce(FY01_Collected_Amount,0)-coalesce(FY01_Collected_Amount_HF,0)\r\n",
+          "precision" : 10,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "EXTRACT4_copy0" : {
+      "action" : "extractGrains",
+      "sources" : [ "EDIT_ATTRIBUTES65_copy0" ],
+      "parameters" : {
+        "grainExtractions" : [ ]
+      }
+    },
+    "AGGREGATE9_copy0" : {
+      "action" : "aggregate",
+      "sources" : [ "EXTRACT4_copy0" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "Sum.FY00_Committed_Amount",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        }, {
+          "name" : "Sum.FY01_Committed_Amount",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        }, {
+          "name" : "Sum.FY02_Committed_Amount",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        }, {
+          "name" : "Sum.FY03_Committed_Amount",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        }, {
+          "name" : "Sum.FY04_Committed_Amount",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        }, {
+          "name" : "Sum.Lifetime_Committed_Amount",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        }, {
+          "name" : "Sum.FY00_Collected_Amount",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        }, {
+          "name" : "Sum.FY01_Collected_Amount",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        }, {
+          "name" : "Sum.FY02_Collected_Amount",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        }, {
+          "name" : "Sum.FY03_Collected_Amount",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        }, {
+          "name" : "Sum.FY04_Collected_Amount",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        }, {
+          "name" : "Sum.Lifetime_Collected_Amount",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        }, {
+          "name" : "SUM_FY00_Collected_Amount_HF",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        }, {
+          "name" : "SUM_FY00_Collect_Amount_Restricted",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        }, {
+          "name" : "SUM_Bequest_Intention",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        }, {
+          "name" : "Sum.FY00_Hamilton_Fund_Cash_Amount",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        }, {
+          "name" : "Sum.FY00_Hamilton_Fund_Fundraising_Amount",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        }, {
+          "name" : "SUM_FY00_Cash_Amount_CYR_Solicitable",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        }, {
+          "name" : "SUM_FY00_Fundraising_Amount_CYR_Solicitable",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        }, {
+          "name" : "SUM_FY00_thru_Apr2_Collected_Amount",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        }, {
+          "name" : "SUM_FY00_Collected_Amount_No_Event_Fee_Gifts",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        }, {
+          "name" : "SUM_FY00_Committed_Amount_HF",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        }, {
+          "name" : "SUM_FY01_Collected_Amount_No_Event_Fee_Gifts",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        }, {
+          "name" : "SUM_FY01_Collected_Amount_HF",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        }, {
+          "name" : "SUM_FY02_Collected_Amount_HF",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        }, {
+          "name" : "SUM_FY03_Collected_Amount_HF",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        }, {
+          "name" : "SUM_FY04_Collected_Amount_HF",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        }, {
+          "name" : "SUM_FY05_Collected_Amount",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        }, {
+          "name" : "SUM_FY05_Collected_Amount_HF",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        }, {
+          "name" : "SUM_Lifetime_Cash_Amount_Endowment",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        }, {
+          "name" : "SUM_Lifetime_Fundraising_Amount_Endowment",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        }, {
+          "name" : "SUM_FY00_Hamilton_Fund_Fundraising_Amount_Temp",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        }, {
+          "name" : "SUM_Bequest_Intention_50th_Reunion",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        }, {
+          "name" : "SUM_Cash_Amount_50th_Reunion",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        }, {
+          "name" : "SUM_Fundraising_Amount_50th_Reunion",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        }, {
+          "name" : "SUM_Tribute_Fundraising",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        }, {
+          "name" : "SUM_FY01_Collected_Amount_Restricted",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        } ]
+      },
+      "parameters" : {
+        "aggregations" : [ {
+          "action" : "SUM",
+          "source" : "FY00_Committed_Amount",
+          "name" : "Sum.FY00_Committed_Amount",
+          "label" : "CYR Fundraising Amount"
+        }, {
+          "action" : "SUM",
+          "source" : "FY01_Committed_Amount",
+          "name" : "Sum.FY01_Committed_Amount",
+          "label" : "1YR Fundraising Amount"
+        }, {
+          "action" : "SUM",
+          "source" : "FY02_Committed_Amount",
+          "name" : "Sum.FY02_Committed_Amount",
+          "label" : "2YR Fundraising Amount"
+        }, {
+          "action" : "SUM",
+          "source" : "FY03_Committed_Amount",
+          "name" : "Sum.FY03_Committed_Amount",
+          "label" : "3YR Fundraising Amount"
+        }, {
+          "action" : "SUM",
+          "source" : "FY04_Committed_Amount",
+          "name" : "Sum.FY04_Committed_Amount",
+          "label" : "4YR Fundraising Amount"
+        }, {
+          "action" : "SUM",
+          "source" : "Fundraising_Amount",
+          "name" : "Sum.Lifetime_Committed_Amount",
+          "label" : "Lifetime Fundraising Amount"
+        }, {
+          "action" : "SUM",
+          "source" : "FY00_Collected_Amount",
+          "name" : "Sum.FY00_Collected_Amount",
+          "label" : "CYR Cash Amount"
+        }, {
+          "action" : "SUM",
+          "source" : "FY01_Collected_Amount",
+          "name" : "Sum.FY01_Collected_Amount",
+          "label" : "1YR Cash Amount"
+        }, {
+          "action" : "SUM",
+          "source" : "FY02_Collected_Amount",
+          "name" : "Sum.FY02_Collected_Amount",
+          "label" : "2YR Cash Amount"
+        }, {
+          "action" : "SUM",
+          "source" : "FY03_Collected_Amount",
+          "name" : "Sum.FY03_Collected_Amount",
+          "label" : "3YR Cash Amount"
+        }, {
+          "action" : "SUM",
+          "source" : "FY04_Collected_Amount",
+          "name" : "Sum.FY04_Collected_Amount",
+          "label" : "4YR Cash Amount"
+        }, {
+          "action" : "SUM",
+          "source" : "Cash_Amount",
+          "name" : "Sum.Lifetime_Collected_Amount",
+          "label" : "Lifetime Cash Amount"
+        }, {
+          "action" : "SUM",
+          "source" : "FY00_Collected_Amount_HF",
+          "name" : "SUM_FY00_Collected_Amount_HF",
+          "label" : "CYR Cash Amount (HF)"
+        }, {
+          "action" : "SUM",
+          "source" : "FY00_Collect_Amount_Restricted",
+          "name" : "SUM_FY00_Collect_Amount_Restricted",
+          "label" : "CYR Cash Amount (Restricted)"
+        }, {
+          "action" : "SUM",
+          "source" : "Bequest_Intention",
+          "name" : "SUM_Bequest_Intention",
+          "label" : "Lifetime Bequest Intention Amount"
+        }, {
+          "action" : "SUM",
+          "source" : "FY00_Hamilton_Fund_Cash_Amount",
+          "name" : "Sum.FY00_Hamilton_Fund_Cash_Amount",
+          "label" : "CYR Hamilton Fund Cash Amount-remove from reports"
+        }, {
+          "action" : "SUM",
+          "source" : "FY00_Hamilton_Fund_Fundraising_Amount",
+          "name" : "Sum.FY00_Hamilton_Fund_Fundraising_Amount",
+          "label" : "CYR Hamilton Fund Fundraising Amount-remove from reports"
+        }, {
+          "action" : "SUM",
+          "source" : "FY00_Cash_Amount_CYR_Solicitable",
+          "name" : "SUM_FY00_Cash_Amount_CYR_Solicitable",
+          "label" : "Cash Amount CYR Solicitable"
+        }, {
+          "action" : "SUM",
+          "source" : "FY00_Fundraising_Amount_CYR_Solicitable",
+          "name" : "SUM_FY00_Fundraising_Amount_CYR_Solicitable",
+          "label" : "Fundraising Amount CYR Solicitable"
+        }, {
+          "action" : "SUM",
+          "source" : "FY00_thru_Apr2_Collected_Amount",
+          "name" : "SUM_FY00_thru_Apr2_Collected_Amount",
+          "label" : "CYR thru Apr 2 Cash Amount"
+        }, {
+          "action" : "SUM",
+          "source" : "FY00_Collected_Amount_No_Event_Fee_Gifts",
+          "name" : "SUM_FY00_Collected_Amount_No_Event_Fee_Gifts",
+          "label" : "CYR Cash Amount No Event Fee Gifts"
+        }, {
+          "action" : "SUM",
+          "source" : "FY00_Committed_Amount_HF",
+          "name" : "SUM_FY00_Committed_Amount_HF",
+          "label" : "CYR Fundraising Amount (HF)"
+        }, {
+          "action" : "SUM",
+          "source" : "FY01_Collected_Amount_No_Event_Fee_Gifts",
+          "name" : "SUM_FY01_Collected_Amount_No_Event_Fee_Gifts",
+          "label" : "1YR Cash Amount No Event Fee Gifts"
+        }, {
+          "action" : "SUM",
+          "source" : "FY01_Collected_Amount_HF",
+          "name" : "SUM_FY01_Collected_Amount_HF",
+          "label" : "1YR Cash Amount (HF)"
+        }, {
+          "action" : "SUM",
+          "source" : "FY02_Collected_Amount_HF",
+          "name" : "SUM_FY02_Collected_Amount_HF",
+          "label" : "2YR Cash Amount (HF)"
+        }, {
+          "action" : "SUM",
+          "source" : "FY03_Collected_Amount_HF",
+          "name" : "SUM_FY03_Collected_Amount_HF",
+          "label" : "3YR Cash Amount (HF)"
+        }, {
+          "action" : "SUM",
+          "source" : "FY04_Collected_Amount_HF",
+          "name" : "SUM_FY04_Collected_Amount_HF",
+          "label" : "4YR Cash Amount (HF)"
+        }, {
+          "action" : "SUM",
+          "source" : "FY05_Collected_Amount",
+          "name" : "SUM_FY05_Collected_Amount",
+          "label" : "5YR Cash Amount"
+        }, {
+          "action" : "SUM",
+          "source" : "FY05_Collected_Amount_HF",
+          "name" : "SUM_FY05_Collected_Amount_HF",
+          "label" : "5YR Cash Amount (HF)"
+        }, {
+          "action" : "SUM",
+          "source" : "Lifetime_Cash_Amount_Endowment",
+          "name" : "SUM_Lifetime_Cash_Amount_Endowment",
+          "label" : "Lifetime Cash Amount-Endowment-delete check code"
+        }, {
+          "action" : "SUM",
+          "source" : "Lifetime_Fundraising_Amount_Endowment",
+          "name" : "SUM_Lifetime_Fundraising_Amount_Endowment",
+          "label" : "Lifetime Fundraising Amount-Endowment-delete check code"
+        }, {
+          "action" : "SUM",
+          "source" : "FY00_Hamilton_Fund_Fundraising_Amount_Temp",
+          "name" : "SUM_FY00_Hamilton_Fund_Fundraising_Amount_Temp",
+          "label" : "Sum of FY00 Hamilton Fund Fundraising Amount Temp"
+        }, {
+          "action" : "SUM",
+          "source" : "Bequest_Intention_50th_Reunion",
+          "name" : "SUM_Bequest_Intention_50th_Reunion",
+          "label" : "Bequest Intention 50th Reunion"
+        }, {
+          "action" : "SUM",
+          "source" : "Cash_Amount_50th_Reunion",
+          "name" : "SUM_Cash_Amount_50th_Reunion",
+          "label" : "Cash Amount 50th Reunion"
+        }, {
+          "action" : "SUM",
+          "source" : "Fundraising_Amount_50th_Reunion",
+          "name" : "SUM_Fundraising_Amount_50th_Reunion",
+          "label" : "Fundraising Amount 50th Reunion"
+        }, {
+          "action" : "SUM",
+          "source" : "Tribute_Fundraising",
+          "name" : "SUM_Tribute_Fundraising",
+          "label" : "Tribute Fundraising"
+        }, {
+          "action" : "SUM",
+          "source" : "FY01_Collected_Amount_Restricted",
+          "name" : "SUM_FY01_Collected_Amount_Restricted",
+          "label" : "1YR Cash Amount (Restricted)"
+        } ],
+        "groupings" : [ "Account_or_Contact_Id" ],
+        "pivots" : [ ],
+        "nodeType" : "STANDARD"
+      }
+    },
+    "JOIN43_copy0" : {
+      "action" : "join",
+      "sources" : [ "JOIN71_copy0", "AGGREGATE9_copy0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Aggregate.Account_or_Contact_Id" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Account_or_Contact_Id" ],
+        "rightQualifier" : "Aggregate",
+        "rightKeys" : [ "Account_or_Contact_Id" ]
+      }
+    },
+    "JOIN47_copy0" : {
+      "action" : "join",
+      "sources" : [ "JOIN49_copy0", "JOIN48_copy0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "AccountId" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "OUTER",
+        "leftKeys" : [ "AccountId" ],
+        "rightQualifier" : "Account",
+        "rightKeys" : [ "Id" ]
+      }
+    },
+    "JOIN48_copy0" : {
+      "action" : "join",
+      "sources" : [ "LOAD_DATASET26_copy0", "LOAD_DATASET2_copy0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "RecordTypeId", "Record_Type.Id" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "RecordTypeId" ],
+        "rightQualifier" : "Record_Type",
+        "rightKeys" : [ "Id" ]
+      }
+    },
+    "JOIN49_copy0" : {
+      "action" : "join",
+      "sources" : [ "LOAD_DATASET27_copy0", "LOAD_DATASET18_copy0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "RecordTypeId", "Record_Type.Id" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "RecordTypeId" ],
+        "rightQualifier" : "Record_Type",
+        "rightKeys" : [ "Id" ]
+      }
+    },
+    "LOAD_DATASET41_copy0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Opportunity.ucinn_asce.ucinn_ascendv2__Tribute_Type__c", "Opportunity.ucinn_asce.ucinn_ascendv2__Tributee__c", "Designation.ucinn_ascendv2__Areas_of_Giving_CASE_Type__c", "Designation.ucinn_ascendv2__CASE_Type__c", "ucinn_ascendv2__Credit_Type__c", "Object", "Id", "ucinn_ascendv2__Gift_Type_Formula__c", "Fiscal_Year", "Contact.ucinn_ascendv2__Is_Deceased__c", "Opportunity.StageName", "Designation.ucinn_ascendv2__Designation_Name__c", "ucinn_ascendv2__Credit_Date_Formula__c", "Opportunity.Type", "Constituent_or_Account_Id", "ucinn_ascendv2__Is_Ready_for_G_L_Formula__c", "Fundraising_Amount_50th_Reunion", "Collected_Amount", "Bequest_Intention_50th_Reunion", "ucinn_ascendv2__Credit_Amount__c", "Number_of_Year_Past", "Fundraising_Amount", "Cash_Amount_50th_Reunion", "Fiscal_Year_Numeric", "Cash_Amount" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Gift Credit and Payment",
+          "name" : "Gift_Credit_and_Payment"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "FILTER34_copy0" : {
+      "action" : "filter",
+      "sources" : [ "FILTER35_copy0" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "DATETIME",
+          "field" : "ucinn_ascendv2__Credit_Date_Formula__c",
+          "operator" : "LESS_OR_EQUAL",
+          "operands" : [ "1706745600000" ]
+        }, {
+          "type" : "TEXT",
+          "field" : "Object",
+          "operator" : "EQUAL",
+          "operands" : [ "Hard and Soft Credit" ]
+        } ]
+      }
+    },
+    "FORMULA144_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FILTER34_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "FY00_Collected_Amount_HF_Before_Feb",
+          "label" : "FY00 Collected Amount(HF) Before Feb",
+          "formulaExpression" : "case\r\nwhen\r\n    Number_of_Year_Past = 0\r\n    and\r\n    contains(\"Designation.ucinn_ascendv2__Areas_of_Giving_CASE_Type__c\",'Hamilton Fund')\r\nthen\r\n    Cash_Amount\r\nelse\r\n    0\r\nend",
+          "precision" : 10,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA145_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA146_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "FY00_Collected_Amount_Restricted_Before_Feb",
+          "label" : "FY00 Collected Amount(Restricted) Before Feb",
+          "formulaExpression" : "coalesce(FY00_Collected_Amount_Before_Feb,0)-coalesce(FY00_Collected_Amount_HF_Before_Feb,0)",
+          "precision" : 10,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA146_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA144_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "FY00_Collected_Amount_Before_Feb",
+          "label" : "FY00 Collected Amount Before Feb",
+          "formulaExpression" : "case\r\nwhen\r\n    Number_of_Year_Past = 0\r\nthen\r\n    Cash_Amount\r\nelse\r\n    0\r\nend",
+          "precision" : 10,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "EXTRACT8_copy0" : {
+      "action" : "extractGrains",
+      "sources" : [ "FORMULA145_copy0" ],
+      "parameters" : {
+        "grainExtractions" : [ ]
+      }
+    },
+    "AGGREGATE17_copy0" : {
+      "action" : "aggregate",
+      "sources" : [ "EXTRACT8_copy0" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "SUM_FY00_Collected_Amount_HF_Before_Feb",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        }, {
+          "name" : "SUM_FY00_Collected_Amount_Restricted_Before_Feb",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        } ]
+      },
+      "parameters" : {
+        "aggregations" : [ {
+          "action" : "SUM",
+          "source" : "FY00_Collected_Amount_HF_Before_Feb",
+          "name" : "SUM_FY00_Collected_Amount_HF_Before_Feb",
+          "label" : "Sum of FY00 Collected Amount(HF) Before Feb"
+        }, {
+          "action" : "SUM",
+          "source" : "FY00_Collected_Amount_Restricted_Before_Feb",
+          "name" : "SUM_FY00_Collected_Amount_Restricted_Before_Feb",
+          "label" : "Sum of FY00 Collected Amount(Restricted) Before Feb"
+        } ],
+        "groupings" : [ "Constituent_or_Account_Id" ],
+        "pivots" : [ ],
+        "nodeType" : "STANDARD"
+      }
+    },
+    "JOIN71_copy0" : {
+      "action" : "join",
+      "sources" : [ "JOIN72_copy0", "AGGREGATE17_copy0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "AggregateB.Constituent_or_Account_Id" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Account_or_Contact_Id" ],
+        "rightQualifier" : "AggregateB",
+        "rightKeys" : [ "Constituent_or_Account_Id" ]
+      }
+    },
+    "FILTER35_copy0" : {
+      "action" : "filter",
+      "sources" : [ "LOAD_DATASET41_copy0" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "Object",
+          "operator" : "EQUAL",
+          "operands" : [ "Hard and Soft Credit" ]
+        }, {
+          "type" : "TEXT",
+          "field" : "ucinn_ascendv2__Credit_Type__c",
+          "operator" : "EQUAL",
+          "operands" : [ "Hard" ]
+        } ]
+      }
+    },
+    "FILTER36_copy0" : {
+      "action" : "filter",
+      "sources" : [ "FILTER35_copy0" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "ucinn_ascendv2__Gift_Type_Formula__c",
+          "operator" : "EQUAL",
+          "operands" : [ "Recurring Gift", "Recurring Gift Payment" ]
+        }, {
+          "type" : "NUMBER",
+          "field" : "Cash_Amount",
+          "operator" : "GREATER_THAN",
+          "operands" : [ "0" ]
+        }, {
+          "type" : "NUMBER",
+          "field" : "Number_of_Year_Past",
+          "operator" : "EQUAL",
+          "operands" : [ "0" ]
+        } ]
+      }
+    },
+    "EXTRACT9_copy0" : {
+      "action" : "extractGrains",
+      "sources" : [ "FILTER36_copy0" ],
+      "parameters" : {
+        "grainExtractions" : [ ]
+      }
+    },
+    "AGGREGATE19_copy0" : {
+      "action" : "aggregate",
+      "sources" : [ "EXTRACT9_copy0" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "SUM_Cash_Amount",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        } ]
+      },
+      "parameters" : {
+        "aggregations" : [ {
+          "action" : "SUM",
+          "source" : "Cash_Amount",
+          "name" : "SUM_Cash_Amount",
+          "label" : " Cash Amount"
+        } ],
+        "groupings" : [ "Constituent_or_Account_Id" ],
+        "pivots" : [ ],
+        "nodeType" : "STANDARD"
+      }
+    },
+    "FORMULA157_copy0" : {
+      "action" : "formula",
+      "sources" : [ "AGGREGATE19_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "If_CB_Current_FY",
+          "label" : "If CB Current FY",
+          "formulaExpression" : "1",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "JOIN72_copy0" : {
+      "action" : "join",
+      "sources" : [ "JOIN105_copy0", "FORMULA157_copy0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "EnrichCBIn.Constituent_or_Account_Id", "EnrichCBIn.SUM_Cash_Amount" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Account_or_Contact_Id" ],
+        "rightQualifier" : "EnrichCBIn",
+        "rightKeys" : [ "Constituent_or_Account_Id" ]
+      }
+    },
+    "FILTER73_copy0" : {
+      "action" : "filter",
+      "sources" : [ "FILTER35_copy0" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "ucinn_ascendv2__Gift_Type_Formula__c",
+          "operator" : "EQUAL",
+          "operands" : [ "Recurring Gift", "Recurring Gift Payment" ]
+        }, {
+          "type" : "NUMBER",
+          "field" : "Cash_Amount",
+          "operator" : "GREATER_THAN",
+          "operands" : [ "0" ]
+        }, {
+          "type" : "NUMBER",
+          "field" : "Number_of_Year_Past",
+          "operator" : "EQUAL",
+          "operands" : [ "1" ]
+        } ]
+      }
+    },
+    "EXTRACT20_copy0" : {
+      "action" : "extractGrains",
+      "sources" : [ "FILTER73_copy0" ],
+      "parameters" : {
+        "grainExtractions" : [ ]
+      }
+    },
+    "AGGREGATE41_copy0" : {
+      "action" : "aggregate",
+      "sources" : [ "EXTRACT20_copy0" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "SUM_Cash_Amount",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        } ]
+      },
+      "parameters" : {
+        "aggregations" : [ {
+          "action" : "SUM",
+          "source" : "Cash_Amount",
+          "name" : "SUM_Cash_Amount",
+          "label" : "Sum of Cash Amount"
+        } ],
+        "groupings" : [ "Constituent_or_Account_Id" ],
+        "pivots" : [ ],
+        "nodeType" : "STANDARD"
+      }
+    },
+    "FORMULA260_copy0" : {
+      "action" : "formula",
+      "sources" : [ "AGGREGATE41_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "If_CB_Last_FY",
+          "label" : "If CB Last FY",
+          "formulaExpression" : "1",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "JOIN105_copy0" : {
+      "action" : "join",
+      "sources" : [ "DROP_FIELDS57_copy0", "FORMULA260_copy0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "EnrichCBIn.Constituent_or_Account_Id", "EnrichCBIn.SUM_Cash_Amount" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Account_or_Contact_Id" ],
+        "rightQualifier" : "EnrichCBIn",
+        "rightKeys" : [ "Constituent_or_Account_Id" ]
+      }
+    },
+    "OUTPUT0" : {
+      "action" : "save",
+      "sources" : [ "JOIN43_copy0" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "check HF",
+          "name" : "check_HF"
+        },
+        "measuresToCurrencies" : [ ]
+      }
+    }
+  },
+  "ui" : {
+    "nodes" : {
+      "LOAD_DATASET2_copy0" : {
+        "label" : "RecordType",
+        "type" : "LOAD_DATASET",
+        "top" : 252.59999999999997,
+        "left" : 531.8,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "LOAD_DATASET18_copy0" : {
+        "label" : "RecordType Copy",
+        "type" : "LOAD_DATASET",
+        "top" : 252.3,
+        "left" : 252.00000000000003,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "LOAD_DATASET26_copy0" : {
+        "label" : "Account",
+        "type" : "LOAD_DATASET",
+        "top" : 392.40000000000003,
+        "left" : 391.79999999999995,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "LOAD_DATASET27_copy0" : {
+        "label" : "Contact",
+        "type" : "LOAD_DATASET",
+        "top" : 112,
+        "left" : 112,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "TRANSFORM20_copy0" : {
+        "label" : "Account or Contact Id",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 112.60000000000002,
+        "left" : 531.8,
+        "graph" : {
+          "FORMULA73_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Account or Contact Id"
+          },
+          "FORMULA136_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Account or Contact Donor ID"
+          },
+          "FORMULA266_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Account or Contact Because Hamilton Fundraising"
+          },
+          "DROP_FIELDS57_copy0" : {
+            "label" : "Drop Columns"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA73_copy0",
+          "target" : "FORMULA136_copy0"
+        }, {
+          "source" : "FORMULA136_copy0",
+          "target" : "FORMULA266_copy0"
+        }, {
+          "source" : "FORMULA266_copy0",
+          "target" : "DROP_FIELDS57_copy0"
+        } ]
+      },
+      "TRANSFORM4_copy0_copy0" : {
+        "label" : "Enrich Credit Gift Payment",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 1372.3999999999999,
+        "left" : 1232.1000000000001,
+        "graph" : {
+          "FORMULA10_copy0_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Is In Period"
+          },
+          "FORMULA52_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "FY00 Committed Amount"
+          },
+          "FORMULA53_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "FY 01 Committed Amount"
+          },
+          "FORMULA54_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "FY02 Committed Amount"
+          },
+          "FORMULA55_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "FY03 Committed Amount"
+          },
+          "FORMULA56_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "FY04 Committed Amount"
+          },
+          "FORMULA57_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "FY00 Collected Amount"
+          },
+          "FORMULA58_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "FY01 Collected Amount"
+          },
+          "FORMULA59_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "FY02 Collected Amount"
+          },
+          "FORMULA60_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "FY03 Collected Amount"
+          },
+          "FORMULA61_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "FY04 Collected Amount"
+          },
+          "FORMULA86_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "FY00 Collected Amount(HF)"
+          },
+          "FORMULA87_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "FY00 Collected Amount(Restricted)"
+          },
+          "FORMULA95_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Bequest Intention Amount"
+          },
+          "FORMULA118_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "FY00 Hamilton Fund Cash Amount"
+          },
+          "FORMULA119_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "FY00 Hamilton Fund Fundraising Amount"
+          },
+          "FORMULA120_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "FY00 Fundraising Amount CYR Solicitable"
+          },
+          "FORMULA121_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "FY00 Cash Amount CYR Solicitable"
+          },
+          "EDIT_ATTRIBUTES65_copy0" : {
+            "label" : "Edit Attributes"
+          },
+          "FORMULA147_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "FY00 thru Apr 2 Collected Amount"
+          },
+          "FORMULA148_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "FY00 Collected Amount No Event Fee Gifts"
+          },
+          "FORMULA149_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "FY00 Committed Amount(HF)"
+          },
+          "FORMULA150_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "FY05 Collected Amount"
+          },
+          "FORMULA151_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "FY01 Collected Amount(HF)"
+          },
+          "FORMULA152_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "FY02 Collected Amount(HF)"
+          },
+          "FORMULA153_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "FY03 Collected Amount(HF)"
+          },
+          "FORMULA154_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "FY04 Collected Amount(HF)"
+          },
+          "FORMULA155_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "FY05 Collected Amount(HF)"
+          },
+          "FORMULA156_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "FY01 Collected Amount No Event Fee Gifts"
+          },
+          "FORMULA163_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Lifetime Fundraising Amount-Endowment-delete mislabeled"
+          },
+          "FORMULA164_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Lifetime Cash Amount-Endowment-delete mislabeled?"
+          },
+          "FORMULA166_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "FY05 Committed Amount"
+          },
+          "FORMULA174_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "FY00 Hamilton Fund Fundraising Amount-TEMP"
+          },
+          "FORMULA259_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Tribute Fundraising"
+          },
+          "FORMULA261_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "FY01 Collected Amount(Restricted)"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA52_copy0",
+          "target" : "FORMULA53_copy0"
+        }, {
+          "source" : "FORMULA53_copy0",
+          "target" : "FORMULA54_copy0"
+        }, {
+          "source" : "FORMULA54_copy0",
+          "target" : "FORMULA55_copy0"
+        }, {
+          "source" : "FORMULA55_copy0",
+          "target" : "FORMULA56_copy0"
+        }, {
+          "source" : "FORMULA58_copy0",
+          "target" : "FORMULA59_copy0"
+        }, {
+          "source" : "FORMULA60_copy0",
+          "target" : "FORMULA61_copy0"
+        }, {
+          "source" : "FORMULA59_copy0",
+          "target" : "FORMULA60_copy0"
+        }, {
+          "source" : "FORMULA95_copy0",
+          "target" : "FORMULA118_copy0"
+        }, {
+          "source" : "FORMULA120_copy0",
+          "target" : "FORMULA52_copy0"
+        }, {
+          "source" : "FORMULA121_copy0",
+          "target" : "FORMULA120_copy0"
+        }, {
+          "source" : "FORMULA10_copy0_copy0",
+          "target" : "FORMULA95_copy0"
+        }, {
+          "source" : "FORMULA119_copy0",
+          "target" : "FORMULA121_copy0"
+        }, {
+          "source" : "FORMULA147_copy0",
+          "target" : "FORMULA58_copy0"
+        }, {
+          "source" : "FORMULA57_copy0",
+          "target" : "FORMULA148_copy0"
+        }, {
+          "source" : "FORMULA150_copy0",
+          "target" : "FORMULA86_copy0"
+        }, {
+          "source" : "FORMULA61_copy0",
+          "target" : "FORMULA150_copy0"
+        }, {
+          "source" : "FORMULA86_copy0",
+          "target" : "FORMULA151_copy0"
+        }, {
+          "source" : "FORMULA151_copy0",
+          "target" : "FORMULA152_copy0"
+        }, {
+          "source" : "FORMULA152_copy0",
+          "target" : "FORMULA153_copy0"
+        }, {
+          "source" : "FORMULA153_copy0",
+          "target" : "FORMULA154_copy0"
+        }, {
+          "source" : "FORMULA155_copy0",
+          "target" : "FORMULA149_copy0"
+        }, {
+          "source" : "FORMULA154_copy0",
+          "target" : "FORMULA155_copy0"
+        }, {
+          "source" : "FORMULA156_copy0",
+          "target" : "FORMULA147_copy0"
+        }, {
+          "source" : "FORMULA148_copy0",
+          "target" : "FORMULA156_copy0"
+        }, {
+          "source" : "FORMULA149_copy0",
+          "target" : "FORMULA163_copy0"
+        }, {
+          "source" : "FORMULA164_copy0",
+          "target" : "FORMULA87_copy0"
+        }, {
+          "source" : "FORMULA163_copy0",
+          "target" : "FORMULA164_copy0"
+        }, {
+          "source" : "FORMULA166_copy0",
+          "target" : "FORMULA57_copy0"
+        }, {
+          "source" : "FORMULA56_copy0",
+          "target" : "FORMULA166_copy0"
+        }, {
+          "source" : "FORMULA174_copy0",
+          "target" : "FORMULA119_copy0"
+        }, {
+          "source" : "FORMULA118_copy0",
+          "target" : "FORMULA174_copy0"
+        }, {
+          "source" : "FORMULA259_copy0",
+          "target" : "EDIT_ATTRIBUTES65_copy0"
+        }, {
+          "source" : "FORMULA261_copy0",
+          "target" : "FORMULA259_copy0"
+        }, {
+          "source" : "FORMULA87_copy0",
+          "target" : "FORMULA261_copy0"
+        } ]
+      },
+      "AGGREGATE8_copy0" : {
+        "label" : "Aggregate By Organization or Contact Account",
+        "description" : "",
+        "type" : "AGGREGATE",
+        "top" : 392.50000000000006,
+        "left" : 1232.1000000000001,
+        "graph" : {
+          "EXTRACT4_copy0" : null,
+          "AGGREGATE9_copy0" : null
+        },
+        "connectors" : [ {
+          "source" : "EXTRACT4_copy0",
+          "target" : "AGGREGATE9_copy0"
+        } ]
+      },
+      "JOIN43_copy0" : {
+        "label" : "Lookup Gift Credit and Payment To Organization and Contact",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 112.5,
+        "left" : 1232.1000000000001
+      },
+      "JOIN47_copy0" : {
+        "label" : "Outer Join All Accounts",
+        "description" : "Create a list of all Account and all Contacts",
+        "type" : "JOIN",
+        "top" : 112.40000000000003,
+        "left" : 391.79999999999995
+      },
+      "JOIN48_copy0" : {
+        "label" : "Lookup Record Type To Account",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 252.40000000000003,
+        "left" : 391.79999999999995
+      },
+      "JOIN49_copy0" : {
+        "label" : "Lookup Record Type To Contact",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 112.40000000000003,
+        "left" : 252.1
+      },
+      "LOAD_DATASET41_copy0" : {
+        "label" : "Gift Credit and Payment",
+        "type" : "LOAD_DATASET",
+        "top" : 1792.4999999999998,
+        "left" : 1232.1000000000001,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "FILTER34_copy0" : {
+        "label" : "Filter Date Before Feb 1",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 952.5,
+        "left" : 1092.1000000000001
+      },
+      "TRANSFORM44_copy0" : {
+        "label" : "Enrich Field Before Feb",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 532.5,
+        "left" : 1092.1000000000001,
+        "graph" : {
+          "FORMULA144_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "FY00 Collected Amount(HF) Before Feb"
+          },
+          "FORMULA145_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "FY00 Collected Amount(Restricted) Before Feb"
+          },
+          "FORMULA146_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "FY00 Collected Amount Before Feb"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA146_copy0",
+          "target" : "FORMULA145_copy0"
+        }, {
+          "source" : "FORMULA144_copy0",
+          "target" : "FORMULA146_copy0"
+        } ]
+      },
+      "AGGREGATE16_copy0" : {
+        "label" : "Aggregate By Org or Contact",
+        "description" : "",
+        "type" : "AGGREGATE",
+        "top" : 392.50000000000006,
+        "left" : 1092.1000000000001,
+        "graph" : {
+          "EXTRACT8_copy0" : null,
+          "AGGREGATE17_copy0" : null
+        },
+        "connectors" : [ {
+          "source" : "EXTRACT8_copy0",
+          "target" : "AGGREGATE17_copy0"
+        } ]
+      },
+      "JOIN71_copy0" : {
+        "label" : "Join HF Before Feb",
+        "description" : "Delete after validation",
+        "type" : "JOIN",
+        "top" : 112.5,
+        "left" : 1092.1000000000001
+      },
+      "FILTER35_copy0" : {
+        "label" : "Filter Object",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 1652.5,
+        "left" : 1232.1000000000001
+      },
+      "FILTER36_copy0" : {
+        "label" : "Filter Recurring Gift in Current FY",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 952.5,
+        "left" : 952.1
+      },
+      "AGGREGATE18_copy0" : {
+        "label" : "Aggregate Recurring Amount",
+        "description" : "",
+        "type" : "AGGREGATE",
+        "top" : 392.50000000000006,
+        "left" : 952.1,
+        "graph" : {
+          "EXTRACT9_copy0" : null,
+          "AGGREGATE19_copy0" : null
+        },
+        "connectors" : [ {
+          "source" : "EXTRACT9_copy0",
+          "target" : "AGGREGATE19_copy0"
+        } ]
+      },
+      "TRANSFORM45_copy0" : {
+        "label" : "Enrich CB Indicators",
+        "description" : "Everyone who made a recurring gift this year would be marked as CB",
+        "type" : "TRANSFORM",
+        "top" : 252.3,
+        "left" : 951.9,
+        "graph" : {
+          "FORMULA157_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "If CB Current FY"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "JOIN72_copy0" : {
+        "label" : "Lookup CB to Contact",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 112.30000000000001,
+        "left" : 951.9
+      },
+      "FILTER73_copy0" : {
+        "label" : "Filter Recurring Gift in Last FY",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 952.2,
+        "left" : 812
+      },
+      "AGGREGATE40_copy0" : {
+        "label" : "Aggregate Recurring Amount Copy",
+        "description" : "",
+        "type" : "AGGREGATE",
+        "top" : 392.3,
+        "left" : 811.9,
+        "graph" : {
+          "EXTRACT20_copy0" : null,
+          "AGGREGATE41_copy0" : null
+        },
+        "connectors" : [ {
+          "source" : "EXTRACT20_copy0",
+          "target" : "AGGREGATE41_copy0"
+        } ]
+      },
+      "TRANSFORM81_copy0" : {
+        "label" : "Enrich CB Indicators LY",
+        "description" : "Everyone who made a recurring gift last FY",
+        "type" : "TRANSFORM",
+        "top" : 252.3,
+        "left" : 811.9,
+        "graph" : {
+          "FORMULA260_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "If CB Last FY"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "JOIN105_copy0" : {
+        "label" : "Lookup LFY CB to Contact",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 112.30000000000001,
+        "left" : 811.9
+      },
+      "OUTPUT0" : {
+        "label" : "Output 0",
+        "type" : "OUTPUT",
+        "top" : 112,
+        "left" : 1372
+      }
+    },
+    "connectors" : [ {
+      "source" : "TRANSFORM20_copy0",
+      "target" : "JOIN105_copy0"
+    }, {
+      "source" : "JOIN71_copy0",
+      "target" : "JOIN43_copy0"
+    }, {
+      "source" : "TRANSFORM4_copy0_copy0",
+      "target" : "AGGREGATE8_copy0"
+    }, {
+      "source" : "AGGREGATE8_copy0",
+      "target" : "JOIN43_copy0"
+    }, {
+      "source" : "JOIN49_copy0",
+      "target" : "JOIN47_copy0"
+    }, {
+      "source" : "JOIN48_copy0",
+      "target" : "JOIN47_copy0"
+    }, {
+      "source" : "JOIN47_copy0",
+      "target" : "TRANSFORM20_copy0"
+    }, {
+      "source" : "LOAD_DATASET26_copy0",
+      "target" : "JOIN48_copy0"
+    }, {
+      "source" : "LOAD_DATASET2_copy0",
+      "target" : "JOIN48_copy0"
+    }, {
+      "source" : "LOAD_DATASET27_copy0",
+      "target" : "JOIN49_copy0"
+    }, {
+      "source" : "LOAD_DATASET18_copy0",
+      "target" : "JOIN49_copy0"
+    }, {
+      "source" : "FILTER35_copy0",
+      "target" : "TRANSFORM4_copy0_copy0"
+    }, {
+      "source" : "FILTER34_copy0",
+      "target" : "TRANSFORM44_copy0"
+    }, {
+      "source" : "TRANSFORM44_copy0",
+      "target" : "AGGREGATE16_copy0"
+    }, {
+      "source" : "JOIN72_copy0",
+      "target" : "JOIN71_copy0"
+    }, {
+      "source" : "AGGREGATE16_copy0",
+      "target" : "JOIN71_copy0"
+    }, {
+      "source" : "LOAD_DATASET41_copy0",
+      "target" : "FILTER35_copy0"
+    }, {
+      "source" : "FILTER36_copy0",
+      "target" : "AGGREGATE18_copy0"
+    }, {
+      "source" : "AGGREGATE18_copy0",
+      "target" : "TRANSFORM45_copy0"
+    }, {
+      "source" : "JOIN105_copy0",
+      "target" : "JOIN72_copy0"
+    }, {
+      "source" : "TRANSFORM45_copy0",
+      "target" : "JOIN72_copy0"
+    }, {
+      "source" : "FILTER35_copy0",
+      "target" : "FILTER34_copy0"
+    }, {
+      "source" : "FILTER35_copy0",
+      "target" : "FILTER36_copy0"
+    }, {
+      "source" : "FILTER35_copy0",
+      "target" : "FILTER73_copy0"
+    }, {
+      "source" : "FILTER73_copy0",
+      "target" : "AGGREGATE40_copy0"
+    }, {
+      "source" : "AGGREGATE40_copy0",
+      "target" : "TRANSFORM81_copy0"
+    }, {
+      "source" : "TRANSFORM81_copy0",
+      "target" : "JOIN105_copy0"
+    }, {
+      "source" : "JOIN43_copy0",
+      "target" : "OUTPUT0"
+    } ],
+    "hiddenColumns" : [ ]
+  },
+  "runMode" : "full"
+}

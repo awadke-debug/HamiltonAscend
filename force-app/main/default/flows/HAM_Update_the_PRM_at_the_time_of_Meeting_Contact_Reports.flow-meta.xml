@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>62.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <description>Update the PRM at the time of meeting field on the contact report whenever it is created.</description>
+    <environments>Default</environments>
+    <interviewLabel>HAM Update the PRM at the time of Meeting Contact Reports {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>HAM Update the PRM at the time of Meeting Contact Reports</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordUpdates>
+        <description>Update the PRM at the time of the meeting when a contact report is submitted.</description>
+        <name>Update_the_PRM_at_time_of_Meeting_Field</name>
+        <label>Update the PRM (at time of Meeting) Field</label>
+        <locationX>176</locationX>
+        <locationY>287</locationY>
+        <inputAssignments>
+            <field>HAM_PRM_at_Time_of_Meeting__c</field>
+            <value>
+                <stringValue>{!$Record.ucinn_ascendv2__Contact__r.ucinn_ascendv2__PRM__r.FirstName} {!$Record.ucinn_ascendv2__Contact__r.ucinn_ascendv2__PRM__r.LastName}</stringValue>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <start>
+        <locationX>50</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Update_the_PRM_at_time_of_Meeting_Field</targetReference>
+        </connector>
+        <object>ucinn_ascendv2__Contact_Report__c</object>
+        <recordTriggerType>Create</recordTriggerType>
+        <triggerType>RecordBeforeSave</triggerType>
+    </start>
+    <status>Active</status>
+</Flow>

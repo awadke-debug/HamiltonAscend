@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FlowTest xmlns="http://soap.sforce.com/2006/04/metadata">
+    <flowApiName>HAM_Presidential_Acknowledgement_Task_Generation</flowApiName>
+    <label>Test Task Creation</label>
+    <testPoints>
+        <elementApiName>Start</elementApiName>
+        <parameters>
+            <leftValueReference>$Record</leftValueReference>
+            <type>InputTriggeringRecordInitial</type>
+            <value>
+                <sobjectValue>{&quot;HAM_Constituent_Type__c&quot;:&quot;Employee&quot;,&quot;HAM_GOLD_Flag__c&quot;:false,&quot;HAM_Gift_Receipt_Generated__c&quot;:false,&quot;HAM_IRA_Acknowledgement_Generated__c&quot;:false,&quot;HAM_Is_Primary_Donor__c&quot;:false,&quot;HAM_Reunion_Milestone__c&quot;:false,&quot;HAM_VP_Acknowledgement_Generated__c&quot;:false,&quot;Name&quot;:&quot;Credit-241017-1785145&quot;,&quot;ucinn_ascendv2__Contact__c&quot;:&quot;003U1000004fos0IAA&quot;,&quot;ucinn_ascendv2__Credit_Amount__c&quot;:100000,&quot;ucinn_ascendv2__Credit_ID__c&quot;:&quot;003U1000004fos0IAA&quot;,&quot;ucinn_ascendv2__Credit_Type__c&quot;:&quot;Hard&quot;,&quot;ucinn_ascendv2__Default_Spouse_Soft_Credit__c&quot;:false,&quot;ucinn_ascendv2__Designation_Detail__c&quot;:&quot;a0YU100000EuqrzMAB&quot;,&quot;ucinn_ascendv2__Designation__c&quot;:&quot;a0bU1000000NkCEIA0&quot;,&quot;ucinn_ascendv2__Is_Donor_Control__c&quot;:false,&quot;ucinn_ascendv2__Opportunity__c&quot;:&quot;006U100000BUdjyIAD&quot;,&quot;ucinn_ascendv2__Session__c&quot;:&quot;a2CU1000001Cg4XMAS&quot;,&quot;ucinn_ascendv2__Source__c&quot;:&quot;Pledge&quot;,&quot;attributes&quot;:{&quot;type&quot;:&quot;ucinn_ascendv2__Hard_and_Soft_Credit__c&quot;}}</sobjectValue>
+            </value>
+        </parameters>
+        <parameters>
+            <leftValueReference>$Record</leftValueReference>
+            <type>InputTriggeringRecordUpdated</type>
+            <value>
+                <sobjectValue>{&quot;HAM_Constituent_Type__c&quot;:&quot;Employee&quot;,&quot;HAM_GOLD_Flag__c&quot;:false,&quot;HAM_Gift_Receipt_Generated__c&quot;:false,&quot;HAM_IRA_Acknowledgement_Generated__c&quot;:false,&quot;HAM_Is_Primary_Donor__c&quot;:false,&quot;HAM_Reunion_Milestone__c&quot;:false,&quot;HAM_VP_Acknowledgement_Generated__c&quot;:false,&quot;Name&quot;:&quot;Credit-241017-1785145&quot;,&quot;ucinn_ascendv2__Contact__c&quot;:&quot;003U1000004fos0IAA&quot;,&quot;ucinn_ascendv2__Credit_Amount__c&quot;:100000,&quot;ucinn_ascendv2__Credit_ID__c&quot;:&quot;003U1000004fos0IAA&quot;,&quot;ucinn_ascendv2__Credit_Type__c&quot;:&quot;Hard&quot;,&quot;ucinn_ascendv2__Default_Spouse_Soft_Credit__c&quot;:false,&quot;ucinn_ascendv2__Designation_Detail__c&quot;:&quot;a0YU100000EuqrzMAB&quot;,&quot;ucinn_ascendv2__Designation__c&quot;:&quot;a0bU1000000NkCEIA0&quot;,&quot;ucinn_ascendv2__Is_Donor_Control__c&quot;:false,&quot;ucinn_ascendv2__Opportunity__c&quot;:&quot;006U100000BUdjyIAD&quot;,&quot;ucinn_ascendv2__Session__c&quot;:&quot;a2CU1000001Cg4XMAS&quot;,&quot;ucinn_ascendv2__Source__c&quot;:&quot;Pledge&quot;,&quot;attributes&quot;:{&quot;type&quot;:&quot;ucinn_ascendv2__Hard_and_Soft_Credit__c&quot;}}</sobjectValue>
+            </value>
+        </parameters>
+    </testPoints>
+    <testPoints>
+        <assertions>
+            <conditions>
+                <leftValueReference>HAM_Create_a_Presidential_Acknowledgement_Task</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <stringValue></stringValue>
+                </rightValue>
+            </conditions>
+        </assertions>
+        <elementApiName>Finish</elementApiName>
+    </testPoints>
+</FlowTest>

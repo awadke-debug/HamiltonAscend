@@ -1,0 +1,796 @@
+{
+  "version" : "62.0",
+  "nodes" : {
+    "LOAD_DATASET1" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "ucinn_ascendv2__Credit_Date_Formula__c", "ucinn_ascendv2__Opportunity__c", "ucinn_ascendv2__Credit_Type__c", "Contact.ucinn_ascendv2__Full_Name_Formula__c", "Account.Id", "Account.Record_Type.Name", "Opportunity.Type", "Constituent_or_Account_Id", "Account.Name", "Cash_Amount" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Gift Credit and Payment",
+          "name" : "Gift_Credit_and_Payment"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "FILTER0" : {
+      "action" : "filter",
+      "sources" : [ "LOAD_DATASET1" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "Account.Record_Type.Name",
+          "operator" : "EQUAL",
+          "operands" : [ "Household" ]
+        }, {
+          "type" : "DATETIME",
+          "field" : "ucinn_ascendv2__Credit_Date_Formula__c",
+          "operator" : "GREATER_OR_EQUAL",
+          "operands" : [ "1706745600000" ]
+        } ]
+      }
+    },
+    "OUTPUT0" : {
+      "action" : "save",
+      "sources" : [ "FORMULA1" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Missing Credits Checking Dataset",
+          "name" : "Missing_Credits_Checking_Dataset",
+          "folderName" : "SharedApp"
+        },
+        "dateConfigurationName" : "July_Fiscal_Year",
+        "measuresToCurrencies" : [ ]
+      }
+    },
+    "FORMULA1" : {
+      "action" : "formula",
+      "sources" : [ "AGGREGATE1" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Is_Missing_Credits",
+          "label" : "Is Missing Credits",
+          "formulaExpression" : "case \r\nwhen \"LookupMemb.Transform3.Member_3_Id\" is null \r\nand SUM_Member_1_Cash=SUM_Member_2_Cash\r\nthen 'false'\r\nwhen \"LookupMemb.Transform3.Member_3_Id\" is not null \r\nand SUM_Member_1_Cash=SUM_Member_2_Cash\r\nand SUM_Member_2_Cash=SUM_Member_3_Cash\r\nthen 'false'\r\nelse 'true'\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "EXTRACT0" : {
+      "action" : "extractGrains",
+      "sources" : [ "FILTER5_copy0" ],
+      "parameters" : {
+        "grainExtractions" : [ ]
+      }
+    },
+    "AGGREGATE1" : {
+      "action" : "aggregate",
+      "sources" : [ "EXTRACT0" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "SUM_Member_1_Cash",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        }, {
+          "name" : "SUM_Member_2_Cash",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        }, {
+          "name" : "SUM_Member_3_Cash",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        } ]
+      },
+      "parameters" : {
+        "aggregations" : [ {
+          "action" : "SUM",
+          "source" : "Member_1_Cash",
+          "name" : "SUM_Member_1_Cash",
+          "label" : "Member 1 Cash"
+        }, {
+          "action" : "SUM",
+          "source" : "Member_2_Cash",
+          "name" : "SUM_Member_2_Cash",
+          "label" : "Member 2 Cash"
+        }, {
+          "action" : "SUM",
+          "source" : "Member_3_Cash",
+          "name" : "SUM_Member_3_Cash",
+          "label" : "Member 3 Cash"
+        } ],
+        "groupings" : [ "Group_Key", "ucinn_ascendv2__Opportunity__c", "Account.Id", "Account.Name", "Opportunity.Type", "LookupMemb.Member_1_Id", "LookupMemb.Member_1_Name", "LookupMemb.Transform2.Member_2_Id", "LookupMemb.Transform2.Member_2_Name", "LookupMemb.Transform3.Member_3_Id", "LookupMemb.Transform3.Member_3_Name", "LookupMemb.Member_1_Primary_Constituent_Type", "LookupMemb.Transform2.Member_2_Primary_Constituent_Type", "LookupMemb.Transform3.Member_3_Primary_Constituent_Type" ],
+        "pivots" : [ ],
+        "nodeType" : "STANDARD"
+      }
+    },
+    "LOAD_DATASET2" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "ucinn_ascendv2__Primary_Contact_Type__c", "Account.Id", "Account_or_Contact_Id", "ucinn_ascendv2__Full_Name_Formula__c", "Account.Record_Type.Name" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Account and Contact Dataset",
+          "name" : "Account_and_Contact_Dataset"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "FILTER6" : {
+      "action" : "filter",
+      "sources" : [ "LOAD_DATASET2" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "Account.Record_Type.Name",
+          "operator" : "EQUAL",
+          "operands" : [ "Household" ]
+        } ]
+      }
+    },
+    "FORMULA0_copy0" : {
+      "action" : "computeRelative",
+      "sources" : [ "FILTER6" ],
+      "parameters" : {
+        "partitionBy" : [ "Account.Id" ],
+        "orderBy" : [ {
+          "fieldName" : "Account_or_Contact_Id",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Row_Number",
+          "label" : "Row Number",
+          "formulaExpression" : "row_number()",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FILTER2_copy0" : {
+      "action" : "filter",
+      "sources" : [ "FORMULA0_copy0" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "NUMBER",
+          "field" : "Row_Number",
+          "operator" : "EQUAL",
+          "operands" : [ "1" ]
+        } ]
+      }
+    },
+    "FILTER3_copy0" : {
+      "action" : "filter",
+      "sources" : [ "FORMULA0_copy0" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "NUMBER",
+          "field" : "Row_Number",
+          "operator" : "EQUAL",
+          "operands" : [ "2" ]
+        } ]
+      }
+    },
+    "FILTER4_copy0" : {
+      "action" : "filter",
+      "sources" : [ "FORMULA0_copy0" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "NUMBER",
+          "field" : "Row_Number",
+          "operator" : "EQUAL",
+          "operands" : [ "3" ]
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES14" : {
+      "action" : "schema",
+      "sources" : [ "FILTER2_copy0" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "ucinn_ascendv2__Full_Name_Formula__c",
+          "newProperties" : {
+            "label" : "Member 1 Name",
+            "name" : "Member_1_Name"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES15" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES14" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Account_or_Contact_Id",
+          "newProperties" : {
+            "label" : "Member 1 Id",
+            "name" : "Member_1_Id"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES20" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES15" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "ucinn_ascendv2__Primary_Contact_Type__c",
+          "newProperties" : {
+            "label" : "Member 1 Primary Constituent Type",
+            "name" : "Member_1_Primary_Constituent_Type",
+            "typeProperties" : null
+          }
+        } ]
+      }
+    },
+    "JOIN1_copy0" : {
+      "action" : "join",
+      "sources" : [ "EDIT_ATTRIBUTES20", "EDIT_ATTRIBUTES21" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Account.Record_Type.Name", "Row_Number", "Transform2.Account.Id", "Transform2.Account.Record_Type.Name", "Transform2.Row_Number" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Account.Id" ],
+        "rightQualifier" : "Transform2",
+        "rightKeys" : [ "Account.Id" ]
+      }
+    },
+    "JOIN2_copy0" : {
+      "action" : "join",
+      "sources" : [ "JOIN1_copy0", "EDIT_ATTRIBUTES22" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Transform3.Account.Id", "Transform3.Account.Record_Type.Name", "Transform3.Row_Number" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Account.Id" ],
+        "rightQualifier" : "Transform3",
+        "rightKeys" : [ "Account.Id" ]
+      }
+    },
+    "FILTER5_copy0" : {
+      "action" : "filter",
+      "sources" : [ "FORMULA6" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "LookupMemb.Transform2.Member_2_Id",
+          "operator" : "IS_NOT_NULL",
+          "operands" : [ ]
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES16" : {
+      "action" : "schema",
+      "sources" : [ "FILTER3_copy0" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "ucinn_ascendv2__Full_Name_Formula__c",
+          "newProperties" : {
+            "label" : "Member 2 Name",
+            "name" : "Member_2_Name"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES17" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES16" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Account_or_Contact_Id",
+          "newProperties" : {
+            "label" : "Member 2 Id",
+            "name" : "Member_2_Id"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES21" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES17" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "ucinn_ascendv2__Primary_Contact_Type__c",
+          "newProperties" : {
+            "label" : "Member 2 Primary Constituent Type",
+            "name" : "Member_2_Primary_Constituent_Type",
+            "typeProperties" : null
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES18" : {
+      "action" : "schema",
+      "sources" : [ "FILTER4_copy0" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "ucinn_ascendv2__Full_Name_Formula__c",
+          "newProperties" : {
+            "label" : "Member 3 Name",
+            "name" : "Member_3_Name"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES19" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES18" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Account_or_Contact_Id",
+          "newProperties" : {
+            "label" : "Member 3 Id",
+            "name" : "Member_3_Id"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES22" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES19" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "ucinn_ascendv2__Primary_Contact_Type__c",
+          "newProperties" : {
+            "label" : "Member 3 Primary Constituent Type",
+            "name" : "Member_3_Primary_Constituent_Type",
+            "typeProperties" : null
+          }
+        } ]
+      }
+    },
+    "JOIN3" : {
+      "action" : "join",
+      "sources" : [ "FILTER0", "JOIN2_copy0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "LookupMemb.Account.Id" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Account.Id" ],
+        "rightQualifier" : "LookupMemb",
+        "rightKeys" : [ "Account.Id" ]
+      }
+    },
+    "FORMULA3" : {
+      "action" : "formula",
+      "sources" : [ "JOIN3" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Member_1_Cash",
+          "label" : "Member 1 Cash",
+          "formulaExpression" : "case when\r\nConstituent_or_Account_Id=\"LookupMemb.Member_1_Id\"\r\nthen Cash_Amount\r\nend",
+          "precision" : 10,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA4" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA3" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Member_2_Cash",
+          "label" : "Member 2 Cash",
+          "formulaExpression" : "case when\r\nConstituent_or_Account_Id=\"LookupMemb.Transform2.Member_2_Id\" \r\nthen Cash_Amount\r\nend",
+          "precision" : 10,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA5" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA4" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Member_3_Cash",
+          "label" : "Member 3 Cash",
+          "formulaExpression" : "case when\r\nConstituent_or_Account_Id=\"LookupMemb.Transform3.Member_3_Id\"\r\nthen Cash_Amount\r\nend",
+          "precision" : 10,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "DROP_FIELDS0" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA5" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Cash_Amount", "Constituent_or_Account_Id" ]
+        }
+      }
+    },
+    "FORMULA6" : {
+      "action" : "formula",
+      "sources" : [ "DROP_FIELDS0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Group_Key",
+          "label" : "Group Key",
+          "formulaExpression" : "concat(ucinn_ascendv2__Opportunity__c,'-',\"Account.Id\")",
+          "precision" : 10,
+          "defaultValue" : ""
+        } ]
+      }
+    }
+  },
+  "ui" : {
+    "nodes" : {
+      "LOAD_DATASET1" : {
+        "label" : "Gift Credit and Payment",
+        "type" : "LOAD_DATASET",
+        "top" : 251.39999999999998,
+        "left" : 112.5,
+        "parameters" : {
+          "sampleSize" : 10000
+        }
+      },
+      "FILTER0" : {
+        "label" : "Filter 0",
+        "type" : "FILTER",
+        "top" : 252,
+        "left" : 252.2
+      },
+      "OUTPUT0" : {
+        "label" : "Output 0",
+        "type" : "OUTPUT",
+        "top" : 252.3,
+        "left" : 1651.6
+      },
+      "TRANSFORM2" : {
+        "label" : "Flags",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 252.3,
+        "left" : 1511.6,
+        "graph" : {
+          "FORMULA1" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Is Missing Credits"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "AGGREGATE0" : {
+        "label" : "Aggregate 0",
+        "type" : "AGGREGATE",
+        "top" : 251.89999999999998,
+        "left" : 1371.9,
+        "graph" : {
+          "EXTRACT0" : null,
+          "AGGREGATE1" : null
+        },
+        "connectors" : [ {
+          "source" : "EXTRACT0",
+          "target" : "AGGREGATE1"
+        } ]
+      },
+      "LOAD_DATASET2" : {
+        "label" : "Account and Contact Dataset",
+        "type" : "LOAD_DATASET",
+        "top" : 392.8,
+        "left" : 112.1,
+        "parameters" : {
+          "sampleSize" : 10000
+        }
+      },
+      "FILTER6" : {
+        "label" : "Filter Household",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 392.8,
+        "left" : 252.10000000000002
+      },
+      "TRANSFORM0_copy0" : {
+        "label" : "Enrich Fields",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 392.8,
+        "left" : 392.1,
+        "graph" : {
+          "FORMULA0_copy0" : {
+            "label" : "Row Number"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "FILTER2_copy0" : {
+        "label" : "Filter Row 1",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 393.3,
+        "left" : 532.1
+      },
+      "FILTER3_copy0" : {
+        "label" : "Filter Row 2",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 533.3,
+        "left" : 532.1
+      },
+      "FILTER4_copy0" : {
+        "label" : "Filter Row 3",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 673.3,
+        "left" : 532.1
+      },
+      "TRANSFORM1_copy2" : {
+        "label" : "Transform 1",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 393.3,
+        "left" : 672.1,
+        "graph" : {
+          "EDIT_ATTRIBUTES14" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES15" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES20" : {
+            "label" : "Edit Attributes"
+          }
+        },
+        "connectors" : [ {
+          "source" : "EDIT_ATTRIBUTES14",
+          "target" : "EDIT_ATTRIBUTES15"
+        }, {
+          "source" : "EDIT_ATTRIBUTES15",
+          "target" : "EDIT_ATTRIBUTES20"
+        } ]
+      },
+      "JOIN1_copy0" : {
+        "label" : "Lookup Member 2",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 393.3,
+        "left" : 812.1
+      },
+      "JOIN2_copy0" : {
+        "label" : "Lookup Member 3",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 392.7,
+        "left" : 952.1
+      },
+      "FILTER5_copy0" : {
+        "label" : "Filter Member>=2",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 251.89999999999998,
+        "left" : 1232.3
+      },
+      "TRANSFORM1_copy0_copy0" : {
+        "label" : "Transform 2",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 533.3,
+        "left" : 672.1,
+        "graph" : {
+          "EDIT_ATTRIBUTES16" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES17" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES21" : {
+            "label" : "Edit Attributes"
+          }
+        },
+        "connectors" : [ {
+          "source" : "EDIT_ATTRIBUTES16",
+          "target" : "EDIT_ATTRIBUTES17"
+        }, {
+          "source" : "EDIT_ATTRIBUTES17",
+          "target" : "EDIT_ATTRIBUTES21"
+        } ]
+      },
+      "TRANSFORM1_copy1_copy0" : {
+        "label" : "Transform 3",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 673.3,
+        "left" : 672.1,
+        "graph" : {
+          "EDIT_ATTRIBUTES18" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES19" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES22" : {
+            "label" : "Edit Attributes"
+          }
+        },
+        "connectors" : [ {
+          "source" : "EDIT_ATTRIBUTES18",
+          "target" : "EDIT_ATTRIBUTES19"
+        }, {
+          "source" : "EDIT_ATTRIBUTES19",
+          "target" : "EDIT_ATTRIBUTES22"
+        } ]
+      },
+      "JOIN3" : {
+        "label" : "Lookup Contact to Credit",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 252.2,
+        "left" : 952.1
+      },
+      "TRANSFORM4" : {
+        "label" : "Enrich Fields",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 252,
+        "left" : 1092,
+        "graph" : {
+          "FORMULA3" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Member 1 Cash"
+          },
+          "FORMULA4" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Member 2 Cash"
+          },
+          "FORMULA5" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Member 3 Cash"
+          },
+          "DROP_FIELDS0" : {
+            "label" : "Drop Columns"
+          },
+          "FORMULA6" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Group Key"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA3",
+          "target" : "FORMULA4"
+        }, {
+          "source" : "FORMULA4",
+          "target" : "FORMULA5"
+        }, {
+          "source" : "FORMULA5",
+          "target" : "DROP_FIELDS0"
+        }, {
+          "source" : "DROP_FIELDS0",
+          "target" : "FORMULA6"
+        } ]
+      }
+    },
+    "connectors" : [ {
+      "source" : "LOAD_DATASET1",
+      "target" : "FILTER0"
+    }, {
+      "source" : "TRANSFORM2",
+      "target" : "OUTPUT0"
+    }, {
+      "source" : "LOAD_DATASET2",
+      "target" : "FILTER6"
+    }, {
+      "source" : "TRANSFORM0_copy0",
+      "target" : "FILTER2_copy0"
+    }, {
+      "source" : "TRANSFORM0_copy0",
+      "target" : "FILTER3_copy0"
+    }, {
+      "source" : "TRANSFORM0_copy0",
+      "target" : "FILTER4_copy0"
+    }, {
+      "source" : "FILTER2_copy0",
+      "target" : "TRANSFORM1_copy2"
+    }, {
+      "source" : "TRANSFORM1_copy2",
+      "target" : "JOIN1_copy0"
+    }, {
+      "source" : "JOIN1_copy0",
+      "target" : "JOIN2_copy0"
+    }, {
+      "source" : "FILTER3_copy0",
+      "target" : "TRANSFORM1_copy0_copy0"
+    }, {
+      "source" : "FILTER4_copy0",
+      "target" : "TRANSFORM1_copy1_copy0"
+    }, {
+      "source" : "TRANSFORM1_copy0_copy0",
+      "target" : "JOIN1_copy0"
+    }, {
+      "source" : "TRANSFORM1_copy1_copy0",
+      "target" : "JOIN2_copy0"
+    }, {
+      "source" : "FILTER6",
+      "target" : "TRANSFORM0_copy0"
+    }, {
+      "source" : "FILTER0",
+      "target" : "JOIN3"
+    }, {
+      "source" : "JOIN2_copy0",
+      "target" : "JOIN3"
+    }, {
+      "source" : "JOIN3",
+      "target" : "TRANSFORM4"
+    }, {
+      "source" : "TRANSFORM4",
+      "target" : "FILTER5_copy0"
+    }, {
+      "source" : "FILTER5_copy0",
+      "target" : "AGGREGATE0"
+    }, {
+      "source" : "AGGREGATE0",
+      "target" : "TRANSFORM2"
+    } ],
+    "hiddenColumns" : [ ]
+  },
+  "runMode" : "full"
+}

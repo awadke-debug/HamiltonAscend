@@ -1,0 +1,175 @@
+{
+  "version" : "62.0",
+  "nodes" : {
+    "LOAD_DATASET37_copy0_copy0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "ucinn_ascendv2__Contact__c", "ucinn_ascendv2__Opportunity__c", "ucinn_ascendv2__Tribute_Type__c", "ucinn_ascendv2__Tributee__c", "ucinn_ascendv2__Contact_Text__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "ucinn_ascendv2__Tribute__c",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "ucinn_ascendv2__Tribute__c"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "FORMULA86_copy0" : {
+      "action" : "formula",
+      "sources" : [ "JOIN48_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "tribute_text",
+          "label" : "tribute text",
+          "formulaExpression" : "case \r\n    when \"Contact.ucinn_ascendv2__Full_Name_Formula__c\" is not null\r\n    then concat(ucinn_ascendv2__Tribute_Type__c, ' ',\"Contact.ucinn_ascendv2__Full_Name_Formula__c\", '\\n')\r\n    when ucinn_ascendv2__Contact_Text__c is not null\r\n    then concat(ucinn_ascendv2__Tribute_Type__c, ' ',ucinn_ascendv2__Contact_Text__c, '\\n')\r\n    when ucinn_ascendv2__Tributee__c is not null\r\n    then concat(ucinn_ascendv2__Tribute_Type__c, ' ',ucinn_ascendv2__Tributee__c, '\\n')\r\n    \r\n    \r\nend",
+          "precision" : 32000,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA87_copy0" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA86_copy0" ],
+      "parameters" : {
+        "partitionBy" : [ "ucinn_ascendv2__Opportunity__c" ],
+        "orderBy" : [ {
+          "fieldName" : "tribute_text",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "MULTIVALUE",
+          "name" : "tribute_text_mv",
+          "label" : "tribute text mv",
+          "formulaExpression" : "collect_set(tribute_text)"
+        } ]
+      }
+    },
+    "OUTPUT2_copy0" : {
+      "action" : "save",
+      "sources" : [ "FORMULA87_copy0" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "test_tribute",
+          "name" : "test_tribute"
+        },
+        "measuresToCurrencies" : [ ]
+      }
+    },
+    "LOAD_DATASET38_copy0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "ucinn_ascendv2__Full_Name_Formula__c", "Id" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "Contact",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "Contact"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN48_copy0" : {
+      "action" : "join",
+      "sources" : [ "LOAD_DATASET37_copy0_copy0", "LOAD_DATASET38_copy0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "ucinn_ascendv2__Contact__c" ],
+        "rightQualifier" : "Contact",
+        "rightKeys" : [ "Id" ]
+      }
+    }
+  },
+  "ui" : {
+    "nodes" : {
+      "LOAD_DATASET37_copy0_copy0" : {
+        "label" : "ucinn_ascendv2__Tribute__c",
+        "type" : "LOAD_DATASET",
+        "top" : 532.1999999999999,
+        "left" : 112,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "TRANSFORM26_copy0" : {
+        "label" : "tribute transformation",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 252,
+        "left" : 252,
+        "graph" : {
+          "FORMULA86_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "tribute text"
+          },
+          "FORMULA87_copy0" : {
+            "label" : "tribute text mv"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA86_copy0",
+          "target" : "FORMULA87_copy0"
+        } ]
+      },
+      "OUTPUT2_copy0" : {
+        "label" : "Output 2",
+        "type" : "OUTPUT",
+        "top" : 112,
+        "left" : 252
+      },
+      "LOAD_DATASET38_copy0" : {
+        "label" : "Contact",
+        "type" : "LOAD_DATASET",
+        "top" : 392.5000000000001,
+        "left" : 112.39999999999986,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN48_copy0" : {
+        "label" : "look up contact to tribute",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 392.30000000000007,
+        "left" : 252.19999999999982
+      }
+    },
+    "connectors" : [ {
+      "source" : "JOIN48_copy0",
+      "target" : "TRANSFORM26_copy0"
+    }, {
+      "source" : "TRANSFORM26_copy0",
+      "target" : "OUTPUT2_copy0"
+    }, {
+      "source" : "LOAD_DATASET37_copy0_copy0",
+      "target" : "JOIN48_copy0"
+    }, {
+      "source" : "LOAD_DATASET38_copy0",
+      "target" : "JOIN48_copy0"
+    } ],
+    "hiddenColumns" : [ ]
+  },
+  "runMode" : "full"
+}

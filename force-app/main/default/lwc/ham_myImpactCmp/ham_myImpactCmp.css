@@ -1,0 +1,647 @@
+.dashboard-container {
+    display: flex;
+    gap: 2rem;
+    padding: 1rem;
+    font-family: 'Open Sans', sans-serif;
+}
+
+.profile-section-container{
+    width: 29%;
+}
+.philanthropy-section-container{
+    width: 69%;
+}
+
+.accordions-container {
+    display: flex;  
+    gap: 1.5rem; 
+    padding: 1rem;
+}
+
+.my-service-container, .my-affinities-container{
+    width: 49%;
+}
+
+.philanthropy-detail-container{
+    padding: 0 1rem !important;
+    width: 100%;
+}
+/*
+.left-panel {
+    flex: 1;
+    background-color: #d9ecfa;
+    border-radius: 16px;
+    padding: 1.5rem;
+}
+
+.right-panel {
+    flex: 2;
+    background-color: #e7f3fc;
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-sizing: border-box;
+}
+
+.profile-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.avatar {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    margin-right: 1rem;
+}
+
+.name-year {
+    display: flex;
+    flex-direction: column;
+}
+
+.name {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.year {
+    font-size: 1.2rem;
+    color: #888;
+}
+
+.info-group {
+    margin-bottom: 1rem;
+}
+
+.facebook-button {
+    background-color: #1877f2;
+    color: white;
+    font-size: 14px;
+    border: none;
+    padding: 0.6rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.section-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: #0b2d8c;
+    margin-bottom: 1rem;
+}
+
+.icon-section {
+    display: flex;
+    gap: 2rem;
+    margin-bottom: 1rem;
+}
+
+.icon-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 12px;
+    color: #333;
+}
+
+.section-group {
+    margin-bottom: 1.5rem;
+}
+
+.section-group h3 {
+    font-weight: 700;
+    font-size: 16px;
+    margin-bottom: 0.5rem;
+}
+
+.form-row {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.form-row > span,
+.form-row lightning-input {
+    flex-shrink: 0; 
+}
+
+lightning-input input {
+    background-color: white;
+    border-radius: 8px;
+    padding: 0.4rem 0.6rem;
+    font-weight: 600;
+    text-align: right; 
+    border: 1px solid #c7d7e8;
+}
+
+.cta-button {
+    background-color: #0b2d8c;
+    color: white;
+    padding: 0.6rem 1.5rem;
+    font-size: 14px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.cta-button:hover {
+    background-color: #092172;
+}
+
+.cta-section {
+    text-align: center;
+    margin-top: 2rem;
+}
+
+.form-spacing {
+    margin-top: 0.75rem;
+    margin-bottom: 0.75rem;
+}
+
+.info-spacing {
+    margin-top: 0.4rem;
+    margin-bottom: 0.4rem;
+    font-size: 14px;
+}
+
+.clickable-contact {
+    background-color: #f6f6f6;
+    padding: 8px;
+    border-radius: 10px;
+    cursor: pointer;
+    display: inline-block;
+    transition: background-color 0.3s ease;
+}
+.clickable-contact:hover {
+    background-color: #e4e4e4;
+}
+
+.popup-card {
+    position: absolute;
+    background-color: white;
+    padding: 12px;
+    border-radius: 12px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    z-index: 10;
+    margin-left: 140px; 
+    margin-top: -10px;
+    min-width: 250px;
+    font-size: 14px;
+}
+
+.slds-popover {
+    background-color: white;
+    padding: 12px;
+    border-radius: 12px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    min-width: 250px;
+}
+
+.popup-close {
+    position: absolute;
+    top: 6px;
+    right: 10px;
+    cursor: pointer;
+    font-size: 16px;
+    color: #666;
+}
+
+.popup-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.popup-icon {
+    margin-right: 8px;
+}
+
+.philanthropy-container {
+  background-color: #e7f3fc;
+    padding: 2rem;
+    border-radius: 16px;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    color: #1d1d1f;
+    box-sizing: border-box;
+}
+
+.section-title {
+  font-size: 1.75rem;
+  font-weight: bold;
+  color: #0033a0;
+  margin-bottom: 1.5rem;
+}
+
+.icon-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  margin: -0.75rem;
+  gap: 2rem;
+  margin-bottom: 1rem;
+}
+
+.icon-label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    font-size: 0.85rem;
+    color: #333;
+    padding: 0.5rem;
+    box-sizing: border-box;
+    flex-shrink: 0;
+    flex-basis: 16%;
+    
+}
+
+.icon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 48px;
+    height: 48px;
+    background-color: white;
+    border: 1px solid #bcdaf0;
+    border-radius: 50%;
+    margin-bottom: 0.4rem;
+    box-shadow: 0 0 0 rgba(0,0,0,0);
+    flex-shrink: 0;
+}
+
+.icon img {
+    max-width: 65%;
+    max-height: 65%;
+    object-fit: contain;
+}
+
+.info-section {
+    margin-bottom: 2rem;
+}
+
+.info-section:first-of-type {
+    border-top: none;
+    padding-top: 0;
+}
+
+.heading-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.section-subtitle {
+    font-size: 1.15rem;
+    font-weight: 600;
+    margin: 0;
+    color: #333;
+}
+
+.row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 0; 
+    margin-bottom: 0.75rem; 
+}
+
+.field-label {
+    display: flex;
+    align-items: center;
+    flex: 0 0 calc(50% - 1.5rem); 
+    margin-right: 3rem; 
+    margin-bottom: 0.5rem; 
+}
+
+.field-label:nth-child(2n) { 
+    margin-right: 0; 
+}
+
+.field-label label {
+    font-weight: 600;
+    margin-right: 0.75rem; 
+    white-space: nowrap;
+    color: #000;
+    flex-shrink: 0; 
+    flex-grow: 0; 
+    text-align: right;
+    min-width: 70px; 
+    max-width: 150px; 
+}
+
+.field-label input {
+    border: 1px solid #c7d7e8;
+    background-color: #f5faff;
+    padding: 0.5rem 0.75rem;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    flex-grow: 1; 
+    width: auto;
+    min-width: 120px; 
+    max-width: 180px; 
+    text-align: center; 
+    color: #000;
+    font-weight: normal;
+    box-sizing: border-box;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+}
+
+.field-label.full-width {
+    flex: 1 0 100%; 
+    margin-top: 0.5rem;
+    margin-right: 0; 
+    max-width: 100%; 
+}
+.field-label.full-width input {
+    text-align: left; 
+    font-weight: normal;
+    min-height: 38px;
+    height: fit-content;
+    width: 100%; 
+    max-width: unset; 
+}
+
+.gift-button {
+    background-color: #002f87;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 0.6rem 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: background-color 0.2s ease;
+}
+
+.gift-button:hover {
+    background-color: #001f60;
+}
+
+.gift-button lightning-icon {
+    --sds-c-icon-color-foreground: white;
+    width: 1rem;
+    height: 1rem;
+}
+
+.button-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 2rem;
+}
+
+.deep-dive-button {
+  background-color: #002f87;
+  color: white;
+  padding: 0.75rem 3rem;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  width: 100%;
+  max-width: 600px;
+}
+
+.deep-dive-button:hover {
+    background-color: #001f60;
+}
+
+
+.currency-input lightning-input {
+    --slds-c-input-radius-border: 0.5rem;
+    --slds-c-input-color-background: #f5faff;
+    --slds-c-input-border-color: #d0e5f4;
+    --slds-c-input-shadow: none;
+    --slds-c-input-color-border: #d0e5f4;
+    --slds-c-input-color-text: #000;
+    --slds-c-input-spacing-inline-end: 0.75rem;
+    font-weight: 500;
+}
+
+.currency-input .slds-form-element__label {
+    font-weight: 600;
+    color: #000;
+    padding-right: 0.75rem;
+}
+
+.currency-input input {
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.5rem;
+    font-weight: 500;
+    background-color: #f5faff;
+    border: 1px solid #d0e5f4;
+    min-width: 120px;
+}
+*/
+
+@media (max-width: 1024px) {
+    .dashboard-container {
+        flex-direction: column;
+        gap: 1.5rem;
+        padding: 0.75rem;
+    }
+
+    .philanthropy-detail-container{
+        padding: 0 0.75rem !important;
+    }
+
+    
+.profile-section-container{
+    width: 100%;
+}
+.philanthropy-section-container{
+    width: 100%;
+}
+
+
+    .accordions-container {
+        flex-direction: column;
+        gap: 0.75rem;
+        padding: 0.75rem;
+    }
+
+    .my-service-container, .my-affinities-container{
+        width: 100%;
+    }
+/*
+     .right-panel {
+        padding: 1rem;
+    }
+
+    .icon-row {
+        margin: 0;
+        justify-content: flex-start; 
+        gap: 0.75rem; 
+    }
+
+    .icon-label {
+        flex-basis: auto; 
+        flex-shrink: 0;
+        padding: 0.5rem; 
+    }
+
+    .info-section {
+        margin-bottom: 1rem; 
+    }
+
+    .row {
+        flex-direction: column; 
+        gap: 0.25rem; 
+        align-items: stretch; 
+    }
+
+    .field-label {
+        width: 100%; 
+        min-width: unset;
+        margin-right: 0; 
+        max-width: unset; 
+        
+        flex-direction: row; 
+        justify-content: space-between; 
+        align-items: center; 
+        padding: 0.25rem 0; 
+    }
+
+    .field-label label {
+        text-align: left; 
+        flex-grow: 1; 
+        flex-shrink: 0; 
+        margin-right: 0.5rem; 
+        white-space: normal; 
+    }
+
+    .field-label input {
+        width: auto; 
+        min-width: 100px; 
+        max-width: 150px; 
+        text-align: center; 
+        flex-shrink: 0; 
+        flex-grow: 0; 
+    }
+
+    .field-label.full-width {
+        flex-direction: column;
+        align-items: flex-start;
+        margin-bottom: 0.5rem;
+    }
+
+    .field-label.full-width label {
+        width: 100%;
+        text-align: left;
+        margin-bottom: 0.15rem; 
+        white-space: normal; 
+    }
+
+    .field-label.full-width input {
+        width: 100%;
+        text-align: left;
+        max-width: unset;
+        flex-grow: 1;
+        height: max-content;
+    }
+
+    .heading-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.25rem;
+    }
+
+    .gift-button {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .deep-dive-button {
+        padding: 0.75rem 1.5rem;
+    }
+
+    .profile-header {
+        flex-direction: row;
+        text-align: center;
+        align-items: left;
+        border-bottom: none;
+        margin-bottom: 1rem;
+        padding-bottom: 0;
+    }
+
+    .avatar {
+        margin-right: 0;
+        margin: 0.5rem;
+    }
+
+    .name-year {
+        flex-direction: row;
+        justify-content: center;
+        padding:0.25rem;
+    }
+
+    .year {
+        padding:0.25rem;
+        margin-top: 0.2rem;
+    }
+
+    .info-group {
+        text-align: left;
+        margin-bottom: 1.5rem;
+    }
+
+    .info-group p {
+        margin-bottom: 0.5rem;
+    }
+
+    .facebook-section {
+        display: flex;
+        justify-content: left;
+        margin-top: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .section-group h3 {
+        text-align: left;
+        border-top: none;
+        padding-top: 0;
+    }
+
+    .section-title {
+        text-align: left;
+    }
+
+    .form-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.25rem;
+    }
+
+    .form-row span {
+        width: 100%;
+    }
+
+    lightning-input {
+        width: 100%;
+    }
+
+    .cta-section {
+        margin-top: 1.5rem;
+    }
+
+    .popup-card {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 90%;
+        max-width: 300px;
+        margin-left: 0;
+        margin-top: 0;
+    } */
+}
