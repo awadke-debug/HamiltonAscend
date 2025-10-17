@@ -1,0 +1,716 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<DiscoveryAIModel xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <content xsi:nil="true"/>
+    <algorithmType>Glm</algorithmType>
+    <label>Maximize 1YR Cash Amount</label>
+    <modelFields>
+        <isDisparateImpact>false</isDisparateImpact>
+        <isSensitive>false</isSensitive>
+        <label>Number of Solicitable Channels</label>
+        <name>Number_of_Solicitable_Channels</name>
+        <type>Text</type>
+        <values>0</values>
+        <values>1</values>
+        <values>2</values>
+        <values>3</values>
+        <values>4</values>
+    </modelFields>
+    <modelFields>
+        <isDisparateImpact>false</isDisparateImpact>
+        <isSensitive>false</isSensitive>
+        <label>Number of Contactable Channels</label>
+        <name>Number_of_Contactable_Channels</name>
+        <type>Text</type>
+        <values>0</values>
+        <values>1</values>
+        <values>2</values>
+        <values>3</values>
+        <values>4</values>
+    </modelFields>
+    <modelFields>
+        <isDisparateImpact>false</isDisparateImpact>
+        <isSensitive>false</isSensitive>
+        <label>Birthdate</label>
+        <name>Birthdate</name>
+        <type>Date</type>
+        <values>January</values>
+        <values>May</values>
+        <values>April</values>
+        <values>June</values>
+        <values>March</values>
+        <values>July</values>
+        <values>August</values>
+        <values>September</values>
+        <values>October</values>
+        <values>December</values>
+        <values>November</values>
+        <values>February</values>
+        <values>null</values>
+    </modelFields>
+    <modelFields>
+        <isDisparateImpact>false</isDisparateImpact>
+        <isSensitive>false</isSensitive>
+        <label>Gender</label>
+        <name>ucinn_ascendv2__Gender__c</name>
+        <type>Text</type>
+        <values>Cis Male</values>
+        <values>Cis Female</values>
+        <values>Other</values>
+        <values>Other_1</values>
+        <values>null</values>
+    </modelFields>
+    <modelFields>
+        <isDisparateImpact>false</isDisparateImpact>
+        <isSensitive>false</isSensitive>
+        <label>Spouse Primary Constituent Type</label>
+        <name>Spouse.ucinn_ascendv2__Primary_Contact_Type__c</name>
+        <type>Text</type>
+        <values>Past Parent</values>
+        <values>Hamilton Alumni</values>
+        <values>Spouse of Alumni or Trustee</values>
+        <values>Current Parent</values>
+        <values>Friend</values>
+        <values>Parent of Withdrawn</values>
+        <values>Kirkland Alumnae</values>
+        <values>Employee</values>
+        <values>Former Employee</values>
+        <values>Hamilton Withdrawn</values>
+        <values>Retiree</values>
+        <values>Grandparent</values>
+        <values>Parent on Leave</values>
+        <values>Trustee</values>
+        <values>Other</values>
+        <values>null</values>
+    </modelFields>
+    <modelFields>
+        <isDisparateImpact>false</isDisparateImpact>
+        <isSensitive>false</isSensitive>
+        <label>Privacy Flag</label>
+        <name>HAM_Privacy_Flag__c</name>
+        <type>Text</type>
+        <values>false</values>
+        <values>true</values>
+        <values>null</values>
+    </modelFields>
+    <modelFields>
+        <isDisparateImpact>false</isDisparateImpact>
+        <isSensitive>false</isSensitive>
+        <label>JBA</label>
+        <name>HAM_JBA__c</name>
+        <type>Text</type>
+        <values>false</values>
+        <values>true</values>
+        <values>null</values>
+    </modelFields>
+    <modelFields>
+        <isDisparateImpact>false</isDisparateImpact>
+        <isSensitive>false</isSensitive>
+        <label>JBA Anonymous</label>
+        <name>HAM_JBA_Anonymous__c</name>
+        <type>Text</type>
+        <values>false</values>
+        <values>true</values>
+        <values>null</values>
+    </modelFields>
+    <modelFields>
+        <isDisparateImpact>false</isDisparateImpact>
+        <isSensitive>false</isSensitive>
+        <label>Constituent Type String</label>
+        <name>Constituent_Type_String</name>
+        <type>Text</type>
+        <values>Friend</values>
+        <values>Past Parent</values>
+        <values>Hamilton Alumni</values>
+        <values>Spouse of Alumni or Trustee</values>
+        <values>Current Parent</values>
+        <values>Parent of Withdrawn</values>
+        <values>Hamilton Withdrawn</values>
+        <values>Surviving Spouse</values>
+        <values>Former Employee</values>
+        <values>Student</values>
+        <values>Kirkland Alumnae</values>
+        <values>Hamilton Alumni, Past Parent</values>
+        <values>Grandparent</values>
+        <values>Employee</values>
+        <values>Past Parent, Spouse of Alumni or Trustee</values>
+        <values>Retiree</values>
+        <values>Former Employee, Hamilton Alumni</values>
+        <values>Past Parent, Surviving Spouse</values>
+        <values>Grandparent, Past Parent</values>
+        <values>Organization Contact</values>
+        <values>Current Parent, Hamilton Alumni</values>
+        <values>Parent on Leave</values>
+        <values>Friend, Hamilton Alumni</values>
+        <values>Student on Leave</values>
+        <values>Current Parent, Spouse of Alumni or Trustee</values>
+        <values>Past Parent, Retiree</values>
+        <values>Kirkland Alumnae, Past Parent</values>
+        <values>Parent of Withdrawn, Past Parent</values>
+        <values>Friend, Hamilton Alumni, Past Parent</values>
+        <values>Former Employee, Friend</values>
+        <values>Employee, Hamilton Alumni</values>
+        <values>Employee, Friend</values>
+        <values>Hamilton Alumni, Parent of Withdrawn</values>
+        <values>Friend, Past Parent</values>
+        <values>Hamilton Alumni, Trustee</values>
+        <values>Friend, Parent on Leave</values>
+        <values>Current Parent, Friend</values>
+        <values>Parent of Withdrawn, Spouse of Alumni or Trustee</values>
+        <values>Employee, Past Parent</values>
+        <values>Other</values>
+        <values>null</values>
+    </modelFields>
+    <modelFields>
+        <isDisparateImpact>false</isDisparateImpact>
+        <isSensitive>false</isSensitive>
+        <label>All Concentrations</label>
+        <name>Degree.All_Concentrations</name>
+        <type>Text</type>
+        <values>Economics</values>
+        <values>Government</values>
+        <values>English Literature</values>
+        <values>History</values>
+        <values>Psychology</values>
+        <values>Biology</values>
+        <values>Mathematics</values>
+        <values>Philosophy</values>
+        <values>Public Policy</values>
+        <values>Sociology</values>
+        <values>Undeclared</values>
+        <values>Art</values>
+        <values>Creative Writing</values>
+        <values>World Politics</values>
+        <values>Chemistry</values>
+        <values>Anthropology</values>
+        <values>Neuroscience</values>
+        <values>Geology</values>
+        <values>Physics</values>
+        <values>French And Francophone Stds</values>
+        <values>Computer Science</values>
+        <values>Art History</values>
+        <values>Biochem/Molbio</values>
+        <values>Comparative Lit</values>
+        <values>Environmental Studies</values>
+        <values>Economics, Mathematics</values>
+        <values>Literature</values>
+        <values>Theatre</values>
+        <values>American Studies</values>
+        <values>Spanish</values>
+        <values>Psychobiology</values>
+        <values>Geoscience</values>
+        <values>Interdisciplinary</values>
+        <values>Music</values>
+        <values>Biology, Chemistry</values>
+        <values>Communication</values>
+        <values>English Literature, History</values>
+        <values>Religion</values>
+        <values>Chinese</values>
+        <values>Religious Studies</values>
+        <values>Asian Studies</values>
+        <values>Classical Studies</values>
+        <values>Mathematics, Physics</values>
+        <values>Communication Studies</values>
+        <values>Economics, Government</values>
+        <values>Hispanic Studies</values>
+        <values>Women&apos;s Studies</values>
+        <values>Computer Science, Mathematics</values>
+        <values>Foreign Languages</values>
+        <values>History, Public Policy</values>
+        <values>Intn&apos;l Comp. Pol. St</values>
+        <values>Russian Studies</values>
+        <values>German</values>
+        <values>Economics, History</values>
+        <values>Chemistry, Mathematics</values>
+        <values>English Literature, French And Francophone Stds</values>
+        <values>Anthr:Archaeology</values>
+        <values>Economics, Psychology</values>
+        <values>Economics, Public Policy</values>
+        <values>Classical Languages</values>
+        <values>Chinese, Economics</values>
+        <values>Africana Studies</values>
+        <values>Economics, English Literature</values>
+        <values>French And Francophone Stds, World Politics</values>
+        <values>English Literature, Public Policy</values>
+        <values>Computer Science, Economics</values>
+        <values>Economics, French And Francophone Stds</values>
+        <values>Economics, Hispanic Studies</values>
+        <values>English Literature, Philosophy</values>
+        <values>Special</values>
+        <values>Economics, World Politics</values>
+        <values>Government, History</values>
+        <values>Dance</values>
+        <values>Mathematics, Economics</values>
+        <values>Hispanic Studies, Psychology</values>
+        <values>Women&apos;s And Gender Studies</values>
+        <values>French And Francophone Stds, History</values>
+        <values>Economics, Philosophy</values>
+        <values>Cinema And Media Studies</values>
+        <values>Hispanic Studies, World Politics</values>
+        <values>Biology, English Literature</values>
+        <values>Art, Economics</values>
+        <values>Economics, Spanish</values>
+        <values>History, English Literature</values>
+        <values>Government, Hispanic Studies</values>
+        <values>Science</values>
+        <values>Studio Art</values>
+        <values>English Literature, Mathematics</values>
+        <values>English Literature, Psychology</values>
+        <values>Other</values>
+        <values>null</values>
+    </modelFields>
+    <modelFields>
+        <isDisparateImpact>false</isDisparateImpact>
+        <isSensitive>false</isSensitive>
+        <label>Class Decade</label>
+        <name>Class_Decade</name>
+        <type>Text</type>
+        <values>2010s</values>
+        <values>2000s</values>
+        <values>2020s</values>
+        <values>1990s</values>
+        <values>1980s</values>
+        <values>1970s</values>
+        <values>1960s</values>
+        <values>1950s</values>
+        <values>1930s</values>
+        <values>1940s</values>
+        <values>1920s</values>
+        <values>1910s</values>
+        <values>1900s</values>
+        <values>Other</values>
+        <values>null</values>
+    </modelFields>
+    <modelFields>
+        <isDisparateImpact>false</isDisparateImpact>
+        <isSensitive>false</isSensitive>
+        <label>Preferred Chapter</label>
+        <name>HAM_Preferred_Chapter__c</name>
+        <type>Text</type>
+        <values>BOST</values>
+        <values>MVNY</values>
+        <values>NYNY</values>
+        <values>NONJ</values>
+        <values>WEST</values>
+        <values>WADC</values>
+        <values>PHIL</values>
+        <values>FAIR</values>
+        <values>SYRA</values>
+        <values>LONG</values>
+        <values>HART</values>
+        <values>ALBY</values>
+        <values>SFCA</values>
+        <values>ROCH</values>
+        <values>LACA</values>
+        <values>CHIL</values>
+        <values>PRIN</values>
+        <values>NHAV</values>
+        <values>MAIN</values>
+        <values>BUFF</values>
+        <values>BALT</values>
+        <values>SEAT</values>
+        <values>PROV</values>
+        <values>RICH</values>
+        <values>BING</values>
+        <values>GFNY</values>
+        <values>DURH</values>
+        <values>POUG</values>
+        <values>GEOR</values>
+        <values>MINN</values>
+        <values>COLO</values>
+        <values>CLEV</values>
+        <values>NVER</values>
+        <values>SHAM</values>
+        <values>NHAM</values>
+        <values>CAPE</values>
+        <values>CHAR</values>
+        <values>DETR</values>
+        <values>SVER</values>
+        <values>ARIZ</values>
+        <values>DENV</values>
+        <values>PITT</values>
+        <values>OREG</values>
+        <values>SCAR</values>
+        <values>HARR</values>
+        <values>ITHA</values>
+        <values>PALM</values>
+        <values>HOUS</values>
+        <values>ORLA</values>
+        <values>SDCA</values>
+        <values>DALL</values>
+        <values>MIAM</values>
+        <values>FORT</values>
+        <values>TAMP</values>
+        <values>NAPL</values>
+        <values>CINN</values>
+        <values>DELA</values>
+        <values>WISC</values>
+        <values>NASH</values>
+        <values>WATR</values>
+        <values>WTEX</values>
+        <values>COLU</values>
+        <values>INDI</values>
+        <values>STLO</values>
+        <values>NFLA</values>
+        <values>SARA</values>
+        <values>NEWM</values>
+        <values>SKEN</values>
+        <values>JAME</values>
+        <values>HAWA</values>
+        <values>UTAH</values>
+        <values>KCMO</values>
+        <values>LASV</values>
+        <values>IOWA</values>
+        <values>IDAH</values>
+        <values>MONT</values>
+        <values>NOLA</values>
+        <values>BAMA</values>
+        <values>OKLA</values>
+        <values>WVIR</values>
+        <values>ARKA</values>
+        <values>ALAS</values>
+        <values>NEBR</values>
+        <values>KYTN</values>
+        <values>WYOM</values>
+        <values>MISS</values>
+        <values>HAMP</values>
+        <values>VERM</values>
+        <values>Other</values>
+        <values>null</values>
+    </modelFields>
+    <modelFields>
+        <isDisparateImpact>false</isDisparateImpact>
+        <isSensitive>false</isSensitive>
+        <label>Preferred Email Type</label>
+        <name>Preferred_Email.ucinn_ascendv2__Type__c</name>
+        <type>Text</type>
+        <values>Personal</values>
+        <values>Admission</values>
+        <values>Campus</values>
+        <values>Business</values>
+        <values>null</values>
+    </modelFields>
+    <modelFields>
+        <isDisparateImpact>false</isDisparateImpact>
+        <isSensitive>false</isSensitive>
+        <label>Wealth Rating Number depricated</label>
+        <name>Wealth_Rating.HAM_Wealth_Rating_Number__c_depricated</name>
+        <type>Text</type>
+        <values>12</values>
+        <values>13</values>
+        <values>11</values>
+        <values>10</values>
+        <values>14</values>
+        <values>8</values>
+        <values>9</values>
+        <values>7</values>
+        <values>5</values>
+        <values>4</values>
+        <values>3</values>
+        <values>Other</values>
+        <values>null</values>
+    </modelFields>
+    <modelFields>
+        <isDisparateImpact>false</isDisparateImpact>
+        <isSensitive>false</isSensitive>
+        <label>Is Contactable</label>
+        <name>Is_Contactable</name>
+        <type>Text</type>
+        <values>true</values>
+        <values>false</values>
+    </modelFields>
+    <modelFields>
+        <isDisparateImpact>false</isDisparateImpact>
+        <isSensitive>false</isSensitive>
+        <label>Is Solicitable</label>
+        <name>Is_Solicitable</name>
+        <type>Text</type>
+        <values>true</values>
+        <values>false</values>
+    </modelFields>
+    <modelFields>
+        <isDisparateImpact>false</isDisparateImpact>
+        <isSensitive>false</isSensitive>
+        <label>Is Contactable By Mail</label>
+        <name>Is_Contactable_By_Mail</name>
+        <type>Text</type>
+        <values>true</values>
+        <values>false</values>
+    </modelFields>
+    <modelFields>
+        <isDisparateImpact>false</isDisparateImpact>
+        <isSensitive>false</isSensitive>
+        <label>Age</label>
+        <name>ucinn_ascendv2__Age_Formula__c</name>
+        <type>Number</type>
+        <values>0.0___23.0</values>
+        <values>23.0___46.0</values>
+        <values>46.0___251.0</values>
+    </modelFields>
+    <modelFields>
+        <isDisparateImpact>false</isDisparateImpact>
+        <isSensitive>false</isSensitive>
+        <label>Is Contactable By Text</label>
+        <name>Is_Contactable_By_Text</name>
+        <type>Text</type>
+        <values>false</values>
+        <values>true</values>
+    </modelFields>
+    <modelFields>
+        <isDisparateImpact>false</isDisparateImpact>
+        <isSensitive>false</isSensitive>
+        <label>Is Contactable By Email</label>
+        <name>Is_Contactable_By_Email</name>
+        <type>Text</type>
+        <values>false</values>
+        <values>true</values>
+    </modelFields>
+    <modelFields>
+        <isDisparateImpact>false</isDisparateImpact>
+        <isSensitive>false</isSensitive>
+        <label>Multicultural Affinity</label>
+        <name>Multicultural_Affinity</name>
+        <type>Text</type>
+        <values>false</values>
+        <values>true</values>
+    </modelFields>
+    <modelFields>
+        <isDisparateImpact>false</isDisparateImpact>
+        <isSensitive>false</isSensitive>
+        <label>Is Trustee Derived</label>
+        <name>Is_Trustee_Derived</name>
+        <type>Text</type>
+        <values>false</values>
+        <values>true</values>
+    </modelFields>
+    <modelFields>
+        <isDisparateImpact>false</isDisparateImpact>
+        <isSensitive>false</isSensitive>
+        <label>Is Hamilton Parent</label>
+        <name>ChildReuni.Is_Hamilton_Parent</name>
+        <type>Text</type>
+        <values>false</values>
+        <values>true</values>
+    </modelFields>
+    <modelFields>
+        <isDisparateImpact>false</isDisparateImpact>
+        <isSensitive>false</isSensitive>
+        <label>Is Solicitable By Email</label>
+        <name>Is_Solicitable_By_Email</name>
+        <type>Text</type>
+        <values>false</values>
+        <values>true</values>
+    </modelFields>
+    <modelFields>
+        <isDisparateImpact>false</isDisparateImpact>
+        <isSensitive>false</isSensitive>
+        <label>Is Alumni</label>
+        <name>Is_Alumni</name>
+        <type>Text</type>
+        <values>false</values>
+        <values>true</values>
+    </modelFields>
+    <modelFields>
+        <isDisparateImpact>false</isDisparateImpact>
+        <isSensitive>false</isSensitive>
+        <label>Is Solicitable By Text</label>
+        <name>Is_Solicitable_By_Text</name>
+        <type>Text</type>
+        <values>false</values>
+        <values>true</values>
+    </modelFields>
+    <modelFields>
+        <isDisparateImpact>false</isDisparateImpact>
+        <isSensitive>false</isSensitive>
+        <label>Last Gift Date</label>
+        <name>Pure_Donor.Status_Date</name>
+        <type>Date</type>
+        <values>December</values>
+        <values>June</values>
+        <values>November</values>
+        <values>March</values>
+        <values>April</values>
+        <values>February</values>
+        <values>October</values>
+        <values>May</values>
+        <values>September</values>
+        <values>January</values>
+        <values>August</values>
+        <values>July</values>
+        <values>null</values>
+    </modelFields>
+    <modelFields>
+        <isDisparateImpact>false</isDisparateImpact>
+        <isSensitive>false</isSensitive>
+        <label>All Service Indicators</label>
+        <name>All_Service_Indicators</name>
+        <type>Text</type>
+        <values>No Contact Mass Email, No Contact Mass Call, No Contact Mass Mail, No Contact Mass Text</values>
+        <values>No Contact Mass Email</values>
+        <values>No Contact with Hamilton</values>
+        <values>No Contact with Hamilton, No Contact Mass Email, No Contact Mass Call, No Contact Mass Mail, No Contact Mass Text</values>
+        <values>No Solicit Mass Text, No Solicit Mass Mail, No Solicit Mass Email, No Solicit Mass Call</values>
+        <values>No Contact Mass Call</values>
+        <values>No Hamilton Magazine</values>
+        <values>No Contact Mass Email, No E-Newsletter</values>
+        <values>No Solicit Mass Text, No Solicit Mass Mail, No Contact with Hamilton, No Solicit Mass Email, No Solicit Mass Call</values>
+        <values>No Solicit Mass Email</values>
+        <values>No Contact with Hamilton, No Contact Mass Email, No Contact Mass Call, No Contact Mass Mail, No E-Newsletter, No Contact Mass Text</values>
+        <values>Hamilton Magazine</values>
+        <values>No Contact Mass Text</values>
+        <values>No E-Newsletter, No Solicit Mass Email</values>
+        <values>No Solicit Mass Text, No Solicit Mass Mail, No Contact Mass Call, No Solicit Mass Email</values>
+        <values>No Solicit Mass Text, No Solicit Mass Mail, No Contact Mass Email, No Solicit Mass Call</values>
+        <values>No Contact Mass Email, No Contact Mass Call, No Contact Mass Mail, No E-Newsletter, No Contact Mass Text</values>
+        <values>No Contact Mass Call, No Contact Mass Text</values>
+        <values>No Contact Mass Email, No Contact Mass Call</values>
+        <values>No E-Newsletter</values>
+        <values>No Contact Mass Email, No Hamilton Magazine</values>
+        <values>No Contact with Hamilton, No Contact Mass Call</values>
+        <values>No Student Consent</values>
+        <values>No Contact Mass Email, No Contact Mass Call, No Contact Mass Text</values>
+        <values>No Contact with Hamilton, No Contact Mass Text</values>
+        <values>No Solicit Mass Text, No Solicit Mass Mail, No Contact Mass Email, No Contact Mass Call</values>
+        <values>No Contact with Hamilton, No Contact Mass Email</values>
+        <values>No Pledge Reminders</values>
+        <values>No Contact Mass Email, No Contact Mass Text</values>
+        <values>No Contact Mass Mail</values>
+        <values>No Solicit Mass Text, No Solicit Mass Mail, No Contact Mass Email, No E-Newsletter, No Solicit Mass Call</values>
+        <values>No Solicit Mass Text, No Solicit Mass Mail, Hamilton Magazine, No Solicit Mass Email, No Solicit Mass Call</values>
+        <values>No Solicit Mass Text, No Solicit Mass Mail, No Contact Mass Email, No Solicit Mass Email, No Solicit Mass Call</values>
+        <values>No Contact Mass Call, No Solicit Mass Email</values>
+        <values>No Contact Mass Email, No Contact Mass Call, Hamilton Magazine, No Contact Mass Mail, No Contact Mass Text</values>
+        <values>No Hamilton Fund Solicitations</values>
+        <values>No Contact Mass Email, No Solicit Mass Email</values>
+        <values>No Contact Mass Email, No Contact Mass Call, No E-Newsletter</values>
+        <values>No Contact Mass Call, No Contact Mass Mail, No Contact Mass Text</values>
+        <values>No Solicit Mass Text, No Solicit Mass Mail, No E-Newsletter, No Solicit Mass Email, No Solicit Mass Call</values>
+        <values>No Contact Mass Call, No E-Newsletter, No Solicit Mass Email</values>
+        <values>Unverified Deceased, No Contact Mass Email, No Contact Mass Call, No Contact Mass Mail, No Contact Mass Text</values>
+        <values>No Solicit Mass Text, No Solicit Mass Mail, No Contact with Hamilton, No Contact Mass Email, No Solicit Mass Call</values>
+        <values>No Solicit Mass Text, No Solicit Mass Mail, No Contact Mass Email, No Contact Mass Call, No E-Newsletter</values>
+        <values>No Solicit Mass Text, No Solicit Mass Mail, No Contact with Hamilton, No Contact Mass Call, No Solicit Mass Email</values>
+        <values>No Contact Mass Call, Hamilton Magazine</values>
+        <values>No Contact Mass Call, No E-Newsletter</values>
+        <values>No Solicit Mass Text, No Solicit Mass Mail, No Contact Mass Email, No Contact Mass Call, No Contact Mass Mail, No Solicit Mass Email, No Contact Mass Text, No Solicit Mass Call</values>
+        <values>No Contact Mass Email, No Contact Mass Call, No Contact Mass Mail, No Hamilton Magazine, No Contact Mass Text</values>
+        <values>Alumni Privacy</values>
+        <values>No Contact Mass Email, No E-Newsletter, No Contact Mass Text</values>
+        <values>Other</values>
+        <values>null</values>
+    </modelFields>
+    <modelFields>
+        <isDisparateImpact>false</isDisparateImpact>
+        <isSensitive>false</isSensitive>
+        <label>Address State</label>
+        <name>Preferred_Address.ucinn_ascendv2__Address_State_Formula__c</name>
+        <type>Text</type>
+        <values>NY</values>
+        <values>MA</values>
+        <values>CA</values>
+        <values>NJ</values>
+        <values>CT</values>
+        <values>PA</values>
+        <values>FL</values>
+        <values>IL</values>
+        <values>TX</values>
+        <values>VA</values>
+        <values>MD</values>
+        <values>OH</values>
+        <values>NC</values>
+        <values>CO</values>
+        <values>ME</values>
+        <values>DC</values>
+        <values>NH</values>
+        <values>WA</values>
+        <values>GA</values>
+        <values>VT</values>
+        <values>MI</values>
+        <values>MN</values>
+        <values>MO</values>
+        <values>RI</values>
+        <values>WI</values>
+        <values>ON</values>
+        <values>OR</values>
+        <values>AZ</values>
+        <values>SC</values>
+        <values>IN</values>
+        <values>TN</values>
+        <values>LA</values>
+        <values>AL</values>
+        <values>IA</values>
+        <values>OK</values>
+        <values>KY</values>
+        <values>KS</values>
+        <values>DE</values>
+        <values>AR</values>
+        <values>MS</values>
+        <values>NM</values>
+        <values>NE</values>
+        <values>UT</values>
+        <values>WV</values>
+        <values>MT</values>
+        <values>NV</values>
+        <values>ID</values>
+        <values>AK</values>
+        <values>HI</values>
+        <values>PR</values>
+        <values>ND</values>
+        <values>BC</values>
+        <values>SD</values>
+        <values>QC</values>
+        <values>WY</values>
+        <values>AB</values>
+        <values>AE</values>
+        <values>NS</values>
+        <values>MB</values>
+        <values>SK</values>
+        <values>NB</values>
+        <values>AP</values>
+        <values>VI</values>
+        <values>Other</values>
+        <values>null</values>
+    </modelFields>
+    <modelFields>
+        <isDisparateImpact>false</isDisparateImpact>
+        <isSensitive>false</isSensitive>
+        <label>Is Solicitable By Phone</label>
+        <name>Is_Solicitable_By_Phone</name>
+        <type>Text</type>
+        <values>false</values>
+        <values>true</values>
+    </modelFields>
+    <modelFields>
+        <isDisparateImpact>false</isDisparateImpact>
+        <isSensitive>false</isSensitive>
+        <label>Is Contactable By Phone</label>
+        <name>Is_Contactable_By_Phone</name>
+        <type>Text</type>
+        <values>false</values>
+        <values>true</values>
+    </modelFields>
+    <modelFields>
+        <isDisparateImpact>false</isDisparateImpact>
+        <isSensitive>false</isSensitive>
+        <label>1YR Cash Amount</label>
+        <name>Aggregate.Sum.FY01_Collected_Amount</name>
+        <type>Number</type>
+        <values>0.0___6184383.91</values>
+    </modelFields>
+    <modelRuntimeType>Discovery</modelRuntimeType>
+    <predictedField>Aggregate.Sum.FY01_Collected_Amount</predictedField>
+    <predictionType>Regression</predictionType>
+    <sourceType>Discovery</sourceType>
+    <status>Enabled</status>
+    <transformations>
+        <config>{&quot;targetFieldName&quot;:&quot;Pure_Donor.Status_Date&quot;,&quot;sourceFieldName&quot;:&quot;Pure_Donor.Status_Date&quot;,&quot;format&quot;:&quot;yyyy-MM-dd&quot;,&quot;type&quot;:&quot;ExtractMonthOfYear&quot;,&quot;version&quot;:1}</config>
+        <sourceFieldNames>Pure_Donor.Status_Date</sourceFieldNames>
+        <targetFieldNames>Pure_Donor.Status_Date</targetFieldNames>
+        <type>ExtractMonthOfYear</type>
+    </transformations>
+    <transformations>
+        <config>{&quot;targetFieldName&quot;:&quot;Birthdate&quot;,&quot;sourceFieldName&quot;:&quot;Birthdate&quot;,&quot;format&quot;:&quot;yyyy-MM-dd&quot;,&quot;type&quot;:&quot;ExtractMonthOfYear&quot;,&quot;version&quot;:1}</config>
+        <sourceFieldNames>Birthdate</sourceFieldNames>
+        <targetFieldNames>Birthdate</targetFieldNames>
+        <type>ExtractMonthOfYear</type>
+    </transformations>
+</DiscoveryAIModel>

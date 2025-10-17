@@ -1,0 +1,270 @@
+{
+  "version" : "61.0",
+  "nodes" : {
+    "LOAD_DATASET0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Gift Credit and Payment",
+          "name" : "Gift_Credit_and_Payment"
+        },
+        "sampleDetails" : {
+          "type" : "TopN"
+        }
+      }
+    },
+    "FILTER0" : {
+      "action" : "filter",
+      "sources" : [ "LOAD_DATASET0" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "ucinn_ascendv2__Gift_Type_Formula__c",
+          "operator" : "EQUAL",
+          "operands" : [ "Recurring Gift Payment" ]
+        }, {
+          "type" : "NUMBER",
+          "field" : "Cash_Amount",
+          "operator" : "GREATER_THAN",
+          "operands" : [ "0" ]
+        } ]
+      }
+    },
+    "FORMULA0" : {
+      "action" : "computeRelative",
+      "sources" : [ "FILTER0" ],
+      "parameters" : {
+        "partitionBy" : [ "Organization_or_Constituent_Account_Id" ],
+        "orderBy" : [ {
+          "fieldName" : "ucinn_ascendv2__Credit_Date_Formula__c",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "DATETIME",
+          "name" : "First_Chapel_Bell_Gift",
+          "label" : "First Chapel Bell Gift",
+          "formulaExpression" : "first_value(ucinn_ascendv2__Credit_Date_Formula__c)",
+          "format" : "dd/MM/yyyy",
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA1" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA0" ],
+      "parameters" : {
+        "partitionBy" : [ "Organization_or_Constituent_Account_Id" ],
+        "orderBy" : [ {
+          "fieldName" : "ucinn_ascendv2__Credit_Date_Formula__c",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "DATETIME",
+          "name" : "Last_Chapel_Bell_Gift",
+          "label" : "Last Chapel Bell Gift",
+          "formulaExpression" : "last_value(ucinn_ascendv2__Credit_Date_Formula__c)",
+          "format" : "dd/MM/yyyy",
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "DROP_FIELDS0" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA2" ],
+      "parameters" : {
+        "slice" : {
+          "mode" : "SELECT",
+          "ignoreMissingFields" : true,
+          "fields" : [ "First_Chapel_Bell_Gift", "Last_Chapel_Bell_Gift", "Organization_or_Constituent_Account_Id", "Contact.ucinn_ascendv2__Full_Name_Formula__c", "temp" ]
+        }
+      }
+    },
+    "FORMULA2" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA1" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "temp",
+          "label" : "temp",
+          "formulaExpression" : "1",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "EXTRACT0" : {
+      "action" : "extractGrains",
+      "sources" : [ "DROP_FIELDS0" ],
+      "parameters" : {
+        "grainExtractions" : [ {
+          "source" : "First_Chapel_Bell_Gift",
+          "targets" : [ {
+            "name" : "First_Chapel_Bell_Gift_DAY",
+            "label" : "First Chapel Bell Gift Day",
+            "grainType" : "DAY"
+          }, {
+            "name" : "First_Chapel_Bell_Gift_MONTH",
+            "label" : "First Chapel Bell Gift Month",
+            "grainType" : "MONTH"
+          }, {
+            "name" : "First_Chapel_Bell_Gift_YEAR",
+            "label" : "First Chapel Bell Gift Year",
+            "grainType" : "YEAR"
+          } ]
+        }, {
+          "source" : "Last_Chapel_Bell_Gift",
+          "targets" : [ {
+            "name" : "Last_Chapel_Bell_Gift_DAY",
+            "label" : "Last Chapel Bell Gift Day",
+            "grainType" : "DAY"
+          }, {
+            "name" : "Last_Chapel_Bell_Gift_MONTH",
+            "label" : "Last Chapel Bell Gift Month",
+            "grainType" : "MONTH"
+          }, {
+            "name" : "Last_Chapel_Bell_Gift_YEAR",
+            "label" : "Last Chapel Bell Gift Year",
+            "grainType" : "YEAR"
+          } ]
+        } ]
+      }
+    },
+    "AGGREGATE1" : {
+      "action" : "aggregate",
+      "sources" : [ "EXTRACT0" ],
+      "parameters" : {
+        "aggregations" : [ {
+          "action" : "AVG",
+          "source" : "temp",
+          "name" : "AVG_temp",
+          "label" : "Average temp"
+        } ],
+        "groupings" : [ "Contact.ucinn_ascendv2__Full_Name_Formula__c", "First_Chapel_Bell_Gift_DAY", "First_Chapel_Bell_Gift_MONTH", "First_Chapel_Bell_Gift_YEAR", "Last_Chapel_Bell_Gift_DAY", "Last_Chapel_Bell_Gift_MONTH", "Last_Chapel_Bell_Gift_YEAR" ],
+        "nodeType" : "STANDARD"
+      }
+    },
+    "OUTPUT0" : {
+      "action" : "save",
+      "sources" : [ "AGGREGATE1" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Chapel Bell First Gift Date",
+          "name" : "Chapel_Bell_First_Gift_Date"
+        },
+        "dateConfigurationName" : "July_Fiscal_Year"
+      }
+    }
+  },
+  "ui" : {
+    "nodes" : {
+      "LOAD_DATASET0" : {
+        "label" : "Gift Credit and Payment",
+        "type" : "LOAD_DATASET",
+        "top" : 112,
+        "left" : 112,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "FILTER0" : {
+        "label" : "Filter to recurring gift payments only",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 112,
+        "left" : 252
+      },
+      "TRANSFORM0" : {
+        "label" : "First and Last CB Dates",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 112,
+        "left" : 392,
+        "graph" : {
+          "FORMULA0" : {
+            "label" : "First Chapel Bell Gift"
+          },
+          "FORMULA1" : {
+            "label" : "Last Chapel Bell Gift"
+          },
+          "DROP_FIELDS0" : {
+            "label" : "Drop Columns"
+          },
+          "FORMULA2" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "temp"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA0",
+          "target" : "FORMULA1"
+        }, {
+          "source" : "FORMULA2",
+          "target" : "DROP_FIELDS0"
+        }, {
+          "source" : "FORMULA1",
+          "target" : "FORMULA2"
+        } ]
+      },
+      "AGGREGATE0" : {
+        "label" : "Aggregate to Contact or Account",
+        "description" : "",
+        "type" : "AGGREGATE",
+        "top" : 112,
+        "left" : 532,
+        "graph" : {
+          "EXTRACT0" : null,
+          "AGGREGATE1" : null
+        },
+        "connectors" : [ {
+          "source" : "EXTRACT0",
+          "target" : "AGGREGATE1"
+        } ]
+      },
+      "TRANSFORM1" : {
+        "label" : "Transform dates",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 112,
+        "left" : 672,
+        "graph" : { },
+        "connectors" : [ ]
+      },
+      "OUTPUT0" : {
+        "label" : "Output 0",
+        "type" : "OUTPUT",
+        "top" : 112,
+        "left" : 812
+      }
+    },
+    "connectors" : [ {
+      "source" : "LOAD_DATASET0",
+      "target" : "FILTER0"
+    }, {
+      "source" : "FILTER0",
+      "target" : "TRANSFORM0"
+    }, {
+      "source" : "TRANSFORM0",
+      "target" : "AGGREGATE0"
+    }, {
+      "source" : "AGGREGATE0",
+      "target" : "TRANSFORM1"
+    }, {
+      "source" : "TRANSFORM1",
+      "target" : "OUTPUT0"
+    } ],
+    "hiddenColumns" : [ ]
+  },
+  "runMode" : "full"
+}

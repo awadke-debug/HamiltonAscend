@@ -1,0 +1,133 @@
+{
+  "version" : "64.0",
+  "nodes" : {
+    "LOAD_DATASET7_copy0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Contact.ucinn_ascendv2__Preferred_Address_State__c", "Is_Reunion_Year", "Contact.ucinn_ascendv2__Preferred_Address_City__c", "add_spouse.Spouse.Name", "add_spouse.Spouse.ucinn_ascendv2__Primary_Contact_Type__c", "Contact.ucinn_ascendv2__Preferred_Address_Line_1__c", "add_spouse.ucinn_ascendv2__Preferred_Spouse__c", "Contact.HAM_Letter_Addressee__c", "Joint_Formal.ucinn_ascendv2__Addressee_Line_1__c", "Is_Seniors_In_Campaign_FY", "Contact.HAM_Institutional_Suffix__c", "Account.ucinn_ascendv2__External_System_ID__c", "Account_Id_for_Lightning", "Contact.ucinn_ascendv2__Donor_ID__c", "Contact.Preferred_Contact_Address", "Reunion_Year_Flag", "Ind_Formal.ucinn_ascendv2__Addressee_Line_1__c", "Contact.HAM_Letter_Salutation__c", "Ind_Formal.ucinn_ascendv2__Inside_Salutation__c", "Sole_Household_Member", "Account.Primary_Constituent_Type__c", "ucinn_asce.HAM_GOLD_Flag__c", "Contact.AccountId", "Contact.ucinn_ascendv2__Preferred_Address_Line_2__c", "Joint_Formal.ucinn_ascendv2__Addressee_Line_2__c", "Account.ucinn_ascendv2__PRM__c", "Default_Inside_Salutation", "Id", "Reunion_Degree.First_Reunion_Year", "Contact.ucinn_ascendv2__Preferred_Class_Year__c", "Reunion_Degree.All_Reunion_Years", "Campaign.Name", "Contact.ucinn_ascendv2__Primary_Contact_Type__c", "Ind_Formal.ucinn_ascendv2__Addressee_Line_2__c", "Campaign.Record_Type.Name", "Contact.ucinn_ascendv2__Preferred_Address_Line_3__c", "Contact.Id", "add_spouse.Spouse.HAM_Reunion_Year__c", "Contact.ucinn_ascendv2__Preferred_Address_Country__c", "Contact.ucinn_ascendv2__Birth_Year__c", "Is_Glade_and_Glen_Eligible_Account", "CampaignId", "Contact.ucinn_ascendv2__Recognition_Name__c", "Account.Primary_Relationship_Manager.UserRole.Name", "Contact.ucinn_ascendv2__External_System_ID__c", "Contact_Id_for_Lightning", "Joint_Formal.ucinn_ascendv2__Inside_Salutation__c", "Default_Addressee_Line_2", "Contact.ucinn_ascendv2__Preferred_Address_Postal_Code__c", "Contact.HAM_Reunion_Year__c", "Account.ucinn_ascendv2__Donor_ID__c", "Contact.Name", "Is_ISB_Campaign", "Account.Name", "Fiscal_Year", "Account.Primary_Relationship_Manager.Name", "Default_Addressee_Line_1", "add_spouse.Spouse_Contact_Id_for_Lightning", "Is_Donor_Before_Give_Day", "Is_Donor_FY", "Is_Philanthropic_Donor", "GOLD.Sum.Lifetime_GOLD_Credit_Amount", "Count.Household_Contacts", "Is_EFOD_FYTD", "Institutional_Degrees.Count.Rows", "Contact.ucinn_ascendv2__Age_Formula__c", "GOLD.Count.GOLD_Rows", "Campaign_Member_Household_Row_Number", "Is_Donor_FYTD", "Primary_Constituent_Sort", "Is_Philanthropic_Donor_FYTD" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Campaign Member",
+          "name" : "Campaign_Member"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "FILTER2_copy0" : {
+      "action" : "filter",
+      "sources" : [ "LOAD_DATASET7_copy0" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "CampaignId",
+          "operator" : "EQUAL",
+          "operands" : [ "701U100000bAzWOIA0" ]
+        } ]
+      }
+    },
+    "FORMULA310_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FILTER2_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "is_honor_roll_manual_add",
+          "label" : "is honor roll manual add",
+          "formulaExpression" : "'true'",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "DROP_FIELDS60_copy0" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA310_copy0" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "CampaignId" ]
+        }
+      }
+    },
+    "OUTPUT0" : {
+      "action" : "save",
+      "sources" : [ "DROP_FIELDS60_copy0" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "test_campaignmember",
+          "name" : "test_campaignmember"
+        },
+        "measuresToCurrencies" : [ ]
+      }
+    }
+  },
+  "ui" : {
+    "nodes" : {
+      "LOAD_DATASET7_copy0" : {
+        "label" : "Campaign Member",
+        "type" : "LOAD_DATASET",
+        "top" : 112,
+        "left" : 530.2,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "FILTER2_copy0" : {
+        "label" : "Filter to manual adds",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 112.19999999999999,
+        "left" : 672.6
+      },
+      "TRANSFORM19_copy0" : {
+        "label" : "create manual add flag",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 112.19999999999999,
+        "left" : 812.6,
+        "graph" : {
+          "FORMULA310_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "is honor roll manual add"
+          },
+          "DROP_FIELDS60_copy0" : {
+            "label" : "Drop Columns"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA310_copy0",
+          "target" : "DROP_FIELDS60_copy0"
+        } ]
+      },
+      "OUTPUT0" : {
+        "label" : "Output 0",
+        "type" : "OUTPUT",
+        "top" : 112.19999999999999,
+        "left" : 952.5
+      }
+    },
+    "connectors" : [ {
+      "source" : "LOAD_DATASET7_copy0",
+      "target" : "FILTER2_copy0"
+    }, {
+      "source" : "FILTER2_copy0",
+      "target" : "TRANSFORM19_copy0"
+    }, {
+      "source" : "TRANSFORM19_copy0",
+      "target" : "OUTPUT0"
+    } ],
+    "hiddenColumns" : [ ]
+  },
+  "runMode" : "full"
+}

@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionCalls>
+        <description>This Email is sent to Nancy and Mike whenever Cancellation happens</description>
+        <name>Send_Cancellation_Email</name>
+        <label>Send Cancellation Email</label>
+        <locationX>314</locationX>
+        <locationY>431</locationY>
+        <actionName>conference360__Attendee__c.ham_Attendee_Cancellation_Email</actionName>
+        <actionType>emailAlert</actionType>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>SObjectRowId</name>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </inputParameters>
+        <nameSegment>conference360__Attendee__c.ham_Attendee_Cancellation_Email</nameSegment>
+        <offset>0</offset>
+    </actionCalls>
+    <actionCalls>
+        <description>This email alert is sent for paid events so that the refunds can be initiated</description>
+        <name>Send_paid_Event_Refund_email</name>
+        <label>Send paid Event Refund email</label>
+        <locationX>50</locationX>
+        <locationY>431</locationY>
+        <actionName>conference360__Attendee__c.HAM_Attendee_Cancellation_Email_Paid_event</actionName>
+        <actionType>emailAlert</actionType>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>SObjectRowId</name>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </inputParameters>
+        <nameSegment>conference360__Attendee__c.HAM_Attendee_Cancellation_Email_Paid_event</nameSegment>
+        <offset>0</offset>
+    </actionCalls>
+    <apiVersion>63.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <decisions>
+        <description>This Decision is used to identify if the event is free or paid?</description>
+        <name>Is_Free</name>
+        <label>Is Free?</label>
+        <locationX>182</locationX>
+        <locationY>323</locationY>
+        <defaultConnector>
+            <targetReference>Send_Cancellation_Email</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>If Free event</defaultConnectorLabel>
+        <rules>
+            <name>If_Paid_Event</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.HAM_Is_Event_Free__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Send_paid_Event_Refund_email</targetReference>
+            </connector>
+            <label>If Paid Event</label>
+        </rules>
+    </decisions>
+    <description>This flow triggers a cancellation email when attendee cancels the registration</description>
+    <environments>Default</environments>
+    <interviewLabel>Send Cancelled Registration Email {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>HAM Send Cancelled Registration Email</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <start>
+        <locationX>56</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Is_Free</targetReference>
+        </connector>
+        <doesRequireRecordChangedToMeetCriteria>true</doesRequireRecordChangedToMeetCriteria>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>conference360__Registration_Status__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Canceled</stringValue>
+            </value>
+        </filters>
+        <object>conference360__Attendee__c</object>
+        <recordTriggerType>Update</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Active</status>
+</Flow>

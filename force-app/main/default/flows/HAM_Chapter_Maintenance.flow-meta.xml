@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>63.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <assignments>
+        <description>Assign the Chapter to Address</description>
+        <name>Assign_Chapter_to_Address</name>
+        <label>Assign Chapter to Address</label>
+        <locationX>264</locationX>
+        <locationY>647</locationY>
+        <assignmentItems>
+            <assignToReference>Address_Loop.HAM_Chapter__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Record.HAM_Chapter_Lookup__r.Id</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Assign_to_Collection</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Assign_Chapter_to_AR</name>
+        <label>Assign Chapter to AR</label>
+        <locationX>264</locationX>
+        <locationY>1055</locationY>
+        <assignmentItems>
+            <assignToReference>Address_Relation_Loop.HAM_Chapter__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Record.HAM_Chapter_Lookup__r.Id</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Assign_to_Collection_AR</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Assign_to_Collection</name>
+        <label>Assign to Collection</label>
+        <locationX>264</locationX>
+        <locationY>755</locationY>
+        <assignmentItems>
+            <assignToReference>colAddresses</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>Address_Loop</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Address_Loop</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Assign_to_Collection_AR</name>
+        <label>Assign to Collection - AR</label>
+        <locationX>264</locationX>
+        <locationY>1163</locationY>
+        <assignmentItems>
+            <assignToReference>colAddressRelations</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>Address_Relation_Loop</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Address_Relation_Loop</targetReference>
+        </connector>
+    </assignments>
+    <description>Upon Chapter Zip creation, this flow ensures address and address relation records are assigned the correct Chapter code value.</description>
+    <environments>Default</environments>
+    <interviewLabel>HAM Chapter Maintenance {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>HAM Chapter Maintenance</label>
+    <loops>
+        <description>Loop over addresses to assign values</description>
+        <name>Address_Loop</name>
+        <label>Address Loop</label>
+        <locationX>176</locationX>
+        <locationY>539</locationY>
+        <collectionReference>Get_Addresses</collectionReference>
+        <iterationOrder>Asc</iterationOrder>
+        <nextValueConnector>
+            <targetReference>Assign_Chapter_to_Address</targetReference>
+        </nextValueConnector>
+        <noMoreValuesConnector>
+            <targetReference>Address_Relation_Loop</targetReference>
+        </noMoreValuesConnector>
+    </loops>
+    <loops>
+        <name>Address_Relation_Loop</name>
+        <label>Address Relation Loop</label>
+        <locationX>176</locationX>
+        <locationY>947</locationY>
+        <collectionReference>Get_Address_Relations</collectionReference>
+        <iterationOrder>Asc</iterationOrder>
+        <nextValueConnector>
+            <targetReference>Assign_Chapter_to_AR</targetReference>
+        </nextValueConnector>
+        <noMoreValuesConnector>
+            <targetReference>Update_Addresses</targetReference>
+        </noMoreValuesConnector>
+    </loops>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordLookups>
+        <description>Get all Address Relations records where zip code matches Chapter</description>
+        <name>Get_Address_Relations</name>
+        <label>Get Address Relations</label>
+        <locationX>176</locationX>
+        <locationY>431</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Address_Loop</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>HAM_Zip_Code_5_Digit__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.HAM_Zip_Code__c</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>false</getFirstRecordOnly>
+        <object>ucinn_ascendv2__Address_Relation__c</object>
+        <queriedFields>Id</queriedFields>
+        <queriedFields>HAM_Chapter__c</queriedFields>
+        <queriedFields>HAM_Zip_Code_5_Digit__c</queriedFields>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <description>Get all Address records where the Zip Code matches that of the Chapter.</description>
+        <name>Get_Addresses</name>
+        <label>Get Addresses</label>
+        <locationX>176</locationX>
+        <locationY>323</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Get_Address_Relations</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>HAM_Zip_Code_5_Digit__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.HAM_Zip_Code__c</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>false</getFirstRecordOnly>
+        <object>ucinn_ascendv2__Address__c</object>
+        <queriedFields>Id</queriedFields>
+        <queriedFields>HAM_Chapter__c</queriedFields>
+        <queriedFields>HAM_Zip_Code_5_Digit__c</queriedFields>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordUpdates>
+        <name>Update_Address_Relations</name>
+        <label>Update Address Relations</label>
+        <locationX>176</locationX>
+        <locationY>1463</locationY>
+        <inputReference>colAddressRelations</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <description>Update Addresses with Chapter</description>
+        <name>Update_Addresses</name>
+        <label>Update Addresses</label>
+        <locationX>176</locationX>
+        <locationY>1355</locationY>
+        <connector>
+            <targetReference>Update_Address_Relations</targetReference>
+        </connector>
+        <inputReference>colAddresses</inputReference>
+    </recordUpdates>
+    <start>
+        <locationX>50</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Get_Addresses</targetReference>
+        </connector>
+        <object>HAM_ChapterZipCode__c</object>
+        <recordTriggerType>Create</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Active</status>
+    <variables>
+        <description>collection variable of Address records</description>
+        <name>colAddresses</name>
+        <dataType>SObject</dataType>
+        <isCollection>true</isCollection>
+        <isInput>true</isInput>
+        <isOutput>true</isOutput>
+        <objectType>ucinn_ascendv2__Address__c</objectType>
+    </variables>
+    <variables>
+        <name>colAddressRelations</name>
+        <dataType>SObject</dataType>
+        <isCollection>true</isCollection>
+        <isInput>true</isInput>
+        <isOutput>true</isOutput>
+        <objectType>ucinn_ascendv2__Address_Relation__c</objectType>
+    </variables>
+</Flow>

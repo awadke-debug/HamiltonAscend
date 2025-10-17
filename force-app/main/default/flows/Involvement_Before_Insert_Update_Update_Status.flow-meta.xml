@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>59.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <decisions>
+        <description>This decision will check if the end date has been populated.</description>
+        <name>Is_End_Date_Populated</name>
+        <label>Is End Date Populated ?</label>
+        <locationX>182</locationX>
+        <locationY>287</locationY>
+        <defaultConnector>
+            <targetReference>Update_Status_Field_Current</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Not Populated</defaultConnectorLabel>
+        <rules>
+            <name>Yes_Populated</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.ucinn_ascendv2__End_Date__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.ucinn_ascendv2__End_Date__c</leftValueReference>
+                <operator>LessThanOrEqualTo</operator>
+                <rightValue>
+                    <elementReference>$Flow.CurrentDate</elementReference>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_Status_Field</targetReference>
+            </connector>
+            <label>Yes, Populated</label>
+        </rules>
+    </decisions>
+    <description>This flow will run on the Involvement object and will change the status field value.</description>
+    <environments>Default</environments>
+    <interviewLabel>Involvement - Before Insert / Update - Update Status {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Involvement - Before Insert / Update - Update Status</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordUpdates>
+        <description>This will update the value on the status field.</description>
+        <name>Update_Status_Field</name>
+        <label>Update Status Field Former</label>
+        <locationX>50</locationX>
+        <locationY>395</locationY>
+        <inputAssignments>
+            <field>ucinn_ascendv2__Status__c</field>
+            <value>
+                <stringValue>Former</stringValue>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Update_Status_Field_Current</name>
+        <label>Update Status Field Current</label>
+        <locationX>314</locationX>
+        <locationY>395</locationY>
+        <inputAssignments>
+            <field>ucinn_ascendv2__Status__c</field>
+            <value>
+                <stringValue>Current</stringValue>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <start>
+        <locationX>56</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Is_End_Date_Populated</targetReference>
+        </connector>
+        <object>ucinn_ascendv2__Involvement__c</object>
+        <recordTriggerType>CreateAndUpdate</recordTriggerType>
+        <triggerType>RecordBeforeSave</triggerType>
+    </start>
+    <status>Active</status>
+</Flow>

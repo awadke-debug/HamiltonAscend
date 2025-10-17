@@ -1,0 +1,673 @@
+{
+  "version" : "64.0",
+  "nodes" : {
+    "LOAD_DATASET4_copy0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Id", "Name", "ucinn_ascendv2__Motivation_Code__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "Campaign",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "Campaign"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "LOAD_DATASET5_copy0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "ContactId", "CampaignId" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "CampaignMember",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "CampaignMember"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN6_copy0_copy0" : {
+      "action" : "join",
+      "sources" : [ "LOAD_DATASET5_copy0", "EDIT_ATTRIBUTES0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Campaign.Id", "CampaignId" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "CampaignId" ],
+        "rightQualifier" : "Campaign",
+        "rightKeys" : [ "Id" ]
+      }
+    },
+    "EDIT_ATTRIBUTES0" : {
+      "action" : "schema",
+      "sources" : [ "LOAD_DATASET4_copy0" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Name",
+          "newProperties" : {
+            "label" : "Campaign Name",
+            "name" : "Name"
+          }
+        } ]
+      }
+    },
+    "LOAD_DATASET7" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Cash_Amount", "Fiscal_Year", "Designation.Name", "Constituent_or_Account_Id" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Gift Credit and Payment",
+          "name" : "Gift_Credit_and_Payment"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "FILTER0" : {
+      "action" : "filter",
+      "sources" : [ "JOIN6_copy0_copy0" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "Campaign.Name",
+          "operator" : "EQUAL",
+          "operands" : [ "FY25-Class of 2025 Senior Gift" ]
+        } ]
+      }
+    },
+    "FORMULA0" : {
+      "action" : "formula",
+      "sources" : [ "FILTER0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Is_Seniors",
+          "label" : "Is Seniors",
+          "formulaExpression" : "'true'",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FILTER1" : {
+      "action" : "filter",
+      "sources" : [ "JOIN6_copy0_copy0" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "Campaign.ucinn_ascendv2__Motivation_Code__c",
+          "operator" : "EQUAL",
+          "operands" : [ "FY25SGCP" ]
+        } ]
+      }
+    },
+    "FILTER2" : {
+      "action" : "filter",
+      "sources" : [ "LOAD_DATASET7" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "Fiscal_Year",
+          "operator" : "EQUAL",
+          "operands" : [ "2025" ]
+        }, {
+          "type" : "TEXT",
+          "field" : "Designation.Name",
+          "operator" : "EQUAL",
+          "operands" : [ "FND-SRG-2025-BRIDGE" ]
+        }, {
+          "type" : "NUMBER",
+          "field" : "Cash_Amount",
+          "operator" : "GREATER_THAN",
+          "operands" : [ "0" ]
+        } ]
+      }
+    },
+    "JOIN9" : {
+      "action" : "join",
+      "sources" : [ "FORMULA0", "FILTER1" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Campaign.Name", "SolicitCode.Campaign.Name" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "OUTER",
+        "leftKeys" : [ "ContactId" ],
+        "rightQualifier" : "SolicitCode",
+        "rightKeys" : [ "ContactId" ]
+      }
+    },
+    "FORMULA1" : {
+      "action" : "formula",
+      "sources" : [ "JOIN9" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Id_formula",
+          "label" : "Id",
+          "formulaExpression" : "coalesce(ContactId, \"SolicitCode.ContactId\")",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "DROP_FIELDS0" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA3" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Campaign.ucinn_ascendv2__Motivation_Code__c", "SolicitCode.Campaign.ucinn_ascendv2__Motivation_Code__c", "ContactId", "SolicitCode.ContactId" ]
+        }
+      }
+    },
+    "FORMULA3" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA1" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Solicit_Code",
+          "label" : "Solicit Code",
+          "formulaExpression" : "coalesce(\"Campaign.ucinn_ascendv2__Motivation_Code__c\", \"SolicitCode.Campaign.ucinn_ascendv2__Motivation_Code__c\")",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "JOIN10" : {
+      "action" : "join",
+      "sources" : [ "DROP_FIELDS0", "FILTER2" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "DesigCode.Cash_Amount", "DesigCode.Fiscal_Year", "DesigCode.Designation.Name" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "OUTER",
+        "leftKeys" : [ "Id_formula" ],
+        "rightQualifier" : "DesigCode",
+        "rightKeys" : [ "Constituent_or_Account_Id" ]
+      }
+    },
+    "FORMULA1_copy0" : {
+      "action" : "formula",
+      "sources" : [ "JOIN10" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Id",
+          "label" : "Id",
+          "formulaExpression" : "coalesce(Id_formula,\"DesigCode.Constituent_or_Account_Id\")",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "DROP_FIELDS1" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA1_copy0" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "DesigCode.Constituent_or_Account_Id", "Id_formula" ]
+        }
+      }
+    },
+    "LOAD_DATASET7_copy0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Fundraising_Amount", "ucinn_ascendv2__Credit_Type__c", "Fiscal_Year", "Object", "Designation.Name", "Constituent_or_Account_Id", "Cash_Amount" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Gift Credit and Payment",
+          "name" : "Gift_Credit_and_Payment"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "FILTER3" : {
+      "action" : "filter",
+      "sources" : [ "LOAD_DATASET7_copy0" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "Fiscal_Year",
+          "operator" : "EQUAL",
+          "operands" : [ "2025" ]
+        } ]
+      }
+    },
+    "JOIN11" : {
+      "action" : "join",
+      "sources" : [ "FILTER3", "DROP_FIELDS1" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Constituent_or_Account_Id" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "OUTER",
+        "leftKeys" : [ "Constituent_or_Account_Id" ],
+        "rightQualifier" : "SeniorGift",
+        "rightKeys" : [ "Id" ]
+      }
+    },
+    "FILTER4" : {
+      "action" : "filter",
+      "sources" : [ "JOIN11" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "SeniorGift.Id",
+          "operator" : "IS_NOT_NULL",
+          "operands" : [ ]
+        } ]
+      }
+    },
+    "LOAD_DATASET8" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "HAM_Reunion_Year__c", "Is_Active", "Name_and_Suffix", "ucinn_ascendv2__Primary_Contact_Type__c", "ucinn_ascendv2__Is_Deceased__c", "Account_or_Contact_Id" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Account and Contact Dataset",
+          "name" : "Account_and_Contact_Dataset"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN12" : {
+      "action" : "join",
+      "sources" : [ "BUCKET0", "LOAD_DATASET8" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Accountand.Account_or_Contact_Id" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "SeniorGift.Id" ],
+        "rightQualifier" : "Accountand",
+        "rightKeys" : [ "Account_or_Contact_Id" ]
+      }
+    },
+    "OUTPUT0" : {
+      "action" : "save",
+      "sources" : [ "JOIN12" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Senior Gift",
+          "name" : "Senior_Gift",
+          "folderName" : "SharedApp"
+        },
+        "dateConfigurationName" : "July_Fiscal_Year",
+        "measuresToCurrencies" : [ ]
+      }
+    },
+    "BUCKET0" : {
+      "action" : "bucketV2",
+      "sources" : [ "FILTER4" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "SeniorGift.Is_Seniors_bucket",
+          "newProperties" : {
+            "name" : "SeniorGift.Is_Seniors"
+          }
+        } ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "SeniorGift.Is_Seniors" ]
+        }
+      },
+      "parameters" : {
+        "buckets" : [ {
+          "value" : "true",
+          "terms" : [ {
+            "operator" : "EQUAL",
+            "opType" : "TEXT",
+            "operands" : [ "true" ]
+          } ]
+        } ],
+        "nullBucket" : "false",
+        "passthroughEnabled" : true,
+        "sourceField" : "SeniorGift.Is_Seniors",
+        "targetField" : {
+          "name" : "SeniorGift.Is_Seniors_bucket",
+          "label" : "Is Seniors"
+        }
+      }
+    }
+  },
+  "ui" : {
+    "nodes" : {
+      "LOAD_DATASET4_copy0" : {
+        "label" : "Campaign",
+        "type" : "LOAD_DATASET",
+        "top" : 531.9,
+        "left" : 252,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "LOAD_DATASET5_copy0" : {
+        "label" : "CampaignMember",
+        "type" : "LOAD_DATASET",
+        "top" : 391.9,
+        "left" : 252,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN6_copy0_copy0" : {
+        "label" : "Lookup Campaign To Members",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 392,
+        "left" : 392
+      },
+      "TRANSFORM9_copy0" : {
+        "label" : "Rename",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 532,
+        "left" : 392,
+        "graph" : {
+          "EDIT_ATTRIBUTES0" : {
+            "label" : "Edit Attributes"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "LOAD_DATASET7" : {
+        "label" : "Gift Credit and Payment",
+        "type" : "LOAD_DATASET",
+        "top" : 671.9,
+        "left" : 1092.8,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "FILTER0" : {
+        "label" : "Filter",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 392.1,
+        "left" : 532
+      },
+      "TRANSFORM10" : {
+        "label" : "Flag",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 392.1,
+        "left" : 672,
+        "graph" : {
+          "FORMULA0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Is Seniors"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "FILTER1" : {
+        "label" : "Filter 1",
+        "type" : "FILTER",
+        "top" : 532.1,
+        "left" : 532
+      },
+      "FILTER2" : {
+        "label" : "Filter 2",
+        "type" : "FILTER",
+        "top" : 532,
+        "left" : 1092
+      },
+      "JOIN9" : {
+        "label" : "Join 9",
+        "type" : "JOIN",
+        "top" : 392.1,
+        "left" : 812
+      },
+      "TRANSFORM11" : {
+        "label" : "Combine Column",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 392.1,
+        "left" : 952,
+        "graph" : {
+          "FORMULA1" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Id"
+          },
+          "DROP_FIELDS0" : {
+            "label" : "Drop Columns"
+          },
+          "FORMULA3" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Solicit Code"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA3",
+          "target" : "DROP_FIELDS0"
+        }, {
+          "source" : "FORMULA1",
+          "target" : "FORMULA3"
+        } ]
+      },
+      "JOIN10" : {
+        "label" : "Join 10",
+        "type" : "JOIN",
+        "top" : 392.1,
+        "left" : 1092
+      },
+      "TRANSFORM11_copy0" : {
+        "label" : "Combine Column",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 392.1,
+        "left" : 1232,
+        "graph" : {
+          "FORMULA1_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Id"
+          },
+          "DROP_FIELDS1" : {
+            "label" : "Drop Columns"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA1_copy0",
+          "target" : "DROP_FIELDS1"
+        } ]
+      },
+      "LOAD_DATASET7_copy0" : {
+        "label" : "Gift Credit and Payment",
+        "description" : "",
+        "type" : "LOAD_DATASET",
+        "top" : 252,
+        "left" : 252,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "FILTER3" : {
+        "label" : "Filter",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 252,
+        "left" : 392
+      },
+      "JOIN11" : {
+        "label" : "Join 11",
+        "type" : "JOIN",
+        "top" : 252.10000000000002,
+        "left" : 1231.9
+      },
+      "FILTER4" : {
+        "label" : "Filter",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 252.10000000000002,
+        "left" : 1371.9
+      },
+      "LOAD_DATASET8" : {
+        "label" : "Account and Contact Dataset",
+        "type" : "LOAD_DATASET",
+        "top" : 392,
+        "left" : 1652.3,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN12" : {
+        "label" : "Join 12",
+        "type" : "JOIN",
+        "top" : 252.10000000000002,
+        "left" : 1652
+      },
+      "OUTPUT0" : {
+        "label" : "Output 0",
+        "type" : "OUTPUT",
+        "top" : 252.10000000000002,
+        "left" : 1792
+      },
+      "TRANSFORM12" : {
+        "label" : "Transform 12",
+        "type" : "TRANSFORM",
+        "top" : 252.10000000000002,
+        "left" : 1512,
+        "graph" : {
+          "BUCKET0" : {
+            "label" : "Bucket"
+          }
+        },
+        "connectors" : [ ]
+      }
+    },
+    "connectors" : [ {
+      "source" : "LOAD_DATASET5_copy0",
+      "target" : "JOIN6_copy0_copy0"
+    }, {
+      "source" : "TRANSFORM9_copy0",
+      "target" : "JOIN6_copy0_copy0"
+    }, {
+      "source" : "JOIN6_copy0_copy0",
+      "target" : "FILTER0"
+    }, {
+      "source" : "FILTER0",
+      "target" : "TRANSFORM10"
+    }, {
+      "source" : "JOIN6_copy0_copy0",
+      "target" : "FILTER1"
+    }, {
+      "source" : "LOAD_DATASET7",
+      "target" : "FILTER2"
+    }, {
+      "source" : "TRANSFORM10",
+      "target" : "JOIN9"
+    }, {
+      "source" : "JOIN9",
+      "target" : "TRANSFORM11"
+    }, {
+      "source" : "TRANSFORM11",
+      "target" : "JOIN10"
+    }, {
+      "source" : "JOIN10",
+      "target" : "TRANSFORM11_copy0"
+    }, {
+      "source" : "LOAD_DATASET7_copy0",
+      "target" : "FILTER3"
+    }, {
+      "source" : "FILTER3",
+      "target" : "JOIN11"
+    }, {
+      "source" : "TRANSFORM11_copy0",
+      "target" : "JOIN11"
+    }, {
+      "source" : "JOIN11",
+      "target" : "FILTER4"
+    }, {
+      "source" : "TRANSFORM12",
+      "target" : "JOIN12"
+    }, {
+      "source" : "LOAD_DATASET8",
+      "target" : "JOIN12"
+    }, {
+      "source" : "JOIN12",
+      "target" : "OUTPUT0"
+    }, {
+      "source" : "FILTER1",
+      "target" : "JOIN9"
+    }, {
+      "source" : "FILTER2",
+      "target" : "JOIN10"
+    }, {
+      "source" : "FILTER4",
+      "target" : "TRANSFORM12"
+    }, {
+      "source" : "LOAD_DATASET4_copy0",
+      "target" : "TRANSFORM9_copy0"
+    } ],
+    "hiddenColumns" : [ ]
+  },
+  "runMode" : "full"
+}

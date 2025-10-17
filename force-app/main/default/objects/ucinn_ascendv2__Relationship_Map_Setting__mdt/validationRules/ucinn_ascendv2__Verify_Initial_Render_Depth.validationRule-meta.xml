@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>ucinn_ascendv2__Verify_Initial_Render_Depth</fullName>
+    <active>true</active>
+    <description>Initial Render Depth must be between 0 and Maximum Depth Level</description>
+    <errorConditionFormula>OR(0 &gt;  ucinn_ascendv2__Initial_Render_Depth__c,ucinn_ascendv2__Initial_Render_Depth__c  &gt; ucinn_ascendv2__Target_Depth_Level__c)</errorConditionFormula>
+    <errorDisplayField>ucinn_ascendv2__Initial_Render_Depth__c</errorDisplayField>
+    <errorMessage>The initial value to render must be &lt;= Maximum Depth Level. The initial value to render must be &gt;= 0.</errorMessage>
+</ValidationRule>

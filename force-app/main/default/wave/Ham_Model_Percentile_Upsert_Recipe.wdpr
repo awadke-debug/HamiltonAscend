@@ -1,0 +1,260 @@
+{
+  "version" : "64.0",
+  "nodes" : {
+    "LOAD_DATASET0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Predicted_Is_100_HF_Donor_HFPaid_prediction", "M1_Group", "HAM_Name_w_Suffix__c", "Account_or_Contact_Id" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Model 100 Deployed HFPaid and PP",
+          "name" : "Model_100_Deployed_HFPaid_and_PP"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "OUTPUT0" : {
+      "action" : "outputExternal",
+      "sources" : [ "FORMULA3" ],
+      "parameters" : {
+        "connectionName" : "SFDCconnectorHAM",
+        "object" : "ucinn_ascendv2__Wealth_Rating__c",
+        "operation" : "insert",
+        "externalIdFieldName" : "",
+        "hyperFileName" : "",
+        "fieldsMapping" : [ {
+          "sourceField" : "Predicted_Is_100_HF_Donor_HFPaid_prediction",
+          "targetField" : "HAM_Raw_Score__c"
+        }, {
+          "sourceField" : "Account_or_Contact_Id",
+          "targetField" : "ucinn_ascendv2__Contact__c"
+        }, {
+          "sourceField" : "Model_Name",
+          "targetField" : "HAM_Propensity_Model_Name__c"
+        }, {
+          "sourceField" : "M1_Group",
+          "targetField" : "HAM_Model_Percentile__c"
+        }, {
+          "sourceField" : "Fiscal_Year",
+          "targetField" : "HAM_Fiscal_Year__c"
+        }, {
+          "sourceField" : "Record_type_ID",
+          "targetField" : "RecordTypeId"
+        }, {
+          "sourceField" : "name",
+          "targetField" : "Name"
+        } ],
+        "connectorType" : "SALESFORCE_OUTPUT"
+      }
+    },
+    "FORMULA0" : {
+      "action" : "formula",
+      "sources" : [ "LOAD_DATASET0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Model_Name",
+          "label" : "Model Name",
+          "formulaExpression" : "'HF 100 propensity lybunt model'",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "DROP_FIELDS0" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA0" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "HAM_Name_w_Suffix__c" ]
+        }
+      }
+    },
+    "TO_MEASURE0" : {
+      "action" : "typeCast",
+      "sources" : [ "DROP_FIELDS0" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "M1_Group_to_measure",
+          "newProperties" : {
+            "name" : "M1_Group"
+          }
+        } ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "M1_Group" ]
+        }
+      },
+      "parameters" : {
+        "fields" : [ {
+          "name" : "M1_Group",
+          "newProperties" : {
+            "label" : "M1 Group",
+            "name" : "M1_Group_to_measure",
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 0,
+              "precision" : 3
+            }
+          }
+        } ]
+      }
+    },
+    "FORMULA1" : {
+      "action" : "formula",
+      "sources" : [ "TO_MEASURE0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Fiscal_Year",
+          "label" : "Fiscal Year",
+          "formulaExpression" : "'2025'",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES0" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA1" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Predicted_Is_100_HF_Donor_HFPaid_prediction",
+          "newProperties" : {
+            "label" : "Predicted Is $100 HF Donor? M1",
+            "name" : "Predicted_Is_100_HF_Donor_HFPaid_prediction"
+          }
+        } ]
+      }
+    },
+    "FORMULA2" : {
+      "action" : "formula",
+      "sources" : [ "EDIT_ATTRIBUTES0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Record_type_ID",
+          "label" : "Record type ID",
+          "formulaExpression" : "'012U1000000lheWIAQ'",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA3" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA2" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "name",
+          "label" : "name",
+          "formulaExpression" : "NULL",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    }
+  },
+  "ui" : {
+    "nodes" : {
+      "LOAD_DATASET0" : {
+        "label" : "Model 100 Deployed HFPaid and PP",
+        "type" : "LOAD_DATASET",
+        "top" : 112,
+        "left" : 112,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "OUTPUT0" : {
+        "label" : "Percentile Prediction Dataset",
+        "description" : "",
+        "type" : "OUTPUT",
+        "top" : 112.5,
+        "left" : 393.7
+      },
+      "TRANSFORM0" : {
+        "label" : "Transform 0",
+        "type" : "TRANSFORM",
+        "top" : 112,
+        "left" : 252,
+        "graph" : {
+          "FORMULA0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Model Name"
+          },
+          "DROP_FIELDS0" : {
+            "label" : "Drop Columns"
+          },
+          "TO_MEASURE0" : {
+            "label" : "To Number"
+          },
+          "FORMULA1" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Fiscal Year"
+          },
+          "EDIT_ATTRIBUTES0" : {
+            "label" : "Edit Attributes"
+          },
+          "FORMULA2" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Record type ID"
+          },
+          "FORMULA3" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "name"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA0",
+          "target" : "DROP_FIELDS0"
+        }, {
+          "source" : "DROP_FIELDS0",
+          "target" : "TO_MEASURE0"
+        }, {
+          "source" : "TO_MEASURE0",
+          "target" : "FORMULA1"
+        }, {
+          "source" : "FORMULA1",
+          "target" : "EDIT_ATTRIBUTES0"
+        }, {
+          "source" : "EDIT_ATTRIBUTES0",
+          "target" : "FORMULA2"
+        }, {
+          "source" : "FORMULA2",
+          "target" : "FORMULA3"
+        } ]
+      }
+    },
+    "connectors" : [ {
+      "source" : "TRANSFORM0",
+      "target" : "OUTPUT0"
+    }, {
+      "source" : "LOAD_DATASET0",
+      "target" : "TRANSFORM0"
+    } ],
+    "hiddenColumns" : [ ]
+  },
+  "runMode" : "full"
+}

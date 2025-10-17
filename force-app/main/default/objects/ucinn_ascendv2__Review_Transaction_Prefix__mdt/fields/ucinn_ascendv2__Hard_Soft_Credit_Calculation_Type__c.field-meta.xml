@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>ucinn_ascendv2__Hard_Soft_Credit_Calculation_Type__c</fullName>
+    <deprecated>false</deprecated>
+    <description>Only applies to non-Legacy Payment Methods. Determines how Hard and Soft Credits are calculated: Either Payment Amount (Gift + Non-Gift) OR Gift Amount Payer Hard Credit / Non-Gift Amount Payer Soft Credit / Payment Amount Relationship Soft Credit.</description>
+    <fieldManageability>SubscriberControlled</fieldManageability>
+    <inlineHelpText>Only applies to non-Legacy Payment Methods. Determines how Hard and Soft Credits are calculated: Either Payment Amount (Gift + Non-Gift) OR Gift Amount Payer Hard Credit / Non-Gift Amount Payer Soft Credit / Payment Amount Relationship Soft Credit.</inlineHelpText>
+    <label>Hard/Soft Credit Calculation Type</label>
+    <required>false</required>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Inherited</fullName>
+                <default>true</default>
+                <label>Inherited</label>
+            </value>
+            <value>
+                <fullName>Legacy</fullName>
+                <default>false</default>
+                <label>Legacy</label>
+            </value>
+            <value>
+                <fullName>Payment Amount</fullName>
+                <default>false</default>
+                <label>Payment Amount</label>
+            </value>
+            <value>
+                <fullName>Gift Amount / Non-Gift Amount / Payment Amount</fullName>
+                <default>false</default>
+                <label>Gift Amount / Non-Gift Amount / Payment Amount</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

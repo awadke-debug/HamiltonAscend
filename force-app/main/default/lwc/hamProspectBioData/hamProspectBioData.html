@@ -1,0 +1,128 @@
+<template>
+    <div class="backgroundWhite">
+        <lightning-accordion  allow-multiple-sections-open="true" active-section-name={activeSectionBio} onsectiontoggle={handleSectionToggle}>
+            <lightning-accordion-section   name="Demographics" label="Demographics">
+                <template lwc:if={contactrecord}>
+
+                    <div class="slds-p-around_small slds-grid slds-wrap slds-gutters">
+                        <!--Profile Photo & Name -->
+                        <!-- Left Column: Profile Photo -->
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                            <div class="slds-p-around_small slds-align_absolute-center">
+                                <img src={contactrecord.HAM_Profile_Picture_URL__c} alt="Profile Photo" class="circle-photo" />
+                            </div>
+                        </div>
+
+                        <!-- Right Column: Name and Label -->
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                            <div class="slds-p-around_small">
+                                <div class="label">Name:</div>
+                                <div class="bold-text">{contactrecord.HAM_Name_w_Suffix__c}</div>
+                            </div>
+                        </div>
+
+
+                        <!-- Donor ID & Constituent Type -->
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                            <div class="slds-p-around_small">
+                                <div class="label">Donor ID:</div>
+                                <div>{contactrecord.ucinn_ascendv2__Donor_ID__c}</div>
+                                <div class="label slds-m-top_small">Constituent Type:</div>
+                                <div>{contactrecord.ucinn_ascendv2__Contact_Type__c}</div>
+                            </div>
+                        </div>
+
+                        <!-- Current Chapters & Alternate Chapter -->
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                            <div class="slds-p-around_small">
+                                <div class="label">Current Chapters:</div>
+                                <div>{contactrecord.HAM_Current_Chapters__c}</div>
+                                <div class="label slds-m-top_small">Alternate Chapter:</div>
+                                <template if:true={contactrecord.HAM_Alternate_Chapter__c}>
+                                    <a href={chapterLink} target="_blank">{contactrecord.HAM_Alternate_Chapter__r.Name}</a>
+                                </template>
+                                <template if:false={contactrecord.HAM_Alternate_Chapter__c}>
+                                    <div>Not Available</div>
+                                </template>
+                            </div>
+                        </div>
+
+                        <!-- Phone & Email -->
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                            <div class="slds-p-around_small">
+                                <div class="label">Phone(Type):</div>
+                                <div>{contactrecord.HAM_Phone_and_Type__c}</div>
+                                <div class="label slds-m-top_small">Email:</div>
+                                <div>{contactrecord.HAM_PreferredEmail__c}</div>
+                            </div>
+                        </div>
+
+                        <!-- Employer & Job Title -->
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                            <div class="slds-p-around_small">
+                                <div class="label">Employer:</div>
+                                <div>{contactrecord.HAM_LiveAlumni_Employer__c}</div>
+                                <div class="label slds-m-top_small">Job Title:</div>
+                                <div>{contactrecord.HAM_LiveAlumni_Job_Title__c}</div>
+                            </div>
+                        </div>
+
+                        <!-- Address & PRM -->
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                            <div class="slds-p-around_small">
+                                <div class="label">Address:</div>
+                                <div class="wrapLong">{contactrecord.ucinn_ascendv2__Preferred_Address_Formula__c}</div>
+                                <div class="label slds-m-top_small">PRM:</div>
+                                <template if:true={contactrecord.ucinn_ascendv2__PRM__c}>
+                                    <a href={prmLink} target="_blank">{contactrecord.ucinn_ascendv2__PRM__r.Name}</a>
+                                </template>
+                                <template if:false={contactrecord.ucinn_ascendv2__PRM__c}>
+                                    <div>Hamily</div>
+                                </template>
+                            </div>
+                        </div>
+
+                        <!-- Spouse & Children -->
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                            <div class="slds-p-around_small">
+                                <div class="label">Spouse:</div>
+                                <div>
+                                     <template if:true={contactrecord.ucinn_ascendv2__Preferred_Spouse__c}>
+                                        <a href={spouseLink} target="_blank">{contactrecord.ucinn_ascendv2__Preferred_Spouse__r.Name}</a>
+                                    </template>
+                                    <template if:false={contactrecord.ucinn_ascendv2__Preferred_Spouse__c}>
+                                        <div>Not Available</div>
+                                    </template>
+                                </div>
+                                <div class="label slds-m-top_small">Children:</div>
+                                <div>{contactrecord.HAM_Children__c}</div>
+                            </div>
+                        </div>
+
+                        <!-- Gender & DOB -->
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                            <div class="slds-p-around_small">
+                                <!--<div class="label">Gender:</div>
+                                <div>{contactrecord.ucinn_ascendv2__Gender__c}</div>-->
+                                <div class="label slds-m-top_small">DOB:</div>
+                                <div>{contactrecord.Birthdate}</div>
+                            </div>
+                        </div>
+                        <!-- Link to Ascend -->
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                            <div class="slds-p-around_small">
+                                <div class="label">Parent:</div>
+                                <div>{contactrecord.HAM_Parents__c}</div>
+                                <div class="label slds-m-top_small">
+                                    <a href={ascendProfileLink} target="_blank" class="slds-text-link">
+                                        Ascend Profile
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+            </lightning-accordion-section>
+        </lightning-accordion>
+    </div>
+</template>

@@ -1,0 +1,235 @@
+{
+  "version" : "63.0",
+  "nodes" : {
+    "LOAD_DATASET0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "ChildReuni.Is_Hamilton_Parent", "Account_or_Contact_Id", "ucinn_ascendv2__Ethnicity__c", "Wealth_Rating_Number_Ed_bucket", "All_Volunteer_Involvements", "Account.Id", "ucinn_ascendv2__Gender__c", "Job_Title_Edited", "Wealth_Rating_Number_Ed", "Is_Solicitable", "Preferred_Address_Region", "ucinn_ascendv2__Preferred_Class_Year__c", "NCAA_Involvements", "Active_Organization_Names", "All_Minors_Codes_Ed", "All_Involvements", "Multicultural_Affinity", "ChildReuni.Is_Hamilton_Parent_ft", "Is_5K_HF_Donor_CYR", "Private_Societies_Involvements", "Lifetime_Cash_1YR", "Years_Given", "Flag_1YR", "Flag_2YR", "Flag_3YR", "Flag_4YR", "Number_of_Solicitable_Channels", "Aggregate.Sum.FY02_Collected_Amount", "Aggregate.SUM_FY03_Collected_Amount_HF", "Aggregate.SUM_FY01_Collected_Amount_HF", "ucinn_ascendv2__Age_Formula__c", "ucinn_ascendv2__Lifetime_Cash__c", "Aggregate.Sum.FY01_Collected_Amount", "Persistence_Flag", "Pure_Donor.Count_Unique.Fiscal_Years", "Aggregate.Sum.Lifetime_Collected_Amount", "Years_Given_Percent", "Aggregate.SUM_FY02_Collected_Amount_HF", "Aggregate.Sum.FY00_Collected_Amount", "Persistence_HF_Flag", "HF_1YR_Flag", "HF_2YR_Flag", "HF_3YR_Flag", "Persistence_5K_HF_Flag", "HAM_Reunion_Year__c" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Model 5K HF Donors Freq /Cash",
+          "name" : "Model_5K_HF_Donors_No_Null_CYR_Freq_Cash"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "LOAD_DATASET1" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Aggregate.SUM_FY00_Collected_Amount_HF", "Is_Contactable", "Preferred_Address.ucinn_ascendv2__Address_State_Formula__c", "Is_Solicitable_By_Phone", "Primary_Relationship_Manager.HAM_Role__c", "Current_Employer.Organization.Name", "HAM_Name_w_Suffix__c", "Largest_Cash_Gift_Type", "HF_Model.HF_Decile_String", "Email", "Account_or_Contact_Id", "Largest_Cash.Largest_Cash_Date", "Is_Solicitable_By_Email", "Secondary_Relationship_Manager.Assigned_User_Name", "Is_Primary_Contact", "Current_Cell.ucinn_ascendv2__Phone_Number__c", "Primary_Relationship_Manager.Assigned_User_Name", "Account.Name", "Aggregate.Sum.Lifetime_Collected_Amount", "Aggregate_02.Sum.Is_Consecutive_Year" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Account and Contact Dataset",
+          "name" : "Account_and_Contact_Dataset"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN0" : {
+      "action" : "join",
+      "sources" : [ "FILTER1", "LOAD_DATASET1" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Account_or_Contact_Id" ],
+        "rightQualifier" : "Accountandee",
+        "rightKeys" : [ "Account_or_Contact_Id" ]
+      }
+    },
+    "FILTER0" : {
+      "action" : "filter",
+      "sources" : [ "JOIN0" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "Is_Solicitable",
+          "operator" : "EQUAL",
+          "operands" : [ "true" ]
+        }, {
+          "type" : "TEXT",
+          "field" : "Accountandee.Is_Primary_Contact",
+          "operator" : "EQUAL",
+          "operands" : [ "true" ]
+        } ]
+      }
+    },
+    "FORMULA0" : {
+      "action" : "formula",
+      "sources" : [ "DISCOVERY_PREDICT1" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Is_5k_HF_Donor_CYR_Int",
+          "label" : "Is 5k HF Donor  CYR Int",
+          "formulaExpression" : "IF(\"Is_5K_HF_Donor_CYR\" = true, 1, 0)\r\n",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "OUTPUT0" : {
+      "action" : "save",
+      "sources" : [ "FORMULA0" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Brad TEMP - Model 5K Deployed Edited",
+          "name" : "Brad_TEMP_Model_5K_Deployed_Edited",
+          "folderName" : "SharedApp"
+        },
+        "measuresToCurrencies" : [ ]
+      }
+    },
+    "FILTER1" : {
+      "action" : "filter",
+      "sources" : [ "LOAD_DATASET0" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "Account.Id",
+          "operator" : "EQUAL",
+          "operands" : [ "001U1000004NFakIAG" ]
+        } ]
+      }
+    },
+    "DISCOVERY_PREDICT1" : {
+      "action" : "smartDataDiscoveryPredict",
+      "sources" : [ "FILTER0" ],
+      "parameters" : {
+        "predictSource" : {
+          "type" : "PRED_DEF",
+          "name" : "Predicted_Is_5K_HF_Donor_CYR"
+        },
+        "columnMapping" : {
+          "Wealth_Rating_Number_Ed_bucket" : "Wealth_Rating_Number_Ed_bucket",
+          "Job_Title_Edited" : "Job_Title_Edited",
+          "Preferred_Address_Region" : "Preferred_Address_Region",
+          "NCAA_Involvements" : "NCAA_Involvements",
+          "Active_Organization_Names" : "Active_Organization_Names",
+          "ChildReuni.Is_Hamilton_Parent_ft" : "ChildReuni.Is_Hamilton_Parent_ft",
+          "Private_Societies_Involvements" : "Private_Societies_Involvements",
+          "Lifetime_Cash_1YR" : "Lifetime_Cash_1YR",
+          "Years_Given" : "Years_Given",
+          "ucinn_ascendv2__Age_Formula__c" : "ucinn_ascendv2__Age_Formula__c",
+          "Persistence_HF_Flag" : "Persistence_HF_Flag",
+          "Persistence_5K_HF_Flag" : "Persistence_5K_HF_Flag"
+        },
+        "predictionField" : {
+          "name" : "Predicted_Is_5K_HF_Donor_CYR_prediction1",
+          "label" : "Predicted Is 5K HF Donor CYR"
+        },
+        "predictionFactorFields" : [ ],
+        "prescriptionFields" : [ ]
+      }
+    }
+  },
+  "ui" : {
+    "nodes" : {
+      "LOAD_DATASET0" : {
+        "label" : "Model 5K HF Donors Freq /Cash",
+        "type" : "LOAD_DATASET",
+        "top" : 112,
+        "left" : 112,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "LOAD_DATASET1" : {
+        "label" : "Account and Contact Dataset",
+        "type" : "LOAD_DATASET",
+        "top" : 252,
+        "left" : 112,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN0" : {
+        "label" : "Join 0",
+        "type" : "JOIN",
+        "top" : 112,
+        "left" : 392
+      },
+      "FILTER0" : {
+        "label" : "Filter 0",
+        "type" : "FILTER",
+        "top" : 112,
+        "left" : 532
+      },
+      "TRANSFORM0" : {
+        "label" : "Transform 0",
+        "type" : "TRANSFORM",
+        "top" : 112.4,
+        "left" : 1091.5,
+        "graph" : {
+          "FORMULA0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Formula"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "OUTPUT0" : {
+        "label" : "Output 0",
+        "type" : "OUTPUT",
+        "top" : 112.9,
+        "left" : 1370.8
+      },
+      "FILTER1" : {
+        "label" : "Filter 1",
+        "type" : "FILTER",
+        "top" : 112,
+        "left" : 252
+      },
+      "DISCOVERY_PREDICT1" : {
+        "label" : "Discovery Predict 1",
+        "type" : "DISCOVERY_PREDICT",
+        "top" : 112,
+        "left" : 812
+      }
+    },
+    "connectors" : [ {
+      "source" : "FILTER1",
+      "target" : "JOIN0"
+    }, {
+      "source" : "LOAD_DATASET1",
+      "target" : "JOIN0"
+    }, {
+      "source" : "JOIN0",
+      "target" : "FILTER0"
+    }, {
+      "source" : "TRANSFORM0",
+      "target" : "OUTPUT0"
+    }, {
+      "source" : "LOAD_DATASET0",
+      "target" : "FILTER1"
+    }, {
+      "source" : "DISCOVERY_PREDICT1",
+      "target" : "TRANSFORM0"
+    }, {
+      "source" : "FILTER0",
+      "target" : "DISCOVERY_PREDICT1"
+    } ],
+    "hiddenColumns" : [ ]
+  },
+  "runMode" : "full"
+}

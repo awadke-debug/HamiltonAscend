@@ -1,0 +1,11 @@
+<template>
+    <template if:false={isLoading}>
+    <ucinn_ascendv2-rm_-main-relationship-map
+        record-id={recordId}
+        object-api-name="Contact">
+    </ucinn_ascendv2-rm_-main-relationship-map>
+    </template>
+    <template if:true={isLoading}>
+        Loading relationship map...
+    </template>
+</template>

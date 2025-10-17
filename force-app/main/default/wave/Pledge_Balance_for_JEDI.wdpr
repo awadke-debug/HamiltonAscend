@@ -1,0 +1,603 @@
+{
+  "version" : "64.0",
+  "nodes" : {
+    "LOAD_DATASET0_copy0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Designation.ucinn_ascendv2__Acknowledgement_Description_Formula__c", "Opportunity.ucinn_ascendv2__Pledge_Gift_ID_Formula__c", "Is_Primary_Contact_or_Organization", "Name_and_Suffix", "Fiscal_Year", "Hard_And_Soft_Credit_Payment.ucinn_ascendv2__Designation_Detail__c", "ucinn_ascendv2__Credit_Date_Formula__c", "Contact.Name", "ucinn_ascendv2__Contact__c", "ucinn_ascendv2__Opportunity__c", "Designation_Detail.Name", "Object", "Opportunity.Name", "ucinn_ascendv2__Gift_Type_Formula__c", "ucinn_ascendv2__Gift_No_Formula__c", "Designation.Name", "Opportunity.ucinn_ascendv2__Credit_Date__c", "Opportunity.Type", "Constituent_or_Account_Id", "Opportunity.ucinn_ascendv2__Proposal__c", "Cash_Amount", "Bequest_Intention", "Fundraising_Amount" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Gift Credit and Payment",
+          "name" : "Gift_Credit_and_Payment"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "FILTER0_copy0" : {
+      "action" : "filter",
+      "sources" : [ "LOAD_DATASET0_copy0" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "Object",
+          "operator" : "EQUAL",
+          "operands" : [ "Hard and Soft Credit" ]
+        }, {
+          "type" : "NUMBER",
+          "field" : "Cash_Amount",
+          "operator" : "GREATER_THAN",
+          "operands" : [ "0" ]
+        }, {
+          "type" : "NUMBER",
+          "field" : "Fundraising_Amount",
+          "operator" : "GREATER_THAN",
+          "operands" : [ "0" ]
+        }, {
+          "type" : "NUMBER",
+          "field" : "Bequest_Intention",
+          "operator" : "EQUAL",
+          "operands" : [ "0" ]
+        }, {
+          "type" : "TEXT",
+          "field" : "Opportunity.Type",
+          "operator" : "NOT",
+          "operands" : [ "PGBEQ (Revocable Bequest)", "PGCGA (Charitable Gift Annuity)", "PGCLT (Charitable Lead Trust)", "PGCRT (Charitable Remainder Trust)", "PGEST (Realized Estate Gift)", "PGPIF (Pooled Income Fund)" ]
+        } ],
+        "filterBooleanLogic" : "1 AND (2 OR 3) AND 4 AND 5"
+      }
+    },
+    "EXTRACT0" : {
+      "action" : "extractGrains",
+      "sources" : [ "FILTER0_copy0" ],
+      "parameters" : {
+        "grainExtractions" : [ {
+          "source" : "Opportunity.ucinn_ascendv2__Credit_Date__c",
+          "targets" : [ {
+            "name" : "Opportunity.ucinn_ascendv2__Credit_Date__c_DAY",
+            "label" : "Gift Credit Date Day",
+            "grainType" : "DAY"
+          }, {
+            "name" : "Opportunity.ucinn_ascendv2__Credit_Date__c_MONTH",
+            "label" : "Gift Credit Date Month",
+            "grainType" : "MONTH"
+          }, {
+            "name" : "Opportunity.ucinn_ascendv2__Credit_Date__c_YEAR",
+            "label" : "Gift Credit Date Year",
+            "grainType" : "YEAR"
+          } ]
+        } ]
+      }
+    },
+    "AGGREGATE1" : {
+      "action" : "aggregate",
+      "sources" : [ "EXTRACT0" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "SUM_Cash_Amount",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        }, {
+          "name" : "SUM_Fundraising_Amount",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        } ]
+      },
+      "parameters" : {
+        "aggregations" : [ {
+          "action" : "SUM",
+          "source" : "Cash_Amount",
+          "name" : "SUM_Cash_Amount",
+          "label" : "Sum of Cash Amount"
+        }, {
+          "action" : "SUM",
+          "source" : "Fundraising_Amount",
+          "name" : "SUM_Fundraising_Amount",
+          "label" : "Sum of Fundraising Amount"
+        } ],
+        "groupings" : [ "Constituent_or_Account_Id", "Opportunity.Type", "ucinn_ascendv2__Opportunity__c", "Opportunity.ucinn_ascendv2__Pledge_Gift_ID_Formula__c", "Opportunity.ucinn_ascendv2__Credit_Date__c_DAY", "Opportunity.ucinn_ascendv2__Credit_Date__c_MONTH", "Opportunity.ucinn_ascendv2__Credit_Date__c_YEAR", "Contact.Name", "Designation_Detail.Name", "Opportunity.Name", "Name_and_Suffix", "ucinn_ascendv2__Contact__c", "Designation.ucinn_ascendv2__Acknowledgement_Description_Formula__c" ],
+        "pivots" : [ ],
+        "nodeType" : "STANDARD"
+      }
+    },
+    "FORMULA0" : {
+      "action" : "formula",
+      "sources" : [ "AGGREGATE1" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Pledge_Balance",
+          "label" : "Pledge Balance",
+          "formulaExpression" : "SUM_Fundraising_Amount-SUM_Cash_Amount",
+          "precision" : 10,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA1" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Pledge_Date",
+          "label" : "Pledge Date",
+          "formulaExpression" : "concat(\"Opportunity.ucinn_ascendv2__Credit_Date__c_YEAR\",'-',\"Opportunity.ucinn_ascendv2__Credit_Date__c_MONTH\",'-',\"Opportunity.ucinn_ascendv2__Credit_Date__c_DAY\")",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "TO_DATE0" : {
+      "action" : "typeCast",
+      "sources" : [ "FORMULA1" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "Pledge_Date_to_date",
+          "newProperties" : {
+            "name" : "Pledge_Date"
+          }
+        } ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Pledge_Date" ]
+        }
+      },
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Pledge_Date",
+          "newProperties" : {
+            "label" : "Pledge Date",
+            "name" : "Pledge_Date_to_date",
+            "typeProperties" : {
+              "type" : "DATETIME",
+              "format" : "yyyy-MM-dd"
+            }
+          }
+        } ]
+      }
+    },
+    "DROP_FIELDS0" : {
+      "action" : "schema",
+      "sources" : [ "TO_DATE0" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Opportunity.ucinn_ascendv2__Credit_Date__c_DAY", "Opportunity.ucinn_ascendv2__Credit_Date__c_MONTH", "Opportunity.ucinn_ascendv2__Credit_Date__c_YEAR" ]
+        }
+      }
+    },
+    "FORMULA2" : {
+      "action" : "formula",
+      "sources" : [ "DROP_FIELDS0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Calendar_Year",
+          "label" : "Calendar Year",
+          "formulaExpression" : "year(Pledge_Date)",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "TO_DIMENSION0" : {
+      "action" : "typeCast",
+      "sources" : [ "FORMULA2" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "Calendar_Year_to_dimension",
+          "newProperties" : {
+            "name" : "Calendar_Year"
+          }
+        } ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Calendar_Year" ]
+        }
+      },
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Calendar_Year",
+          "newProperties" : {
+            "label" : "Calendar Year",
+            "name" : "Calendar_Year_to_dimension",
+            "typeProperties" : {
+              "type" : "TEXT",
+              "length" : 255
+            }
+          }
+        } ]
+      }
+    },
+    "FORMULA3" : {
+      "action" : "formula",
+      "sources" : [ "TO_DIMENSION0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Fiscal_Year",
+          "label" : "Fiscal Year",
+          "formulaExpression" : "fiscalYear(Pledge_Date)",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "TO_DIMENSION1" : {
+      "action" : "typeCast",
+      "sources" : [ "FORMULA3" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "Fiscal_Year_to_dimension",
+          "newProperties" : {
+            "name" : "Fiscal_Year"
+          }
+        } ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Fiscal_Year" ]
+        }
+      },
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Fiscal_Year",
+          "newProperties" : {
+            "label" : "Fiscal Year",
+            "name" : "Fiscal_Year_to_dimension",
+            "typeProperties" : {
+              "type" : "TEXT",
+              "length" : 255
+            }
+          }
+        } ]
+      }
+    },
+    "FILTER1" : {
+      "action" : "filter",
+      "sources" : [ "TO_DIMENSION1" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "NUMBER",
+          "field" : "Pledge_Balance",
+          "operator" : "GREATER_THAN",
+          "operands" : [ "0" ]
+        } ]
+      }
+    },
+    "OUTPUT0" : {
+      "action" : "save",
+      "sources" : [ "JOIN0" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Pledge Balance",
+          "name" : "Pledge_Balance",
+          "folderName" : "SharedApp"
+        },
+        "measuresToCurrencies" : [ ]
+      }
+    },
+    "FORMULA4" : {
+      "action" : "formula",
+      "sources" : [ "FILTER1" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "External_System_Id",
+          "label" : "External System Id",
+          "formulaExpression" : "concat(Constituent_or_Account_Id,\"Designation.ucinn_ascendv2__Acknowledgement_Description_Formula__c\")",
+          "precision" : 32000,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA5" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA4" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Constituent_or_Account_Id_formula",
+          "label" : "ID",
+          "formulaExpression" : "''",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "LOAD_DATASET0_copy0_copy0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Designation.Name", "ucinn_ascendv2__Opportunity__c", "Opportunity.StageName" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Gift Credit and Payment",
+          "name" : "Gift_Credit_and_Payment"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN0" : {
+      "action" : "join",
+      "sources" : [ "EDIT_ATTRIBUTES0", "FILTER2" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "ucinn_ascendv2__Opportunity__c" ],
+        "rightQualifier" : "opp_stage",
+        "rightKeys" : [ "ucinn_ascendv2__Opportunity__c" ]
+      }
+    },
+    "FILTER2" : {
+      "action" : "filter",
+      "sources" : [ "LOAD_DATASET0_copy0_copy0" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "Designation.Name",
+          "operator" : "IS_NOT_NULL",
+          "operands" : [ ]
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES0" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA5" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Designation.ucinn_ascendv2__Acknowledgement_Description_Formula__c",
+          "newProperties" : {
+            "label" : "Designation Name",
+            "name" : "Designation.ucinn_ascendv2__Designation_Name__c",
+            "typeProperties" : null
+          }
+        } ]
+      }
+    }
+  },
+  "ui" : {
+    "nodes" : {
+      "LOAD_DATASET0_copy0" : {
+        "label" : "Gift Credit and Payment",
+        "type" : "LOAD_DATASET",
+        "top" : 252,
+        "left" : 112,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "FILTER0_copy0" : {
+        "label" : "Filter",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 252,
+        "left" : 252
+      },
+      "AGGREGATE0" : {
+        "label" : "Aggregate 0",
+        "type" : "AGGREGATE",
+        "top" : 252,
+        "left" : 392,
+        "graph" : {
+          "EXTRACT0" : null,
+          "AGGREGATE1" : null
+        },
+        "connectors" : [ {
+          "source" : "EXTRACT0",
+          "target" : "AGGREGATE1"
+        } ]
+      },
+      "TRANSFORM0" : {
+        "label" : "Transform 0",
+        "type" : "TRANSFORM",
+        "top" : 252,
+        "left" : 532,
+        "graph" : {
+          "FORMULA0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Pledge Balance"
+          },
+          "FORMULA1" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Pledge Date"
+          },
+          "TO_DATE0" : {
+            "label" : "To Date"
+          },
+          "DROP_FIELDS0" : {
+            "label" : "Drop Columns"
+          },
+          "FORMULA2" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Calendar Year"
+          },
+          "TO_DIMENSION0" : {
+            "label" : "To Text"
+          },
+          "FORMULA3" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Fiscal Year"
+          },
+          "TO_DIMENSION1" : {
+            "label" : "To Text"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA0",
+          "target" : "FORMULA1"
+        }, {
+          "source" : "FORMULA1",
+          "target" : "TO_DATE0"
+        }, {
+          "source" : "TO_DATE0",
+          "target" : "DROP_FIELDS0"
+        }, {
+          "source" : "DROP_FIELDS0",
+          "target" : "FORMULA2"
+        }, {
+          "source" : "FORMULA2",
+          "target" : "TO_DIMENSION0"
+        }, {
+          "source" : "TO_DIMENSION0",
+          "target" : "FORMULA3"
+        }, {
+          "source" : "FORMULA3",
+          "target" : "TO_DIMENSION1"
+        } ]
+      },
+      "FILTER1" : {
+        "label" : "filter to pledge balances",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 252,
+        "left" : 672
+      },
+      "OUTPUT0" : {
+        "label" : "Output 0",
+        "type" : "OUTPUT",
+        "top" : 252.5,
+        "left" : 1231.8
+      },
+      "TRANSFORM1" : {
+        "label" : "Transform 1",
+        "type" : "TRANSFORM",
+        "top" : 252,
+        "left" : 812,
+        "graph" : {
+          "FORMULA4" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "External System Id"
+          },
+          "FORMULA5" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "ID"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA4",
+          "target" : "FORMULA5"
+        } ]
+      },
+      "LOAD_DATASET0_copy0_copy0" : {
+        "label" : "Gift Credit and Payment",
+        "type" : "LOAD_DATASET",
+        "top" : 531.9,
+        "left" : 1092.7,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN0" : {
+        "label" : "look up stage to opportunity",
+        "description" : "using lookup rather then adding upstream to aggregate",
+        "type" : "JOIN",
+        "top" : 252.3,
+        "left" : 1092.1
+      },
+      "FILTER2" : {
+        "label" : "Filter 2",
+        "type" : "FILTER",
+        "top" : 392,
+        "left" : 1092
+      },
+      "TRANSFORM2" : {
+        "label" : "rename designation so reports render",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 252,
+        "left" : 952,
+        "graph" : {
+          "EDIT_ATTRIBUTES0" : {
+            "label" : "Edit Attributes"
+          }
+        },
+        "connectors" : [ ]
+      }
+    },
+    "connectors" : [ {
+      "source" : "LOAD_DATASET0_copy0",
+      "target" : "FILTER0_copy0"
+    }, {
+      "source" : "FILTER0_copy0",
+      "target" : "AGGREGATE0"
+    }, {
+      "source" : "AGGREGATE0",
+      "target" : "TRANSFORM0"
+    }, {
+      "source" : "TRANSFORM0",
+      "target" : "FILTER1"
+    }, {
+      "source" : "FILTER1",
+      "target" : "TRANSFORM1"
+    }, {
+      "source" : "TRANSFORM2",
+      "target" : "JOIN0"
+    }, {
+      "source" : "FILTER2",
+      "target" : "JOIN0"
+    }, {
+      "source" : "LOAD_DATASET0_copy0_copy0",
+      "target" : "FILTER2"
+    }, {
+      "source" : "JOIN0",
+      "target" : "OUTPUT0"
+    }, {
+      "source" : "TRANSFORM1",
+      "target" : "TRANSFORM2"
+    } ],
+    "hiddenColumns" : [ ]
+  },
+  "runMode" : "full"
+}

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>ucinn_ascendv2__Contact_Full_Name_Processing_Method__c</fullName>
+    <deprecated>false</deprecated>
+    <description>When inserting or updating an existing name to type &quot;Full Name&quot;, this setting controls whether we delete the other records, or change the other records to &quot;Former&quot;.</description>
+    <fieldManageability>SubscriberControlled</fieldManageability>
+    <inlineHelpText>When inserting or updating an existing name to type &quot;Full Name&quot;, this setting controls whether we delete the other records, throw a validation, or change the other records to &quot;Former&quot;.</inlineHelpText>
+    <label>Constituent Full Name Processing Method</label>
+    <required>false</required>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Change</fullName>
+                <default>true</default>
+                <label>Change</label>
+            </value>
+            <value>
+                <fullName>Validate</fullName>
+                <default>false</default>
+                <label>Validate</label>
+            </value>
+            <value>
+                <fullName>Delete</fullName>
+                <default>false</default>
+                <label>Delete</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

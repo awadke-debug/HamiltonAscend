@@ -1,0 +1,42 @@
+<template>
+    <div class="right-panel">
+        <h2 class="section-title">{label.myphilanthropyhiglights}</h2>
+
+        <div class="icon-row">
+            <template for:each={hcBadges} for:item="badge">
+                <div key={badge.label} class="icon-label">
+                    <span class="icon"><img src={badge.imageUrl} alt={badge.label}></img></span>
+                    <p>{badge.label}</p>
+                </div>
+            </template>
+        </div>
+
+        <template for:each={philanthropySections} for:item="section">
+            <div key={section.name} class="info-section">
+                <div class="heading-row">
+                    <h3 class="section-subtitle">{section.label}</h3>
+                    <template if:true={section.isShowGift}>
+                        <a href={label.makeagiftlink} target="_blank" class="slds-button slds-button_brand gift-button">
+                            <span><img src={images.makeaGiftImage} alt="" width="20px" height="20px"></img></span>
+                            <span class="slds-m-left_x-small">{label.makeagift}</span>
+                        </a>
+                    </template>
+                </div>
+                <div class="row">
+                    <template for:each={section.fields} for:item="field">
+                        <div key={field.label} class={field.fieldLabelCss}>
+                            <label>{field.label}:</label>
+                            <div class={field.fieldValueCss}>
+                                <span>{field.value}</span>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+            </div>
+        </template>
+
+        <div class="button-container">
+            <button class="deep-dive-button" onclick={handleButtonClick} >{label.deeperdiveintomyphilanthropy}</button>
+        </div>
+    </div>
+</template>

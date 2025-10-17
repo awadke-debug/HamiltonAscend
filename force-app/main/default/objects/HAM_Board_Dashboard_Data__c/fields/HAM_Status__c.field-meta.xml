@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>HAM_Status__c</fullName>
+    <description>If there is an end-date this is a former data record, otherwise this is current.</description>
+    <externalId>false</externalId>
+    <formula>IF(ISNULL(HAM_End_Date__c),
+&quot;Current&quot;,
+&quot;Former&quot;
+)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <inlineHelpText>If there is an end-date this is a former data record, otherwise this is current.</inlineHelpText>
+    <label>Status</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

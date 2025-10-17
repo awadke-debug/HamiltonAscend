@@ -1,0 +1,624 @@
+{
+  "version" : "61.0",
+  "nodes" : {
+    "LOAD_DATASET0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "HAM_Reunion_Year__c", "Id", "Preferred_Phone.ucinn_ascendv2__Phone_Number__c", "Account_or_Contact_External_Id", "Preferred_Address.ucinn_ascendv2__Full_Address_Formula__c", "Name", "Society_Membership.All_Active_Giving_Societies", "Primary_Relationship_Manager.Assigned_User_Name", "ucinn_ascendv2__Primary_Contact_Type__c", "Preferred_Email.ucinn_ascendv2__Email_Address__c" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Account and Contact Dataset",
+          "name" : "Account_and_Contact_Dataset"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "FORMULA4" : {
+      "action" : "formula",
+      "sources" : [ "JOIN9" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Days_Passed",
+          "label" : "Days Passed",
+          "formulaExpression" : "case \r\nwhen \r\nucinn_ascendv2__Last_Payment_Date_Roll_Up__c is not null\r\nthen \r\ndatediff(current_date(), ucinn_ascendv2__Last_Payment_Date_Roll_Up__c)\r\nwhen \r\nucinn_ascendv2__Last_Payment_Date_Roll_Up__c is null \r\nthen \r\ndatediff(current_date(), ucinn_ascendv2__Credit_Date__c)\r\nend",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA6" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA4" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "DATETIME",
+          "name" : "Updated_Date",
+          "label" : "Updated Date",
+          "formulaExpression" : "now()",
+          "format" : "yyyy-MM-dd",
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES0" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA6" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "RecordType.Name",
+          "newProperties" : {
+            "label" : "Opportunity Record Type",
+            "name" : "RecordType.Name"
+          }
+        } ]
+      }
+    },
+    "FORMULA7" : {
+      "action" : "formula",
+      "sources" : [ "EDIT_ATTRIBUTES2" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Designation_Code",
+          "label" : "Designation Code",
+          "formulaExpression" : "coalesce(\"ucinn_asce.Name\", \"Join8.ucinn_asce.Name\")",
+          "precision" : 10,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "DROP_FIELDS0" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA7" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "ucinn_asce.Name", "Join8.ucinn_asce.Name", "Is_Credit_Date_Before_Today" ]
+        }
+      }
+    },
+    "EDIT_ATTRIBUTES1" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES0" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Name",
+          "newProperties" : {
+            "label" : "Opportunity Name",
+            "name" : "Name"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES2" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES1" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Amount",
+          "newProperties" : {
+            "label" : "Recurring Amount",
+            "name" : "Amount"
+          }
+        } ]
+      }
+    },
+    "OUTPUT0" : {
+      "action" : "save",
+      "sources" : [ "DROP_FIELDS0" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Chapel Bell Society 3903",
+          "name" : "Chapel_Bell_Society_3903",
+          "folderName" : "SharedApp"
+        },
+        "dateConfigurationName" : "July_Fiscal_Year"
+      }
+    },
+    "LOAD_DATASET7" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "LastModifiedDate", "ucinn_ascendv2__Last_Payment_Amount__c", "ucinn_ascendv2__Last_Payment_Date_Roll_Up__c", "LastModifiedById", "Id", "RecordTypeId", "Name", "StageName", "Amount", "Type", "ucinn_ascendv2__Contact__c", "ucinn_ascendv2__Credit_Date__c", "ucinn_ascendv2__Designation__c", "ucinn_ascendv2__Frequency__c", "ucinn_ascendv2__Tender_Type_for_Gifts__c", "ucinn_ascendv2__Designation_Detail_Amount_Roll_Up__c", "ucinn_ascendv2__Pledge_Gift_ID_Formula__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "Opportunity",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "Opportunity"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "LOAD_DATASET8" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Id", "Name" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "RecordType",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "RecordType"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN5" : {
+      "action" : "join",
+      "sources" : [ "EDIT_ATTRIBUTES3", "LOAD_DATASET8" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "RecordType.Id", "RecordTypeId" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "RecordTypeId" ],
+        "rightQualifier" : "RecordType",
+        "rightKeys" : [ "Id" ]
+      }
+    },
+    "FILTER2" : {
+      "action" : "filter",
+      "sources" : [ "FORMULA9" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "RecordType.Name",
+          "operator" : "EQUAL",
+          "operands" : [ "Recurring Gift" ]
+        }, {
+          "type" : "TEXT",
+          "field" : "Name",
+          "operator" : "IS_NOT_NULL",
+          "operands" : [ ]
+        } ]
+      }
+    },
+    "JOIN6" : {
+      "action" : "join",
+      "sources" : [ "FILTER2", "LOAD_DATASET0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "FilterChap.Id" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "ucinn_ascendv2__Contact__c" ],
+        "rightQualifier" : "FilterChap",
+        "rightKeys" : [ "Id" ]
+      }
+    },
+    "LOAD_DATASET9" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Id", "Name" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "ucinn_ascendv2__Designation__c",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "ucinn_ascendv2__Designation__c"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN7" : {
+      "action" : "join",
+      "sources" : [ "JOIN6", "LOAD_DATASET9" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "ucinn_asce.Id" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "ucinn_ascendv2__Designation__c" ],
+        "rightQualifier" : "ucinn_asce",
+        "rightKeys" : [ "Id" ]
+      }
+    },
+    "LOAD_DATASET10" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "ucinn_ascendv2__Designation__c", "ucinn_ascendv2__Opportunity__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "ucinn_ascendv2__Payment__c",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "ucinn_ascendv2__Payment__c"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN8" : {
+      "action" : "join",
+      "sources" : [ "LOAD_DATASET10", "LOAD_DATASET9" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "ucinn_asce.Id", "ucinn_ascendv2__Designation__c" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "ucinn_ascendv2__Designation__c" ],
+        "rightQualifier" : "ucinn_asce",
+        "rightKeys" : [ "Id" ]
+      }
+    },
+    "JOIN9" : {
+      "action" : "join",
+      "sources" : [ "JOIN7", "JOIN8" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Join8.ucinn_ascendv2__Opportunity__c" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Id" ],
+        "rightQualifier" : "Join8",
+        "rightKeys" : [ "ucinn_ascendv2__Opportunity__c" ]
+      }
+    },
+    "FORMULA9" : {
+      "action" : "formula",
+      "sources" : [ "JOIN5" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Is_Credit_Date_Before_Today",
+          "label" : "Is Credit Date Before Today",
+          "formulaExpression" : "case \r\nwhen \r\nucinn_ascendv2__Credit_Date__c<=current_date()\r\nthen\r\n'true'\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "LOAD_DATASET11" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Id", "Name" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "User",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "User"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN10" : {
+      "action" : "join",
+      "sources" : [ "LOAD_DATASET7", "LOAD_DATASET11" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "LastModifiedById", "User.Id" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "LastModifiedById" ],
+        "rightQualifier" : "User",
+        "rightKeys" : [ "Id" ]
+      }
+    },
+    "EDIT_ATTRIBUTES3" : {
+      "action" : "schema",
+      "sources" : [ "JOIN10" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "User.Name",
+          "newProperties" : {
+            "label" : "Last Modified By",
+            "name" : "User.Name"
+          }
+        } ]
+      }
+    }
+  },
+  "ui" : {
+    "nodes" : {
+      "LOAD_DATASET0" : {
+        "label" : "Account and Contact Dataset",
+        "type" : "LOAD_DATASET",
+        "top" : 532.2,
+        "left" : 952.1,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "TRANSFORM1" : {
+        "label" : "Enrich Field",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 252.39999999999998,
+        "left" : 1513.4,
+        "graph" : {
+          "FORMULA4" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Days Passed"
+          },
+          "FORMULA6" : {
+            "parameters" : {
+              "type" : "DATE_NOW_UI"
+            },
+            "label" : "Updated Date"
+          },
+          "EDIT_ATTRIBUTES0" : {
+            "label" : "Edit Attributes"
+          },
+          "FORMULA7" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Designation Code"
+          },
+          "DROP_FIELDS0" : {
+            "label" : "Drop Columns"
+          },
+          "EDIT_ATTRIBUTES1" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES2" : {
+            "label" : "Edit Attributes"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA4",
+          "target" : "FORMULA6"
+        }, {
+          "source" : "FORMULA6",
+          "target" : "EDIT_ATTRIBUTES0"
+        }, {
+          "source" : "FORMULA7",
+          "target" : "DROP_FIELDS0"
+        }, {
+          "source" : "EDIT_ATTRIBUTES0",
+          "target" : "EDIT_ATTRIBUTES1"
+        }, {
+          "source" : "EDIT_ATTRIBUTES2",
+          "target" : "FORMULA7"
+        }, {
+          "source" : "EDIT_ATTRIBUTES1",
+          "target" : "EDIT_ATTRIBUTES2"
+        } ]
+      },
+      "OUTPUT0" : {
+        "label" : "Output 0",
+        "type" : "OUTPUT",
+        "top" : 252.39999999999998,
+        "left" : 1653.4
+      },
+      "LOAD_DATASET7" : {
+        "label" : "Opportunity",
+        "type" : "LOAD_DATASET",
+        "top" : 252.3,
+        "left" : 112.6,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "LOAD_DATASET8" : {
+        "label" : "RecordType",
+        "type" : "LOAD_DATASET",
+        "top" : 392,
+        "left" : 532.5,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN5" : {
+        "label" : "Join RecordType to Opportunity",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 252,
+        "left" : 532
+      },
+      "FILTER2" : {
+        "label" : "Filter Recurring Gift",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 252,
+        "left" : 812
+      },
+      "JOIN6" : {
+        "label" : "Join Contact Info to Opportunity",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 252,
+        "left" : 952
+      },
+      "LOAD_DATASET9" : {
+        "label" : "ucinn_ascendv2__Designation__c",
+        "type" : "LOAD_DATASET",
+        "top" : 392.2,
+        "left" : 1092.1,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN7" : {
+        "label" : "Join Designation to Opportunity",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 252,
+        "left" : 1092
+      },
+      "LOAD_DATASET10" : {
+        "label" : "ucinn_ascendv2__Payment__c",
+        "type" : "LOAD_DATASET",
+        "top" : 532.2,
+        "left" : 1232.1,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN8" : {
+        "label" : "Join Designation to Payment",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 392.2,
+        "left" : 1232.1
+      },
+      "JOIN9" : {
+        "label" : "Join Designation From Payment to Opportunity",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 252,
+        "left" : 1232
+      },
+      "TRANSFORM2" : {
+        "label" : "Enrich Fields",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 252,
+        "left" : 672,
+        "graph" : {
+          "FORMULA9" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Is Credit Date Before Today"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "LOAD_DATASET11" : {
+        "label" : "User",
+        "type" : "LOAD_DATASET",
+        "top" : 392.1,
+        "left" : 252,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN10" : {
+        "label" : "Join User",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 252.10000000000002,
+        "left" : 252.10000000000002
+      },
+      "TRANSFORM3" : {
+        "label" : "Rename",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 252,
+        "left" : 392,
+        "graph" : {
+          "EDIT_ATTRIBUTES3" : {
+            "label" : "Edit Attributes"
+          }
+        },
+        "connectors" : [ ]
+      }
+    },
+    "connectors" : [ {
+      "source" : "TRANSFORM1",
+      "target" : "OUTPUT0"
+    }, {
+      "source" : "TRANSFORM3",
+      "target" : "JOIN5"
+    }, {
+      "source" : "LOAD_DATASET8",
+      "target" : "JOIN5"
+    }, {
+      "source" : "TRANSFORM2",
+      "target" : "FILTER2"
+    }, {
+      "source" : "FILTER2",
+      "target" : "JOIN6"
+    }, {
+      "source" : "JOIN6",
+      "target" : "JOIN7"
+    }, {
+      "source" : "LOAD_DATASET9",
+      "target" : "JOIN7"
+    }, {
+      "source" : "LOAD_DATASET10",
+      "target" : "JOIN8"
+    }, {
+      "source" : "LOAD_DATASET9",
+      "target" : "JOIN8"
+    }, {
+      "source" : "JOIN7",
+      "target" : "JOIN9"
+    }, {
+      "source" : "JOIN8",
+      "target" : "JOIN9"
+    }, {
+      "source" : "LOAD_DATASET0",
+      "target" : "JOIN6"
+    }, {
+      "source" : "JOIN5",
+      "target" : "TRANSFORM2"
+    }, {
+      "source" : "JOIN9",
+      "target" : "TRANSFORM1"
+    }, {
+      "source" : "LOAD_DATASET7",
+      "target" : "JOIN10"
+    }, {
+      "source" : "LOAD_DATASET11",
+      "target" : "JOIN10"
+    }, {
+      "source" : "JOIN10",
+      "target" : "TRANSFORM3"
+    } ],
+    "hiddenColumns" : [ ]
+  },
+  "runMode" : "full"
+}

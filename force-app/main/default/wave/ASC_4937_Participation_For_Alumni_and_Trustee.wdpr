@@ -1,0 +1,1644 @@
+{
+  "version" : "61.0",
+  "nodes" : {
+    "LOAD_DATASET0_copy0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "ucinn_ascendv2__Credit_Date_Formula__c", "ucinn_ascendv2__Credit_Type__c", "Designation.ucinn_ascendv2__Areas_of_Giving_CASE_Type__c", "Object", "Is_Primary_Contact_or_Organization", "Fiscal_Year", "Constituent_or_Account_Id", "Fundraising_Amount", "Cash_Amount" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Gift Credit and Payment",
+          "name" : "Gift_Credit_and_Payment"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "FILTER0_copy2" : {
+      "action" : "filter",
+      "sources" : [ "LOAD_DATASET0_copy0" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "Object",
+          "operator" : "EQUAL",
+          "operands" : [ "Hard and Soft Credit" ]
+        }, {
+          "type" : "TEXT",
+          "field" : "Fiscal_Year",
+          "operator" : "EQUAL",
+          "operands" : [ "2022", "2023", "2024" ]
+        }, {
+          "type" : "NUMBER",
+          "field" : "Cash_Amount",
+          "operator" : "GREATER_THAN",
+          "operands" : [ "0" ]
+        } ]
+      }
+    },
+    "LOAD_DATASET1_copy0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Account_or_Contact_Id", "ucinn_ascendv2__Contact_Type__c", "HAM_Reunion_Year__c", "ucinn_ascendv2__Primary_Contact_Type__c" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Account and Contact Dataset",
+          "name" : "Account_and_Contact_Dataset"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN0_copy0" : {
+      "action" : "join",
+      "sources" : [ "APPEND0_copy0", "LOAD_DATASET1_copy0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Accountand.Account_or_Contact_Id", "Accountand.Blank" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Constituent_or_Account_Id" ],
+        "rightQualifier" : "Accountand",
+        "rightKeys" : [ "Account_or_Contact_Id" ]
+      }
+    },
+    "FORMULA13_copy0" : {
+      "action" : "formula",
+      "sources" : [ "JOIN8" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Is_Annual_Fund",
+          "label" : "Is Annual Fund",
+          "formulaExpression" : "case \r\nwhen contains(\"Designation.ucinn_ascendv2__Areas_of_Giving_CASE_Type__c\",'Hamilton Fund')\r\nthen 1\r\nend",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA66" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA13_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Is_Other_Restricted_and_Capital_Efforts",
+          "label" : "Is Other Restricted and Capital Efforts",
+          "formulaExpression" : "case \r\nwhen not contains(\"Designation.ucinn_ascendv2__Areas_of_Giving_CASE_Type__c\",'Hamilton Fund')\r\nand Cash_Amount>0\r\nthen 1\r\nend",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA67" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA66" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Is_Alumni_in_FY",
+          "label" : "Is Alumni in FY",
+          "formulaExpression" : "case \r\nwhen \r\n(\r\narray_contains(\"Accountand.ucinn_ascendv2__Contact_Type__c\", 'Hamilton Alumni')\r\nor array_contains(\"Accountand.ucinn_ascendv2__Contact_Type__c\", 'Hamilton Withdrawn')\r\nor array_contains(\"Accountand.ucinn_ascendv2__Contact_Type__c\", 'Kirkland Alumnae')\r\n)\r\nand \"Accountand.HAM_Reunion_Year__c\"<Fiscal_Year\r\nthen 1\r\nend",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "LOAD_DATASET3_copy0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Contact.Id", "Campaign.HAM_Fiscal_Year__c", "Campaign.Name" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Campaign Member",
+          "name" : "Campaign_Member"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "FILTER1_copy0" : {
+      "action" : "filter",
+      "sources" : [ "LOAD_DATASET3_copy0" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "Campaign.Name",
+          "operator" : "CONTAINS",
+          "operands" : [ "ISB" ]
+        }, {
+          "type" : "TEXT",
+          "field" : "Campaign.HAM_Fiscal_Year__c",
+          "operator" : "EQUAL",
+          "operands" : [ "2022", "2023", "2024" ]
+        } ]
+      }
+    },
+    "FORMULA42_copy1" : {
+      "action" : "formula",
+      "sources" : [ "FILTER0_copy2" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Key_of_Id_and_FY",
+          "label" : "Key of Id and FY",
+          "formulaExpression" : "concat(Constituent_or_Account_Id,'-',Fiscal_Year)\r\n",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA43_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FILTER1_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Key_of_Id_and_FY",
+          "label" : "Key of Id and FY",
+          "formulaExpression" : "concat(\"Contact.Id\",'-',\"Campaign.HAM_Fiscal_Year__c\")",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA44_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA43_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Is_ISB_in_FY",
+          "label" : "Is ISB in FY",
+          "formulaExpression" : "1",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "DROP_FIELDS0_copy0" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA44_copy0" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "SELECT",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Key_of_Id_and_FY", "Is_ISB_in_FY", "Contact.Id", "Campaign.HAM_Fiscal_Year__c" ]
+        }
+      }
+    },
+    "JOIN2_copy0" : {
+      "action" : "join",
+      "sources" : [ "FORMULA42_copy1", "DROP_FIELDS0_copy0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "TRANSFORM9.Contact.Id", "TRANSFORM9.Campaign.HAM_Fiscal_Year__c", "TRANSFORM9.Key_of_Id_and_FY" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Key_of_Id_and_FY" ],
+        "rightQualifier" : "TRANSFORM9",
+        "rightKeys" : [ "Key_of_Id_and_FY" ]
+      }
+    },
+    "JOIN3_copy0" : {
+      "action" : "join",
+      "sources" : [ "DROP_FIELDS0_copy0", "FILTER3_copy0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "TRANSFORM8.Cash_Amount", "TRANSFORM8.Constituent_or_Account_Id", "TRANSFORM8.Designation.ucinn_ascendv2__Areas_of_Giving_CASE_Type__c", "TRANSFORM8.Fiscal_Year", "TRANSFORM8.Id", "TRANSFORM8.Key_of_Id_and_FY", "TRANSFORM8.Organization_or_Contact_External_Id", "TRANSFORM8.ucinn_ascendv2__Credit_Date_Formula__c", "TRANSFORM8.ucinn_ascendv2__Credit_Type__c", "TRANSFORM8.ucinn_ascendv2__Gift_Type_Formula__c", "TRANSFORM8.ucinn_ascendv2__Opportunity__c" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Key_of_Id_and_FY" ],
+        "rightQualifier" : "TRANSFORM8",
+        "rightKeys" : [ "Key_of_Id_and_FY" ]
+      }
+    },
+    "FILTER2_copy0" : {
+      "action" : "filter",
+      "sources" : [ "JOIN3_copy0" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "TRANSFORM8.Object",
+          "operator" : "IS_NULL",
+          "operands" : [ ]
+        } ]
+      }
+    },
+    "FILTER3_copy0" : {
+      "action" : "filter",
+      "sources" : [ "FORMULA42_copy1" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "NUMBER",
+          "field" : "Cash_Amount",
+          "operator" : "GREATER_THAN",
+          "operands" : [ "0" ]
+        } ]
+      }
+    },
+    "APPEND0_copy0" : {
+      "action" : "appendV2",
+      "sources" : [ "JOIN2_copy0", "FILTER2_copy0" ],
+      "parameters" : {
+        "fieldMappings" : [ {
+          "top" : "Fiscal_Year",
+          "bottom" : "Campaign.HAM_Fiscal_Year__c"
+        }, {
+          "top" : "Constituent_or_Account_Id",
+          "bottom" : "Contact.Id"
+        }, {
+          "top" : "Key_of_Id_and_FY",
+          "bottom" : "Key_of_Id_and_FY"
+        }, {
+          "top" : "TRANSFORM9.Is_ISB_in_FY",
+          "bottom" : "Is_ISB_in_FY"
+        } ]
+      }
+    },
+    "OUTPUT0_copy0" : {
+      "action" : "save",
+      "sources" : [ "FORMULA67" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "ASC-4937 Alumni And Trustee Giving",
+          "name" : "ASC_4937_Alumni_And_Trustee_Giving",
+          "folderName" : "SharedApp"
+        },
+        "dateConfigurationName" : "July_Fiscal_Year",
+        "measuresToCurrencies" : [ ]
+      }
+    },
+    "LOAD_DATASET4_copy1" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "ucinn_ascendv2__Involvement_Code__c", "RecordTypeId", "ucinn_ascendv2__End_Date__c", "ucinn_ascendv2__Start_Date__c", "ucinn_ascendv2__Contact__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "ucinn_ascendv2__Involvement__c",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "ucinn_ascendv2__Involvement__c"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "LOAD_DATASET5_copy1" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "HAM_Category__c", "Id" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "ucinn_ascendv2__Involvement_Value__c",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "ucinn_ascendv2__Involvement_Value__c"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "LOAD_DATASET6_copy1" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Id", "Name" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "RecordType",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "RecordType"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN4_copy1" : {
+      "action" : "join",
+      "sources" : [ "LOAD_DATASET4_copy1", "LOAD_DATASET6_copy1" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "RecordType.Id" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "RecordTypeId" ],
+        "rightQualifier" : "RecordType",
+        "rightKeys" : [ "Id" ]
+      }
+    },
+    "JOIN5_copy1" : {
+      "action" : "join",
+      "sources" : [ "JOIN4_copy1", "LOAD_DATASET5_copy1" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "ucinn_asce.Id" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "ucinn_ascendv2__Involvement_Code__c" ],
+        "rightQualifier" : "ucinn_asce",
+        "rightKeys" : [ "Id" ]
+      }
+    },
+    "FILTER4_copy1" : {
+      "action" : "filter",
+      "sources" : [ "JOIN5_copy1" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "RecordType.Name",
+          "operator" : "EQUAL",
+          "operands" : [ "Board of Trustees" ]
+        }, {
+          "type" : "TEXT",
+          "field" : "ucinn_asce.HAM_Category__c",
+          "operator" : "EQUAL",
+          "operands" : [ "Board of Trustees" ]
+        } ]
+      }
+    },
+    "JOIN6_copy0" : {
+      "action" : "join",
+      "sources" : [ "JOIN0_copy0", "APPEND9_copy1" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Credit_Trustee.ucinn_ascendv2__Contact__c", "Credit_Trustee.Fiscal_Year", "Credit_Trustee.Key_of_Id_and_FY" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Key_of_Id_and_FY" ],
+        "rightQualifier" : "Credit_Trustee",
+        "rightKeys" : [ "Key_of_Id_and_FY" ]
+      }
+    },
+    "EXTRACT0_copy1" : {
+      "action" : "extractGrains",
+      "sources" : [ "FILTER4_copy1" ],
+      "parameters" : {
+        "grainExtractions" : [ {
+          "source" : "ucinn_ascendv2__Start_Date__c",
+          "targets" : [ {
+            "name" : "ucinn_ascendv2__Start_Date__c_FISCAL_YEAR",
+            "label" : "Start Date Fiscal Year",
+            "grainType" : "FISCAL_YEAR"
+          } ]
+        }, {
+          "source" : "ucinn_ascendv2__End_Date__c",
+          "targets" : [ {
+            "name" : "ucinn_ascendv2__End_Date__c_FISCAL_YEAR",
+            "label" : "End Date Fiscal Year",
+            "grainType" : "FISCAL_YEAR"
+          } ]
+        } ]
+      }
+    },
+    "AGGREGATE1_copy1" : {
+      "action" : "aggregate",
+      "sources" : [ "EXTRACT0_copy1" ],
+      "parameters" : {
+        "aggregations" : [ {
+          "action" : "UNIQUE",
+          "source" : "ucinn_asce.HAM_Category__c",
+          "name" : "UNIQUE_ucinn_asce.HAM_Category__c",
+          "label" : "Unique Category"
+        } ],
+        "groupings" : [ "ucinn_ascendv2__Contact__c", "ucinn_ascendv2__Start_Date__c_FISCAL_YEAR", "ucinn_ascendv2__End_Date__c_FISCAL_YEAR" ],
+        "pivots" : [ ],
+        "nodeType" : "STANDARD"
+      }
+    },
+    "FORMULA61_copy0_copy0_copy1" : {
+      "action" : "formula",
+      "sources" : [ "AGGREGATE1_copy1" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Fiscal_Year",
+          "label" : "Fiscal Year",
+          "formulaExpression" : "2023",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA62_copy0_copy0_copy1" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA61_copy0_copy0_copy1" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Is_Trustee_in_FY",
+          "label" : "Is Trustee in FY",
+          "formulaExpression" : "case \r\nwhen ucinn_ascendv2__Start_Date__c_FISCAL_YEAR<=Fiscal_Year \r\nand (ucinn_ascendv2__End_Date__c_FISCAL_YEAR>=Fiscal_Year or ucinn_ascendv2__End_Date__c_FISCAL_YEAR is null)\r\nthen 1\r\nend",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "DROP_FIELDS1_copy0_copy0_copy1" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA62_copy0_copy0_copy1" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "ucinn_ascendv2__Start_Date__c_FISCAL_YEAR", "ucinn_ascendv2__End_Date__c_FISCAL_YEAR", "UNIQUE_ucinn_asce.HAM_Category__c" ]
+        }
+      }
+    },
+    "FORMULA65_copy0_copy0_copy1" : {
+      "action" : "formula",
+      "sources" : [ "DROP_FIELDS1_copy0_copy0_copy1" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Key_of_Id_and_FY",
+          "label" : "Key of Id and FY",
+          "formulaExpression" : "concat(ucinn_ascendv2__Contact__c,'-',Fiscal_Year)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FILTER5_copy0_copy0_copy1" : {
+      "action" : "filter",
+      "sources" : [ "FORMULA65_copy0_copy0_copy1" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "NUMBER",
+          "field" : "Is_Trustee_in_FY",
+          "operator" : "EQUAL",
+          "operands" : [ "1" ]
+        } ]
+      }
+    },
+    "APPEND8_copy1" : {
+      "action" : "appendV2",
+      "sources" : [ "FILTER5_copy2_copy0_copy1", "FILTER5_copy0_copy0_copy1" ],
+      "parameters" : {
+        "fieldMappings" : [ {
+          "top" : "ucinn_ascendv2__Contact__c",
+          "bottom" : "ucinn_ascendv2__Contact__c"
+        }, {
+          "top" : "Fiscal_Year",
+          "bottom" : "Fiscal_Year"
+        }, {
+          "top" : "Is_Trustee_in_FY",
+          "bottom" : "Is_Trustee_in_FY"
+        }, {
+          "top" : "Key_of_Id_and_FY",
+          "bottom" : "Key_of_Id_and_FY"
+        } ]
+      }
+    },
+    "APPEND9_copy1" : {
+      "action" : "appendV2",
+      "sources" : [ "APPEND8_copy1", "FILTER5_copy0_copy1_copy1" ],
+      "parameters" : {
+        "fieldMappings" : [ {
+          "top" : "ucinn_ascendv2__Contact__c",
+          "bottom" : "ucinn_ascendv2__Contact__c"
+        }, {
+          "top" : "Fiscal_Year",
+          "bottom" : "Fiscal_Year"
+        }, {
+          "top" : "Is_Trustee_in_FY",
+          "bottom" : "Is_Trustee_in_FY"
+        }, {
+          "top" : "Key_of_Id_and_FY",
+          "bottom" : "Key_of_Id_and_FY"
+        } ]
+      }
+    },
+    "FORMULA61_copy0_copy1_copy1" : {
+      "action" : "formula",
+      "sources" : [ "AGGREGATE1_copy1" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Fiscal_Year",
+          "label" : "Fiscal Year",
+          "formulaExpression" : "2024",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA62_copy0_copy1_copy1" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA61_copy0_copy1_copy1" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Is_Trustee_in_FY",
+          "label" : "Is Trustee in FY",
+          "formulaExpression" : "case \r\nwhen ucinn_ascendv2__Start_Date__c_FISCAL_YEAR<=Fiscal_Year \r\nand (ucinn_ascendv2__End_Date__c_FISCAL_YEAR>=Fiscal_Year or ucinn_ascendv2__End_Date__c_FISCAL_YEAR is null)\r\nthen 1\r\nend",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "DROP_FIELDS1_copy0_copy1_copy1" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA62_copy0_copy1_copy1" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "ucinn_ascendv2__Start_Date__c_FISCAL_YEAR", "ucinn_ascendv2__End_Date__c_FISCAL_YEAR", "UNIQUE_ucinn_asce.HAM_Category__c" ]
+        }
+      }
+    },
+    "FORMULA65_copy0_copy1_copy1" : {
+      "action" : "formula",
+      "sources" : [ "DROP_FIELDS1_copy0_copy1_copy1" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Key_of_Id_and_FY",
+          "label" : "Key of Id and FY",
+          "formulaExpression" : "concat(ucinn_ascendv2__Contact__c,'-',Fiscal_Year)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FILTER5_copy0_copy1_copy1" : {
+      "action" : "filter",
+      "sources" : [ "FORMULA65_copy0_copy1_copy1" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "NUMBER",
+          "field" : "Is_Trustee_in_FY",
+          "operator" : "EQUAL",
+          "operands" : [ "1" ]
+        } ]
+      }
+    },
+    "FORMULA61_copy2_copy0_copy1" : {
+      "action" : "formula",
+      "sources" : [ "AGGREGATE1_copy1" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Fiscal_Year",
+          "label" : "Fiscal Year",
+          "formulaExpression" : "2022",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA62_copy2_copy0_copy1" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA61_copy2_copy0_copy1" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Is_Trustee_in_FY",
+          "label" : "Is Trustee in FY",
+          "formulaExpression" : "case \r\nwhen ucinn_ascendv2__Start_Date__c_FISCAL_YEAR<=Fiscal_Year \r\nand (ucinn_ascendv2__End_Date__c_FISCAL_YEAR>=Fiscal_Year or ucinn_ascendv2__End_Date__c_FISCAL_YEAR is null)\r\nthen 1\r\nend",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "DROP_FIELDS1_copy2_copy0_copy1" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA62_copy2_copy0_copy1" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "ucinn_ascendv2__Start_Date__c_FISCAL_YEAR", "ucinn_ascendv2__End_Date__c_FISCAL_YEAR", "UNIQUE_ucinn_asce.HAM_Category__c" ]
+        }
+      }
+    },
+    "FORMULA65_copy2_copy0_copy1" : {
+      "action" : "formula",
+      "sources" : [ "DROP_FIELDS1_copy2_copy0_copy1" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Key_of_Id_and_FY",
+          "label" : "Key of Id and FY",
+          "formulaExpression" : "concat(ucinn_ascendv2__Contact__c,'-',Fiscal_Year)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FILTER5_copy2_copy0_copy1" : {
+      "action" : "filter",
+      "sources" : [ "FORMULA65_copy2_copy0_copy1" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "NUMBER",
+          "field" : "Is_Trustee_in_FY",
+          "operator" : "EQUAL",
+          "operands" : [ "1" ]
+        } ]
+      }
+    },
+    "LOAD_DATASET0_copy0_copy0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "ucinn_ascendv2__Credit_Date_Formula__c", "ucinn_ascendv2__Credit_Type__c", "Designation.ucinn_ascendv2__Areas_of_Giving_CASE_Type__c", "Object", "Is_Primary_Contact_or_Organization", "Fiscal_Year", "Constituent_or_Account_Id", "Fundraising_Amount", "Cash_Amount" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Gift Credit and Payment",
+          "name" : "Gift_Credit_and_Payment"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "FILTER0_copy2_copy0" : {
+      "action" : "filter",
+      "sources" : [ "LOAD_DATASET0_copy0_copy0" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "Object",
+          "operator" : "EQUAL",
+          "operands" : [ "Hard and Soft Credit" ]
+        }, {
+          "type" : "TEXT",
+          "field" : "Fiscal_Year",
+          "operator" : "EQUAL",
+          "operands" : [ "2022", "2023", "2024" ]
+        }, {
+          "type" : "NUMBER",
+          "field" : "Cash_Amount",
+          "operator" : "GREATER_THAN",
+          "operands" : [ "0" ]
+        } ]
+      }
+    },
+    "FORMULA42_copy1_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FILTER0_copy2_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Key_of_Id_and_FY",
+          "label" : "Key of Id and FY",
+          "formulaExpression" : "concat(Constituent_or_Account_Id,'-',Fiscal_Year)\r\n",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FILTER6" : {
+      "action" : "filter",
+      "sources" : [ "FORMULA42_copy1_copy0" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "Designation.ucinn_ascendv2__Areas_of_Giving_CASE_Type__c",
+          "operator" : "EQUAL",
+          "operands" : [ "Hamilton Fund Designated", "Hamilton Fund Unrestricted" ]
+        } ]
+      }
+    },
+    "FILTER7" : {
+      "action" : "filter",
+      "sources" : [ "FORMULA42_copy1_copy0" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "Designation.ucinn_ascendv2__Areas_of_Giving_CASE_Type__c",
+          "operator" : "NOT",
+          "operands" : [ "Hamilton Fund Designated", "Hamilton Fund Unrestricted" ]
+        } ]
+      }
+    },
+    "EXTRACT1" : {
+      "action" : "extractGrains",
+      "sources" : [ "FILTER6" ],
+      "parameters" : {
+        "grainExtractions" : [ ]
+      }
+    },
+    "AGGREGATE3" : {
+      "action" : "aggregate",
+      "sources" : [ "EXTRACT1" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "SUM_Cash_Amount",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        } ]
+      },
+      "parameters" : {
+        "aggregations" : [ {
+          "action" : "SUM",
+          "source" : "Cash_Amount",
+          "name" : "SUM_Cash_Amount",
+          "label" : "HF Cash Amount"
+        } ],
+        "groupings" : [ "Key_of_Id_and_FY" ],
+        "pivots" : [ ],
+        "nodeType" : "STANDARD"
+      }
+    },
+    "EXTRACT2" : {
+      "action" : "extractGrains",
+      "sources" : [ "FILTER7" ],
+      "parameters" : {
+        "grainExtractions" : [ ]
+      }
+    },
+    "AGGREGATE5" : {
+      "action" : "aggregate",
+      "sources" : [ "EXTRACT2" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "SUM_Cash_Amount",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        } ]
+      },
+      "parameters" : {
+        "aggregations" : [ {
+          "action" : "SUM",
+          "source" : "Cash_Amount",
+          "name" : "SUM_Cash_Amount",
+          "label" : "NOT HF Cash Amount"
+        } ],
+        "groupings" : [ "Key_of_Id_and_FY" ],
+        "pivots" : [ ],
+        "nodeType" : "STANDARD"
+      }
+    },
+    "FORMULA68" : {
+      "action" : "formula",
+      "sources" : [ "AGGREGATE3" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "HF_Giving_Flag",
+          "label" : "HF Giving Flag",
+          "formulaExpression" : "1",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA69" : {
+      "action" : "formula",
+      "sources" : [ "AGGREGATE5" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "NOT_HF_Giving_Flag",
+          "label" : "NOT HF Giving Flag",
+          "formulaExpression" : "1",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "JOIN7" : {
+      "action" : "join",
+      "sources" : [ "FORMULA68", "FORMULA69" ],
+      "schema" : {
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "OUTER",
+        "leftKeys" : [ "Key_of_Id_and_FY" ],
+        "rightQualifier" : "Transform1",
+        "rightKeys" : [ "Key_of_Id_and_FY" ]
+      }
+    },
+    "FORMULA70" : {
+      "action" : "formula",
+      "sources" : [ "JOIN7" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Giving_Group",
+          "label" : "Giving Group",
+          "formulaExpression" : "case \r\nwhen HF_Giving_Flag=1 and \"Transform1.NOT_HF_Giving_Flag\"=0\r\nthen 'Only HF'\r\n\r\nwhen HF_Giving_Flag=0 and \"Transform1.NOT_HF_Giving_Flag\"=1\r\nthen 'Only Other Gift'\r\n\r\nwhen HF_Giving_Flag=1 and \"Transform1.NOT_HF_Giving_Flag\"=1\r\nthen 'Both HF and Other Gift'\r\n\r\nend\r\n",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA71" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA70" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Key_of_Id_and_FY_merge",
+          "label" : "Key of Id and FY",
+          "formulaExpression" : "coalesce(Key_of_Id_and_FY,\"Transform1.Key_of_Id_and_FY\")",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "JOIN8" : {
+      "action" : "join",
+      "sources" : [ "JOIN6_copy0", "FORMULA71" ],
+      "schema" : {
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "EnrichFiel.Key_of_Id_and_FY", "EnrichFiel.SUM_Cash_Amount", "EnrichFiel.HF_Giving_Flag", "EnrichFiel.Transform1.Key_of_Id_and_FY", "EnrichFiel.Transform1.SUM_Cash_Amount", "EnrichFiel.Transform1.NOT_HF_Giving_Flag", "EnrichFiel.Key_of_Id_and_FY_merge" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Key_of_Id_and_FY" ],
+        "rightQualifier" : "EnrichFiel",
+        "rightKeys" : [ "Key_of_Id_and_FY_merge" ]
+      }
+    }
+  },
+  "ui" : {
+    "nodes" : {
+      "LOAD_DATASET0_copy0" : {
+        "label" : "Gift Credit and Payment",
+        "type" : "LOAD_DATASET",
+        "top" : 250.89999999999998,
+        "left" : 252,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "FILTER0_copy2" : {
+        "label" : "Filter Object",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 250.89999999999998,
+        "left" : 392
+      },
+      "LOAD_DATASET1_copy0" : {
+        "label" : "Account and Contact Dataset",
+        "type" : "LOAD_DATASET",
+        "top" : 391.6,
+        "left" : 1092.3,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN0_copy0" : {
+        "label" : "Lookup Contact to Credit",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 250.89999999999998,
+        "left" : 1092
+      },
+      "TRANSFORM4_copy0" : {
+        "label" : "Enrich Credit Related Fields",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 252.39999999999998,
+        "left" : 1793.7,
+        "graph" : {
+          "FORMULA13_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Is Annual Fund"
+          },
+          "FORMULA66" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Is Other Restricted and Capital Efforts"
+          },
+          "FORMULA67" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Is Alumni in FY"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA13_copy0",
+          "target" : "FORMULA66"
+        }, {
+          "source" : "FORMULA66",
+          "target" : "FORMULA67"
+        } ]
+      },
+      "LOAD_DATASET3_copy0" : {
+        "label" : "Campaign Member",
+        "type" : "LOAD_DATASET",
+        "top" : 671.3,
+        "left" : 672,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "FILTER1_copy0" : {
+        "label" : "Filter ISB",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 531.3,
+        "left" : 672
+      },
+      "TRANSFORM8_copy1" : {
+        "label" : "Key Id+FY",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 251.3,
+        "left" : 532,
+        "graph" : {
+          "FORMULA42_copy1" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Key of Id and FY"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "TRANSFORM9_copy0" : {
+        "label" : "Key Id+FY Copy1",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 391.3,
+        "left" : 672,
+        "graph" : {
+          "FORMULA43_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Formula"
+          },
+          "FORMULA44_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Is ISB in FY"
+          },
+          "DROP_FIELDS0_copy0" : {
+            "label" : "Keep Columns"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA43_copy0",
+          "target" : "FORMULA44_copy0"
+        }, {
+          "source" : "FORMULA44_copy0",
+          "target" : "DROP_FIELDS0_copy0"
+        } ]
+      },
+      "JOIN2_copy0" : {
+        "label" : "Lookup ISB to Credit",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 251.3,
+        "left" : 672
+      },
+      "JOIN3_copy0" : {
+        "label" : "Lookup Credit to ISB",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 811.6,
+        "left" : 812
+      },
+      "FILTER2_copy0" : {
+        "label" : "Filter Not Donor in FY",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 811.7,
+        "left" : 952
+      },
+      "FILTER3_copy0" : {
+        "label" : "Filter Cash>0",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 811.3,
+        "left" : 672
+      },
+      "APPEND0_copy0" : {
+        "label" : "Append ISB Non-donor to Credit",
+        "description" : "",
+        "type" : "APPEND",
+        "top" : 250.89999999999998,
+        "left" : 952
+      },
+      "OUTPUT0_copy0" : {
+        "label" : "Output 0 Copy",
+        "type" : "OUTPUT",
+        "top" : 252.39999999999998,
+        "left" : 1933.7
+      },
+      "LOAD_DATASET4_copy1" : {
+        "label" : "ucinn_ascendv2__Involvement__c Copy",
+        "type" : "LOAD_DATASET",
+        "top" : 950.1,
+        "left" : 251.89999999999998,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "LOAD_DATASET5_copy1" : {
+        "label" : "ucinn_ascendv2__Involvement_Value__c Copy",
+        "type" : "LOAD_DATASET",
+        "top" : 1092.3,
+        "left" : 532.1,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "LOAD_DATASET6_copy1" : {
+        "label" : "RecordType Copy",
+        "type" : "LOAD_DATASET",
+        "top" : 1092.3,
+        "left" : 392.1,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN4_copy1" : {
+        "label" : "Lookup RecordType to Involvement Copy",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 950.1,
+        "left" : 391.9
+      },
+      "JOIN5_copy1" : {
+        "label" : "Lookup Involvement Code to Involvement Copy",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 950.1,
+        "left" : 531.9
+      },
+      "FILTER4_copy1" : {
+        "label" : "Filter Trustees Copy",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 950.1,
+        "left" : 671.9
+      },
+      "JOIN6_copy0" : {
+        "label" : "Lookup Trustee Year to Credit",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 250.89999999999998,
+        "left" : 1372
+      },
+      "AGGREGATE0_copy1" : {
+        "label" : "Aggregate by Id Copy",
+        "description" : "",
+        "type" : "AGGREGATE",
+        "top" : 950.1,
+        "left" : 811.9,
+        "graph" : {
+          "EXTRACT0_copy1" : null,
+          "AGGREGATE1_copy1" : null
+        },
+        "connectors" : [ {
+          "source" : "EXTRACT0_copy1",
+          "target" : "AGGREGATE1_copy1"
+        } ]
+      },
+      "TRANSFORM10_copy0_copy0_copy1" : {
+        "label" : "FY23 Trustee Copy",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 1092.2,
+        "left" : 952.1,
+        "graph" : {
+          "FORMULA61_copy0_copy0_copy1" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Fiscal Year"
+          },
+          "FORMULA62_copy0_copy0_copy1" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Is Trustee in FY"
+          },
+          "DROP_FIELDS1_copy0_copy0_copy1" : {
+            "label" : "Drop Columns"
+          },
+          "FORMULA65_copy0_copy0_copy1" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Key of Id and FY"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA61_copy0_copy0_copy1",
+          "target" : "FORMULA62_copy0_copy0_copy1"
+        }, {
+          "source" : "FORMULA62_copy0_copy0_copy1",
+          "target" : "DROP_FIELDS1_copy0_copy0_copy1"
+        }, {
+          "source" : "DROP_FIELDS1_copy0_copy0_copy1",
+          "target" : "FORMULA65_copy0_copy0_copy1"
+        } ]
+      },
+      "FILTER5_copy0_copy0_copy1" : {
+        "label" : "Filter FY23 Trustee Copy",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 1092.2,
+        "left" : 1092.1
+      },
+      "APPEND8_copy1" : {
+        "label" : "Append 8 Copy",
+        "type" : "APPEND",
+        "top" : 952.1,
+        "left" : 1232
+      },
+      "APPEND9_copy1" : {
+        "label" : "Append 9 Copy",
+        "type" : "APPEND",
+        "top" : 952.2,
+        "left" : 1372
+      },
+      "TRANSFORM10_copy0_copy1_copy1" : {
+        "label" : "FY24 Trustee Copy",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 1232.2,
+        "left" : 952.3,
+        "graph" : {
+          "FORMULA61_copy0_copy1_copy1" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Fiscal Year"
+          },
+          "FORMULA62_copy0_copy1_copy1" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Is Trustee in FY"
+          },
+          "DROP_FIELDS1_copy0_copy1_copy1" : {
+            "label" : "Drop Columns"
+          },
+          "FORMULA65_copy0_copy1_copy1" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Key of Id and FY"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA61_copy0_copy1_copy1",
+          "target" : "FORMULA62_copy0_copy1_copy1"
+        }, {
+          "source" : "FORMULA62_copy0_copy1_copy1",
+          "target" : "DROP_FIELDS1_copy0_copy1_copy1"
+        }, {
+          "source" : "DROP_FIELDS1_copy0_copy1_copy1",
+          "target" : "FORMULA65_copy0_copy1_copy1"
+        } ]
+      },
+      "FILTER5_copy0_copy1_copy1" : {
+        "label" : "Filter FY24 Trustee Copy",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 1232.2,
+        "left" : 1092.3
+      },
+      "TRANSFORM10_copy2_copy0_copy1" : {
+        "label" : "FY22 Trustee Copy",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 950.1,
+        "left" : 951.9,
+        "graph" : {
+          "FORMULA61_copy2_copy0_copy1" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Fiscal Year"
+          },
+          "FORMULA62_copy2_copy0_copy1" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Is Trustee in FY"
+          },
+          "DROP_FIELDS1_copy2_copy0_copy1" : {
+            "label" : "Drop Columns"
+          },
+          "FORMULA65_copy2_copy0_copy1" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Key of Id and FY"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA61_copy2_copy0_copy1",
+          "target" : "FORMULA62_copy2_copy0_copy1"
+        }, {
+          "source" : "FORMULA62_copy2_copy0_copy1",
+          "target" : "DROP_FIELDS1_copy2_copy0_copy1"
+        }, {
+          "source" : "DROP_FIELDS1_copy2_copy0_copy1",
+          "target" : "FORMULA65_copy2_copy0_copy1"
+        } ]
+      },
+      "FILTER5_copy2_copy0_copy1" : {
+        "label" : "Filter FY22 Trustee Copy",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 950.1,
+        "left" : 1091.9
+      },
+      "LOAD_DATASET0_copy0_copy0" : {
+        "label" : "Gift Credit and Payment Copy",
+        "type" : "LOAD_DATASET",
+        "top" : 1373.9,
+        "left" : 252.2,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "FILTER0_copy2_copy0" : {
+        "label" : "Filter Object Copy",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 1373.9,
+        "left" : 392.2
+      },
+      "TRANSFORM8_copy1_copy0" : {
+        "label" : "Key Id+FY Copy",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 1373.9,
+        "left" : 532.2,
+        "graph" : {
+          "FORMULA42_copy1_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Key of Id and FY"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "FILTER6" : {
+        "label" : "Filter HF",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 1372.1,
+        "left" : 672
+      },
+      "FILTER7" : {
+        "label" : "Filter NOT HF",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 1513.8,
+        "left" : 672
+      },
+      "AGGREGATE2" : {
+        "label" : "Aggregate 2",
+        "type" : "AGGREGATE",
+        "top" : 1372,
+        "left" : 812,
+        "graph" : {
+          "EXTRACT1" : null,
+          "AGGREGATE3" : null
+        },
+        "connectors" : [ {
+          "source" : "EXTRACT1",
+          "target" : "AGGREGATE3"
+        } ]
+      },
+      "AGGREGATE4" : {
+        "label" : "Aggregate 4",
+        "type" : "AGGREGATE",
+        "top" : 1512,
+        "left" : 812,
+        "graph" : {
+          "EXTRACT2" : null,
+          "AGGREGATE5" : null
+        },
+        "connectors" : [ {
+          "source" : "EXTRACT2",
+          "target" : "AGGREGATE5"
+        } ]
+      },
+      "TRANSFORM11" : {
+        "label" : "Transform 11",
+        "type" : "TRANSFORM",
+        "top" : 1372,
+        "left" : 952,
+        "graph" : {
+          "FORMULA68" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "HF Giving Flag"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "TRANSFORM12" : {
+        "label" : "Transform 12",
+        "type" : "TRANSFORM",
+        "top" : 1512,
+        "left" : 952,
+        "graph" : {
+          "FORMULA69" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "NOT HF Giving Flag"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "JOIN7" : {
+        "label" : "Outjoin HF and NOT HF",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 1372,
+        "left" : 1092
+      },
+      "TRANSFORM13" : {
+        "label" : "Enrich Fields",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 1372.1,
+        "left" : 1512.2,
+        "graph" : {
+          "FORMULA70" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Giving Group"
+          },
+          "FORMULA71" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Key of Id and FY"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA70",
+          "target" : "FORMULA71"
+        } ]
+      },
+      "JOIN8" : {
+        "label" : "Lookup Giving Group to Credit",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 252,
+        "left" : 1512
+      }
+    },
+    "connectors" : [ {
+      "source" : "FILTER5_copy2_copy0_copy1",
+      "target" : "APPEND8_copy1"
+    }, {
+      "source" : "LOAD_DATASET0_copy0",
+      "target" : "FILTER0_copy2"
+    }, {
+      "source" : "APPEND0_copy0",
+      "target" : "JOIN0_copy0"
+    }, {
+      "source" : "LOAD_DATASET3_copy0",
+      "target" : "FILTER1_copy0"
+    }, {
+      "source" : "FILTER0_copy2",
+      "target" : "TRANSFORM8_copy1"
+    }, {
+      "source" : "FILTER1_copy0",
+      "target" : "TRANSFORM9_copy0"
+    }, {
+      "source" : "TRANSFORM8_copy1",
+      "target" : "JOIN2_copy0"
+    }, {
+      "source" : "TRANSFORM9_copy0",
+      "target" : "JOIN3_copy0"
+    }, {
+      "source" : "FILTER3_copy0",
+      "target" : "JOIN3_copy0"
+    }, {
+      "source" : "TRANSFORM9_copy0",
+      "target" : "JOIN2_copy0"
+    }, {
+      "source" : "JOIN3_copy0",
+      "target" : "FILTER2_copy0"
+    }, {
+      "source" : "TRANSFORM8_copy1",
+      "target" : "FILTER3_copy0"
+    }, {
+      "source" : "JOIN2_copy0",
+      "target" : "APPEND0_copy0"
+    }, {
+      "source" : "FILTER2_copy0",
+      "target" : "APPEND0_copy0"
+    }, {
+      "source" : "LOAD_DATASET4_copy1",
+      "target" : "JOIN4_copy1"
+    }, {
+      "source" : "LOAD_DATASET6_copy1",
+      "target" : "JOIN4_copy1"
+    }, {
+      "source" : "JOIN4_copy1",
+      "target" : "JOIN5_copy1"
+    }, {
+      "source" : "LOAD_DATASET5_copy1",
+      "target" : "JOIN5_copy1"
+    }, {
+      "source" : "JOIN5_copy1",
+      "target" : "FILTER4_copy1"
+    }, {
+      "source" : "JOIN0_copy0",
+      "target" : "JOIN6_copy0"
+    }, {
+      "source" : "FILTER4_copy1",
+      "target" : "AGGREGATE0_copy1"
+    }, {
+      "source" : "TRANSFORM10_copy0_copy0_copy1",
+      "target" : "FILTER5_copy0_copy0_copy1"
+    }, {
+      "source" : "AGGREGATE0_copy1",
+      "target" : "TRANSFORM10_copy0_copy0_copy1"
+    }, {
+      "source" : "FILTER5_copy0_copy0_copy1",
+      "target" : "APPEND8_copy1"
+    }, {
+      "source" : "APPEND8_copy1",
+      "target" : "APPEND9_copy1"
+    }, {
+      "source" : "TRANSFORM10_copy0_copy1_copy1",
+      "target" : "FILTER5_copy0_copy1_copy1"
+    }, {
+      "source" : "TRANSFORM10_copy2_copy0_copy1",
+      "target" : "FILTER5_copy2_copy0_copy1"
+    }, {
+      "source" : "AGGREGATE0_copy1",
+      "target" : "TRANSFORM10_copy2_copy0_copy1"
+    }, {
+      "source" : "AGGREGATE0_copy1",
+      "target" : "TRANSFORM10_copy0_copy1_copy1"
+    }, {
+      "source" : "FILTER5_copy0_copy1_copy1",
+      "target" : "APPEND9_copy1"
+    }, {
+      "source" : "APPEND9_copy1",
+      "target" : "JOIN6_copy0"
+    }, {
+      "source" : "TRANSFORM4_copy0",
+      "target" : "OUTPUT0_copy0"
+    }, {
+      "source" : "JOIN8",
+      "target" : "TRANSFORM4_copy0"
+    }, {
+      "source" : "LOAD_DATASET1_copy0",
+      "target" : "JOIN0_copy0"
+    }, {
+      "source" : "LOAD_DATASET0_copy0_copy0",
+      "target" : "FILTER0_copy2_copy0"
+    }, {
+      "source" : "FILTER0_copy2_copy0",
+      "target" : "TRANSFORM8_copy1_copy0"
+    }, {
+      "source" : "TRANSFORM8_copy1_copy0",
+      "target" : "FILTER6"
+    }, {
+      "source" : "TRANSFORM8_copy1_copy0",
+      "target" : "FILTER7"
+    }, {
+      "source" : "FILTER6",
+      "target" : "AGGREGATE2"
+    }, {
+      "source" : "FILTER7",
+      "target" : "AGGREGATE4"
+    }, {
+      "source" : "AGGREGATE2",
+      "target" : "TRANSFORM11"
+    }, {
+      "source" : "AGGREGATE4",
+      "target" : "TRANSFORM12"
+    }, {
+      "source" : "TRANSFORM11",
+      "target" : "JOIN7"
+    }, {
+      "source" : "TRANSFORM12",
+      "target" : "JOIN7"
+    }, {
+      "source" : "JOIN7",
+      "target" : "TRANSFORM13"
+    }, {
+      "source" : "JOIN6_copy0",
+      "target" : "JOIN8"
+    }, {
+      "source" : "TRANSFORM13",
+      "target" : "JOIN8"
+    } ],
+    "hiddenColumns" : [ ]
+  },
+  "runMode" : "full"
+}

@@ -1,0 +1,45 @@
+<aura:component implements="lightning:appHomeTemplate" description="Main column and right sidebar. On a phone, the regions are of equal width">
+    <ltng:require styles="{!$Resource.NoStandardHeader}" />
+    <aura:attribute name="r1c1" type="Aura.Component[]" />
+    <aura:attribute name="r1c2" type="Aura.Component[]" />
+    <aura:attribute name="r2c1" type="Aura.Component[]" />
+    <aura:attribute name="r3c1" type="Aura.Component[]" />
+    <aura:attribute name="r3c2" type="Aura.Component[]" />
+    <aura:attribute name="r4c1" type="Aura.Component[]" />
+
+    <div class="slds-p-around_small" style="background-color: #002f86;">
+        <!-- Row 1 -->
+        <lightning:layout multipleRows="true" class="slds-wrap">
+            <lightning:layoutItem size="12" mediumDeviceSize="4" padding="around-small">
+                {!v.r1c1}
+            </lightning:layoutItem>
+            <lightning:layoutItem size="12" mediumDeviceSize="8" padding="around-small">
+                {!v.r1c2}
+            </lightning:layoutItem>
+        </lightning:layout>
+
+        <!-- Row 2 -->
+        <lightning:layout multipleRows="true" class="slds-wrap">
+            <lightning:layoutItem size="12" padding="around-small">
+                {!v.r2c1}
+            </lightning:layoutItem>
+        </lightning:layout>
+
+        <!-- Row 4 -->
+        <lightning:layout multipleRows="true" class="slds-wrap">
+            <lightning:layoutItem size="12" padding="around-small">
+                {!v.r4c1}
+            </lightning:layoutItem>
+        </lightning:layout>
+
+         <!-- Row 3 -->
+        <lightning:layout multipleRows="true" class="slds-wrap">
+            <lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+                {!v.r3c1}
+            </lightning:layoutItem>
+            <lightning:layoutItem size="12" mediumDeviceSize="6" padding="around-small">
+                {!v.r3c2}
+            </lightning:layoutItem>
+        </lightning:layout>
+    </div>
+</aura:component>

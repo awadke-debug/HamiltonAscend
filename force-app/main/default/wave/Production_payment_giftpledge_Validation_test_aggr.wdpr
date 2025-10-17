@@ -1,0 +1,470 @@
+{
+  "version" : "60.0",
+  "nodes" : {
+    "LOAD_DATASET0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Is_Reunion_Year", "LastModifiedDate", "Opportunity.Adjustment_Session.ucinn_ascendv2__Is_Ready_for_G_L__c", "EnrichHFDa.Constituent_Credit_Date_Key", "Designation.ucinn_ascendv2__Areas_of_Giving_CASE_Type__c", "Spouse.Name", "Is_Gold", "CreatedBy.Name", "Designation.ucinn_ascendv2__CASE_Type__c", "Opportunity.RecordType.Name", "Designation.ucinn_ascendv2__Campaign__c", "Opportunity_Team.Opportunity_Team_List", "Primary_Relationship_Manager.Assigned_User", "Object", "Id", "Rollup_Degree.Major_Degree_List", "Contact.ucinn_ascendv2__Preferred_Class_Year__c", "Is_Primary_Contact_or_Organization", "Contact.ucinn_ascendv2__Preferred_Spouse__c", "EnrichDail.Constituent_Credit_Date_Key", "Constituent_Fiscal_Year_Key", "Opportunity.ucinn_ascendv2__External_System_ID__c", "Organization_or_Constituent_Account_Id", "EnrichDail.Max_Gift_Date_1YR", "Rollup_Degree.All_Degree_Reunion_Years", "Account.Id", "Account.ucinn_ascendv2__Primary_Contact__c", "Constituent_Date_Key", "EnrichHFDa.Max_HF_Gift_Date_1YR", "HAM_Constituent_Type__c", "Designation_test", "Campaign_Priority.Name", "ucinn_ascendv2__Designation_Detail__c", "Contact.ucinn_ascendv2__Date_of_Most_Recent_Gift__c", "Household_Gift_Credit_Key", "ucinn_ascendv2__External_System_ID__c", "ucinn_ascendv2__Gift_Type_Formula__c", "Updated_Date", "Organization_or_Contact_External_Id", "Fiscal_Year", "ISB.Is_ISB_Particpant", "Opportunity.HAM_CFY_Ask__c", "Account.Type", "Designation.HAM_Campaign_Priority__c", "Designation.ucinn_ascendv2__Opportunity__c", "Contact.ucinn_ascendv2__Is_Deceased__c", "CreatedById", "Secondary_Relationship_Manager.Assigned_User", "Amount_Band", "Maximum_Date.Is_Constituent_Maximum_Total_Date", "Account.ucinn_ascendv2__External_System_ID__c", "Opportunity.StageName", "Reunion_Year_Flag", "Appeal.Name", "Wealth_Rating.ucinn_ascendv2__Wealth_Rating__c", "Designation.ucinn_ascendv2__Designation_Name__c", "Opportunity.HAM_MOU_Received__c", "ucinn_ascendv2__Credit_Date_Formula__c", "Designation.ucinn_ascendv2__Fund_Purpose__c", "Account.Record_Type.Name", "Designation.Name", "HAM_GOLD_Flag__c", "Rollup_Degree.All_Degree_Majors", "Retained_Contact.ucinn_ascendv2__Contact__c", "Amount_Band_Sort", "Contact.ucinn_ascendv2__Primary_Contact_Type__c", "Designation.ucinn_ascendv2__Fund_Type__c", "Formatted_External_Id", "Is_In_Period", "Opportunity.ucinn_ascendv2__Adjustment_Session__c", "Opportunity.Type", "HAM_Reunion_Milestone__c", "Contact.ucinn_ascendv2__External_System_ID__c", "Opportunity.HAM_Copy_of_Will_Received__c", "Contact_Retention_Id", "Constituent_or_Account_Id", "Spouse.ucinn_ascendv2__Preferred_Class_Year__c", "Designation.ucinn_ascendv2__CASE_Purpose_v1__c", "Contact.Name", "ucinn_ascendv2__Contact__c", "ucinn_ascendv2__Designation__c", "ucinn_ascendv2__Is_Ready_for_G_L_Formula__c", "Opportunity.Gift_Pledge_Id", "Designation.Id", "Account.Name", "Opportunity.HAM_Vice_President_Override__c", "Opportunity_Team.Opportunity_Team_Multivalue", "Contact.ucinn_ascendv2__Current_FY_Giving__c", "Opportunity.ucinn_ascendv2__Amount_Paid_to_Date_Roll_Up__c", "Collected_Amount", "ucinn_ascendv2__Credit_Amount__c", "GVAC.HAM_Give__c", "Credit_Amount_or_Amount_Paid_To_Date", "Payment_Aggregate.Sum.Opportunity_Collected_Amount", "Committed_Amount", "Fundraising_Amount", "Contact.ucinn_ascendv2__Lifetime_Cash__c", "HAM_Reunion_Milestone_Year__c", "Opportunity.ucinn_ascendv2__Submitted_Amount__c", "Outstanding_Committed_Amount", "Fiscal_Year_Numeric", "GVAC.HAM_Attend__c", "Cash_Amount", "Opportunity.ExpectedRevenue", "Contact.ucinn_ascendv2__Number_of_Consecutive_Giving__c", "Opportunity.ucinn_ascendv2__Remaining_Amount_Due_Formula__c", "Contact.ucinn_ascendv2__Preferred_Class_Year_Integer_Formula__c", "Contact.ucinn_ascendv2__Lifetime_Fundraising__c", "Household_Row_Number", "Bequest_Intention", "Contact.ucinn_ascendv2__Last_FY_Giving__c", "GVAC.HAM_Volunteer__c", "GVAC.HAM_Connect__c", "Number_of_Payments.Count.Fiscal_Years_Given" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Gift Credit and Payment",
+          "name" : "Gift_Credit_and_Payment"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "FORMULA0" : {
+      "action" : "formula",
+      "sources" : [ "LOAD_DATASET0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Contact_or_Org_Type",
+          "label" : "Contact or Org Type",
+          "formulaExpression" : "case \r\n    when \"Account.Record_Type.Name\"='Household' then \"Contact.ucinn_ascendv2__Primary_Contact_Type__c\"\r\n    else \"Account.Type\"\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA1" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Constituent_Group_ascend",
+          "label" : "Constituent Group ascend",
+          "formulaExpression" : "CASE\r\nWHEN \"Contact_or_Org_Type\"='Academic Organization' then 'Founds & Corps'\r\nWHEN \"Contact_or_Org_Type\"='Campus Organization' then 'Founds & Corps'\r\nWHEN \"Contact_or_Org_Type\"='Corporation' then 'Founds & Corps'\r\n\r\nWHEN \"Contact_or_Org_Type\"='Current Parent' then 'Parent'\r\nWHEN \"Contact_or_Org_Type\"='Donor-Advised Fund' then 'Founds & Corps'\r\nWHEN \"Contact_or_Org_Type\"='Employee' then 'Other'\r\n\r\nWHEN \"Contact_or_Org_Type\"='Estate - Alumnus' then 'Estate'\r\nWHEN \"Contact_or_Org_Type\"='Estate - Other' then 'Estate'\r\nWHEN \"Contact_or_Org_Type\"='Estate - Parent' then 'Estate'\r\nWHEN \"Contact_or_Org_Type\"='Former Employee' then 'Other'\r\n\r\nWHEN \"Contact_or_Org_Type\"='Foundation - Corporate' then 'Founds & Corps'\r\nWHEN \"Contact_or_Org_Type\"='Foundation - Independent' then 'Founds & Corps'\r\nWHEN \"Contact_or_Org_Type\"='Foundation - Personal/Family' then 'Founds & Corps'\r\n\r\nWHEN \"Contact_or_Org_Type\"='Friend' then 'Other'\r\n\r\nWHEN \"Contact_or_Org_Type\"='Grandparent' then 'Parent'\r\nWHEN \"Contact_or_Org_Type\"='Hamilton Alumni' then 'Alumni'\r\n\r\nWHEN \"Contact_or_Org_Type\"='Hamilton Withdrawn' then 'Alumni'\r\nWHEN \"Contact_or_Org_Type\"='Kirkland Alumnae' then 'Alumni'\r\nWHEN \"Contact_or_Org_Type\"='Organization' then 'Founds & Corps'\r\nWHEN \"Contact_or_Org_Type\"='Parent of Hamilton Withdrawn' then 'Parent'\r\nWHEN \"Contact_or_Org_Type\"='Past Parent' then 'Parent'\r\nWHEN \"Contact_or_Org_Type\"='Retiree' then 'Other'\r\n\r\nWHEN \"Contact_or_Org_Type\"='Spouse of Alumni or Trustee' then 'Other'\r\nWHEN \"Contact_or_Org_Type\"='Student' then 'Alumni'\r\nWHEN \"Contact_or_Org_Type\"='Surviving Spouse' then 'Other'\r\n\r\nWHEN \"Contact_or_Org_Type\"='Trust - Alumni' then 'Founds & Corps'\r\nWHEN \"Contact_or_Org_Type\"='Trustee' then 'Trustee'\r\nELSE 'xMissing'\r\nEnd\r\n",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "JOIN0" : {
+      "action" : "join",
+      "sources" : [ "LOAD_DATASET6", "JOIN2" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "OUTER",
+        "leftKeys" : [ "Contribution_Id" ],
+        "rightQualifier" : "Transform0",
+        "rightKeys" : [ "Formatted_External_Id" ]
+      }
+    },
+    "FORMULA4" : {
+      "action" : "formula",
+      "sources" : [ "JOIN0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "File_Source",
+          "label" : "File Source",
+          "formulaExpression" : "case  \r\n    when \"Transform0.Formatted_External_Id\" is not null and \"Contribution_Id\" is not null\r\n    then 'Both' \r\n    when \"Transform0.Formatted_External_Id\" is not null  then 'Opp' else 'DWH'\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA5" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA4" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Person_ID_Match_Flag",
+          "label" : "Person ID Match Flag",
+          "formulaExpression" : "case  \r\n    when Primary_Donor=\"Transform0.Transform0.Organization_or_Contact_External_Id\"\r\n    then 'Match'\r\n    else\r\n    'Not Match'\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA7" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA9" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Designation_Match_Flag",
+          "label" : "Designation Match Flag",
+          "formulaExpression" : "case  \r\n    when Designation=\"Transform0.Transform0.Designation.Name\"\r\n    then 'Match'\r\n    else\r\n    'Not Match'\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA8" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA7" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Amount_Match_Flag",
+          "label" : "Amount Match Flag",
+          "formulaExpression" : "case  \r\n    when Amount_SUM=\"Transform0.ascend_amount_agg\"\r\n    then 'Match'\r\n    else\r\n    'Not Match'\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA9" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA5" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Date_Match_Flag",
+          "label" : "Date Match Flag",
+          "formulaExpression" : "case  \r\n    when Hamilton_Fund_Date=\"Transform0.Transform0.ucinn_ascendv2__Credit_Date_Formula__c\"\r\n    then 'Match'\r\n    else\r\n    'Not Match'\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA10" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA8" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Overall_Match_Flag",
+          "label" : "Overall Match Flag",
+          "formulaExpression" : "case\r\n    when \"Date_Match_Flag\"!='Match' then 'Not Match' \r\n    when \"Amount_Match_Flag\"!='Match' then 'Not Match' \r\n    when \"Person_ID_Match_Flag\"!='Match' then 'Not Match' \r\n    when Designation_Match_Flag !='Match' then 'Not Match' \r\n    else\r\n    'Match' \r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA11" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA10" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Campaign_ascend",
+          "label" : "Campaign ascend",
+          "formulaExpression" : "case \r\n    when contains(\"Transform0.Transform0.Campaign_Priority.Name\", 'BH-')\r\n    then 'Because Hamilton'\r\n\r\n    else\r\n    \"Transform0.Transform0.Campaign_Priority.Name\"\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "OUTPUT0" : {
+      "action" : "save",
+      "sources" : [ "FORMULA11" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Collected Contribution Level Validation v2",
+          "name" : "Collected_Contribution_Level_Validationv2",
+          "folderName" : "SharedApp"
+        },
+        "measuresToCurrencies" : [ ]
+      }
+    },
+    "FILTER0" : {
+      "action" : "filter",
+      "sources" : [ "FORMULA1" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "Object",
+          "operator" : "EQUAL",
+          "operands" : [ "Payment" ]
+        } ]
+      }
+    },
+    "LOAD_DATASET6" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "CHAPEL_BELL_GIFT", "Giving_Area", "Designation", "Type", "Campaign_Name", "HAMILTON_FUND", "Hamilton_Fund_Date", "Primary_Donor", "Contribution_Id", "Amount_SUM" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "dwh payment",
+          "name" : "dwh_payment"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "EXTRACT0" : {
+      "action" : "extractGrains",
+      "sources" : [ "FILTER0" ],
+      "parameters" : {
+        "grainExtractions" : [ ]
+      }
+    },
+    "AGGREGATE1" : {
+      "action" : "aggregate",
+      "sources" : [ "EXTRACT0" ],
+      "parameters" : {
+        "aggregations" : [ {
+          "action" : "SUM",
+          "source" : "ucinn_ascendv2__Credit_Amount__c",
+          "name" : "SUM_ucinn_ascendv2__Credit_Amount__c",
+          "label" : "Sum of Amount"
+        } ],
+        "groupings" : [ "Formatted_External_Id" ],
+        "pivots" : [ ],
+        "nodeType" : "STANDARD"
+      }
+    },
+    "EDIT_ATTRIBUTES0" : {
+      "action" : "schema",
+      "sources" : [ "AGGREGATE1" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "SUM_ucinn_ascendv2__Credit_Amount__c",
+          "newProperties" : {
+            "label" : "ascend amount (agg)",
+            "name" : "ascend_amount_agg"
+          }
+        } ]
+      }
+    },
+    "JOIN2" : {
+      "action" : "join",
+      "sources" : [ "EDIT_ATTRIBUTES0", "FORMULA1" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Formatted_External_Id" ],
+        "rightQualifier" : "Transform0",
+        "rightKeys" : [ "Formatted_External_Id" ]
+      }
+    }
+  },
+  "ui" : {
+    "nodes" : {
+      "LOAD_DATASET0" : {
+        "label" : "Gift Credit and Payment",
+        "type" : "LOAD_DATASET",
+        "top" : 392,
+        "left" : 112.30000000000001,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "TRANSFORM0" : {
+        "label" : "Transform 0",
+        "type" : "TRANSFORM",
+        "top" : 392.1,
+        "left" : 390.3,
+        "graph" : {
+          "FORMULA0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Contact or Org Type"
+          },
+          "FORMULA1" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Constituent Group ascend"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA0",
+          "target" : "FORMULA1"
+        } ]
+      },
+      "JOIN0" : {
+        "label" : "Join 0",
+        "type" : "JOIN",
+        "top" : 392.1,
+        "left" : 952.1
+      },
+      "TRANSFORM4" : {
+        "label" : "match flags",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 392.2,
+        "left" : 1094,
+        "graph" : {
+          "FORMULA4" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "File Source"
+          },
+          "FORMULA5" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Person ID Match Flag"
+          },
+          "FORMULA7" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Designation Match Flag"
+          },
+          "FORMULA8" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Amount Match Flag"
+          },
+          "FORMULA9" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Date Match Flag"
+          },
+          "FORMULA10" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Overall Match Flag"
+          },
+          "FORMULA11" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Campaign-ascend"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA4",
+          "target" : "FORMULA5"
+        }, {
+          "source" : "FORMULA7",
+          "target" : "FORMULA8"
+        }, {
+          "source" : "FORMULA5",
+          "target" : "FORMULA9"
+        }, {
+          "source" : "FORMULA8",
+          "target" : "FORMULA10"
+        }, {
+          "source" : "FORMULA9",
+          "target" : "FORMULA7"
+        }, {
+          "source" : "FORMULA10",
+          "target" : "FORMULA11"
+        } ]
+      },
+      "OUTPUT0" : {
+        "label" : "Output 0",
+        "type" : "OUTPUT",
+        "top" : 392.2,
+        "left" : 1234
+      },
+      "FILTER0" : {
+        "label" : "Filter to Payment Only",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 532.1,
+        "left" : 392.5
+      },
+      "LOAD_DATASET6" : {
+        "label" : "dwh payment",
+        "type" : "LOAD_DATASET",
+        "top" : 672.5,
+        "left" : 952.1,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "AGGREGATE0" : {
+        "label" : "Aggregate to Contribution ID Level",
+        "description" : "",
+        "type" : "AGGREGATE",
+        "top" : 532,
+        "left" : 532,
+        "graph" : {
+          "EXTRACT0" : null,
+          "AGGREGATE1" : null
+        },
+        "connectors" : [ {
+          "source" : "EXTRACT0",
+          "target" : "AGGREGATE1"
+        } ]
+      },
+      "TRANSFORM5" : {
+        "label" : "Transform 5",
+        "type" : "TRANSFORM",
+        "top" : 531.8,
+        "left" : 672.4,
+        "graph" : {
+          "EDIT_ATTRIBUTES0" : {
+            "label" : "Edit Attributes"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "JOIN2" : {
+        "label" : "Join 2",
+        "type" : "JOIN",
+        "top" : 532,
+        "left" : 812.4
+      }
+    },
+    "connectors" : [ {
+      "source" : "LOAD_DATASET6",
+      "target" : "JOIN0"
+    }, {
+      "source" : "LOAD_DATASET0",
+      "target" : "TRANSFORM0"
+    }, {
+      "source" : "JOIN0",
+      "target" : "TRANSFORM4"
+    }, {
+      "source" : "TRANSFORM4",
+      "target" : "OUTPUT0"
+    }, {
+      "source" : "TRANSFORM0",
+      "target" : "FILTER0"
+    }, {
+      "source" : "FILTER0",
+      "target" : "AGGREGATE0"
+    }, {
+      "source" : "AGGREGATE0",
+      "target" : "TRANSFORM5"
+    }, {
+      "source" : "TRANSFORM5",
+      "target" : "JOIN2"
+    }, {
+      "source" : "TRANSFORM0",
+      "target" : "JOIN2"
+    }, {
+      "source" : "JOIN2",
+      "target" : "JOIN0"
+    } ],
+    "hiddenColumns" : [ ]
+  },
+  "runMode" : "full"
+}

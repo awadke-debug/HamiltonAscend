@@ -1,0 +1,619 @@
+{
+  "version" : "63.0",
+  "nodes" : {
+    "LOAD_DATASET0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Years_since_graduation_bucket", "HAM_Name_w_Suffix__c", "Account_or_Contact_Id", "Is_500_HF_DONOR", "Aggregate.SUM_FY01_Collected_Amount_HF_bucket", "Primary_Relationship_Manager.Assigned_User_Name", "Wealth_Rating.HAM_Wealth_Rating_Number__c_bucket", "NCAA_PSI_SCI", "HAM_Reunion_Year__c", "Preferred_Address.ucinn_ascendv2__Address_State_Formula__c_bucket", "Private_Societies_Flag", "NCAA_Flag", "Aggregate.SUM_FY02_Collected_Amount_HF_bucket", "Years_since_graduation", "Age_Edited_1YR", "Aggregate.SUM_FY00_Collected_Amount_HF", "Is_500HF_Donor_int", "Lifetime_Cash_Collected_as_of_1YR", "Aggregate.SUM_FY03_Collected_Amount_HF", "Persistence_500_HF_Flag", "Aggregate.SUM_FY01_Collected_Amount_HF", "Aggregate.SUM_FY02_Collected_Amount_HF", "Persistence_HF_Flag" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Model 500 CYR New Version_2",
+          "name" : "Model_500_CYR_New_Version_2"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "LOAD_DATASET1" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "ucinn_ascendv2__Wealth_Rating__c", "HAM_Name_w_Suffix__c", "HF_Model.HF_Decile_String", "HAM_Reunion_Year__c", "Account_or_Contact_Id", "Aggregate.SUM_FY00_Collected_Amount_HF", "Aggregate.SUM_FY00_Committed_Amount_HF", "Aggregate.Sum.Lifetime_Collected_Amount", "Aggregate.SUM_FY03_Collected_Amount_HF", "Aggregate.SUM_FY01_Collected_Amount_HF", "Aggregate.Sum.FY00_Collected_Amount", "Ask_Expected.MAX_HAM_Ask_Amount__c", "Aggregate.Sum.FY00_Committed_Amount", "Aggregate.Sum.FY01_Collected_Amount", "Aggregate.SUM_FY04_Collected_Amount_HF", "Aggregate.SUM_FY00_Committed_Excluding_BQI", "Aggregate.SUM_FY02_Collected_Amount_HF" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Account and Contact Dataset",
+          "name" : "Account_and_Contact_Dataset"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN0" : {
+      "action" : "join",
+      "sources" : [ "LOAD_DATASET0", "LOAD_DATASET1" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Account_or_Contact_Id" ],
+        "rightQualifier" : "Accountand",
+        "rightKeys" : [ "Account_or_Contact_Id" ]
+      }
+    },
+    "TO_MEASURE0" : {
+      "action" : "typeCast",
+      "sources" : [ "JOIN0" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "HAM_Reunion_Year__c_to_measure",
+          "newProperties" : {
+            "name" : "HAM_Reunion_Year__c"
+          }
+        } ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "HAM_Reunion_Year__c" ]
+        }
+      },
+      "parameters" : {
+        "fields" : [ {
+          "name" : "HAM_Reunion_Year__c",
+          "newProperties" : {
+            "label" : "Reunion Year",
+            "name" : "HAM_Reunion_Year__c_to_measure",
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        } ]
+      }
+    },
+    "FORMULA0" : {
+      "action" : "formula",
+      "sources" : [ "TO_MEASURE0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Is_Gold",
+          "label" : "Is Gold?",
+          "formulaExpression" : "case \r\n    when \"HAM_Reunion_Year__c\">=2015 and \"HAM_Reunion_Year__c\"<=2024\r\n    then 'true'\r\n   \r\n    else\r\n    'false'\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA1" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Is_500_Prospect_Eligible",
+          "label" : "Is $500 Prospect Eligible?",
+          "formulaExpression" : "case \r\n    when round(\"Accountand.Aggregate.SUM_FY00_Committed_Amount_HF\",0)>=500\r\n    then 'false'\r\n    when round(\"Aggregate.SUM_FY00_Collected_Amount_HF\",0)>=500\r\n    then 'false'    \r\n    else\r\n    'true'\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA3" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA1" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "a",
+          "label" : "a",
+          "formulaExpression" : "'a'",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "DISCOVERY_PREDICT0" : {
+      "action" : "smartDataDiscoveryPredict",
+      "sources" : [ "FORMULA3" ],
+      "parameters" : {
+        "predictSource" : {
+          "type" : "PRED_DEF",
+          "name" : "Predicted_Is_5k_HF_Donor_MSB"
+        },
+        "columnMapping" : {
+          "NCAA_PSI_SCI" : "NCAA_PSI_SCI",
+          "Years_since_graduation_bucket" : "Years_since_graduation_bucket",
+          "Wealth_Rating.HAM_Wealth_Rating_Number__c_bucket" : "Wealth_Rating.HAM_Wealth_Rating_Number__c_bucket",
+          "Lifetime_Cash_Collected_as_of_2YR" : "Lifetime_Cash_Collected_as_of_1YR",
+          "Preferred_Address.ucinn_ascendv2__Address_State_Formula__c_bucket" : "Preferred_Address.ucinn_ascendv2__Address_State_Formula__c_bucket",
+          "Aggregate.SUM_FY02_Collected_Amount_HF_bucket" : "Aggregate.SUM_FY01_Collected_Amount_HF_bucket",
+          "Aggregate.SUM_FY03_Collected_Amount_HF_bucket" : "Aggregate.SUM_FY02_Collected_Amount_HF_bucket",
+          "Age_Edited_1YR" : "Age_Edited_1YR"
+        },
+        "predictionField" : {
+          "name" : "Predicted_Is_5k_HF_Donor_MSB_prediction",
+          "label" : "Predicted Is .5k HF Donor"
+        },
+        "predictionFactorFields" : [ {
+          "field" : {
+            "name" : "Predicted_Is_5k_HF_Donor_MSB_predictor",
+            "label" : "Predictor 1"
+          },
+          "impact" : {
+            "name" : "Predicted_Is_5k_HF_Donor_MSB_predictor_impact",
+            "label" : "Predictor 1 Impact"
+          }
+        }, {
+          "field" : {
+            "name" : "Predicted_Is_5k_HF_Donor_MSB_predictor1",
+            "label" : "Predictor 2"
+          },
+          "impact" : {
+            "name" : "Predicted_Is_5k_HF_Donor_MSB_predictor_impact1",
+            "label" : "Predictor 2 Impact"
+          }
+        }, {
+          "field" : {
+            "name" : "Predicted_Is_5k_HF_Donor_MSB_predictor2",
+            "label" : "Predictor 3"
+          },
+          "impact" : {
+            "name" : "Predicted_Is_5k_HF_Donor_MSB_predictor_impact2",
+            "label" : "Predictor 3 Impact"
+          }
+        } ],
+        "prescriptionFields" : [ ],
+        "multiClassFields" : [ ]
+      }
+    },
+    "FORMULA2" : {
+      "action" : "formula",
+      "sources" : [ "DISCOVERY_PREDICT0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Probability_Score_Group_M1",
+          "label" : "Prob Score Group M1",
+          "formulaExpression" : "string(floor(Predicted_Is_5k_HF_Donor_MSB_prediction/10)*10)||'th'",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES0" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA2" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Predicted_Is_5k_HF_Donor_MSB_prediction",
+          "newProperties" : {
+            "label" : "Predicted Is .5k HF Donor? M1",
+            "name" : "Predicted_Is_500_HF_Donor_SB_prediction"
+          }
+        } ]
+      }
+    },
+    "FORMULA4" : {
+      "action" : "computeRelative",
+      "sources" : [ "EDIT_ATTRIBUTES0" ],
+      "parameters" : {
+        "partitionBy" : [ "a" ],
+        "orderBy" : [ {
+          "fieldName" : "Predicted_Is_500_HF_Donor_SB_prediction",
+          "direction" : "DESC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Rank_M1",
+          "label" : "Rank M1",
+          "formulaExpression" : "rank()",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA5" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA4" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Percentile_M1",
+          "label" : "Percentile M1",
+          "formulaExpression" : "floor((Rank_M1/17331)*100)+1",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA6" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA5" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "M1_Group",
+          "label" : "M1 Group",
+          "formulaExpression" : "case \r\n    when Percentile_M1<10\r\n    then concat('0',string(Percentile_M1))\r\n    \r\n    else\r\n    '10'\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "DISCOVERY_PREDICT1" : {
+      "action" : "smartDataDiscoveryPredict",
+      "sources" : [ "FORMULA6" ],
+      "parameters" : {
+        "predictSource" : {
+          "type" : "PRED_DEF",
+          "name" : "Predicted_Is_5k_HF_Donor_MPP"
+        },
+        "columnMapping" : {
+          "NCAA_PSI_SCI" : "NCAA_PSI_SCI",
+          "Years_since_graduation_bucket" : "Years_since_graduation_bucket",
+          "Persistence_500_HF_Flag" : "Persistence_500_HF_Flag",
+          "Wealth_Rating.HAM_Wealth_Rating_Number__c_bucket" : "Wealth_Rating.HAM_Wealth_Rating_Number__c_bucket",
+          "Persistence_HF_Flag" : "Persistence_HF_Flag",
+          "Lifetime_Cash_Collected_as_of_2YR" : "Lifetime_Cash_Collected_as_of_1YR",
+          "Preferred_Address.ucinn_ascendv2__Address_State_Formula__c_bucket" : "Preferred_Address.ucinn_ascendv2__Address_State_Formula__c_bucket",
+          "Age_Edited_1YR" : "Age_Edited_1YR"
+        },
+        "predictionField" : {
+          "name" : "Predicted_Is_5k_HF_Donor_MPP_prediction",
+          "label" : "Predicted Is .5k HF Donor"
+        },
+        "predictionFactorFields" : [ {
+          "field" : {
+            "name" : "Predicted_Is_5k_HF_Donor_MPP_predictor",
+            "label" : "Predictor 1"
+          },
+          "impact" : {
+            "name" : "Predicted_Is_5k_HF_Donor_MPP_predictor_impact",
+            "label" : "Predictor 1 Impact"
+          }
+        }, {
+          "field" : {
+            "name" : "Predicted_Is_5k_HF_Donor_MPP_predictor1",
+            "label" : "Predictor 2"
+          },
+          "impact" : {
+            "name" : "Predicted_Is_5k_HF_Donor_MPP_predictor_impact1",
+            "label" : "Predictor 2 Impact"
+          }
+        }, {
+          "field" : {
+            "name" : "Predicted_Is_5k_HF_Donor_MPP_predictor2",
+            "label" : "Predictor 3"
+          },
+          "impact" : {
+            "name" : "Predicted_Is_5k_HF_Donor_MPP_predictor_impact2",
+            "label" : "Predictor 3 Impact"
+          }
+        } ],
+        "prescriptionFields" : [ ],
+        "multiClassFields" : [ ]
+      }
+    },
+    "OUTPUT0" : {
+      "action" : "save",
+      "sources" : [ "FORMULA9" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Model 500 Deployed SB and PP",
+          "name" : "Model_500_Deployed_SB_and_PP",
+          "folderName" : "SharedApp"
+        },
+        "measuresToCurrencies" : [ ]
+      }
+    },
+    "FORMULA2_copy1" : {
+      "action" : "formula",
+      "sources" : [ "DISCOVERY_PREDICT1" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Probability_Score_Group_M2",
+          "label" : "Prob Score Group M2",
+          "formulaExpression" : "string(floor(Predicted_Is_5k_HF_Donor_MPP_prediction/10)*10)||'th'",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES1" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA2_copy1" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Predicted_Is_5k_HF_Donor_MPP_prediction",
+          "newProperties" : {
+            "label" : "Predicted Is .5k HF Donor? M2",
+            "name" : "Predicted_Is_5k_HF_Donor_MPP_prediction"
+          }
+        } ]
+      }
+    },
+    "FORMULA7" : {
+      "action" : "computeRelative",
+      "sources" : [ "EDIT_ATTRIBUTES1" ],
+      "parameters" : {
+        "partitionBy" : [ "a" ],
+        "orderBy" : [ {
+          "fieldName" : "Predicted_Is_5k_HF_Donor_MPP_prediction",
+          "direction" : "DESC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Rank_M2",
+          "label" : "Rank M2",
+          "formulaExpression" : "rank()",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA8" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA7" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Percentile_M2",
+          "label" : "Percentile M2",
+          "formulaExpression" : "floor((Rank_M2/17331)*100)+1",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA9" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA8" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "M2_Group",
+          "label" : "M2 Group",
+          "formulaExpression" : "case \r\n    when Percentile_M2<10\r\n    then concat('0', string(Percentile_M2))\r\n    else\r\n    '10'\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    }
+  },
+  "ui" : {
+    "nodes" : {
+      "LOAD_DATASET0" : {
+        "label" : "Model 500 CYR New Version_2",
+        "type" : "LOAD_DATASET",
+        "top" : 112,
+        "left" : 112,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "LOAD_DATASET1" : {
+        "label" : "Account and Contact Dataset",
+        "type" : "LOAD_DATASET",
+        "top" : 252.10000000000002,
+        "left" : 252.10000000000002,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN0" : {
+        "label" : "Join 0",
+        "type" : "JOIN",
+        "top" : 112,
+        "left" : 252
+      },
+      "TRANSFORM0" : {
+        "label" : "Transform 0",
+        "type" : "TRANSFORM",
+        "top" : 112,
+        "left" : 392,
+        "graph" : {
+          "TO_MEASURE0" : {
+            "label" : "To Number"
+          },
+          "FORMULA0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Formula"
+          },
+          "FORMULA1" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Is $500 Prospect Eligible?"
+          },
+          "FORMULA3" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "a"
+          }
+        },
+        "connectors" : [ {
+          "source" : "TO_MEASURE0",
+          "target" : "FORMULA0"
+        }, {
+          "source" : "FORMULA0",
+          "target" : "FORMULA1"
+        }, {
+          "source" : "FORMULA1",
+          "target" : "FORMULA3"
+        } ]
+      },
+      "DISCOVERY_PREDICT0" : {
+        "label" : "Transform MSS",
+        "description" : "This is the model created using score buckets for last two years' HF Paid.",
+        "type" : "DISCOVERY_PREDICT",
+        "top" : 252.10000000000002,
+        "left" : 532
+      },
+      "TRANSFORM1" : {
+        "label" : "Transform M1",
+        "description" : "This model uses XBOOST as algorithm and last two fiscal year's HF Paid in customized bins.",
+        "type" : "TRANSFORM",
+        "top" : 112.19999999999999,
+        "left" : 532,
+        "graph" : {
+          "FORMULA2" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Prob Score Group M1"
+          },
+          "EDIT_ATTRIBUTES0" : {
+            "label" : "Edit Attributes"
+          },
+          "FORMULA4" : {
+            "label" : "Rank M1"
+          },
+          "FORMULA5" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Percentile M1"
+          },
+          "FORMULA6" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "M1 Group"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA2",
+          "target" : "EDIT_ATTRIBUTES0"
+        }, {
+          "source" : "EDIT_ATTRIBUTES0",
+          "target" : "FORMULA4"
+        }, {
+          "source" : "FORMULA4",
+          "target" : "FORMULA5"
+        }, {
+          "source" : "FORMULA5",
+          "target" : "FORMULA6"
+        } ]
+      },
+      "DISCOVERY_PREDICT1" : {
+        "label" : "Transform MPP",
+        "description" : "This model was created using persistence.",
+        "type" : "DISCOVERY_PREDICT",
+        "top" : 252,
+        "left" : 672.1
+      },
+      "OUTPUT0" : {
+        "label" : "Output 0",
+        "type" : "OUTPUT",
+        "top" : 112.1,
+        "left" : 812.1
+      },
+      "TRANSFORM1_copy1" : {
+        "label" : "Transform M2",
+        "description" : "This model uses XBOOST as algorithm and last two fiscal year's HF Paid in customized bins.",
+        "type" : "TRANSFORM",
+        "top" : 112.19999999999999,
+        "left" : 672.2,
+        "graph" : {
+          "FORMULA2_copy1" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Prob Score Group M2"
+          },
+          "EDIT_ATTRIBUTES1" : {
+            "label" : "Edit Attributes"
+          },
+          "FORMULA7" : {
+            "label" : "Rank M2"
+          },
+          "FORMULA8" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Percentile M2"
+          },
+          "FORMULA9" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "M2 Group"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA2_copy1",
+          "target" : "EDIT_ATTRIBUTES1"
+        }, {
+          "source" : "EDIT_ATTRIBUTES1",
+          "target" : "FORMULA7"
+        }, {
+          "source" : "FORMULA7",
+          "target" : "FORMULA8"
+        }, {
+          "source" : "FORMULA8",
+          "target" : "FORMULA9"
+        } ]
+      }
+    },
+    "connectors" : [ {
+      "source" : "LOAD_DATASET0",
+      "target" : "JOIN0"
+    }, {
+      "source" : "LOAD_DATASET1",
+      "target" : "JOIN0"
+    }, {
+      "source" : "JOIN0",
+      "target" : "TRANSFORM0"
+    }, {
+      "source" : "TRANSFORM0",
+      "target" : "DISCOVERY_PREDICT0"
+    }, {
+      "source" : "DISCOVERY_PREDICT0",
+      "target" : "TRANSFORM1"
+    }, {
+      "source" : "TRANSFORM1",
+      "target" : "DISCOVERY_PREDICT1"
+    }, {
+      "source" : "DISCOVERY_PREDICT1",
+      "target" : "TRANSFORM1_copy1"
+    }, {
+      "source" : "TRANSFORM1_copy1",
+      "target" : "OUTPUT0"
+    } ],
+    "hiddenColumns" : [ ]
+  },
+  "runMode" : "full"
+}

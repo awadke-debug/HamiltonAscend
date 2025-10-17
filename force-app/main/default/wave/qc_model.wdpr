@@ -1,0 +1,164 @@
+{
+  "version" : "63.0",
+  "nodes" : {
+    "LOAD_DATASET0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "ChildReuni.Is_Hamilton_Parent", "Account_or_Contact_Id", "ucinn_ascendv2__Ethnicity__c", "Wealth_Rating_Number_Ed_bucket", "All_Volunteer_Involvements", "Account.Id", "ucinn_ascendv2__Gender__c", "Job_Title_Edited", "Wealth_Rating_Number_Ed", "Is_Solicitable", "HAM_Reunion_Year__c", "Preferred_Address_Region", "ucinn_ascendv2__Preferred_Class_Year__c", "NCAA_Involvements", "Active_Organization_Names", "All_Minors_Codes_Ed", "All_Involvements", "Multicultural_Affinity", "ChildReuni.Is_Hamilton_Parent_ft", "Is_5K_HF_Donor_CYR", "Private_Societies_Involvements", "Lifetime_Cash_1YR", "Years_Given", "Flag_1YR", "Flag_2YR", "Flag_3YR", "Flag_4YR", "Number_of_Solicitable_Channels", "Aggregate.Sum.FY02_Collected_Amount", "Aggregate.SUM_FY03_Collected_Amount_HF", "Aggregate.SUM_FY01_Collected_Amount_HF", "ucinn_ascendv2__Age_Formula__c", "ucinn_ascendv2__Lifetime_Cash__c", "Aggregate.Sum.FY01_Collected_Amount", "Persistence_Flag", "Pure_Donor.Count_Unique.Fiscal_Years", "Aggregate.Sum.Lifetime_Collected_Amount", "Years_Given_Percent", "Aggregate.SUM_FY02_Collected_Amount_HF", "Aggregate.Sum.FY00_Collected_Amount", "Persistence_HF_Flag", "HF_1YR_Flag", "HF_2YR_Flag", "HF_3YR_Flag", "Persistence_5K_HF_Flag" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Model 5K HF Donors Freq /Cash",
+          "name" : "Model_5K_HF_Donors_No_Null_CYR_Freq_Cash"
+        },
+        "sampleDetails" : {
+          "type" : "TopN"
+        }
+      }
+    },
+    "TO_DIMENSION0" : {
+      "action" : "typeCast",
+      "sources" : [ "FILTER0" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "ucinn_ascendv2__Age_Formula__c_to_dimension",
+          "newProperties" : {
+            "name" : "ucinn_ascendv2__Age_Formula__c"
+          }
+        } ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "ucinn_ascendv2__Age_Formula__c" ]
+        }
+      },
+      "parameters" : {
+        "fields" : [ {
+          "name" : "ucinn_ascendv2__Age_Formula__c",
+          "newProperties" : {
+            "label" : "Age",
+            "name" : "ucinn_ascendv2__Age_Formula__c_to_dimension",
+            "typeProperties" : {
+              "type" : "TEXT",
+              "length" : 255
+            }
+          }
+        } ]
+      }
+    },
+    "TO_DIMENSION1" : {
+      "action" : "typeCast",
+      "sources" : [ "TO_DIMENSION0" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "Years_Given_to_dimension",
+          "newProperties" : {
+            "name" : "Years_Given"
+          }
+        } ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Years_Given" ]
+        }
+      },
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Years_Given",
+          "newProperties" : {
+            "label" : "Years Given",
+            "name" : "Years_Given_to_dimension",
+            "typeProperties" : {
+              "type" : "TEXT",
+              "length" : 255
+            }
+          }
+        } ]
+      }
+    },
+    "FILTER0" : {
+      "action" : "filter",
+      "sources" : [ "LOAD_DATASET0" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "NUMBER",
+          "field" : "ucinn_ascendv2__Age_Formula__c",
+          "operator" : "LESS_OR_EQUAL",
+          "operands" : [ "26" ]
+        }, {
+          "type" : "NUMBER",
+          "field" : "Years_Given",
+          "operator" : "LESS_OR_EQUAL",
+          "operands" : [ "2" ]
+        } ]
+      }
+    },
+    "OUTPUT0" : {
+      "action" : "save",
+      "sources" : [ "TO_DIMENSION1" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "test modelcyr",
+          "name" : "test3_model_cyr"
+        }
+      }
+    }
+  },
+  "ui" : {
+    "nodes" : {
+      "LOAD_DATASET0" : {
+        "label" : "Model 5K HF Donors Freq /Cash",
+        "type" : "LOAD_DATASET",
+        "top" : 112,
+        "left" : 112,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "TRANSFORM0" : {
+        "label" : "Transform 0",
+        "type" : "TRANSFORM",
+        "top" : 112,
+        "left" : 392,
+        "graph" : {
+          "TO_DIMENSION0" : {
+            "label" : "To Text"
+          },
+          "TO_DIMENSION1" : {
+            "label" : "To Text"
+          }
+        },
+        "connectors" : [ {
+          "source" : "TO_DIMENSION0",
+          "target" : "TO_DIMENSION1"
+        } ]
+      },
+      "FILTER0" : {
+        "label" : "Filter 0",
+        "type" : "FILTER",
+        "top" : 112,
+        "left" : 252
+      },
+      "OUTPUT0" : {
+        "label" : "Output 0",
+        "type" : "OUTPUT",
+        "top" : 112,
+        "left" : 532
+      }
+    },
+    "connectors" : [ {
+      "source" : "FILTER0",
+      "target" : "TRANSFORM0"
+    }, {
+      "source" : "LOAD_DATASET0",
+      "target" : "FILTER0"
+    }, {
+      "source" : "TRANSFORM0",
+      "target" : "OUTPUT0"
+    } ],
+    "hiddenColumns" : [ ]
+  },
+  "runMode" : "full"
+}

@@ -1,0 +1,39 @@
+<template>
+    <table class="data-table">
+        <thead>
+            <tr>
+                <template for:each={columns} for:item="col">
+                    <th key={col.apiName} onclick={handleSort} data-field={col.apiName}>{col.label} 
+                        <template if:true={col.isSortedColumn}>
+                            <span class="sort-icon">{sortDirectionIcon}</span>
+                        </template>                        
+                    </th>
+                </template>
+            </tr>
+        </thead>
+        <tbody>
+            <template if:true={hasRecords}>
+                <template for:each={displayRecords} for:item="record">
+                    <tr key={record.Id}>
+                        <template for:each={record.cells} for:item="cell">
+                            <td key={cell.key}>
+                                {cell.value} </td>
+                        </template>
+                    </tr>
+                </template>
+            </template>
+            <template if:false={hasRecords}>
+                <tr>
+                    <td colspan={tableData.columnLabels.length}>{label.noRecordsMsg}</td>
+                </tr>
+            </template>
+            <template if:true={tableData.hasMore}>
+                <tr>
+                    <td colspan={tableData.columnLabels.length} class="load-more-row" onclick={handleLoadMore}>
+                        <strong>{label.loadMore}</strong>
+                    </td>
+                </tr>
+            </template>
+        </tbody>
+    </table>
+</template>

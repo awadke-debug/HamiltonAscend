@@ -1,0 +1,122 @@
+<template>
+    <div class="slds-modal__container profile-modal">
+        <template if:true={isLoading}>
+            <div class="spinner-container">
+                <lightning-spinner alternative-text="Loading" size="large"></lightning-spinner>
+            </div>
+        </template>
+
+        <template if:true={personalInfo}>
+            <div class="modal-content-wrapper">
+                <!-- Header -->
+                <div class="header">
+                    <h2>{label.editprofile}</h2>
+                    <div class="form-grid" style="display: flex !important;">
+
+                        <div class="column profile-container">
+                            <template if:false={isEditingImage}>
+                                <template if:false={personalInfo.profilePictureUrl}>
+                                    <lightning-icon class="person-icon" icon-name="standard:user" size="large"></lightning-icon>
+                                    <div class="camera-overlay" onclick={handleCameraClick}>
+                                        <img src={images.cameraImage} alt="Camera" class="camera-icon" />
+                                    </div>
+                                </template>
+                                <!-- Otherwise show existing profile picture -->
+                                <template if:true={personalInfo.profilePictureUrl}>
+                                    <img src={personalInfo.profilePictureUrl} alt="Profile" class="profile-image" />
+                                    <div class="camera-overlay" onclick={handleCameraClick}>
+                                        <img src={images.cameraImage} alt="Camera" class="camera-icon" />
+                                    </div>
+                                </template>
+                            </template>
+                            <template if:true={isEditingImage}>
+                                <input type="file"
+                                    accept="image/*"
+                                    class="file-input"
+                                    onchange={handleFileChange} />
+                            </template>
+                        </div>
+                        <div class="column upload-text-container">
+                            <!-- Filename -->
+                            <template if:false={isEditingImage}>
+                                <div class="file-name" if:true={uploadedFileName}>
+                                    <p>{label.newpic}</p>
+                                    <p>{uploadedFileName}</p>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Form -->
+                <div class="form-grid">
+                        <div class="field-row">
+                            <label>{label.firstname}</label>
+                            <input type="text" value={personalInfo.firstName} data-name="firstName" onchange={handleChange} />
+                        </div>
+                        <div class="field-row">
+                            <label>{label.lastname}</label>
+                            <input type="text" value={personalInfo.lastName} data-name="lastName" onchange={handleChange} />
+                        </div>
+                        <div class="field-row">
+                            <label>{label.jobtitle}</label>
+                            <input type="text" value={personalInfo.jobTitle} data-name="jobTitle" onchange={handleChange} />
+                        </div>
+                        <div class="field-row">
+                            <label>{label.phone}</label>
+                            <input type="tel" value={personalInfo.phoneNo} data-name="phoneNo" onchange={handleChange} />
+                        </div>
+                        <div class="field-row">
+                            <label>{label.email}</label>
+                            <input type="email" value={personalInfo.email} data-name="email" onchange={handleChange} />
+                        </div>
+                        <div class="field-row">
+                            <label>{label.linkedinurl}</label>
+                            <input type="text" value={personalInfo.linkedInUrl} data-name="linkedInUrl" onchange={handleChange} />
+                        </div>
+                        <div class="field-row">
+                            <label>{label.employer}</label>
+                            <input type="text" value={personalInfo.employerName} data-name="employerName" onchange={handleChange} />
+                        </div>
+                </div>
+
+                <!-- Address Section -->
+                <div class="address-section">
+                    <h3>{label.addressdetails}</h3>
+                    <div class="address-grid">
+                        <div class="field-row">
+                            <label>{label.street}</label>
+                            <input type="text" value={personalInfo.addressInfo.street} data-name="addressInfo.street" onchange={handleChange} />
+                        </div>
+                        <div class="field-row">
+                            <label>{label.city}</label>
+                            <input type="text" value={personalInfo.addressInfo.city} data-name="addressInfo.city" onchange={handleChange} />
+                        </div>
+                        <div class="field-row">
+                            <label>{label.state}</label>
+                            <input type="text" value={personalInfo.addressInfo.state} data-name="addressInfo.state" onchange={handleChange} />
+                        </div>
+                        <div class="field-row">
+                            <label>{label.county}</label>
+                            <input type="text" value={personalInfo.addressInfo.county} data-name="addressInfo.county" onchange={handleChange} />
+                        </div>
+                        <div class="field-row">
+                            <label>{label.country}</label>
+                            <input type="text" value={personalInfo.addressInfo.country} data-name="addressInfo.country" onchange={handleChange} />
+                        </div>
+                        <div class="field-row">
+                            <label>{label.postalcode}</label>
+                            <input type="text" value={personalInfo.addressInfo.postalCode} data-name="addressInfo.postalCode" onchange={handleChange} />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer Buttons -->
+                <div class="footer">
+                    <button class="cancel" onclick={handleCancel}>{label.cancel}</button>
+                    <button class="save" onclick={handleSave}>{label.save}</button>
+                </div>
+            </div>
+        </template>
+    </div>
+</template>

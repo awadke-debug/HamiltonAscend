@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>HAM_Formatted_Phone__c</fullName>
+    <externalId>false</externalId>
+    <formula>IF(LEN(Phone) = 10,&quot;(&quot; + LEFT( Phone, 3) + &quot;) &quot; + MID(Phone, 4, 3) + &quot;-&quot; + MID(Phone, 7, 4),Phone)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Formatted Phone</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

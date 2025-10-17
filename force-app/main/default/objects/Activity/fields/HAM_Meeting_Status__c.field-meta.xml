@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>HAM_Meeting_Status__c</fullName>
+    <description>Please use this field to setup the meeting and make sure to update the status as an when the meeting is held, rescheduled or cancelled.</description>
+    <inlineHelpText>1. Planned = A trip is being planned and you are contacting the person
+2. Scheduled = Alumni has confirmed the availability and meeting is scheduled
+3. Rescheduled = Alumni requested to rescheduled the meeting 
+4. Completed = Meeting was completed and its time for contact report
+5. Cancelled = Due to some reason one of the member cancelled the meeting (Reason will be mandatory)</inlineHelpText>
+    <label>HAM Meeting Status</label>
+    <required>false</required>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Planned</fullName>
+                <default>false</default>
+                <label>Planned</label>
+            </value>
+            <value>
+                <fullName>Attempted unavailable</fullName>
+                <default>false</default>
+                <label>Attempted unavailable</label>
+            </value>
+            <value>
+                <fullName>Attempted unresponsive</fullName>
+                <default>false</default>
+                <label>Attempted unresponsive</label>
+            </value>
+            <value>
+                <fullName>Scheduled</fullName>
+                <default>false</default>
+                <label>Scheduled</label>
+            </value>
+            <value>
+                <fullName>Rescheduled</fullName>
+                <default>false</default>
+                <label>Rescheduled</label>
+            </value>
+            <value>
+                <fullName>Completed</fullName>
+                <default>false</default>
+                <label>Completed</label>
+            </value>
+            <value>
+                <fullName>Cancelled</fullName>
+                <default>false</default>
+                <label>Cancelled</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

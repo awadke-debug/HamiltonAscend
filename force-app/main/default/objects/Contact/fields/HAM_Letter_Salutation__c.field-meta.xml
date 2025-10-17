@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>HAM_Letter_Salutation__c</fullName>
+    <externalId>false</externalId>
+    <formula>IF(HAM_Spouse_or_Partner_Soft_Credit__c = FALSE,FirstName,
+IF(HAM_Is_Primary_Constituent__c=TRUE,FirstName &amp; &quot; and &quot; &amp; ucinn_ascendv2__Preferred_Spouse__r.FirstName,ucinn_ascendv2__Preferred_Spouse__r.FirstName&amp;&quot; and &quot;&amp;FirstName)
+)</formula>
+    <label>Letter Salutation</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

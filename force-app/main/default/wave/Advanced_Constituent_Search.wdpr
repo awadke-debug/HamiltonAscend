@@ -1,0 +1,1605 @@
+{
+  "version" : "59.0",
+  "nodes" : {
+    "LOAD_DATASET0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Id", "AccountId", "LastName", "FirstName", "RecordTypeId" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "Contact",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "Contact"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "LOAD_DATASET1" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Id", "Name", "Type", "RecordTypeId" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "Account",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "Account"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "LOAD_DATASET2" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Id", "Name" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "RecordType",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "RecordType"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN0" : {
+      "action" : "join",
+      "sources" : [ "LOAD_DATASET1", "LOAD_DATASET2" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "RecordType.Id", "RecordTypeId" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "RecordTypeId" ],
+        "rightQualifier" : "RecordType",
+        "rightKeys" : [ "Id" ]
+      }
+    },
+    "JOIN1" : {
+      "action" : "join",
+      "sources" : [ "LOAD_DATASET0", "JOIN0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Account.Id" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "AccountId" ],
+        "rightQualifier" : "Account",
+        "rightKeys" : [ "Id" ]
+      }
+    },
+    "JOIN2" : {
+      "action" : "join",
+      "sources" : [ "JOIN1", "LOAD_DATASET2" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "RecordType.Id", "RecordTypeId" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "RecordTypeId" ],
+        "rightQualifier" : "RecordType",
+        "rightKeys" : [ "Id" ]
+      }
+    },
+    "OUTPUT0" : {
+      "action" : "save",
+      "sources" : [ "FORMULA2" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Contact Dataset",
+          "name" : "Contact_Dataset",
+          "folderName" : "SharedApp"
+        },
+        "measuresToCurrencies" : [ ]
+      }
+    },
+    "LOAD_DATASET3" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Id", "RecordTypeId", "ucinn_ascendv2__Contact__c", "ucinn_ascendv2__Conferred_Degree_Year__c", "ucinn_ascendv2__Degree_Code__c", "Name" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "ucinn_ascendv2__Degree_Information__c",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "ucinn_ascendv2__Degree_Information__c"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN3" : {
+      "action" : "join",
+      "sources" : [ "JOIN8", "LOAD_DATASET2" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "RecordTypeId", "Record_Type.Id" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "RecordTypeId" ],
+        "rightQualifier" : "Record_Type",
+        "rightKeys" : [ "Id" ]
+      }
+    },
+    "FILTER0" : {
+      "action" : "filter",
+      "sources" : [ "JOIN3" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "Record_Type.Name",
+          "operator" : "EQUAL",
+          "operands" : [ "School Degree Information" ]
+        } ]
+      }
+    },
+    "EXTRACT0" : {
+      "action" : "extractGrains",
+      "sources" : [ "FILTER0" ],
+      "parameters" : {
+        "grainExtractions" : [ ]
+      }
+    },
+    "AGGREGATE1" : {
+      "action" : "aggregate",
+      "sources" : [ "EXTRACT0" ],
+      "parameters" : {
+        "aggregations" : [ {
+          "action" : "COUNT",
+          "name" : "Degree.Count",
+          "label" : "Degree Count"
+        } ],
+        "groupings" : [ "ucinn_ascendv2__Contact__c" ],
+        "pivots" : [ ],
+        "nodeType" : "STANDARD"
+      }
+    },
+    "JOIN4" : {
+      "action" : "join",
+      "sources" : [ "JOIN2", "AGGREGATE1" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Education.ucinn_ascendv2__Contact__c" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Id" ],
+        "rightQualifier" : "Education",
+        "rightKeys" : [ "ucinn_ascendv2__Contact__c" ]
+      }
+    },
+    "FORMULA0" : {
+      "action" : "computeRelative",
+      "sources" : [ "FILTER0" ],
+      "parameters" : {
+        "partitionBy" : [ "ucinn_ascendv2__Contact__c" ],
+        "orderBy" : [ {
+          "fieldName" : "ucinn_ascendv2__Conferred_Degree_Year__c",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "First_Degree_ID",
+          "label" : "First Degree ID",
+          "formulaExpression" : "first_value(Id)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA1" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA0" ],
+      "parameters" : {
+        "partitionBy" : [ "ucinn_ascendv2__Contact__c" ],
+        "orderBy" : [ {
+          "fieldName" : "ucinn_ascendv2__Conferred_Degree_Year__c",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Last_Degree_ID",
+          "label" : "Last Degree ID",
+          "formulaExpression" : "last_value(Id)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "DROP_FIELDS0" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA1" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "SELECT",
+          "ignoreMissingFields" : true,
+          "fields" : [ "ucinn_ascendv2__Contact__c", "First_Degree_ID", "Last_Degree_ID" ]
+        }
+      }
+    },
+    "JOIN5" : {
+      "action" : "join",
+      "sources" : [ "JOIN4", "DROP_FIELDS0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Education_degree.ucinn_ascendv2__Contact__c", "Education_degree.ucinn_ascendv2__Conferred_Degree_Year__c", "Education_degree.ucinn_ascendv2__Degree_Code__c", "Education_degree.Id", "Education_degree.RecordType.Name" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Id" ],
+        "rightQualifier" : "Education_degree",
+        "rightKeys" : [ "ucinn_ascendv2__Contact__c" ]
+      }
+    },
+    "JOIN6" : {
+      "action" : "join",
+      "sources" : [ "JOIN5", "DROP_FIELDS1" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "First_Degree.Id", "First_Degree.ucinn_ascendv2__Contact__c", "First_Degree.Name", "First_Degree.RecordType.Name" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Education_degree.First_Degree_ID" ],
+        "rightQualifier" : "First_Degree",
+        "rightKeys" : [ "Id" ]
+      }
+    },
+    "JOIN7" : {
+      "action" : "join",
+      "sources" : [ "JOIN6", "DROP_FIELDS2" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Last_Degree.Id", "Last_Degree.ucinn_ascendv2__Contact__c", "Last_Degree.Name", "Last_Degree.RecordType.Name" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Education_degree.Last_Degree_ID" ],
+        "rightQualifier" : "Last_Degree",
+        "rightKeys" : [ "Id" ]
+      }
+    },
+    "DROP_FIELDS1" : {
+      "action" : "schema",
+      "sources" : [ "FILTER0" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "SELECT",
+          "ignoreMissingFields" : true,
+          "fields" : [ "ucinn_ascendv2__Conferred_Degree_Year__c", "Id", "Degree_Code.Name", "Degree_Code.ucinn_ascendv2__Degree_Code__c" ]
+        }
+      }
+    },
+    "DROP_FIELDS2" : {
+      "action" : "schema",
+      "sources" : [ "FILTER0" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "SELECT",
+          "ignoreMissingFields" : true,
+          "fields" : [ "ucinn_ascendv2__Conferred_Degree_Year__c", "Id", "Name", "Degree_Code.Name", "Degree_Code.ucinn_ascendv2__Degree_Code__c" ]
+        }
+      }
+    },
+    "LOAD_DATASET4" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Id", "Name", "ucinn_ascendv2__Degree_Code__c", "ucinn_ascendv2__Is_Active__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "ucinn_ascendv2__Degree_Code__c",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "ucinn_ascendv2__Degree_Code__c"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN8" : {
+      "action" : "join",
+      "sources" : [ "LOAD_DATASET3", "LOAD_DATASET4" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Degree_Code.Id", "ucinn_ascendv2__Degree_Code__c" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "ucinn_ascendv2__Degree_Code__c" ],
+        "rightQualifier" : "Degree_Code",
+        "rightKeys" : [ "Id" ]
+      }
+    },
+    "LOAD_DATASET5" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "ucinn_ascendv2__Credit_Date_Formula__c", "ucinn_ascendv2__Credit_Amount__c", "ucinn_ascendv2__Amount_Formula__c", "ucinn_ascendv2__Contact__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "ucinn_ascendv2__Hard_and_Soft_Credit__c",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "ucinn_ascendv2__Hard_and_Soft_Credit__c"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "EDIT_ATTRIBUTES0" : {
+      "action" : "schema",
+      "sources" : [ "JOIN14" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "First_Degree.Degree_Code.Name",
+          "newProperties" : {
+            "label" : "First Degree Code",
+            "name" : "First_Degree.Degree_Code.Name"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES1" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES0" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Last_Degree.Degree_Code.ucinn_ascendv2__Degree_Code__c",
+          "newProperties" : {
+            "label" : "Last Degree Code",
+            "name" : "Last_Degree.Degree_Code.ucinn_ascendv2__Degree_Code__c"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES2" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES1" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Business.ucinn_ascendv2__Full_Address_Formula__c",
+          "newProperties" : {
+            "label" : "Business Address",
+            "name" : "Business.ucinn_ascendv2__Full_Address_Formula__c"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES3" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES2" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Mialing.ucinn_ascendv2__Full_Address_Formula__c",
+          "newProperties" : {
+            "label" : "Mailing Address",
+            "name" : "Mialing.ucinn_ascendv2__Full_Address_Formula__c"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES4" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES3" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Residential.ucinn_ascendv2__Full_Address_Formula__c",
+          "newProperties" : {
+            "label" : "Residential Address",
+            "name" : "Residential.ucinn_ascendv2__Full_Address_Formula__c"
+          }
+        } ]
+      }
+    },
+    "FORMULA2" : {
+      "action" : "formula",
+      "sources" : [ "EDIT_ATTRIBUTES4" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Degree.All_Degrees_List",
+          "label" : "All Degrees List",
+          "formulaExpression" : "array_join(\"Degree.Degree_Code.Name\", '; ')",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "LOAD_DATASET6" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "ucinn_ascendv2__Type__c", "ucinn_ascendv2__Contact__c", "ucinn_ascendv2__Is_Preferred__c", "ucinn_ascendv2__Status__c", "ucinn_ascendv2__Full_Address_Formula__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "ucinn_ascendv2__Address_Relation__c",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "ucinn_ascendv2__Address_Relation__c"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "FILTER1" : {
+      "action" : "filter",
+      "sources" : [ "LOAD_DATASET6" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "ucinn_ascendv2__Type__c",
+          "operator" : "EQUAL",
+          "operands" : [ "Residence" ]
+        }, {
+          "type" : "TEXT",
+          "field" : "ucinn_ascendv2__Status__c",
+          "operator" : "EQUAL",
+          "operands" : [ "Current" ]
+        }, {
+          "type" : "TEXT",
+          "field" : "ucinn_ascendv2__Is_Preferred__c",
+          "operator" : "EQUAL",
+          "operands" : [ "true" ]
+        } ]
+      }
+    },
+    "JOIN10" : {
+      "action" : "join",
+      "sources" : [ "JOIN17", "FILTER1" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Residential.ucinn_ascendv2__Type__c", "Residential.ucinn_ascendv2__Contact__c", "Residential.ucinn_ascendv2__Is_Preferred__c", "Residential.ucinn_ascendv2__Status__c" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Id" ],
+        "rightQualifier" : "Residential",
+        "rightKeys" : [ "ucinn_ascendv2__Contact__c" ]
+      }
+    },
+    "FILTER2" : {
+      "action" : "filter",
+      "sources" : [ "LOAD_DATASET6" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "ucinn_ascendv2__Status__c",
+          "operator" : "EQUAL",
+          "operands" : [ "Current" ]
+        }, {
+          "type" : "TEXT",
+          "field" : "ucinn_ascendv2__Type__c",
+          "operator" : "EQUAL",
+          "operands" : [ "Mail" ]
+        }, {
+          "type" : "TEXT",
+          "field" : "ucinn_ascendv2__Is_Preferred__c",
+          "operator" : "EQUAL",
+          "operands" : [ "true" ]
+        } ]
+      }
+    },
+    "JOIN11" : {
+      "action" : "join",
+      "sources" : [ "JOIN10", "FILTER2" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Mialing.ucinn_ascendv2__Type__c", "Mialing.ucinn_ascendv2__Contact__c", "Mialing.ucinn_ascendv2__Is_Preferred__c", "Mialing.ucinn_ascendv2__Status__c" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Id" ],
+        "rightQualifier" : "Mialing",
+        "rightKeys" : [ "ucinn_ascendv2__Contact__c" ]
+      }
+    },
+    "FILTER3" : {
+      "action" : "filter",
+      "sources" : [ "LOAD_DATASET6" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "ucinn_ascendv2__Type__c",
+          "operator" : "EQUAL",
+          "operands" : [ "Business" ]
+        }, {
+          "type" : "TEXT",
+          "field" : "ucinn_ascendv2__Status__c",
+          "operator" : "EQUAL",
+          "operands" : [ "Current" ]
+        }, {
+          "type" : "TEXT",
+          "field" : "ucinn_ascendv2__Is_Preferred__c",
+          "operator" : "EQUAL",
+          "operands" : [ "true" ]
+        } ]
+      }
+    },
+    "JOIN12" : {
+      "action" : "join",
+      "sources" : [ "JOIN11", "FILTER3" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Business.ucinn_ascendv2__Type__c", "Business.ucinn_ascendv2__Contact__c", "Business.ucinn_ascendv2__Is_Preferred__c", "Business.ucinn_ascendv2__Status__c" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Id" ],
+        "rightQualifier" : "Business",
+        "rightKeys" : [ "ucinn_ascendv2__Contact__c" ]
+      }
+    },
+    "DROP_FIELDS3" : {
+      "action" : "schema",
+      "sources" : [ "FILTER0" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "SELECT",
+          "ignoreMissingFields" : true,
+          "fields" : [ "ucinn_ascendv2__Contact__c", "Degree_Code.Name" ]
+        }
+      }
+    },
+    "EDIT_ATTRIBUTES5" : {
+      "action" : "schema",
+      "sources" : [ "DROP_FIELDS3" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Degree_Code.Name",
+          "newProperties" : {
+            "label" : "All Degrees",
+            "name" : "Degree_Code.Name"
+          }
+        } ]
+      }
+    },
+    "JOIN13" : {
+      "action" : "join",
+      "sources" : [ "JOIN7", "EDIT_ATTRIBUTES5" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Degree.ucinn_ascendv2__Contact__c" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "MULTI_VALUE_LOOKUP",
+        "leftKeys" : [ "Id" ],
+        "rightQualifier" : "Degree",
+        "rightKeys" : [ "ucinn_ascendv2__Contact__c" ]
+      }
+    },
+    "LOAD_DATASET7" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "ucinn_ascendv2__Account__c", "ucinn_ascendv2__Contact__c", "ucinn_ascendv2__Involvement_Code_Description_Formula__c", "RecordTypeId" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "ucinn_ascendv2__Involvement__c",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "ucinn_ascendv2__Involvement__c"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "FORMULA3" : {
+      "action" : "computeRelative",
+      "sources" : [ "JOIN16" ],
+      "parameters" : {
+        "partitionBy" : [ "ucinn_ascendv2__Contact__c" ],
+        "orderBy" : [ {
+          "fieldName" : "ucinn_ascendv2__Involvement_Code_Description_Formula__c",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "MULTIVALUE",
+          "name" : "Involvement_Codes",
+          "label" : "Involvement Codes",
+          "formulaExpression" : "collect_set(ucinn_ascendv2__Involvement_Code_Description_Formula__c)"
+        } ]
+      }
+    },
+    "FORMULA4" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA3" ],
+      "parameters" : {
+        "partitionBy" : [ "ucinn_ascendv2__Contact__c" ],
+        "orderBy" : [ {
+          "fieldName" : "Organization.Name",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "MULTIVALUE",
+          "name" : "Involvement_Organizations",
+          "label" : "Involvement Organizations",
+          "formulaExpression" : "collect_set(\"Organization.Name\")"
+        } ]
+      }
+    },
+    "DROP_FIELDS4" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA4" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "SELECT",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Involvement_Codes", "Involvement_Organizations", "ucinn_ascendv2__Contact__c" ]
+        }
+      }
+    },
+    "JOIN14" : {
+      "action" : "join",
+      "sources" : [ "JOIN12", "DROP_FIELDS4" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Id" ],
+        "rightQualifier" : "All_Involvements",
+        "rightKeys" : [ "ucinn_ascendv2__Contact__c" ]
+      }
+    },
+    "LOAD_DATASET8" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Id", "Name" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "RecordType",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "RecordType"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN15" : {
+      "action" : "join",
+      "sources" : [ "LOAD_DATASET7", "LOAD_DATASET8" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Record_Type.Id" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "RecordTypeId" ],
+        "rightQualifier" : "Record_Type",
+        "rightKeys" : [ "Id" ]
+      }
+    },
+    "LOAD_DATASET9" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Id", "Name" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "Account",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "Account"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN16" : {
+      "action" : "join",
+      "sources" : [ "JOIN15", "LOAD_DATASET9" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Organization.Id", "ucinn_ascendv2__Account__c" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "ucinn_ascendv2__Account__c" ],
+        "rightQualifier" : "Organization",
+        "rightKeys" : [ "Id" ]
+      }
+    },
+    "FORMULA5" : {
+      "action" : "formula",
+      "sources" : [ "FILTER4" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Current_Fiscal_Year",
+          "label" : "Current Fiscal Year",
+          "formulaExpression" : "fiscalYear(current_date())",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA6" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA5" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Credit_Date_Fiscal_Year",
+          "label" : "Credit Date Fiscal Year",
+          "formulaExpression" : "fiscalYear(ucinn_ascendv2__Credit_Date_Formula__c)",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA7" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA6" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Number_of_Years_Past",
+          "label" : "Number of Years Past",
+          "formulaExpression" : "Current_Fiscal_Year - Credit_Date_Fiscal_Year",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA8" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA7" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "FY00_Credit_Amount",
+          "label" : "FY00 Credit Amount",
+          "formulaExpression" : "case when Number_of_Years_Past=0 then ucinn_ascendv2__Credit_Amount__c else 0\r\nend",
+          "precision" : 10,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA9" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA8" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "FY01_Credit_Amount",
+          "label" : "FY01 Credit Amount",
+          "formulaExpression" : "case when Number_of_Years_Past=1 then ucinn_ascendv2__Credit_Amount__c else 0\r\nend",
+          "precision" : 10,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "EXTRACT1" : {
+      "action" : "extractGrains",
+      "sources" : [ "FORMULA9" ],
+      "parameters" : {
+        "grainExtractions" : [ ]
+      }
+    },
+    "AGGREGATE3" : {
+      "action" : "aggregate",
+      "sources" : [ "EXTRACT1" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "SUM.FY00_Credit_Amount",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        }, {
+          "name" : "SUM.FY01_Credit_Amount",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        }, {
+          "name" : "SUM.Lifetime_Credit_Amount",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        } ]
+      },
+      "parameters" : {
+        "aggregations" : [ {
+          "action" : "SUM",
+          "source" : "FY00_Credit_Amount",
+          "name" : "SUM.FY00_Credit_Amount",
+          "label" : "FY00 Credit Amount"
+        }, {
+          "action" : "SUM",
+          "source" : "FY01_Credit_Amount",
+          "name" : "SUM.FY01_Credit_Amount",
+          "label" : "FY01 Credit Amount"
+        }, {
+          "action" : "SUM",
+          "source" : "ucinn_ascendv2__Credit_Amount__c",
+          "name" : "SUM.Lifetime_Credit_Amount",
+          "label" : "Lifetime Credit Amount"
+        } ],
+        "groupings" : [ "ucinn_ascendv2__Contact__c" ],
+        "pivots" : [ ],
+        "nodeType" : "STANDARD"
+      }
+    },
+    "JOIN17" : {
+      "action" : "join",
+      "sources" : [ "JOIN13", "AGGREGATE3" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Credit_Amount.ucinn_ascendv2__Contact__c" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Id" ],
+        "rightQualifier" : "Credit_Amount",
+        "rightKeys" : [ "ucinn_ascendv2__Contact__c" ]
+      }
+    },
+    "FILTER4" : {
+      "action" : "filter",
+      "sources" : [ "LOAD_DATASET5" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "DATETIME",
+          "field" : "ucinn_ascendv2__Credit_Date_Formula__c",
+          "operator" : "IS_NOT_NULL",
+          "operands" : [ ]
+        } ]
+      }
+    }
+  },
+  "ui" : {
+    "nodes" : {
+      "LOAD_DATASET0" : {
+        "label" : "Contact",
+        "type" : "LOAD_DATASET",
+        "top" : 112.1,
+        "left" : 112,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "LOAD_DATASET1" : {
+        "label" : "Account",
+        "type" : "LOAD_DATASET",
+        "top" : 252,
+        "left" : 112.30000000000001,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "LOAD_DATASET2" : {
+        "label" : "RecordType",
+        "type" : "LOAD_DATASET",
+        "top" : 531.9,
+        "left" : 391.9,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN0" : {
+        "label" : "Join on Record Type to Account",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 252,
+        "left" : 391.9
+      },
+      "JOIN1" : {
+        "label" : "Join on Account to Contact",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 112.19999999999999,
+        "left" : 392
+      },
+      "JOIN2" : {
+        "label" : "Join Record Type to Contact",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 112.19999999999999,
+        "left" : 532
+      },
+      "OUTPUT0" : {
+        "label" : "Output Contact Dataset",
+        "description" : "",
+        "type" : "OUTPUT",
+        "top" : 112,
+        "left" : 2212
+      },
+      "LOAD_DATASET3" : {
+        "label" : "ucinn_ascendv2__Degree_Information__c",
+        "type" : "LOAD_DATASET",
+        "top" : 810.8,
+        "left" : 672.8,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN3" : {
+        "label" : "Join Record Type To Degree",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 532,
+        "left" : 672.2
+      },
+      "FILTER0" : {
+        "label" : "Filter School Degree Only",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 392,
+        "left" : 672.2
+      },
+      "AGGREGATE0" : {
+        "label" : "Aggregate Degree Count",
+        "description" : "",
+        "type" : "AGGREGATE",
+        "top" : 252,
+        "left" : 672.2,
+        "graph" : {
+          "EXTRACT0" : null,
+          "AGGREGATE1" : null
+        },
+        "connectors" : [ {
+          "source" : "EXTRACT0",
+          "target" : "AGGREGATE1"
+        } ]
+      },
+      "JOIN4" : {
+        "label" : "Join Degree Count To Contact",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 112.5,
+        "left" : 672
+      },
+      "TRANSFORM0" : {
+        "label" : "First and Last Degree Id",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 252,
+        "left" : 812,
+        "graph" : {
+          "FORMULA0" : {
+            "label" : "First Degree Id"
+          },
+          "FORMULA1" : {
+            "label" : "Last Degree Id"
+          },
+          "DROP_FIELDS0" : {
+            "label" : "Keep First and Last Degree Id"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA1",
+          "target" : "DROP_FIELDS0"
+        }, {
+          "source" : "FORMULA0",
+          "target" : "FORMULA1"
+        } ]
+      },
+      "JOIN5" : {
+        "label" : "Join First and Last Degree Id To Contact",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 112.4,
+        "left" : 812.1
+      },
+      "JOIN6" : {
+        "label" : "Join First Degree Details To Contact",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 112.1,
+        "left" : 952
+      },
+      "JOIN7" : {
+        "label" : "Join Last Degree Details To Contact",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 111.9,
+        "left" : 1092
+      },
+      "TRANSFORM1" : {
+        "label" : "Keep First Degree Fields",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 252,
+        "left" : 952,
+        "graph" : {
+          "DROP_FIELDS1" : {
+            "label" : "Keep Columns"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "TRANSFORM2" : {
+        "label" : "Keep Last Degree Fields",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 252,
+        "left" : 1092,
+        "graph" : {
+          "DROP_FIELDS2" : {
+            "label" : "Keep Columns"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "LOAD_DATASET4" : {
+        "label" : "ucinn_ascendv2__Degree_Code__c",
+        "type" : "LOAD_DATASET",
+        "top" : 672,
+        "left" : 812.3,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN8" : {
+        "label" : "Join Degree Code To Degree",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 671.9,
+        "left" : 672.9
+      },
+      "LOAD_DATASET5" : {
+        "label" : "ucinn_ascendv2__Hard_and_Soft_Credit__c",
+        "type" : "LOAD_DATASET",
+        "top" : 812.7,
+        "left" : 1372.2,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "TRANSFORM3" : {
+        "label" : "Relabel Fields",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 112.6,
+        "left" : 2072.3,
+        "graph" : {
+          "EDIT_ATTRIBUTES0" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES1" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES2" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES3" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES4" : {
+            "label" : "Edit Attributes"
+          },
+          "FORMULA2" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "All Degrees List"
+          }
+        },
+        "connectors" : [ {
+          "source" : "EDIT_ATTRIBUTES0",
+          "target" : "EDIT_ATTRIBUTES1"
+        }, {
+          "source" : "EDIT_ATTRIBUTES1",
+          "target" : "EDIT_ATTRIBUTES2"
+        }, {
+          "source" : "EDIT_ATTRIBUTES2",
+          "target" : "EDIT_ATTRIBUTES3"
+        }, {
+          "source" : "EDIT_ATTRIBUTES3",
+          "target" : "EDIT_ATTRIBUTES4"
+        }, {
+          "source" : "EDIT_ATTRIBUTES4",
+          "target" : "FORMULA2"
+        } ]
+      },
+      "LOAD_DATASET6" : {
+        "label" : "ucinn_ascendv2__Address_Relation__c",
+        "type" : "LOAD_DATASET",
+        "top" : 532,
+        "left" : 1654.3,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "FILTER1" : {
+        "label" : "Current Preferred Residence Address",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 252,
+        "left" : 1512
+      },
+      "JOIN10" : {
+        "label" : "Lookup Residential Address To Contact",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 112.19999999999999,
+        "left" : 1512.3
+      },
+      "FILTER2" : {
+        "label" : "Current Preferred Mailing Address",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 252,
+        "left" : 1652
+      },
+      "JOIN11" : {
+        "label" : "Lookup Mailing Address To Contact",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 112.69999999999999,
+        "left" : 1652.3
+      },
+      "FILTER3" : {
+        "label" : "Filter Current Business Address",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 252,
+        "left" : 1792
+      },
+      "JOIN12" : {
+        "label" : "Lookup Business Address To Contact",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 112.69999999999999,
+        "left" : 1792.3
+      },
+      "TRANSFORM4" : {
+        "label" : "Degree Multivalue",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 252,
+        "left" : 1232,
+        "graph" : {
+          "DROP_FIELDS3" : {
+            "label" : "Keep Columns"
+          },
+          "EDIT_ATTRIBUTES5" : {
+            "label" : "Edit Attributes"
+          }
+        },
+        "connectors" : [ {
+          "source" : "DROP_FIELDS3",
+          "target" : "EDIT_ATTRIBUTES5"
+        } ]
+      },
+      "JOIN13" : {
+        "label" : "Rollup Degrees To Contact",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 111.9,
+        "left" : 1232
+      },
+      "LOAD_DATASET7" : {
+        "label" : "ucinn_ascendv2__Involvement__c",
+        "type" : "LOAD_DATASET",
+        "top" : 671.9,
+        "left" : 1932.2,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "TRANSFORM5" : {
+        "label" : "Calculated Involvement Fields",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 251.89999999999998,
+        "left" : 1932,
+        "graph" : {
+          "FORMULA3" : {
+            "label" : "All Involvement Codes"
+          },
+          "FORMULA4" : {
+            "label" : "All Involvement Organizations"
+          },
+          "DROP_FIELDS4" : {
+            "label" : "Keep Involvement Fields"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA3",
+          "target" : "FORMULA4"
+        }, {
+          "source" : "FORMULA4",
+          "target" : "DROP_FIELDS4"
+        } ]
+      },
+      "JOIN14" : {
+        "label" : "Lookup All Involvements To Contact",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 112.69999999999999,
+        "left" : 1932.3
+      },
+      "LOAD_DATASET8" : {
+        "label" : "RecordType",
+        "type" : "LOAD_DATASET",
+        "top" : 531.9,
+        "left" : 2072.2,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN15" : {
+        "label" : "Join Record Type To Involvement",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 531.9,
+        "left" : 1932.2
+      },
+      "LOAD_DATASET9" : {
+        "label" : "Account",
+        "type" : "LOAD_DATASET",
+        "top" : 391.9,
+        "left" : 2072,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN16" : {
+        "label" : "Join Involvement Organization",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 391.9,
+        "left" : 1932
+      },
+      "TRANSFORM6" : {
+        "label" : "Calculated Credit Fields",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 533,
+        "left" : 1372.1,
+        "graph" : {
+          "FORMULA5" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Current Fiscal Year"
+          },
+          "FORMULA6" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Credit Date Fiscal Year"
+          },
+          "FORMULA7" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Number of Years Past"
+          },
+          "FORMULA8" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "FY00 Credit Amount"
+          },
+          "FORMULA9" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "FY01 Credit Amount"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA5",
+          "target" : "FORMULA6"
+        }, {
+          "source" : "FORMULA6",
+          "target" : "FORMULA7"
+        }, {
+          "source" : "FORMULA7",
+          "target" : "FORMULA8"
+        }, {
+          "source" : "FORMULA8",
+          "target" : "FORMULA9"
+        } ]
+      },
+      "AGGREGATE2" : {
+        "label" : "Aggregate Credit Amount",
+        "description" : "",
+        "type" : "AGGREGATE",
+        "top" : 252,
+        "left" : 1372,
+        "graph" : {
+          "EXTRACT1" : null,
+          "AGGREGATE3" : null
+        },
+        "connectors" : [ {
+          "source" : "EXTRACT1",
+          "target" : "AGGREGATE3"
+        } ]
+      },
+      "JOIN17" : {
+        "label" : "Join Credit to Contact",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 112,
+        "left" : 1372
+      },
+      "FILTER4" : {
+        "label" : "Filter Null Credit Date",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 672,
+        "left" : 1372
+      }
+    },
+    "connectors" : [ {
+      "source" : "JOIN17",
+      "target" : "JOIN10"
+    }, {
+      "source" : "LOAD_DATASET1",
+      "target" : "JOIN0"
+    }, {
+      "source" : "LOAD_DATASET2",
+      "target" : "JOIN0"
+    }, {
+      "source" : "LOAD_DATASET0",
+      "target" : "JOIN1"
+    }, {
+      "source" : "JOIN0",
+      "target" : "JOIN1"
+    }, {
+      "source" : "JOIN1",
+      "target" : "JOIN2"
+    }, {
+      "source" : "LOAD_DATASET2",
+      "target" : "JOIN2"
+    }, {
+      "source" : "TRANSFORM3",
+      "target" : "OUTPUT0"
+    }, {
+      "source" : "JOIN8",
+      "target" : "JOIN3"
+    }, {
+      "source" : "LOAD_DATASET2",
+      "target" : "JOIN3"
+    }, {
+      "source" : "JOIN3",
+      "target" : "FILTER0"
+    }, {
+      "source" : "FILTER0",
+      "target" : "AGGREGATE0"
+    }, {
+      "source" : "JOIN2",
+      "target" : "JOIN4"
+    }, {
+      "source" : "AGGREGATE0",
+      "target" : "JOIN4"
+    }, {
+      "source" : "FILTER0",
+      "target" : "TRANSFORM0"
+    }, {
+      "source" : "JOIN4",
+      "target" : "JOIN5"
+    }, {
+      "source" : "TRANSFORM0",
+      "target" : "JOIN5"
+    }, {
+      "source" : "JOIN5",
+      "target" : "JOIN6"
+    }, {
+      "source" : "TRANSFORM1",
+      "target" : "JOIN6"
+    }, {
+      "source" : "JOIN6",
+      "target" : "JOIN7"
+    }, {
+      "source" : "TRANSFORM2",
+      "target" : "JOIN7"
+    }, {
+      "source" : "FILTER0",
+      "target" : "TRANSFORM1"
+    }, {
+      "source" : "FILTER0",
+      "target" : "TRANSFORM2"
+    }, {
+      "source" : "LOAD_DATASET3",
+      "target" : "JOIN8"
+    }, {
+      "source" : "LOAD_DATASET4",
+      "target" : "JOIN8"
+    }, {
+      "source" : "JOIN14",
+      "target" : "TRANSFORM3"
+    }, {
+      "source" : "LOAD_DATASET6",
+      "target" : "FILTER1"
+    }, {
+      "source" : "FILTER1",
+      "target" : "JOIN10"
+    }, {
+      "source" : "LOAD_DATASET6",
+      "target" : "FILTER2"
+    }, {
+      "source" : "JOIN10",
+      "target" : "JOIN11"
+    }, {
+      "source" : "FILTER2",
+      "target" : "JOIN11"
+    }, {
+      "source" : "LOAD_DATASET6",
+      "target" : "FILTER3"
+    }, {
+      "source" : "JOIN11",
+      "target" : "JOIN12"
+    }, {
+      "source" : "FILTER3",
+      "target" : "JOIN12"
+    }, {
+      "source" : "FILTER0",
+      "target" : "TRANSFORM4"
+    }, {
+      "source" : "JOIN7",
+      "target" : "JOIN13"
+    }, {
+      "source" : "TRANSFORM4",
+      "target" : "JOIN13"
+    }, {
+      "source" : "JOIN16",
+      "target" : "TRANSFORM5"
+    }, {
+      "source" : "JOIN12",
+      "target" : "JOIN14"
+    }, {
+      "source" : "TRANSFORM5",
+      "target" : "JOIN14"
+    }, {
+      "source" : "LOAD_DATASET7",
+      "target" : "JOIN15"
+    }, {
+      "source" : "LOAD_DATASET8",
+      "target" : "JOIN15"
+    }, {
+      "source" : "JOIN15",
+      "target" : "JOIN16"
+    }, {
+      "source" : "LOAD_DATASET9",
+      "target" : "JOIN16"
+    }, {
+      "source" : "FILTER4",
+      "target" : "TRANSFORM6"
+    }, {
+      "source" : "TRANSFORM6",
+      "target" : "AGGREGATE2"
+    }, {
+      "source" : "JOIN13",
+      "target" : "JOIN17"
+    }, {
+      "source" : "AGGREGATE2",
+      "target" : "JOIN17"
+    }, {
+      "source" : "LOAD_DATASET5",
+      "target" : "FILTER4"
+    } ],
+    "hiddenColumns" : [ ]
+  },
+  "runMode" : "full"
+}

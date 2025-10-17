@@ -1,0 +1,528 @@
+{
+  "version" : "63.0",
+  "nodes" : {
+    "LOAD_DATASET0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "PAYMENT_ID", "PROGRAM", "CREDIT_AMOUNT", "FUND", "COST_CENTER", "PERIOD", "JOURNAL", "REVENUE_CATEGORY", "ACCOUNTING_DATE", "DONOR", "JOURNAL_SOURCE", "LINE_MEMO", "LEDGER_ACCOUNT", "DEBIT_AMOUNT", "SESSION_ID", "GLID", "GIFT_ID", "GIFT", "GRANT", "INITIATIVE", "SPEND_CATEGORY_AS_WORKTAG", "CREATED_BY" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "WORKDAY_DONOR_CONTRIBUTIONS",
+          "connectionName" : "ascend_Production_Data_Lake_INBOUND",
+          "sourceObjectName" : "WORKDAY_DONOR_CONTRIBUTIONS"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "LOAD_DATASET1" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "payment.Name", "ucinn_ascendv2__Credit_Type__c", "Opportunity.ucinn_ascendv2__Pledge_Gift_ID_Formula__c", "Organization_or_Constituent_Account_Id", "ucinn_asce.Name", "PaymentGL.ucinn_ascendv2__G_L_Account__c_payment", "ucinn_ascendv2__Credit_Date_Formula__c", "Hard_And_Soft_Credit_Payment.ucinn_ascendv2__G_L_Account__c", "ucinn_ascendv2__Payment__c", "PaymentGL.ucinn_ascendv2__Post_to_G_L_Date__c_payment", "Cash_Amount" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Gift Credit and Payment",
+          "name" : "Gift_Credit_and_Payment"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "FILTER0" : {
+      "action" : "filter",
+      "sources" : [ "LOAD_DATASET1" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "ucinn_ascendv2__Credit_Type__c",
+          "operator" : "EQUAL",
+          "operands" : [ "Hard" ]
+        }, {
+          "type" : "NUMBER",
+          "field" : "Cash_Amount",
+          "operator" : "GREATER_THAN",
+          "operands" : [ "0" ]
+        } ]
+      }
+    },
+    "JOIN0" : {
+      "action" : "join",
+      "sources" : [ "LOAD_DATASET0", "FILTER0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "PAYMENT_ID" ],
+        "rightKeys" : [ "payment.Name" ]
+      }
+    },
+    "OUTPUT0" : {
+      "action" : "save",
+      "sources" : [ "TO_MEASURE1" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "test GL",
+          "name" : "test_GL"
+        },
+        "measuresToCurrencies" : [ ]
+      }
+    },
+    "LOAD_DATASET2" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Id", "IsDeleted", "Name", "CreatedDate", "CreatedById", "LastModifiedDate", "LastModifiedById", "SystemModstamp", "LastViewedDate", "LastReferencedDate", "ucinn_ascendv2__Designation_Detail__c", "ucinn_ascendv2__Account_Number__c", "ucinn_ascendv2__Account_Type__c", "ucinn_ascendv2__Account__c", "ucinn_ascendv2__Adjusted_Gift__c", "ucinn_ascendv2__Adjusted_Payment__c", "ucinn_ascendv2__Adjustment_Reason_Other__c", "ucinn_ascendv2__Adjustment_Reason__c", "ucinn_ascendv2__Adjustment_Reason_v1__c", "ucinn_ascendv2__Adjustment_Session__c", "ucinn_ascendv2__Adjustment_Type__c", "ucinn_ascendv2__Amount_Authorized_In_Payment_Gateway__c", "ucinn_ascendv2__Amount_Charged_In_Payment_Gateway__c", "ucinn_ascendv2__Amount_Paid_to_Date_Same_Designation__c", "ucinn_ascendv2__Amount_Paid_to_Date__c", "ucinn_ascendv2__Appraisal_Value__c", "ucinn_ascendv2__Authorization_Code__c", "ucinn_ascendv2__Authorization_Request_ID__c", "ucinn_ascendv2__Authorize_and_Charge__c", "ucinn_ascendv2__Average_Value_on_Date__c", "ucinn_ascendv2__Bank_Reference_Number__c", "ucinn_ascendv2__CRS_Payment_Identifier__c", "ucinn_ascendv2__Campaign__c", "ucinn_ascendv2__Charge_Request_ID__c", "ucinn_ascendv2__Check_Date__c", "ucinn_ascendv2__Check_Number__c", "ucinn_ascendv2__Constituent_Type__c", "ucinn_ascendv2__Contact__c", "ucinn_ascendv2__Created_In_External_Payment_Gateway__c", "ucinn_ascendv2__Credit_Card_Expiration_Date__c", "ucinn_ascendv2__Credit_Card_Type__c", "ucinn_ascendv2__Credit_Date__c", "ucinn_ascendv2__Designation__c", "ucinn_ascendv2__Disbursement__c", "ucinn_ascendv2__Encrypted_Payment_Information__c", "ucinn_ascendv2__External_Payment_Gateway_ID__c", "ucinn_ascendv2__External_System_ID__c", "ucinn_ascendv2__Face_Value__c", "ucinn_ascendv2__File_Creation_Date__c", "ucinn_ascendv2__G_L_Account__c", "ucinn_ascendv2__Gift_Processor__c", "ucinn_ascendv2__Has_Correspondence__c", "ucinn_ascendv2__Has_Handwriting_Present__c", "ucinn_ascendv2__High_Value_on_Date__c", "ucinn_ascendv2__Installment__c", "ucinn_ascendv2__Is_Anonymous__c", "ucinn_ascendv2__Is_Payment_Matching__c", "ucinn_ascendv2__Is_Tax_Receipt__c", "ucinn_ascendv2__Is_Voided__c", "ucinn_ascendv2__Low_Value_on_Date__c", "ucinn_ascendv2__Matching_Installment__c", "ucinn_ascendv2__Matching_Record_Created__c", "ucinn_ascendv2__Membership_Days_Granted__c", "ucinn_ascendv2__Non_Gift_Amount__c", "ucinn_ascendv2__Notes__c", "ucinn_ascendv2__Number_of_Shares__c", "ucinn_ascendv2__Online_Payment_Charge_ID__c", "ucinn_ascendv2__Opportunity__c", "ucinn_ascendv2__Overpayment_Amount__c", "ucinn_ascendv2__Overpayment_Gift__c", "ucinn_ascendv2__Payment_Amount__c", "ucinn_ascendv2__Payment_Group_ID__c", "ucinn_ascendv2__Payment_Group__c", "ucinn_ascendv2__Payment_Name_Auto_Number__c", "ucinn_ascendv2__Post_to_G_L_Date__c", "ucinn_ascendv2__Previous_Expiration_Date__c", "ucinn_ascendv2__Receipt_Number__c", "ucinn_ascendv2__Received_Date__c", "ucinn_ascendv2__Reference__c", "ucinn_ascendv2__Review_Transaction_v2__c", "ucinn_ascendv2__Routing_Number__c", "ucinn_ascendv2__SEC_Code__c", "ucinn_ascendv2__Send_to_G_L__c", "ucinn_ascendv2__Sent_to_G_L_Date__c", "ucinn_ascendv2__Session__c", "ucinn_ascendv2__Status_In_External_Payment_Gateway__c", "ucinn_ascendv2__Status__c", "ucinn_ascendv2__Subscription_ID__c", "ucinn_ascendv2__Tender_Type_for_Gifts__c", "ucinn_ascendv2__Tender_Type_for_Pledges__c", "ucinn_ascendv2__Test_Pull_From_DD__c", "ucinn_ascendv2__Ticker_Symbol__c", "ucinn_ascendv2__Total_Payment__c", "ucinn_ascendv2__Transaction_ID__c", "ucinn_ascendv2__Transaction_Number__c", "ucinn_ascendv2__Transaction_Type__c", "ucinn_ascendv2__Transfer_Date__c", "ucinn_ascendv2__Updated_In_External_Payment_Gateway__c", "ucinn_ascendv2__Matching_Gift_Count__c", "ucinn_ascendv2__Acknowledgement_Description_Formula__c", "ucinn_ascendv2__Contributor_Formula__c", "ucinn_ascendv2__Designation_Description_Formula__c", "ucinn_ascendv2__Designation_Unit_1_Amount_Formula__c", "ucinn_ascendv2__Designation_Unit_1_Formula__c", "ucinn_ascendv2__Designation_Unit_2_Amount_Formula__c", "ucinn_ascendv2__Designation_Unit_2_Formula__c", "ucinn_ascendv2__Donor_ID_Formula__c", "ucinn_ascendv2__Fiscal_Year_Formula__c", "ucinn_ascendv2__Fiscal_Year_Text_Formula__c", "ucinn_ascendv2__Gift_Amount_Formula__c", "ucinn_ascendv2__Gift_Receipt_Name_Formula__c", "ucinn_ascendv2__Gift_Type_Formula__c", "ucinn_ascendv2__Is_Ascend_Community_Gift_Formula__c", "ucinn_ascendv2__Is_Designation_Mismatch_Formula__c", "ucinn_ascendv2__Matching_Gift_Amount_Formula__c", "ucinn_ascendv2__Opportunity_Record_Type__c", "ucinn_ascendv2__Opportunity_Stage__c", "ucinn_ascendv2__Pledge_Payment_Amount_Formula__c", "ucinn_ascendv2__Session_Approved_Date_Formula__c", "ucinn_ascendv2__Tender_Type_Formula__c", "ucinn_ascendv2__External_Matching_Service_ID__c", "ucinn_ascendv2__Is_Processed_By_Matching_Service__c", "HAM_Appraisal_Date__c", "HAM_Broker_Name__c", "HAM_Campaign_Priority__c", "HAM_Data_Source__c", "HAM_GIK_Long_Description__c", "HAM_GIK_Other__c", "HAM_GIK_Short_Description__c", "HAM_GIK_Type__c", "HAM_Liquidated_Amount__c", "HAM_Liquidated_or_Sold_Date__c", "HAM_Property_Location_c__c", "HAM_Third_Party_Payment__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "ucinn_ascendv2__Payment__c",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "ucinn_ascendv2__Payment__c"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "OUTPUT1" : {
+      "action" : "save",
+      "sources" : [ "LOAD_DATASET2" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "dump payment",
+          "name" : "dump_payment"
+        },
+        "measuresToCurrencies" : [ ]
+      }
+    },
+    "FORMULA0" : {
+      "action" : "formula",
+      "sources" : [ "JOIN0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "is_payment_key_match",
+          "label" : "is payment key match",
+          "formulaExpression" : "case \r\n    when PAYMENT_ID=\"payment.Name\"\r\n    then 'true'\r\n  \r\n    else\r\n   'false'\r\nend",
+          "precision" : 10,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA1" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "is_date_match",
+          "label" : "is date match",
+          "formulaExpression" : "case \r\n    when ACCOUNTING_DATE=\"PaymentGL.ucinn_ascendv2__Post_to_G_L_Date__c_payment\"\r\n    then 'true'\r\n    else\r\n    'false'\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "TO_MEASURE0" : {
+      "action" : "typeCast",
+      "sources" : [ "FORMULA1" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "CREDIT_AMOUNT_to_measure",
+          "newProperties" : {
+            "name" : "CREDIT_AMOUNT"
+          }
+        } ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "CREDIT_AMOUNT" ]
+        }
+      },
+      "parameters" : {
+        "fields" : [ {
+          "name" : "CREDIT_AMOUNT",
+          "newProperties" : {
+            "label" : "CREDIT_AMOUNT",
+            "name" : "CREDIT_AMOUNT_to_measure",
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        } ]
+      }
+    },
+    "FORMULA2" : {
+      "action" : "formula",
+      "sources" : [ "TO_MEASURE0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "is_amount_match",
+          "label" : "is amount match",
+          "formulaExpression" : "case  \r\n    when CREDIT_AMOUNT-Cash_Amount=0\r\n    then 'true'\r\n    else\r\n    'false'\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA3" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA2" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Workday_GL",
+          "label" : "Workday GL",
+          "formulaExpression" : "concat(\r\nsubstr(FUND, 1, 2),'-',\r\nsubstr(PROGRAM, 1, 2),'-',\r\nsubstr(COST_CENTER, 1, 6),'-',\r\nsubstr(LEDGER_ACCOUNT, 1, 4))",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA4" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA3" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "is_GL_match",
+          "label" : "is GL match",
+          "formulaExpression" : "case  \r\n    when Workday_GL=\"PaymentGL.ucinn_ascendv2__G_L_Account__c_payment\"\r\n    then 'true'\r\n    else\r\n    'false'\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "TO_MEASURE1" : {
+      "action" : "typeCast",
+      "sources" : [ "FORMULA4" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "DEBIT_AMOUNT_to_measure",
+          "newProperties" : {
+            "name" : "DEBIT_AMOUNT"
+          }
+        } ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "DEBIT_AMOUNT" ]
+        }
+      },
+      "parameters" : {
+        "fields" : [ {
+          "name" : "DEBIT_AMOUNT",
+          "newProperties" : {
+            "label" : "DEBIT_AMOUNT",
+            "name" : "DEBIT_AMOUNT_to_measure",
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        } ]
+      }
+    }
+  },
+  "ui" : {
+    "nodes" : {
+      "LOAD_DATASET0" : {
+        "label" : "WORKDAY_DONOR_CONTRIBUTIONS",
+        "type" : "LOAD_DATASET",
+        "top" : 112,
+        "left" : 112,
+        "parameters" : {
+          "sampleSize" : 10000
+        }
+      },
+      "LOAD_DATASET1" : {
+        "label" : "Gift Credit and Payment",
+        "type" : "LOAD_DATASET",
+        "top" : 252,
+        "left" : 112,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "FILTER0" : {
+        "label" : "Filter to hard credit cash",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 252,
+        "left" : 252
+      },
+      "JOIN0" : {
+        "label" : "Join 0",
+        "type" : "JOIN",
+        "top" : 252,
+        "left" : 392
+      },
+      "OUTPUT0" : {
+        "label" : "Output 0",
+        "type" : "OUTPUT",
+        "top" : 252.3,
+        "left" : 813.1
+      },
+      "LOAD_DATASET2" : {
+        "label" : "ucinn_ascendv2__Payment__c",
+        "type" : "LOAD_DATASET",
+        "top" : 392,
+        "left" : 112,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "OUTPUT1" : {
+        "label" : "Output 1",
+        "type" : "OUTPUT",
+        "top" : 392,
+        "left" : 252
+      },
+      "TRANSFORM0" : {
+        "label" : "Transform 0",
+        "type" : "TRANSFORM",
+        "top" : 252,
+        "left" : 532,
+        "graph" : {
+          "FORMULA0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "is payment key match"
+          },
+          "FORMULA1" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "is date match"
+          },
+          "TO_MEASURE0" : {
+            "label" : "To Number"
+          },
+          "FORMULA2" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "is amount match"
+          },
+          "FORMULA3" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Workday GL"
+          },
+          "FORMULA4" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "is GL match"
+          },
+          "TO_MEASURE1" : {
+            "label" : "To Number"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA0",
+          "target" : "FORMULA1"
+        }, {
+          "source" : "FORMULA1",
+          "target" : "TO_MEASURE0"
+        }, {
+          "source" : "TO_MEASURE0",
+          "target" : "FORMULA2"
+        }, {
+          "source" : "FORMULA2",
+          "target" : "FORMULA3"
+        }, {
+          "source" : "FORMULA3",
+          "target" : "FORMULA4"
+        }, {
+          "source" : "FORMULA4",
+          "target" : "TO_MEASURE1"
+        } ]
+      }
+    },
+    "connectors" : [ {
+      "source" : "LOAD_DATASET1",
+      "target" : "FILTER0"
+    }, {
+      "source" : "LOAD_DATASET0",
+      "target" : "JOIN0"
+    }, {
+      "source" : "FILTER0",
+      "target" : "JOIN0"
+    }, {
+      "source" : "TRANSFORM0",
+      "target" : "OUTPUT0"
+    }, {
+      "source" : "LOAD_DATASET2",
+      "target" : "OUTPUT1"
+    }, {
+      "source" : "JOIN0",
+      "target" : "TRANSFORM0"
+    } ],
+    "hiddenColumns" : [ {
+      "fieldName" : "ucinn_ascendv2__Contributor_Formula__c",
+      "objectType" : "connectedDataset",
+      "objectName" : "SFDC_LOCAL$ucinn_ascendv2__Payment__c"
+    }, {
+      "fieldName" : "ucinn_ascendv2__Designation_Description_Formula__c",
+      "objectType" : "connectedDataset",
+      "objectName" : "SFDC_LOCAL$ucinn_ascendv2__Payment__c"
+    }, {
+      "fieldName" : "ucinn_ascendv2__Designation_Unit_1_Amount_Formula__c",
+      "objectType" : "connectedDataset",
+      "objectName" : "SFDC_LOCAL$ucinn_ascendv2__Payment__c"
+    }, {
+      "fieldName" : "ucinn_ascendv2__Designation_Unit_1_Formula__c",
+      "objectType" : "connectedDataset",
+      "objectName" : "SFDC_LOCAL$ucinn_ascendv2__Payment__c"
+    }, {
+      "fieldName" : "ucinn_ascendv2__Designation_Unit_2_Amount_Formula__c",
+      "objectType" : "connectedDataset",
+      "objectName" : "SFDC_LOCAL$ucinn_ascendv2__Payment__c"
+    }, {
+      "fieldName" : "ucinn_ascendv2__Designation_Unit_2_Formula__c",
+      "objectType" : "connectedDataset",
+      "objectName" : "SFDC_LOCAL$ucinn_ascendv2__Payment__c"
+    }, {
+      "fieldName" : "ucinn_ascendv2__Donor_ID_Formula__c",
+      "objectType" : "connectedDataset",
+      "objectName" : "SFDC_LOCAL$ucinn_ascendv2__Payment__c"
+    }, {
+      "fieldName" : "ucinn_ascendv2__Fiscal_Year_Formula__c",
+      "objectType" : "connectedDataset",
+      "objectName" : "SFDC_LOCAL$ucinn_ascendv2__Payment__c"
+    }, {
+      "fieldName" : "ucinn_ascendv2__Fiscal_Year_Text_Formula__c",
+      "objectType" : "connectedDataset",
+      "objectName" : "SFDC_LOCAL$ucinn_ascendv2__Payment__c"
+    }, {
+      "fieldName" : "ucinn_ascendv2__Gift_Amount_Formula__c",
+      "objectType" : "connectedDataset",
+      "objectName" : "SFDC_LOCAL$ucinn_ascendv2__Payment__c"
+    }, {
+      "fieldName" : "ucinn_ascendv2__Gift_Receipt_Name_Formula__c",
+      "objectType" : "connectedDataset",
+      "objectName" : "SFDC_LOCAL$ucinn_ascendv2__Payment__c"
+    }, {
+      "fieldName" : "ucinn_ascendv2__Gift_Type_Formula__c",
+      "objectType" : "connectedDataset",
+      "objectName" : "SFDC_LOCAL$ucinn_ascendv2__Payment__c"
+    }, {
+      "fieldName" : "ucinn_ascendv2__Is_Ascend_Community_Gift_Formula__c",
+      "objectType" : "connectedDataset",
+      "objectName" : "SFDC_LOCAL$ucinn_ascendv2__Payment__c"
+    }, {
+      "fieldName" : "ucinn_ascendv2__Is_Designation_Mismatch_Formula__c",
+      "objectType" : "connectedDataset",
+      "objectName" : "SFDC_LOCAL$ucinn_ascendv2__Payment__c"
+    }, {
+      "fieldName" : "ucinn_ascendv2__Matching_Gift_Amount_Formula__c",
+      "objectType" : "connectedDataset",
+      "objectName" : "SFDC_LOCAL$ucinn_ascendv2__Payment__c"
+    }, {
+      "fieldName" : "ucinn_ascendv2__Opportunity_Record_Type__c",
+      "objectType" : "connectedDataset",
+      "objectName" : "SFDC_LOCAL$ucinn_ascendv2__Payment__c"
+    }, {
+      "fieldName" : "ucinn_ascendv2__Opportunity_Stage__c",
+      "objectType" : "connectedDataset",
+      "objectName" : "SFDC_LOCAL$ucinn_ascendv2__Payment__c"
+    }, {
+      "fieldName" : "ucinn_ascendv2__Pledge_Payment_Amount_Formula__c",
+      "objectType" : "connectedDataset",
+      "objectName" : "SFDC_LOCAL$ucinn_ascendv2__Payment__c"
+    }, {
+      "fieldName" : "ucinn_ascendv2__Session_Approved_Date_Formula__c",
+      "objectType" : "connectedDataset",
+      "objectName" : "SFDC_LOCAL$ucinn_ascendv2__Payment__c"
+    }, {
+      "fieldName" : "ucinn_ascendv2__Tender_Type_Formula__c",
+      "objectType" : "connectedDataset",
+      "objectName" : "SFDC_LOCAL$ucinn_ascendv2__Payment__c"
+    }, {
+      "fieldName" : "ucinn_ascendv2__External_Matching_Service_ID__c",
+      "objectType" : "connectedDataset",
+      "objectName" : "SFDC_LOCAL$ucinn_ascendv2__Payment__c"
+    }, {
+      "fieldName" : "ucinn_ascendv2__Is_Processed_By_Matching_Service__c",
+      "objectType" : "connectedDataset",
+      "objectName" : "SFDC_LOCAL$ucinn_ascendv2__Payment__c"
+    }, {
+      "fieldName" : "HAM_Appraisal_Date__c",
+      "objectType" : "connectedDataset",
+      "objectName" : "SFDC_LOCAL$ucinn_ascendv2__Payment__c"
+    }, {
+      "fieldName" : "HAM_Broker_Name__c",
+      "objectType" : "connectedDataset",
+      "objectName" : "SFDC_LOCAL$ucinn_ascendv2__Payment__c"
+    }, {
+      "fieldName" : "HAM_Campaign_Priority__c",
+      "objectType" : "connectedDataset",
+      "objectName" : "SFDC_LOCAL$ucinn_ascendv2__Payment__c"
+    }, {
+      "fieldName" : "HAM_Data_Source__c",
+      "objectType" : "connectedDataset",
+      "objectName" : "SFDC_LOCAL$ucinn_ascendv2__Payment__c"
+    }, {
+      "fieldName" : "HAM_GIK_Long_Description__c",
+      "objectType" : "connectedDataset",
+      "objectName" : "SFDC_LOCAL$ucinn_ascendv2__Payment__c"
+    }, {
+      "fieldName" : "HAM_GIK_Other__c",
+      "objectType" : "connectedDataset",
+      "objectName" : "SFDC_LOCAL$ucinn_ascendv2__Payment__c"
+    }, {
+      "fieldName" : "HAM_GIK_Short_Description__c",
+      "objectType" : "connectedDataset",
+      "objectName" : "SFDC_LOCAL$ucinn_ascendv2__Payment__c"
+    }, {
+      "fieldName" : "HAM_GIK_Type__c",
+      "objectType" : "connectedDataset",
+      "objectName" : "SFDC_LOCAL$ucinn_ascendv2__Payment__c"
+    }, {
+      "fieldName" : "HAM_Liquidated_Amount__c",
+      "objectType" : "connectedDataset",
+      "objectName" : "SFDC_LOCAL$ucinn_ascendv2__Payment__c"
+    }, {
+      "fieldName" : "HAM_Liquidated_or_Sold_Date__c",
+      "objectType" : "connectedDataset",
+      "objectName" : "SFDC_LOCAL$ucinn_ascendv2__Payment__c"
+    }, {
+      "fieldName" : "HAM_Property_Location_c__c",
+      "objectType" : "connectedDataset",
+      "objectName" : "SFDC_LOCAL$ucinn_ascendv2__Payment__c"
+    }, {
+      "fieldName" : "HAM_Third_Party_Payment__c",
+      "objectType" : "connectedDataset",
+      "objectName" : "SFDC_LOCAL$ucinn_ascendv2__Payment__c"
+    } ]
+  },
+  "runMode" : "full"
+}

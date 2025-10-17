@@ -1,0 +1,53 @@
+<template>
+    <div class="backgroundWhite">
+        <lightning-accordion allow-multiple-sections-open="true" active-section-name={activeStudentSectionBio} onsectiontoggle={handleStudentSectionToggle}>
+            <lightning-accordion-section name="Student Summary" label="Student Summary">
+                <template lwc:if={educationDetails}>
+                    <div class="slds-grid slds-wrap slds-gutters slds-p-around_small">
+
+                        <!-- Row 1 -->
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3">
+                            <div class="label">Concentration</div>
+                            <div>{educationDetails.ucinn_ascendv2__Major_Formula__c}</div>
+                        </div>
+
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3">
+                            <div class="label">Class Year</div>
+                            <div>{educationDetails.ucinn_ascendv2__Conferred_Degree_Year__c}</div>
+                        </div>
+
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3">
+                            <div class="label">Minor</div>
+                            <div>{educationDetails.ucinn_ascendv2__Minor_Formula__c}</div>
+                        </div>
+
+                        <!-- Row 2 -->
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3">
+                            <div class="label">Athletics</div>
+                            <div class="wrapLong">{contactEducationWrapper.athletics}</div>
+                        </div>
+
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3">
+                            <div class="label">Society</div>
+                            <div class="wrapLong">{contactEducationWrapper.societies}</div>
+                        </div>
+
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3">
+                            <div class="label">Clubs</div>
+                            <div class="wrapLong">{contactEducationWrapper.clubs}</div>
+                        </div>
+
+                        <!-- Awards Table -->
+                        <div class="slds-col slds-size_1-of-1 slds-p-top_medium">
+                            <div class="label slds-text-title_caps slds-text-color_brand">Awards</div>
+                            <div style="overflow-x:auto">
+                                <lightning-datatable key-field="id" data={awards} columns={awardColumns} hide-checkbox-column></lightning-datatable>
+                            </div>
+                        </div>
+
+                    </div>
+                </template>
+            </lightning-accordion-section>
+        </lightning-accordion>
+    </div>
+</template>

@@ -1,0 +1,182 @@
+{
+  "version" : "62.0",
+  "nodes" : {
+    "LOAD_DATASET0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Designation.ucinn_ascendv2__Designation_Name__c", "Contact.Name", "Account.Name", "ucinn_ascendv2__Credit_Type__c", "Fiscal_Year", "Contact.HAM_Reunion_Year__c", "Contact.ucinn_ascendv2__Primary_Contact_Type__c", "Constituent_or_Account_Id", "Bequest_Intention", "Fundraising_Amount" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Gift Credit and Payment",
+          "name" : "Gift_Credit_and_Payment"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "FILTER0" : {
+      "action" : "filter",
+      "sources" : [ "LOAD_DATASET0" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "ucinn_ascendv2__Credit_Type__c",
+          "operator" : "EQUAL",
+          "operands" : [ "Hard" ]
+        }, {
+          "type" : "TEXT",
+          "field" : "Fiscal_Year",
+          "operator" : "EQUAL",
+          "operands" : [ "2025" ]
+        } ]
+      }
+    },
+    "EXTRACT0" : {
+      "action" : "extractGrains",
+      "sources" : [ "FILTER0" ],
+      "parameters" : {
+        "grainExtractions" : [ ]
+      }
+    },
+    "AGGREGATE1" : {
+      "action" : "aggregate",
+      "sources" : [ "EXTRACT0" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "SUM_Fundraising_Amount",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        }, {
+          "name" : "SUM_Bequest_Intention",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        } ]
+      },
+      "parameters" : {
+        "aggregations" : [ {
+          "action" : "SUM",
+          "source" : "Fundraising_Amount",
+          "name" : "SUM_Fundraising_Amount",
+          "label" : "Sum of Fundraising Amount"
+        }, {
+          "action" : "SUM",
+          "source" : "Bequest_Intention",
+          "name" : "SUM_Bequest_Intention",
+          "label" : "Sum of Bequest Intention"
+        } ],
+        "groupings" : [ "Constituent_or_Account_Id", "Contact.Name", "Account.Name", "Designation.ucinn_ascendv2__Designation_Name__c", "Contact.ucinn_ascendv2__Primary_Contact_Type__c", "Contact.HAM_Reunion_Year__c" ],
+        "pivots" : [ ],
+        "nodeType" : "STANDARD"
+      }
+    },
+    "FILTER1" : {
+      "action" : "filter",
+      "sources" : [ "AGGREGATE1" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "NUMBER",
+          "field" : "SUM_Fundraising_Amount",
+          "operator" : "GREATER_OR_EQUAL",
+          "operands" : [ "500000" ]
+        } ]
+      }
+    },
+    "OUTPUT0" : {
+      "action" : "save",
+      "sources" : [ "FILTER1" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "2025_03 Board Deck Desigs at 500K plus",
+          "name" : "M2025_03_Board_Deck_Desigs_at_500K_plus",
+          "folderName" : "SharedApp"
+        },
+        "measuresToCurrencies" : [ ]
+      }
+    }
+  },
+  "ui" : {
+    "nodes" : {
+      "LOAD_DATASET0" : {
+        "label" : "Gift Credit and Payment",
+        "type" : "LOAD_DATASET",
+        "top" : 112,
+        "left" : 112,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "FILTER0" : {
+        "label" : "Filter to FY25, hard credit",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 112,
+        "left" : 252
+      },
+      "AGGREGATE0" : {
+        "label" : "Aggregate 0",
+        "type" : "AGGREGATE",
+        "top" : 112,
+        "left" : 392,
+        "graph" : {
+          "EXTRACT0" : null,
+          "AGGREGATE1" : null
+        },
+        "connectors" : [ {
+          "source" : "EXTRACT0",
+          "target" : "AGGREGATE1"
+        } ]
+      },
+      "FILTER1" : {
+        "label" : "Filter to $500k+",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 112,
+        "left" : 532
+      },
+      "OUTPUT0" : {
+        "label" : "Output 0",
+        "type" : "OUTPUT",
+        "top" : 112,
+        "left" : 672
+      }
+    },
+    "connectors" : [ {
+      "source" : "LOAD_DATASET0",
+      "target" : "FILTER0"
+    }, {
+      "source" : "FILTER0",
+      "target" : "AGGREGATE0"
+    }, {
+      "source" : "AGGREGATE0",
+      "target" : "FILTER1"
+    }, {
+      "source" : "FILTER1",
+      "target" : "OUTPUT0"
+    } ],
+    "hiddenColumns" : [ {
+      "fieldName" : "Bequest_Intention",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Gift_Credit_and_Payment"
+    }, {
+      "fieldName" : "Fundraising_Amount",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Gift_Credit_and_Payment"
+    } ]
+  },
+  "runMode" : "full"
+}

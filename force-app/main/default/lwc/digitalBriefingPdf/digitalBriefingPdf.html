@@ -1,0 +1,92 @@
+<template>
+  <div style="background-color: #ffffff">
+    <lightning-button class="slds-var-m-left_xx-large"
+      variant="base" 
+      label={contactName} 
+      onclick={navigateToContactRecord} 
+    ></lightning-button>
+    <lightning-layout>
+      <lightning-layout-item padding="horizontal-large">
+  
+        <lightning-tabset active-tab-value="tabOne" variant="standard">
+          <lightning-tab label="Edit Brief" value="tabOne">
+            <div class="slds-is-relative" style="display: grid; grid-template-columns: 1fr; gap: 1rem; width: 95vw;">
+              <lightning-combobox name="briefingType" label="Briefing Type" value={briefingId} placeholder="Select Type"
+                options={contactsBriefingOptions} onchange={handleTypeChange}></lightning-combobox>
+  
+              <lightning-input-rich-text value={briefingDetail} onchange={handleBriefingDetailChange}
+                disabled={disableRichTextEditor}>
+              </lightning-input-rich-text>
+  
+              <div style="display:flex; margin-left: auto; padding-bottom: 0.25rem;">
+                <div style="display: flex; align-items: baseline; gap: 1rem; margin-right: 1rem;">
+                  <div style="margin-left: auto;">
+                    <lightning-input type="checkbox" label="Send to default email?" checked={isDefaultEmail}
+                      onchange={handleDefaultEmailChange}></lightning-input>
+                    <template lwc:if={hasDefaultEmail}>
+                      <p style="font-size: x-small;"><i>Default email is {wiredPDFEmailRecipient.data.Email__c}.</i></p>
+                    </template>
+                    <template lwc:else>
+                      <div style="display: flex; align-items: end; gap: 0.25rem;">
+                        <lightning-icon icon-name="utility:warning" alternative-text="Warning:No default email"
+                          size="xx-small"></lightning-icon>
+                        <p style="font-size: x-small; color: #b3b3b3;"><i>Missing default email.</i></p>
+                      </div>
+                    </template>
+                  </div>
+  
+                  <template lwc:if={displayEmailInput}>
+                    <lightning-input type="text" placeholder="Enter alternate email/s" variant="label-hidden"
+                      onchange={handleAlternateEmailChange} required></lightning-input>
+                  </template>
+                  <lightning-button icon-name="utility:email" icon-position="left" label="Send PDF"
+                    onclick={handleEmailSend} style="padding-left: 0.25rem;"
+                    disabled={disableEmailBtn}></lightning-button>
+  
+                </div>
+  
+                <lightning-button label="Save Changes" onclick={handleGeneratePdf}
+                  disabled={disableGeneratePdf}></lightning-button>
+              </div>
+              <template lwc:if={displaySpinner}>
+                <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+              </template>
+            </div>
+  
+          </lightning-tab>
+  
+          <lightning-tab label="Preview PDF">
+            <div class="slds-notify_container slds-is-relative" lwc:if={showInfoMessage}>
+              <div class="slds-notify slds-notify_toast slds-theme_info custom-light-blue-notification" role="status">
+                <span class="slds-assistive-text">info</span>
+                <span class="slds-icon_container slds-icon-utility-info slds-m-right_small" title="information">
+                  <svg class="slds-icon slds-icon_small slds-icon-text-default custom-icon-color" aria-hidden="true">
+                    <use href="/_slds/icons/utility-sprite/svg/symbols.svg#info"></use>
+                  </svg>
+                  <span class="slds-assistive-text">information</span>
+                </span>
+                <div class="slds-notify__content custom-blue-text">
+                <h2 class="slds-text-heading_small">Your PDF may take a moment to load. Thank you for your patience.
+                </h2>
+                </div>
+                <div class="slds-notify__close">
+                  <button class="slds-button slds-button_icon slds-button_icon-inverse" title="Close" onclick={handleCloseInforMessage}>
+                    <svg class="slds-button__icon custom-icon-color" aria-hidden="true">
+                      <use xlink:href="/_slds/icons/utility-sprite/svg/symbols.svg#close"></use>
+                    </svg>
+                    <span class="slds-assistive-text">Close</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <template if:true={url}>
+              <iframe src={url} style={pdfHeight} frameborder="0" scrolling="no"></iframe>
+            </template>
+  
+          </lightning-tab>
+        </lightning-tabset>
+      </lightning-layout-item>
+    </lightning-layout>
+  </div>
+</template>

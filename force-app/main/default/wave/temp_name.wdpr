@@ -1,0 +1,117 @@
+{
+  "version" : "61.0",
+  "nodes" : {
+    "LOAD_DATASET45_copy0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Id", "Name", "ucinn_ascendv2__Contact__c", "ucinn_ascendv2__Contact_Name_Auto_Number__c", "ucinn_ascendv2__External_System_ID__c", "ucinn_ascendv2__First_Name__c", "ucinn_ascendv2__Last_Name__c", "ucinn_ascendv2__Middle_Name__c", "ucinn_ascendv2__Nickname__c", "ucinn_ascendv2__Prefix__c", "ucinn_ascendv2__Professional_Designation__c", "ucinn_ascendv2__Source__c", "ucinn_ascendv2__Suffix__c", "ucinn_ascendv2__Type__c", "ucinn_ascendv2__Constructed_Name_Formula__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "ucinn_ascendv2__Contact_Name__c",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "ucinn_ascendv2__Contact_Name__c"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "LOAD_DATASET46_copy0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Id", "Name" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "RecordType",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "RecordType"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN85_copy0" : {
+      "action" : "join",
+      "sources" : [ "LOAD_DATASET45_copy0", "LOAD_DATASET46_copy0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Id" ],
+        "rightQualifier" : "RecordType",
+        "rightKeys" : [ "Id" ]
+      }
+    },
+    "OUTPUT0" : {
+      "action" : "save",
+      "sources" : [ "JOIN85_copy0" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "temp_name",
+          "name" : "temp_name"
+        },
+        "measuresToCurrencies" : [ ]
+      }
+    }
+  },
+  "ui" : {
+    "nodes" : {
+      "LOAD_DATASET45_copy0" : {
+        "label" : "ucinn_ascendv2__Contact_Name__c",
+        "type" : "LOAD_DATASET",
+        "top" : 112,
+        "left" : 112,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "LOAD_DATASET46_copy0" : {
+        "label" : "RecordType",
+        "type" : "LOAD_DATASET",
+        "top" : 252.00000000000003,
+        "left" : 252,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN85_copy0" : {
+        "label" : "Lookup Record Type ID to Contact Name",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 112,
+        "left" : 252
+      },
+      "OUTPUT0" : {
+        "label" : "Output 0",
+        "type" : "OUTPUT",
+        "top" : 112,
+        "left" : 392
+      }
+    },
+    "connectors" : [ {
+      "source" : "LOAD_DATASET45_copy0",
+      "target" : "JOIN85_copy0"
+    }, {
+      "source" : "LOAD_DATASET46_copy0",
+      "target" : "JOIN85_copy0"
+    }, {
+      "source" : "JOIN85_copy0",
+      "target" : "OUTPUT0"
+    } ],
+    "hiddenColumns" : [ ]
+  },
+  "runMode" : "full"
+}

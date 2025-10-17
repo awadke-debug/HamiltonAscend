@@ -1,0 +1,82 @@
+{
+  "version" : "53.0",
+  "nodes" : {
+    "LOAD_DATASET0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Guest_Location", "Reviews", "Review_Date", "Review_id", "Hotel_Name", "Review_Date_Epoch_days", "Review_Date_Epoch_seconds" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Hotel Reviews",
+          "name" : "Hotel_Reviews"
+        }
+      }
+    },
+    "DETECT_SENTIMENT0" : {
+      "action" : "detectSentiment",
+      "sources" : [ "LOAD_DATASET0" ],
+      "parameters" : {
+        "sourceField" : "Reviews",
+        "targetField" : {
+          "name" : "Reviews_sentiment",
+          "label" : "Review Sentiment"
+        }
+      }
+    },
+    "OUTPUT0" : {
+      "action" : "save",
+      "sources" : [ "DETECT_SENTIMENT0" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Learn - Sentiment Analysis",
+          "name" : "Learn_Sentiment_Analysis",
+          "folderName" : "Learning_Adventure"
+        }
+      }
+    }
+  },
+  "ui" : {
+    "nodes" : {
+      "LOAD_DATASET0" : {
+        "label" : "Hotel Reviews",
+        "type" : "LOAD_DATASET",
+        "top" : 112,
+        "left" : 112,
+        "graph" : {
+          "LOAD_DATASET0" : null
+        },
+        "connectors" : [ ],
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "TRANSFORM0" : {
+        "label" : "Detect Sentiment Transform",
+        "type" : "TRANSFORM",
+        "top" : 112,
+        "left" : 252,
+        "graph" : {
+          "DETECT_SENTIMENT0" : null
+        },
+        "connectors" : [ ]
+      },
+      "OUTPUT0" : {
+        "label" : "Output",
+        "type" : "OUTPUT",
+        "top" : 112,
+        "left" : 392
+      }
+    },
+    "connectors" : [ {
+      "source" : "LOAD_DATASET0",
+      "target" : "TRANSFORM0"
+    }, {
+      "source" : "TRANSFORM0",
+      "target" : "OUTPUT0"
+    } ],
+    "hiddenColumns" : [ ]
+  }
+}

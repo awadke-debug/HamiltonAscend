@@ -1,0 +1,2001 @@
+{
+  "version" : "64.0",
+  "nodes" : {
+    "LOAD_DATASET1" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "ucinn_ascendv2__Is_Anonymous__c", "HAM_Privacy_Flag__c", "HAM_Is_Active__c", "Id", "LastName", "FirstName", "MobilePhone", "Email", "ucinn_ascendv2__Do_Not_Call__c", "ucinn_ascendv2__Do_Not_Email__c", "ucinn_ascendv2__Do_Not_Mail__c", "ucinn_ascendv2__Do_Not_Solicit__c", "ucinn_ascendv2__External_System_ID__c", "ucinn_ascendv2__Preferred_Address_City__c", "ucinn_ascendv2__Preferred_Address_Country__c", "ucinn_ascendv2__Preferred_Address_Line_1__c", "ucinn_ascendv2__Preferred_Address_Postal_Code__c", "ucinn_ascendv2__Preferred_Address_State__c", "ucinn_ascendv2__Primary_Contact_Type__c", "ucinn_ascendv2__Home_Phone_No_Trustee_Formula__c", "ucinn_ascendv2__PRM_No_Trustee_Formula__c", "ucinn_ascendv2__Spouse_No_Trustee_Formula__c", "HAM_HF_Donor_Status__c", "HAM_Preferred_Chapter__c", "HAM_Pure_Donor_Status__c", "HAM_Reunion_Year__c", "HAM_PreferredEmail__c", "HAM_Contactable_by_Mail__c", "HAM_Contactable_by_Email__c", "HAM_Contactable_by_Text__c", "HAM_Contactable_by_Phone__c", "HAM_Is_Contactable__c", "HAM_Solicitable_by_Mail__c", "HAM_Solicitable_by_Email__c", "HAM_Solicitable_by_Text__c", "HAM_Solicitable_by_Phone__c", "HAM_Is_Solicitable__c", "HAM_CYR_HF_Ask__c", "HAM_Birth_Name__c", "HAM_Spouse_External_System_ID__c", "HAM_Spouse_Reunion_Year__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "Contact",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "Contact"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "OUTPUT0" : {
+      "action" : "save",
+      "sources" : [ "FILTER0" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Constituent File for VMS",
+          "name" : "Constituent_File_for_VMS",
+          "folderName" : "SharedApp"
+        },
+        "dateConfigurationName" : "July_Fiscal_Year",
+        "measuresToCurrencies" : [ ]
+      }
+    },
+    "FORMULA0" : {
+      "action" : "formula",
+      "sources" : [ "LOAD_DATASET1" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Preferred_First_Name",
+          "label" : "Preferred First Name",
+          "formulaExpression" : "FirstName",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA1" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Donor_Status",
+          "label" : "Donor Status",
+          "formulaExpression" : "case \r\nwhen \r\nHAM_Pure_Donor_Status__c= 9999 \r\nTHEN 'Non Donor' \r\nwhen HAM_Pure_Donor_Status__c  = 0 \r\nTHEN 'Current Year'\r\nwhen HAM_Pure_Donor_Status__c = 1 \r\nTHEN 'Last Year'\r\nELSE concat(ROUND(HAM_Pure_Donor_Status__c,0),' Years Ago' )\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA2" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA1" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "AF_Donor_Status",
+          "label" : "AF Donor Status",
+          "formulaExpression" : "case \r\nwhen \r\nHAM_HF_Donor_Status__c= 9999 \r\nTHEN 'Non Donor' \r\nwhen HAM_HF_Donor_Status__c  = 0 \r\nTHEN 'Current Year'\r\nwhen HAM_HF_Donor_Status__c = 1 \r\nTHEN 'Last Year'\r\nELSE concat(ROUND(HAM_HF_Donor_Status__c,0),' Years Ago' )\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA3" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA2" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Contact_Restrictions_Email",
+          "label" : "Contact Restrictions Email",
+          "formulaExpression" : "case \r\nwhen \r\n HAM_Contactable_by_Email__c='true' AND HAM_Solicitable_by_Email__c='true'\r\nTHEN ''\r\nwhen \r\n HAM_Contactable_by_Email__c='true' AND  HAM_Solicitable_by_Email__c='false'\r\nTHEN 'NO SOLICIT'\r\nwhen \r\n HAM_Solicitable_by_Email__c='false' AND  HAM_Solicitable_by_Email__c='false' \r\nTHEN 'NO CONTACT'\r\nELSE 'NO CONTACT'\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA4" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA3" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Contact_Restrictions_Text",
+          "label" : "Contact Restrictions Text",
+          "formulaExpression" : "case \r\nwhen \r\nHAM_Contactable_by_Text__c='true' AND HAM_Solicitable_by_Text__c='true' \r\nTHEN ''\r\nwhen \r\nHAM_Contactable_by_Text__c='true' AND HAM_Solicitable_by_Text__c='false' \r\nTHEN 'NO SOLICIT'\r\nwhen \r\nHAM_Contactable_by_Text__c='false' AND HAM_Solicitable_by_Text__c='false' \r\nTHEN 'NO CONTACT'\r\n\r\nELSE 'NO CONTACT'\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA5" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA4" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Contact_Restrictions_Phone",
+          "label" : "Contact Restrictions Phone",
+          "formulaExpression" : "case  \r\nwhen \r\nHAM_Contactable_by_Phone__c='true' AND HAM_Solicitable_by_Phone__c='true' \r\nTHEN ''\r\nwhen \r\nHAM_Contactable_by_Phone__c='true' AND HAM_Solicitable_by_Phone__c='false' \r\nTHEN 'NO SOLICIT'\r\nwhen \r\nHAM_Contactable_by_Phone__c='false' AND HAM_Solicitable_by_Phone__c='false' \r\nTHEN 'NO CONTACT'\r\n\r\nELSE 'NO CONTACT'\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA6" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA5" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Contact_Restrictions_Directmail",
+          "label" : "Contact Restrictions Directmail",
+          "formulaExpression" : "case  \r\nwhen \r\nHAM_Contactable_by_Mail__c='true' AND HAM_Solicitable_by_Mail__c='true' \r\nTHEN ''\r\nwhen \r\nHAM_Contactable_by_Mail__c='true' AND HAM_Solicitable_by_Mail__c='false' \r\nTHEN 'NO SOLICIT'\r\nwhen \r\nHAM_Contactable_by_Mail__c='false' AND HAM_Solicitable_by_Mail__c='false' \r\nTHEN 'NO CONTACT'\r\n\r\nELSE 'NO CONTACT'\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA7" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA26" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "ANNUAL_FUND_OFFICER_ASSIGNMENT",
+          "label" : "ANNUAL_FUND_OFFICER_ASSIGNMENT",
+          "formulaExpression" : "''",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA8" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA7" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "ENGAGEMENT_SCORE_CYR",
+          "label" : "ENGAGEMENT_SCORE_CYR",
+          "formulaExpression" : "''",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA9" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA8" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "ENGAGEMENT_SCORE_1YR",
+          "label" : "ENGAGEMENT_SCORE_1YR",
+          "formulaExpression" : "''",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA10" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA9" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "ENGAGEMENT_SCORE_2YR",
+          "label" : "ENGAGEMENT_SCORE_2YR",
+          "formulaExpression" : "''",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA11" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA10" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "ENGAGEMENT_SCORE_3YR",
+          "label" : "ENGAGEMENT_SCORE_3YR",
+          "formulaExpression" : "''",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA12" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA11" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "ENGAGEMENT_SCORE_4YR",
+          "label" : "ENGAGEMENT_SCORE_4YR",
+          "formulaExpression" : "''",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA13" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA12" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "ENGAGEMENT_SCORE_5YR",
+          "label" : "ENGAGEMENT_SCORE_5YR",
+          "formulaExpression" : "''",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA14" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA13" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "AFFILIATION_1",
+          "label" : "AFFILIATION_1",
+          "formulaExpression" : "''",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA15" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA14" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "AFFILIATION_1_YEAR",
+          "label" : "AFFILIATION_1_YEAR",
+          "formulaExpression" : "''",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA16" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA15" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "AFFILIATION_2",
+          "label" : "AFFILIATION_2",
+          "formulaExpression" : "''",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA17" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA16" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "AFFILIATION_2_YEAR",
+          "label" : "AFFILIATION_2_YEAR",
+          "formulaExpression" : "''",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA18" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA17" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "AFFILIATION_3",
+          "label" : "AFFILIATION_3",
+          "formulaExpression" : "''",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA19" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA18" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "AFFILIATION_3_YEAR",
+          "label" : "AFFILIATION_3_YEAR",
+          "formulaExpression" : "''",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA20" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA19" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "AFFILIATION_4",
+          "label" : "AFFILIATION_4",
+          "formulaExpression" : "''",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA21" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA20" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "AFFILIATION_4_YEAR",
+          "label" : "AFFILIATION_4_YEAR",
+          "formulaExpression" : "''",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA22" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA21" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "AFFILIATION_5",
+          "label" : "AFFILIATION_5",
+          "formulaExpression" : "''",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA23" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA22" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "AFFILIATION_5_YEAR",
+          "label" : "AFFILIATION_5_YEAR",
+          "formulaExpression" : "''",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA24" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA23" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "AFFILIATION_6",
+          "label" : "AFFILIATION_6",
+          "formulaExpression" : "''",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA25" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA24" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "AFFILIATION_6_YEAR",
+          "label" : "AFFILIATION_6_YEAR",
+          "formulaExpression" : "''",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA26" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA6" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "SELECTABLE_FLAG",
+          "label" : "SELECTABLE_FLAG",
+          "formulaExpression" : "case \r\nwhen \r\nucinn_ascendv2__Primary_Contact_Type__c='Trustee' \r\nTHEN 'false'\r\nwhen \r\nucinn_ascendv2__PRM_No_Trustee_Formula__c= 'Lori Dennison' OR ucinn_ascendv2__PRM_No_Trustee_Formula__c= 'Richard Tantillo' \r\nTHEN 'false'\r\nELSE 'true'\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES0" : {
+      "action" : "schema",
+      "sources" : [ "JOIN1" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "ucinn_ascendv2__External_System_ID__c",
+          "newProperties" : {
+            "label" : "ID",
+            "name" : "ucinn_ascendv2__External_System_ID__c"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES1" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES0" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "FirstName",
+          "newProperties" : {
+            "label" : "FIRST_NAME",
+            "name" : "FirstName"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES2" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES1" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Preferred_First_Name",
+          "newProperties" : {
+            "label" : "PREFERRED_FIRST_NAME",
+            "name" : "Preferred_First_Name"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES3" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES2" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "LastName",
+          "newProperties" : {
+            "label" : "LAST_NAME",
+            "name" : "LastName"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES4" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES3" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "HAM_Birth_Name__c",
+          "newProperties" : {
+            "label" : "BIRTH_NAME_LAST",
+            "name" : "HAM_Birth_Name__c"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES5" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES4" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "HAM_Reunion_Year__c",
+          "newProperties" : {
+            "label" : "CLASS_YEAR",
+            "name" : "HAM_Reunion_Year__c"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES6" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES5" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Email",
+          "newProperties" : {
+            "label" : "PREFERRED_EMAIL",
+            "name" : "Email"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES7" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES6" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "MobilePhone",
+          "newProperties" : {
+            "label" : "CELL_PHONE",
+            "name" : "MobilePhone"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES8" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES7" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "ucinn_ascendv2__Home_Phone_No_Trustee_Formula__c",
+          "newProperties" : {
+            "label" : "HOME_PHONE",
+            "name" : "ucinn_ascendv2__Home_Phone_No_Trustee_Formula__c"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES9" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES8" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "ucinn_ascendv2__Preferred_Address_Line_1__c",
+          "newProperties" : {
+            "label" : "STREET_ADDRESS_1",
+            "name" : "ucinn_ascendv2__Preferred_Address_Line_1__c"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES10" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES9" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "ucinn_ascendv2__Preferred_Address_City__c",
+          "newProperties" : {
+            "label" : "CITY",
+            "name" : "ucinn_ascendv2__Preferred_Address_City__c"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES11" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES10" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "ucinn_ascendv2__Preferred_Address_State__c",
+          "newProperties" : {
+            "label" : "STATE",
+            "name" : "ucinn_ascendv2__Preferred_Address_State__c"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES12" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES11" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "ucinn_ascendv2__Preferred_Address_Postal_Code__c",
+          "newProperties" : {
+            "label" : "ZIP",
+            "name" : "ucinn_ascendv2__Preferred_Address_Postal_Code__c"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES13" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES12" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "ucinn_ascendv2__Preferred_Address_Country__c",
+          "newProperties" : {
+            "label" : "COUNTRY",
+            "name" : "ucinn_ascendv2__Preferred_Address_Country__c"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES14" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES13" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "HAM_Preferred_Chapter__c",
+          "newProperties" : {
+            "label" : "CHAPTER_CODE",
+            "name" : "HAM_Preferred_Chapter__c"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES15" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES14" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Donor_Status",
+          "newProperties" : {
+            "label" : "DONOR_STATUS",
+            "name" : "Donor_Status"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES16" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES15" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "AF_Donor_Status",
+          "newProperties" : {
+            "label" : "AF_DONOR_STATUS",
+            "name" : "AF_Donor_Status"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES17" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES16" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "HAM_CYR_HF_Ask__c",
+          "newProperties" : {
+            "label" : "ASK_AMOUNT",
+            "name" : "HAM_CYR_HF_Ask__c"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES18" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES17" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "HAM_Spouse_External_System_ID__c",
+          "newProperties" : {
+            "label" : "SPOUSE_ID",
+            "name" : "HAM_Spouse_External_System_ID__c"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES19" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES18" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "ucinn_ascendv2__Spouse_No_Trustee_Formula__c",
+          "newProperties" : {
+            "label" : "SPOUSE_NAME",
+            "name" : "ucinn_ascendv2__Spouse_No_Trustee_Formula__c"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES20" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES19" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "HAM_Spouse_Reunion_Year__c",
+          "newProperties" : {
+            "label" : "SPOUSE_CLASS_YEAR",
+            "name" : "HAM_Spouse_Reunion_Year__c"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES22" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES27" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "ucinn_ascendv2__Primary_Contact_Type__c",
+          "newProperties" : {
+            "label" : "INSTITUTIONAL_RELATIONSHIP",
+            "name" : "ucinn_ascendv2__Primary_Contact_Type__c"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES23" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES20" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "ucinn_ascendv2__PRM_No_Trustee_Formula__c",
+          "newProperties" : {
+            "label" : "DEVELOPMENT_OFFICER_ASSIGNMENT",
+            "name" : "ucinn_ascendv2__PRM_No_Trustee_Formula__c"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES24" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES23" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Contact_Restrictions_Email",
+          "newProperties" : {
+            "label" : "CONTACT_RESTRICTIONS_EMAIL",
+            "name" : "Contact_Restrictions_Email"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES25" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES24" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Contact_Restrictions_Text",
+          "newProperties" : {
+            "label" : "CONTACT_RESTRICTIONS_TEXT",
+            "name" : "Contact_Restrictions_Text"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES26" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES25" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Contact_Restrictions_Phone",
+          "newProperties" : {
+            "label" : "CONTACT_RESTRICTIONS_PHONE",
+            "name" : "Contact_Restrictions_Phone"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES27" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES26" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Contact_Restrictions_Directmail",
+          "newProperties" : {
+            "label" : "CONTACT_RESTRICTIONS_DIRECTMAIL",
+            "name" : "Contact_Restrictions_Directmail"
+          }
+        } ]
+      }
+    },
+    "FILTER0" : {
+      "action" : "filter",
+      "sources" : [ "EDIT_ATTRIBUTES22" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "HAM_Is_Active__c",
+          "operator" : "EQUAL",
+          "operands" : [ "true" ]
+        }, {
+          "type" : "TEXT",
+          "field" : "HAM_Privacy_Flag__c",
+          "operator" : "EQUAL",
+          "operands" : [ "false" ]
+        }, {
+          "type" : "TEXT",
+          "field" : "ucinn_ascendv2__Is_Anonymous__c",
+          "operator" : "EQUAL",
+          "operands" : [ "false" ]
+        }, {
+          "type" : "TEXT",
+          "field" : "HAM_Is_Contactable__c",
+          "operator" : "EQUAL",
+          "operands" : [ "true" ]
+        }, {
+          "type" : "TEXT",
+          "field" : "ucinn_ascendv2__Primary_Contact_Type__c",
+          "operator" : "EQUAL",
+          "operands" : [ "Hamilton Alumni", "Hamilton Withdrawn", "Kirkland Alumnae", "Trustee" ]
+        }, {
+          "type" : "TEXT",
+          "field" : "ucinn_ascendv2__External_System_ID__c",
+          "operator" : "IS_NOT_NULL",
+          "operands" : [ ]
+        } ]
+      }
+    },
+    "LOAD_DATASET1_copy0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "ucinn_ascendv2__External_System_ID__c", "Id", "ucinn_ascendv2__Is_Anonymous__c", "ucinn_ascendv2__Primary_Contact_Type__c", "HAM_Is_Active__c", "HAM_Is_Contactable__c", "HAM_Privacy_Flag__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "Contact",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "Contact"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "LOAD_DATASET2" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Aggregate.SUM_FY00_Collected_Amount_HF", "Aggregate.SUM_FY05_Collected_Amount_HF", "Aggregate.SUM_FY04_Collected_Amount_HF", "Aggregate.SUM_FY03_Collected_Amount_HF", "Aggregate.SUM_FY01_Collected_Amount_HF", "Aggregate.SUM_FY02_Collected_Amount_HF", "Account_or_Contact_Id", "Hamilton_Fund.Status_Date", "Pure_Donor.Status_Date", "Aggregate.SUM_FY05_Collected_Amount", "Aggregate.Sum.FY03_Collected_Amount", "Aggregate.Sum.FY00_Collected_Amount", "Aggregate.Sum.FY04_Collected_Amount", "Aggregate.Sum.FY01_Collected_Amount", "Aggregate.Sum.FY02_Collected_Amount" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Account and Contact Dataset",
+          "name" : "Account_and_Contact_Dataset"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN0" : {
+      "action" : "join",
+      "sources" : [ "LOAD_DATASET1_copy0", "LOAD_DATASET2" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Accountand.Account_or_Contact_Id" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Id" ],
+        "rightQualifier" : "Accountand",
+        "rightKeys" : [ "Account_or_Contact_Id" ]
+      }
+    },
+    "EDIT_ATTRIBUTES29" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES42" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Accountand.Aggregate.Sum.FY00_Collected_Amount",
+          "newProperties" : {
+            "label" : "TOTAL_COLLECTED_WITHOUT_EVENT_FEES",
+            "name" : "Accountand.Aggregate.Sum.FY00_Collected_Amount"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES31" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES29" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Accountand.Aggregate.SUM_FY00_Collected_Amount_HF",
+          "newProperties" : {
+            "label" : "HAMILTON_FUND_WITHOUT_EVENT_FEES_COLLECTED",
+            "name" : "Accountand.Aggregate.SUM_FY00_Collected_Amount_HF"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES32" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES31" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Accountand.Aggregate.Sum.FY03_Collected_Amount",
+          "newProperties" : {
+            "label" : "TOTAL_COLLECTED_WITHOUT_EVENT_FEES_FY23",
+            "name" : "Accountand.Aggregate.Sum.FY03_Collected_Amount"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES33" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES32" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Accountand.Aggregate.Sum.FY04_Collected_Amount",
+          "newProperties" : {
+            "label" : "TOTAL_COLLECTED_WITHOUT_EVENT_FEES_FY22",
+            "name" : "Accountand.Aggregate.Sum.FY04_Collected_Amount"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES34" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES33" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Accountand.Aggregate.SUM_FY05_Collected_Amount",
+          "newProperties" : {
+            "label" : "TOTAL_COLLECTED_WITHOUT_EVENT_FEES_FY21",
+            "name" : "Accountand.Aggregate.SUM_FY05_Collected_Amount"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES35" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES34" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Accountand.Aggregate.Sum.FY01_Collected_Amount",
+          "newProperties" : {
+            "label" : "TOTAL_COLLECTED_WITHOUT_EVENT_FEES_FY25",
+            "name" : "Accountand.Aggregate.Sum.FY01_Collected_Amount"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES36" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES35" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Accountand.Aggregate.Sum.FY02_Collected_Amount",
+          "newProperties" : {
+            "label" : "TOTAL_COLLECTED_WITHOUT_EVENT_FEES_FY24",
+            "name" : "Accountand.Aggregate.Sum.FY02_Collected_Amount"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES37" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES36" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Accountand.Aggregate.SUM_FY03_Collected_Amount_HF",
+          "newProperties" : {
+            "label" : "HAMILTON_FUND_WITHOUT_EVENT_FEES_COLLECTED_FY23",
+            "name" : "Accountand.Aggregate.SUM_FY03_Collected_Amount_HF"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES38" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES37" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Accountand.Aggregate.SUM_FY04_Collected_Amount_HF",
+          "newProperties" : {
+            "label" : "HAMILTON_FUND_WITHOUT_EVENT_FEES_COLLECTED_FY22",
+            "name" : "Accountand.Aggregate.SUM_FY04_Collected_Amount_HF"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES39" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES38" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Accountand.Aggregate.SUM_FY05_Collected_Amount_HF",
+          "newProperties" : {
+            "label" : "HAMILTON_FUND_WITHOUT_EVENT_FEES_COLLECTED_FY21",
+            "name" : "Accountand.Aggregate.SUM_FY05_Collected_Amount_HF"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES40" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES39" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Accountand.Aggregate.SUM_FY01_Collected_Amount_HF",
+          "newProperties" : {
+            "label" : "HAMILTON_FUND_WITHOUT_EVENT_FEES_COLLECTED_FY25",
+            "name" : "Accountand.Aggregate.SUM_FY01_Collected_Amount_HF"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES41" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES40" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Accountand.Aggregate.SUM_FY02_Collected_Amount_HF",
+          "newProperties" : {
+            "label" : "HAMILTON_FUND_WITHOUT_EVENT_FEES_COLLECTED_FY24",
+            "name" : "Accountand.Aggregate.SUM_FY02_Collected_Amount_HF"
+          }
+        } ]
+      }
+    },
+    "FORMULA31" : {
+      "action" : "formula",
+      "sources" : [ "EDIT_ATTRIBUTES41" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "FISCAL_YEAR",
+          "label" : "FISCAL_YEAR",
+          "formulaExpression" : "fiscalyear(current_date())",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES42" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA30" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "ucinn_ascendv2__External_System_ID__c",
+          "newProperties" : {
+            "label" : "ID",
+            "name" : "ucinn_ascendv2__External_System_ID__c"
+          }
+        } ]
+      }
+    },
+    "FORMULA27" : {
+      "action" : "formula",
+      "sources" : [ "JOIN0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "DATETIME",
+          "name" : "TOTAL_WITHOUT_EVENT_FEES_LAST_DATE",
+          "label" : "TOTAL_WITHOUT_EVENT_FEES_LAST_DATE",
+          "formulaExpression" : "case \r\nwhen \"Accountand.Pure_Donor.Status_Date\" is not null and\r\nfiscalyear(\"Accountand.Pure_Donor.Status_Date\")=fiscalyear(current_date())\r\nthen \"Accountand.Pure_Donor.Status_Date\"\r\n\r\nend",
+          "format" : "yyyy-MM-dd",
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "DROP_FIELDS0" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA28" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Accountand.Pure_Donor.Status_Date", "Accountand.Hamilton_Fund.Status_Date" ]
+        }
+      }
+    },
+    "FORMULA28" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA27" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "DATETIME",
+          "name" : "HAMILTON_FUND_WITHOUT_EVENT_FEES_LAST_DATE",
+          "label" : "HAMILTON_FUND_WITHOUT_EVENT_FEES_LAST_DATE",
+          "formulaExpression" : "case \r\nwhen \"Accountand.Hamilton_Fund.Status_Date\" is not null and\r\nfiscalyear(\"Accountand.Hamilton_Fund.Status_Date\")=fiscalyear(current_date())\r\nthen \"Accountand.Hamilton_Fund.Status_Date\"\r\n\r\nend",
+          "format" : "yyyy-MM-dd",
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA29" : {
+      "action" : "formula",
+      "sources" : [ "DROP_FIELDS0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "TOTAL_COLLECTED_WITHOUT_EVENT_FEES_FY19",
+          "label" : "TOTAL_COLLECTED_WITHOUT_EVENT_FEES_FY19",
+          "formulaExpression" : "null",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA30" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA29" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "HAMILTON_FUND_WITHOUT_EVENT_FEES_COLLECTED_FY19",
+          "label" : "HAMILTON_FUND_WITHOUT_EVENT_FEES_COLLECTED_FY19",
+          "formulaExpression" : "null",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FILTER0_copy0" : {
+      "action" : "filter",
+      "sources" : [ "FORMULA31" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "HAM_Is_Active__c",
+          "operator" : "EQUAL",
+          "operands" : [ "true" ]
+        }, {
+          "type" : "TEXT",
+          "field" : "HAM_Privacy_Flag__c",
+          "operator" : "EQUAL",
+          "operands" : [ "false" ]
+        }, {
+          "type" : "TEXT",
+          "field" : "ucinn_ascendv2__Is_Anonymous__c",
+          "operator" : "EQUAL",
+          "operands" : [ "false" ]
+        }, {
+          "type" : "TEXT",
+          "field" : "HAM_Is_Contactable__c",
+          "operator" : "EQUAL",
+          "operands" : [ "true" ]
+        }, {
+          "type" : "TEXT",
+          "field" : "ucinn_ascendv2__Primary_Contact_Type__c",
+          "operator" : "EQUAL",
+          "operands" : [ "Hamilton Alumni", "Hamilton Withdrawn", "Kirkland Alumnae", "Trustee" ]
+        }, {
+          "type" : "TEXT",
+          "field" : "ucinn_ascendv2__External_System_ID__c",
+          "operator" : "IS_NOT_NULL",
+          "operands" : [ ]
+        } ],
+        "filterBooleanLogic" : "1 AND 2 AND 3 AND 4 AND 5 AND 6"
+      }
+    },
+    "OUTPUT1" : {
+      "action" : "save",
+      "sources" : [ "FILTER0_copy0" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Giving for VMS",
+          "name" : "Giving_for_VMS",
+          "folderName" : "SharedApp"
+        },
+        "dateConfigurationName" : "July_Fiscal_Year",
+        "measuresToCurrencies" : [ ]
+      }
+    },
+    "LOAD_DATASET3" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Id", "CampaignId", "ContactId", "AccountId", "Status" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "CampaignMember",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "CampaignMember"
+        },
+        "sampleDetails" : {
+          "type" : "TopN"
+        }
+      }
+    },
+    "FILTER1" : {
+      "action" : "filter",
+      "sources" : [ "LOAD_DATASET3" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "CampaignId",
+          "operator" : "EQUAL",
+          "operands" : [ "701U100000bdfilIAA" ]
+        } ]
+      }
+    },
+    "JOIN1" : {
+      "action" : "join",
+      "sources" : [ "FORMULA25", "FORMULA32" ],
+      "schema" : {
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Id" ],
+        "rightQualifier" : "Seniors",
+        "rightKeys" : [ "ContactId" ]
+      }
+    },
+    "DROP_FIELDS1" : {
+      "action" : "schema",
+      "sources" : [ "FILTER1" ],
+      "parameters" : {
+        "slice" : {
+          "mode" : "SELECT",
+          "ignoreMissingFields" : true,
+          "fields" : [ "ContactId" ]
+        }
+      }
+    },
+    "FORMULA32" : {
+      "action" : "formula",
+      "sources" : [ "DROP_FIELDS1" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Is_Seniors_Campaign_VMS",
+          "label" : "Is Seniors Campaign VMS",
+          "formulaExpression" : "'true'",
+          "precision" : 5,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "OUTPUT2" : {
+      "action" : "save",
+      "sources" : [ "EDIT_ATTRIBUTES22" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "test",
+          "name" : "test"
+        }
+      }
+    }
+  },
+  "ui" : {
+    "nodes" : {
+      "LOAD_DATASET1" : {
+        "label" : "Contact",
+        "type" : "LOAD_DATASET",
+        "top" : 111.9,
+        "left" : 112.69999999999999,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "OUTPUT0" : {
+        "label" : "Output 0",
+        "type" : "OUTPUT",
+        "top" : 112,
+        "left" : 950.3
+      },
+      "TRANSFORM0" : {
+        "label" : "Enrich Fields",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 112.1,
+        "left" : 251.3,
+        "graph" : {
+          "FORMULA0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Preferred First Name"
+          },
+          "FORMULA1" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Donor Status"
+          },
+          "FORMULA2" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "AF Donor Status"
+          },
+          "FORMULA3" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Contact Restrictions Email"
+          },
+          "FORMULA4" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Contact Restrictions Text"
+          },
+          "FORMULA5" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Contact Restrictions Phone"
+          },
+          "FORMULA6" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Contact Restrictions Directmail"
+          },
+          "FORMULA7" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "ANNUAL_FUND_OFFICER_ASSIGNMENT"
+          },
+          "FORMULA8" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "ENGAGEMENT_SCORE_CYR"
+          },
+          "FORMULA9" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "ENGAGEMENT_SCORE_1YR"
+          },
+          "FORMULA10" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "ENGAGEMENT_SCORE_2YR"
+          },
+          "FORMULA11" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "ENGAGEMENT_SCORE_3YR"
+          },
+          "FORMULA12" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "ENGAGEMENT_SCORE_4YR"
+          },
+          "FORMULA13" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "ENGAGEMENT_SCORE_5YR"
+          },
+          "FORMULA14" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "AFFILIATION_1"
+          },
+          "FORMULA15" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "AFFILIATION_1_YEAR"
+          },
+          "FORMULA16" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "AFFILIATION_2"
+          },
+          "FORMULA17" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "AFFILIATION_2_YEAR"
+          },
+          "FORMULA18" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "AFFILIATION_3"
+          },
+          "FORMULA19" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "AFFILIATION_3_YEAR"
+          },
+          "FORMULA20" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "AFFILIATION_4"
+          },
+          "FORMULA21" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "AFFILIATION_4_YEAR"
+          },
+          "FORMULA22" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "AFFILIATION_5"
+          },
+          "FORMULA23" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "AFFILIATION_5_YEAR"
+          },
+          "FORMULA24" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "AFFILIATION_6"
+          },
+          "FORMULA25" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "AFFILIATION_6_YEAR"
+          },
+          "FORMULA26" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "SELECTABLE_FLAG"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA0",
+          "target" : "FORMULA1"
+        }, {
+          "source" : "FORMULA1",
+          "target" : "FORMULA2"
+        }, {
+          "source" : "FORMULA2",
+          "target" : "FORMULA3"
+        }, {
+          "source" : "FORMULA3",
+          "target" : "FORMULA4"
+        }, {
+          "source" : "FORMULA4",
+          "target" : "FORMULA5"
+        }, {
+          "source" : "FORMULA5",
+          "target" : "FORMULA6"
+        }, {
+          "source" : "FORMULA7",
+          "target" : "FORMULA8"
+        }, {
+          "source" : "FORMULA8",
+          "target" : "FORMULA9"
+        }, {
+          "source" : "FORMULA9",
+          "target" : "FORMULA10"
+        }, {
+          "source" : "FORMULA10",
+          "target" : "FORMULA11"
+        }, {
+          "source" : "FORMULA11",
+          "target" : "FORMULA12"
+        }, {
+          "source" : "FORMULA12",
+          "target" : "FORMULA13"
+        }, {
+          "source" : "FORMULA13",
+          "target" : "FORMULA14"
+        }, {
+          "source" : "FORMULA14",
+          "target" : "FORMULA15"
+        }, {
+          "source" : "FORMULA15",
+          "target" : "FORMULA16"
+        }, {
+          "source" : "FORMULA16",
+          "target" : "FORMULA17"
+        }, {
+          "source" : "FORMULA17",
+          "target" : "FORMULA18"
+        }, {
+          "source" : "FORMULA18",
+          "target" : "FORMULA19"
+        }, {
+          "source" : "FORMULA19",
+          "target" : "FORMULA20"
+        }, {
+          "source" : "FORMULA20",
+          "target" : "FORMULA21"
+        }, {
+          "source" : "FORMULA21",
+          "target" : "FORMULA22"
+        }, {
+          "source" : "FORMULA22",
+          "target" : "FORMULA23"
+        }, {
+          "source" : "FORMULA23",
+          "target" : "FORMULA24"
+        }, {
+          "source" : "FORMULA24",
+          "target" : "FORMULA25"
+        }, {
+          "source" : "FORMULA26",
+          "target" : "FORMULA7"
+        }, {
+          "source" : "FORMULA6",
+          "target" : "FORMULA26"
+        } ]
+      },
+      "TRANSFORM1" : {
+        "label" : "Rename",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 112.5,
+        "left" : 532.3,
+        "graph" : {
+          "EDIT_ATTRIBUTES0" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES1" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES2" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES3" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES4" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES5" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES6" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES7" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES8" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES9" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES10" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES11" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES12" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES13" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES14" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES15" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES16" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES17" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES18" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES19" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES20" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES22" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES23" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES24" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES25" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES26" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES27" : {
+            "label" : "Edit Attributes"
+          }
+        },
+        "connectors" : [ {
+          "source" : "EDIT_ATTRIBUTES0",
+          "target" : "EDIT_ATTRIBUTES1"
+        }, {
+          "source" : "EDIT_ATTRIBUTES1",
+          "target" : "EDIT_ATTRIBUTES2"
+        }, {
+          "source" : "EDIT_ATTRIBUTES2",
+          "target" : "EDIT_ATTRIBUTES3"
+        }, {
+          "source" : "EDIT_ATTRIBUTES3",
+          "target" : "EDIT_ATTRIBUTES4"
+        }, {
+          "source" : "EDIT_ATTRIBUTES4",
+          "target" : "EDIT_ATTRIBUTES5"
+        }, {
+          "source" : "EDIT_ATTRIBUTES5",
+          "target" : "EDIT_ATTRIBUTES6"
+        }, {
+          "source" : "EDIT_ATTRIBUTES6",
+          "target" : "EDIT_ATTRIBUTES7"
+        }, {
+          "source" : "EDIT_ATTRIBUTES7",
+          "target" : "EDIT_ATTRIBUTES8"
+        }, {
+          "source" : "EDIT_ATTRIBUTES8",
+          "target" : "EDIT_ATTRIBUTES9"
+        }, {
+          "source" : "EDIT_ATTRIBUTES9",
+          "target" : "EDIT_ATTRIBUTES10"
+        }, {
+          "source" : "EDIT_ATTRIBUTES10",
+          "target" : "EDIT_ATTRIBUTES11"
+        }, {
+          "source" : "EDIT_ATTRIBUTES11",
+          "target" : "EDIT_ATTRIBUTES12"
+        }, {
+          "source" : "EDIT_ATTRIBUTES12",
+          "target" : "EDIT_ATTRIBUTES13"
+        }, {
+          "source" : "EDIT_ATTRIBUTES13",
+          "target" : "EDIT_ATTRIBUTES14"
+        }, {
+          "source" : "EDIT_ATTRIBUTES14",
+          "target" : "EDIT_ATTRIBUTES15"
+        }, {
+          "source" : "EDIT_ATTRIBUTES15",
+          "target" : "EDIT_ATTRIBUTES16"
+        }, {
+          "source" : "EDIT_ATTRIBUTES16",
+          "target" : "EDIT_ATTRIBUTES17"
+        }, {
+          "source" : "EDIT_ATTRIBUTES17",
+          "target" : "EDIT_ATTRIBUTES18"
+        }, {
+          "source" : "EDIT_ATTRIBUTES18",
+          "target" : "EDIT_ATTRIBUTES19"
+        }, {
+          "source" : "EDIT_ATTRIBUTES19",
+          "target" : "EDIT_ATTRIBUTES20"
+        }, {
+          "source" : "EDIT_ATTRIBUTES20",
+          "target" : "EDIT_ATTRIBUTES23"
+        }, {
+          "source" : "EDIT_ATTRIBUTES23",
+          "target" : "EDIT_ATTRIBUTES24"
+        }, {
+          "source" : "EDIT_ATTRIBUTES24",
+          "target" : "EDIT_ATTRIBUTES25"
+        }, {
+          "source" : "EDIT_ATTRIBUTES25",
+          "target" : "EDIT_ATTRIBUTES26"
+        }, {
+          "source" : "EDIT_ATTRIBUTES27",
+          "target" : "EDIT_ATTRIBUTES22"
+        }, {
+          "source" : "EDIT_ATTRIBUTES26",
+          "target" : "EDIT_ATTRIBUTES27"
+        } ]
+      },
+      "FILTER0" : {
+        "label" : "Filter 0",
+        "type" : "FILTER",
+        "top" : 112,
+        "left" : 810.3
+      },
+      "LOAD_DATASET1_copy0" : {
+        "label" : "Contact",
+        "description" : "",
+        "type" : "LOAD_DATASET",
+        "top" : 531.8,
+        "left" : 112.4,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "LOAD_DATASET2" : {
+        "label" : "Account and Contact Dataset",
+        "type" : "LOAD_DATASET",
+        "top" : 671.8,
+        "left" : 252.39999999999998,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN0" : {
+        "label" : "Lookup A&C to Contact",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 531.8,
+        "left" : 252.39999999999998
+      },
+      "TRANSFORM2" : {
+        "label" : "Rename",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 531.8,
+        "left" : 672.4,
+        "graph" : {
+          "EDIT_ATTRIBUTES29" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES31" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES32" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES33" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES34" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES35" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES36" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES37" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES38" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES39" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES40" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES41" : {
+            "label" : "Edit Attributes"
+          },
+          "FORMULA31" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "FISCAL_YEAR"
+          },
+          "EDIT_ATTRIBUTES42" : {
+            "label" : "Edit Attributes"
+          }
+        },
+        "connectors" : [ {
+          "source" : "EDIT_ATTRIBUTES29",
+          "target" : "EDIT_ATTRIBUTES31"
+        }, {
+          "source" : "EDIT_ATTRIBUTES31",
+          "target" : "EDIT_ATTRIBUTES32"
+        }, {
+          "source" : "EDIT_ATTRIBUTES32",
+          "target" : "EDIT_ATTRIBUTES33"
+        }, {
+          "source" : "EDIT_ATTRIBUTES33",
+          "target" : "EDIT_ATTRIBUTES34"
+        }, {
+          "source" : "EDIT_ATTRIBUTES34",
+          "target" : "EDIT_ATTRIBUTES35"
+        }, {
+          "source" : "EDIT_ATTRIBUTES35",
+          "target" : "EDIT_ATTRIBUTES36"
+        }, {
+          "source" : "EDIT_ATTRIBUTES36",
+          "target" : "EDIT_ATTRIBUTES37"
+        }, {
+          "source" : "EDIT_ATTRIBUTES37",
+          "target" : "EDIT_ATTRIBUTES38"
+        }, {
+          "source" : "EDIT_ATTRIBUTES38",
+          "target" : "EDIT_ATTRIBUTES39"
+        }, {
+          "source" : "EDIT_ATTRIBUTES39",
+          "target" : "EDIT_ATTRIBUTES40"
+        }, {
+          "source" : "EDIT_ATTRIBUTES40",
+          "target" : "EDIT_ATTRIBUTES41"
+        }, {
+          "source" : "EDIT_ATTRIBUTES41",
+          "target" : "FORMULA31"
+        }, {
+          "source" : "EDIT_ATTRIBUTES42",
+          "target" : "EDIT_ATTRIBUTES29"
+        } ]
+      },
+      "TRANSFORM3" : {
+        "label" : "Enrich Fields",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 531.8,
+        "left" : 392.4,
+        "graph" : {
+          "FORMULA27" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "TOTAL_WITHOUT_EVENT_FEES_LAST_DATE"
+          },
+          "DROP_FIELDS0" : {
+            "label" : "Drop Columns"
+          },
+          "FORMULA28" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "HAMILTON_FUND_WITHOUT_EVENT_FEES_LAST_DATE"
+          },
+          "FORMULA29" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "TOTAL_COLLECTED_WITHOUT_EVENT_FEES_FY19"
+          },
+          "FORMULA30" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "HAMILTON_FUND_WITHOUT_EVENT_FEES_COLLECTED_FY19"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA28",
+          "target" : "DROP_FIELDS0"
+        }, {
+          "source" : "FORMULA27",
+          "target" : "FORMULA28"
+        }, {
+          "source" : "DROP_FIELDS0",
+          "target" : "FORMULA29"
+        }, {
+          "source" : "FORMULA29",
+          "target" : "FORMULA30"
+        } ]
+      },
+      "FILTER0_copy0" : {
+        "label" : "Filter 0",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 531.8,
+        "left" : 812.4
+      },
+      "OUTPUT1" : {
+        "label" : "Output 1",
+        "type" : "OUTPUT",
+        "top" : 531.8,
+        "left" : 952.4
+      },
+      "LOAD_DATASET3" : {
+        "label" : "CampaignMember",
+        "type" : "LOAD_DATASET",
+        "top" : 252.89999999999998,
+        "left" : 112.80000000000001,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "FILTER1" : {
+        "label" : "Filter to Seniors Class of 2026",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 252.2,
+        "left" : 251.7
+      },
+      "JOIN1" : {
+        "label" : "Lookup Seniors",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 111.6,
+        "left" : 391.9
+      },
+      "TRANSFORM4" : {
+        "label" : "Transform",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 252.10000000000002,
+        "left" : 392,
+        "graph" : {
+          "DROP_FIELDS1" : {
+            "label" : "Keep Columns"
+          },
+          "FORMULA32" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Is Seniors Campaign VMS"
+          }
+        },
+        "connectors" : [ {
+          "source" : "DROP_FIELDS1",
+          "target" : "FORMULA32"
+        } ]
+      },
+      "OUTPUT2" : {
+        "label" : "Output 2",
+        "type" : "OUTPUT",
+        "top" : 252.2,
+        "left" : 531.9
+      }
+    },
+    "connectors" : [ {
+      "source" : "FILTER0",
+      "target" : "OUTPUT0"
+    }, {
+      "source" : "LOAD_DATASET1",
+      "target" : "TRANSFORM0"
+    }, {
+      "source" : "JOIN1",
+      "target" : "TRANSFORM1"
+    }, {
+      "source" : "TRANSFORM1",
+      "target" : "FILTER0"
+    }, {
+      "source" : "LOAD_DATASET1_copy0",
+      "target" : "JOIN0"
+    }, {
+      "source" : "LOAD_DATASET2",
+      "target" : "JOIN0"
+    }, {
+      "source" : "TRANSFORM3",
+      "target" : "TRANSFORM2"
+    }, {
+      "source" : "JOIN0",
+      "target" : "TRANSFORM3"
+    }, {
+      "source" : "TRANSFORM2",
+      "target" : "FILTER0_copy0"
+    }, {
+      "source" : "FILTER0_copy0",
+      "target" : "OUTPUT1"
+    }, {
+      "source" : "LOAD_DATASET3",
+      "target" : "FILTER1"
+    }, {
+      "source" : "TRANSFORM0",
+      "target" : "JOIN1"
+    }, {
+      "source" : "TRANSFORM4",
+      "target" : "JOIN1"
+    }, {
+      "source" : "FILTER1",
+      "target" : "TRANSFORM4"
+    }, {
+      "source" : "TRANSFORM1",
+      "target" : "OUTPUT2"
+    } ],
+    "hiddenColumns" : [ ]
+  },
+  "runMode" : "full"
+}

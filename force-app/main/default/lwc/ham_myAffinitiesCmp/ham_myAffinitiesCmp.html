@@ -1,0 +1,30 @@
+<template>
+        <!-- My Affinities Accordion -->
+    <template if:true={showAffinities}>
+      <div class="card-service">
+        <div class="card-header-service" onclick={toggleAffinities}>
+          <span>▲</span> {label.myAffinities}
+        </div>
+        <div class="card-body-service">
+          <template for:each={myAffinities} for:item="item" >
+            <p class="section-label" key={item.order}>{item.displaylabel}</p>
+            <template lwc:if={item.displayValueList}>
+              <ul key={item.order}>
+                  <template for:each={item.displayValueList} for:item="value">
+                      <li class="accordian-text-new" key={value}>{value}</li>
+                  </template>
+              </ul>
+            </template>
+            <template lwc:else>
+                  <p key={item.order} class="accordian-text-new">{item.displayValueText}</p>
+              </template> 
+          </template>
+        </div>
+      </div>
+    </template>
+    <template if:false={showAffinities}>
+      <div class="card-service collapsed-service" onclick={toggleAffinities}>
+        <div class="card-header-service"><span>▶</span> {label.myAffinities}</div>
+      </div>
+    </template>
+</template>

@@ -1,0 +1,450 @@
+{
+  "version" : "64.0",
+  "nodes" : {
+    "LOAD_DATASET1" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "ucinn_ascendv2__Is_Deceased__c", "HAM_Name_w_Suffix__c", "Account.Name", "Account_or_Contact_Id", "Aggregate.Sum.Lifetime_Committed_Amount", "Aggregate.Sum.Lifetime_Collected_Amount", "Aggregate.SUM_Committed_Excluding_BQI" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Account and Contact Dataset",
+          "name" : "Account_and_Contact_Dataset"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "FORMULA0" : {
+      "action" : "formula",
+      "sources" : [ "LOAD_DATASET1" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Balance_to_Founders_Circle",
+          "label" : "Balance to Founders Circle",
+          "formulaExpression" : "1000000-\"Aggregate.Sum.Lifetime_Committed_Amount\"",
+          "precision" : 10,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FILTER1" : {
+      "action" : "filter",
+      "sources" : [ "FORMULA0" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "NUMBER",
+          "field" : "Balance_to_Founders_Circle",
+          "operator" : "LESS_OR_EQUAL",
+          "operands" : [ "250000" ]
+        } ]
+      }
+    },
+    "OUTPUT0" : {
+      "action" : "save",
+      "sources" : [ "JOIN56" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Founders Circle Dataset",
+          "name" : "Founders_Circle_Dataset",
+          "folderName" : "SharedApp"
+        },
+        "dateConfigurationName" : "July_Fiscal_Year",
+        "measuresToCurrencies" : [ ]
+      }
+    },
+    "LOAD_DATASET0_copy0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "ucinn_ascendv2__Opportunity__c", "Contact.ucinn_ascendv2__Full_Name_Formula__c", "ucinn_ascendv2__Credit_Date_Formula__c", "Object", "Constituent_or_Account_Id", "Fundraising_Amount" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Gift Credit and Payment",
+          "name" : "Gift_Credit_and_Payment"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "EXTRACT0_copy0" : {
+      "action" : "extractGrains",
+      "sources" : [ "LOAD_DATASET0_copy0" ],
+      "parameters" : {
+        "grainExtractions" : [ {
+          "source" : "ucinn_ascendv2__Credit_Date_Formula__c",
+          "targets" : [ {
+            "name" : "ucinn_ascendv2__Credit_Date_Formula__c_DAY",
+            "label" : "Date Day",
+            "grainType" : "DAY"
+          }, {
+            "name" : "ucinn_ascendv2__Credit_Date_Formula__c_MONTH",
+            "label" : "Date Month",
+            "grainType" : "MONTH"
+          }, {
+            "name" : "ucinn_ascendv2__Credit_Date_Formula__c_YEAR",
+            "label" : "Date Year",
+            "grainType" : "YEAR"
+          } ]
+        } ]
+      }
+    },
+    "AGGREGATE1_copy0" : {
+      "action" : "aggregate",
+      "sources" : [ "EXTRACT0_copy0" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "SUM_Fundraising_Amount",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        } ]
+      },
+      "parameters" : {
+        "aggregations" : [ {
+          "action" : "SUM",
+          "source" : "Fundraising_Amount",
+          "name" : "SUM_Fundraising_Amount",
+          "label" : "Sum of Fundraising Amount"
+        } ],
+        "groupings" : [ "Constituent_or_Account_Id", "ucinn_ascendv2__Credit_Date_Formula__c_DAY", "ucinn_ascendv2__Credit_Date_Formula__c_MONTH", "ucinn_ascendv2__Credit_Date_Formula__c_YEAR", "Contact.ucinn_ascendv2__Full_Name_Formula__c" ],
+        "pivots" : [ ],
+        "nodeType" : "STANDARD"
+      }
+    },
+    "FORMULA3_copy0" : {
+      "action" : "formula",
+      "sources" : [ "AGGREGATE1_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Date",
+          "label" : "Date",
+          "formulaExpression" : "concat(ucinn_ascendv2__Credit_Date_Formula__c_YEAR,'-',ucinn_ascendv2__Credit_Date_Formula__c_MONTH,'-',ucinn_ascendv2__Credit_Date_Formula__c_DAY)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "TO_DATE0_copy0" : {
+      "action" : "typeCast",
+      "sources" : [ "FORMULA3_copy0" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "Date_to_date",
+          "newProperties" : {
+            "name" : "Date"
+          }
+        } ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Date" ]
+        }
+      },
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Date",
+          "newProperties" : {
+            "label" : "Date",
+            "name" : "Date_to_date",
+            "typeProperties" : {
+              "type" : "DATETIME",
+              "format" : "yyyy-MM-dd"
+            }
+          }
+        } ]
+      }
+    },
+    "DROP_FIELDS0_copy0" : {
+      "action" : "schema",
+      "sources" : [ "TO_DATE0_copy0" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "ucinn_ascendv2__Credit_Date_Formula__c_DAY", "ucinn_ascendv2__Credit_Date_Formula__c_YEAR", "ucinn_ascendv2__Credit_Date_Formula__c_MONTH" ]
+        }
+      }
+    },
+    "FORMULA5_copy0" : {
+      "action" : "computeRelative",
+      "sources" : [ "DROP_FIELDS0_copy0" ],
+      "parameters" : {
+        "partitionBy" : [ "Constituent_or_Account_Id" ],
+        "orderBy" : [ {
+          "fieldName" : "Date",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Cumulative_Fundraising_Amount",
+          "label" : "Cumulative Fundraising Amount",
+          "formulaExpression" : "sum(SUM_Fundraising_Amount)\r\n\r\n",
+          "precision" : 10,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA6_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA5_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "DATETIME",
+          "name" : "Date_of_Over_1M",
+          "label" : "Date of Over 1M",
+          "formulaExpression" : "case when Cumulative_Fundraising_Amount>=1000000\r\nthen Date\r\nend\r\n\r\n",
+          "format" : "yyyy-MM-dd",
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FILTER1_copy0" : {
+      "action" : "filter",
+      "sources" : [ "FORMULA6_copy0" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "DATETIME",
+          "field" : "Date_of_Over_1M",
+          "operator" : "IS_NOT_NULL",
+          "operands" : [ ]
+        } ]
+      }
+    },
+    "FORMULA4_copy0" : {
+      "action" : "computeRelative",
+      "sources" : [ "FILTER1_copy0" ],
+      "parameters" : {
+        "partitionBy" : [ "Constituent_or_Account_Id" ],
+        "orderBy" : [ {
+          "fieldName" : "Date_of_Over_1M",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "DATETIME",
+          "name" : "FC_Date",
+          "label" : "FC Date",
+          "formulaExpression" : "first_value(Date_of_Over_1M)\r\n\r\n\r\n",
+          "format" : "yyyy-MM-dd",
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "DROP_FIELDS1" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA4_copy0" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "SELECT",
+          "ignoreMissingFields" : true,
+          "fields" : [ "FC_Date", "Constituent_or_Account_Id" ]
+        }
+      }
+    },
+    "JOIN56" : {
+      "action" : "join",
+      "sources" : [ "FILTER1", "DROP_FIELDS1" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "FC.Constituent_or_Account_Id" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Account_or_Contact_Id" ],
+        "rightQualifier" : "FC",
+        "rightKeys" : [ "Constituent_or_Account_Id" ]
+      }
+    }
+  },
+  "ui" : {
+    "nodes" : {
+      "LOAD_DATASET1" : {
+        "label" : "Account and Contact Dataset",
+        "type" : "LOAD_DATASET",
+        "top" : 113.5,
+        "left" : 251.5,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "TRANSFORM0" : {
+        "label" : "Enrich Fields",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 113.5,
+        "left" : 391.5,
+        "graph" : {
+          "FORMULA0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Balance to Founders Circle"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "FILTER1" : {
+        "label" : "Filter 1",
+        "type" : "FILTER",
+        "top" : 113.5,
+        "left" : 531.5
+      },
+      "OUTPUT0" : {
+        "label" : "Output 0",
+        "type" : "OUTPUT",
+        "top" : 112.19999999999999,
+        "left" : 952
+      },
+      "LOAD_DATASET0_copy0" : {
+        "label" : "Gift Credit and Payment",
+        "type" : "LOAD_DATASET",
+        "top" : 252.10000000000002,
+        "left" : 251.7,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "AGGREGATE0_copy0" : {
+        "label" : "Aggregate 0",
+        "type" : "AGGREGATE",
+        "top" : 252.10000000000002,
+        "left" : 391.7,
+        "graph" : {
+          "EXTRACT0_copy0" : null,
+          "AGGREGATE1_copy0" : null
+        },
+        "connectors" : [ {
+          "source" : "EXTRACT0_copy0",
+          "target" : "AGGREGATE1_copy0"
+        } ]
+      },
+      "TRANSFORM1_copy0" : {
+        "label" : "Transform 1",
+        "type" : "TRANSFORM",
+        "top" : 252.10000000000002,
+        "left" : 531.7,
+        "graph" : {
+          "FORMULA3_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Date"
+          },
+          "TO_DATE0_copy0" : {
+            "label" : "To Date"
+          },
+          "DROP_FIELDS0_copy0" : {
+            "label" : "Drop Columns"
+          },
+          "FORMULA5_copy0" : {
+            "label" : "Cumulative Fundraising Amount"
+          },
+          "FORMULA6_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Date of Over 1M"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA3_copy0",
+          "target" : "TO_DATE0_copy0"
+        }, {
+          "source" : "TO_DATE0_copy0",
+          "target" : "DROP_FIELDS0_copy0"
+        }, {
+          "source" : "DROP_FIELDS0_copy0",
+          "target" : "FORMULA5_copy0"
+        }, {
+          "source" : "FORMULA5_copy0",
+          "target" : "FORMULA6_copy0"
+        } ]
+      },
+      "FILTER1_copy0" : {
+        "label" : "Filter 1 Copy",
+        "type" : "FILTER",
+        "top" : 252.3,
+        "left" : 671.8
+      },
+      "TRANSFORM2_copy0" : {
+        "label" : "Transform 2",
+        "type" : "TRANSFORM",
+        "top" : 252.10000000000002,
+        "left" : 811.8,
+        "graph" : {
+          "FORMULA4_copy0" : {
+            "label" : "FC Date"
+          },
+          "DROP_FIELDS1" : {
+            "label" : "Keep Columns"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA4_copy0",
+          "target" : "DROP_FIELDS1"
+        } ]
+      },
+      "JOIN56" : {
+        "label" : "Join 56",
+        "type" : "JOIN",
+        "top" : 112,
+        "left" : 812.1
+      }
+    },
+    "connectors" : [ {
+      "source" : "LOAD_DATASET1",
+      "target" : "TRANSFORM0"
+    }, {
+      "source" : "TRANSFORM0",
+      "target" : "FILTER1"
+    }, {
+      "source" : "AGGREGATE0_copy0",
+      "target" : "TRANSFORM1_copy0"
+    }, {
+      "source" : "FILTER1_copy0",
+      "target" : "TRANSFORM2_copy0"
+    }, {
+      "source" : "TRANSFORM1_copy0",
+      "target" : "FILTER1_copy0"
+    }, {
+      "source" : "LOAD_DATASET0_copy0",
+      "target" : "AGGREGATE0_copy0"
+    }, {
+      "source" : "FILTER1",
+      "target" : "JOIN56"
+    }, {
+      "source" : "TRANSFORM2_copy0",
+      "target" : "JOIN56"
+    }, {
+      "source" : "JOIN56",
+      "target" : "OUTPUT0"
+    } ],
+    "hiddenColumns" : [ ]
+  },
+  "runMode" : "full"
+}

@@ -1,0 +1,1291 @@
+{
+  "version" : "61.0",
+  "nodes" : {
+    "LOAD_DATASET4_copy0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "HAM_Match_Expiration_Date__c", "ucinn_ascendv2__G_L_Expiration_Date__c", "Id", "Name", "RecordTypeId", "ucinn_ascendv2__Areas_of_Giving_CASE_Type__c", "ucinn_ascendv2__CASE_Purpose_v1__c", "ucinn_ascendv2__CASE_Type__c", "ucinn_ascendv2__Designation_Name__c", "ucinn_ascendv2__Fund_Name__c", "ucinn_ascendv2__Fund_Purpose__c", "ucinn_ascendv2__Fund_Type__c", "ucinn_ascendv2__G_L_Account__c", "ucinn_ascendv2__Parent_Designation__c", "HAM_Fund_Short_Name__c", "HAM_Match_Type__c", "HAM_Match__c", "HAM_Maximum_Match__c", "HAM_Match_Eligible__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "ucinn_ascendv2__Designation__c",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "ucinn_ascendv2__Designation__c"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "LOAD_DATASET21_copy0_copy0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Id", "Name" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "RecordType",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "RecordType"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN42_copy0" : {
+      "action" : "join",
+      "sources" : [ "LOAD_DATASET4_copy0", "LOAD_DATASET21_copy0_copy0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "RecordTypeId" ],
+        "rightQualifier" : "desig_recordtype",
+        "rightKeys" : [ "Id" ]
+      }
+    },
+    "EDIT_ATTRIBUTES47_copy0" : {
+      "action" : "schema",
+      "sources" : [ "FILTER4" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "desig_recordtype.Name",
+          "newProperties" : {
+            "label" : "Designation Record Type Name",
+            "name" : "desig_recordtype.Name"
+          }
+        } ]
+      }
+    },
+    "DROP_FIELDS2" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES47_copy0" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "SELECT",
+          "ignoreMissingFields" : true,
+          "fields" : [ "ucinn_ascendv2__G_L_Expiration_Date__c", "Id", "Name", "ucinn_ascendv2__Designation_Name__c", "ucinn_ascendv2__G_L_Account__c", "ucinn_ascendv2__Parent_Designation__c", "HAM_Match_Type__c", "HAM_Match__c", "HAM_Maximum_Match__c", "desig_recordtype.Name", "Aggregatet.SUM_ucinn_ascendv2__Amt_Paid_to_Date_Same_Desig_Roll_Up__c", "HAM_Match_Expiration_Date__c" ]
+        }
+      }
+    },
+    "LOAD_DATASET5_copy0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "ucinn_ascendv2__Designation__c", "ucinn_ascendv2__Amt_Paid_to_Date_Same_Desig_Roll_Up__c", "Name", "Id", "ucinn_ascendv2__Opportunity__c", "ucinn_ascendv2__Campaign__c", "ucinn_ascendv2__Amount_Paid_to_Date_Roll_Up__c", "HAM_Campaign_Priority__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "ucinn_ascendv2__Designation_Detail__c",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "ucinn_ascendv2__Designation_Detail__c"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "FILTER0" : {
+      "action" : "filter",
+      "sources" : [ "DROP_FIELDS1" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "KeepIDandM.HAM_Match_Eligible_Parent__c",
+          "operator" : "EQUAL",
+          "operands" : [ "true" ]
+        } ]
+      }
+    },
+    "EXTRACT0" : {
+      "action" : "extractGrains",
+      "sources" : [ "FILTER6" ],
+      "parameters" : {
+        "grainExtractions" : [ ]
+      }
+    },
+    "AGGREGATE1" : {
+      "action" : "aggregate",
+      "sources" : [ "EXTRACT0" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "SUM_ucinn_ascendv2__Amt_Paid_to_Date_Same_Desig_Roll_Up__c",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        } ]
+      },
+      "parameters" : {
+        "aggregations" : [ {
+          "action" : "SUM",
+          "source" : "ucinn_ascendv2__Amt_Paid_to_Date_Same_Desig_Roll_Up__c",
+          "name" : "SUM_ucinn_ascendv2__Amt_Paid_to_Date_Same_Desig_Roll_Up__c",
+          "label" : "Sum of Amount Paid to Date (Same Designation)"
+        } ],
+        "groupings" : [ "ucinn_ascendv2__Designation__c" ],
+        "pivots" : [ ],
+        "nodeType" : "STANDARD"
+      }
+    },
+    "OUTPUT0" : {
+      "action" : "save",
+      "sources" : [ "FORMULA5" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "MacLennan Match",
+          "name" : "MacLennan_Match",
+          "folderName" : "AIS_Dashboards_and_Reports"
+        },
+        "dateConfigurationName" : "July_Fiscal_Year",
+        "measuresToCurrencies" : [ ]
+      }
+    },
+    "FILTER1" : {
+      "action" : "filter",
+      "sources" : [ "LOAD_DATASET4_copy0" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "HAM_Match_Eligible__c",
+          "operator" : "EQUAL",
+          "operands" : [ "true" ]
+        } ]
+      }
+    },
+    "DROP_FIELDS0" : {
+      "action" : "schema",
+      "sources" : [ "FILTER1" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "SELECT",
+          "ignoreMissingFields" : true,
+          "fields" : [ "HAM_Match_Eligible__c", "Id", "Name" ]
+        }
+      }
+    },
+    "EDIT_ATTRIBUTES48" : {
+      "action" : "schema",
+      "sources" : [ "DROP_FIELDS0" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "HAM_Match_Eligible__c",
+          "newProperties" : {
+            "label" : "Match Eligible Parent Designation",
+            "name" : "HAM_Match_Eligible_Parent__c"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES49" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES48" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Id",
+          "newProperties" : {
+            "label" : "Record ID Parent Desig",
+            "name" : "Id_Record_ID_Parent_Desig"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES50" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES49" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Name",
+          "newProperties" : {
+            "label" : "Parent Designation Code",
+            "name" : "Parent_Designation_Code_Name"
+          }
+        } ]
+      }
+    },
+    "JOIN44" : {
+      "action" : "join",
+      "sources" : [ "DROP_FIELDS3", "EDIT_ATTRIBUTES50" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "OUTER",
+        "leftKeys" : [ "Parent_Designation" ],
+        "rightQualifier" : "KeepIDandM",
+        "rightKeys" : [ "Id_Record_ID_Parent_Desig" ]
+      }
+    },
+    "DROP_FIELDS1" : {
+      "action" : "schema",
+      "sources" : [ "JOIN44" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "KeepIDandM.Id_Record_ID_Parent_Desig", "HAM_Match_Eligible__c" ]
+        }
+      }
+    },
+    "FILTER2" : {
+      "action" : "filter",
+      "sources" : [ "DROP_FIELDS2" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "HAM_Match_Type__c",
+          "operator" : "EQUAL",
+          "operands" : [ "Match Quasi" ]
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES51" : {
+      "action" : "schema",
+      "sources" : [ "FILTER2" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "ucinn_ascendv2__G_L_Expiration_Date__c",
+          "newProperties" : {
+            "label" : "Designation Expiration Date Quasi",
+            "name" : "ucinn_ascendv2__G_L_Expiration_Date__c_Quasi"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES52" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES51" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Name",
+          "newProperties" : {
+            "label" : "Designation Code Quasi",
+            "name" : "Designation_Code_Quasi"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES53" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES52" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "ucinn_ascendv2__Designation_Name__c",
+          "newProperties" : {
+            "label" : "Designation Name Quasi",
+            "name" : "ucinn_ascendv2__Designation_Name__c_Quasi"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES54" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES53" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "ucinn_ascendv2__G_L_Account__c",
+          "newProperties" : {
+            "label" : "G / L Account Quasi",
+            "name" : "ucinn_ascendv2__G_L_Account__c_Quasi"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES55" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES54" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Id",
+          "newProperties" : {
+            "label" : "Record ID Quasi",
+            "name" : "Id_Quasi"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES56" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES55" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "HAM_Match_Type__c",
+          "newProperties" : {
+            "label" : "Match Type Quasi",
+            "name" : "HAM_Match_Type__c_Quasi"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES57" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES56" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "HAM_Match__c",
+          "newProperties" : {
+            "label" : "Match Name Quasi",
+            "name" : "HAM_Match__c_Quasi"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES58" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES57" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "HAM_Maximum_Match__c",
+          "newProperties" : {
+            "label" : "Maximum Match Quasi",
+            "name" : "HAM_Maximum_Match__c_Quasi"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES59" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES58" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "desig_recordtype.Name",
+          "newProperties" : {
+            "label" : "Designation Record Type Name Quasi",
+            "name" : "desig_recordtype.Name_Quasi"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES61" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES59" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Aggregatet.SUM_ucinn_ascendv2__Amt_Paid_to_Date_Same_Desig_Roll_Up__c",
+          "newProperties" : {
+            "label" : "Amount Paid to Date (Same Designation) Quasi",
+            "name" : "Aggregatet.SUM_ucinn_ascendv2__Amt_Paid_to_Date_Same_Desig_Roll_Up__c_Quasi"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES63" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES61" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "HAM_Match_Expiration_Date__c",
+          "newProperties" : {
+            "label" : "Match Expiration Date Quasi",
+            "name" : "HAM_Match_Expiration_Date__c_Quasi"
+          }
+        } ]
+      }
+    },
+    "FILTER3" : {
+      "action" : "filter",
+      "sources" : [ "DROP_FIELDS2" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "HAM_Match_Type__c",
+          "operator" : "EQUAL",
+          "operands" : [ "Match True" ]
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES51_copy0" : {
+      "action" : "schema",
+      "sources" : [ "FILTER3" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "ucinn_ascendv2__G_L_Expiration_Date__c",
+          "newProperties" : {
+            "label" : "Designation Expiration Date True",
+            "name" : "ucinn_ascendv2__G_L_Expiration_Date__c_True"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES52_copy0" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES51_copy0" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Name",
+          "newProperties" : {
+            "label" : "Designation Code True",
+            "name" : "Designation_Code_True"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES53_copy0" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES52_copy0" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "ucinn_ascendv2__Designation_Name__c",
+          "newProperties" : {
+            "label" : "Designation Name True",
+            "name" : "ucinn_ascendv2__Designation_Name__c_True"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES54_copy0" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES53_copy0" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "ucinn_ascendv2__G_L_Account__c",
+          "newProperties" : {
+            "label" : "G / L Account True",
+            "name" : "ucinn_ascendv2__G_L_Account__c_True"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES55_copy0" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES54_copy0" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Id",
+          "newProperties" : {
+            "label" : "Record ID True",
+            "name" : "Id_True"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES56_copy0" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES55_copy0" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "HAM_Match_Type__c",
+          "newProperties" : {
+            "label" : "Match Type True",
+            "name" : "HAM_Match_Type__c_True"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES57_copy0" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES56_copy0" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "HAM_Match__c",
+          "newProperties" : {
+            "label" : "Match Name True",
+            "name" : "HAM_Match__c_True"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES58_copy0" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES57_copy0" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "HAM_Maximum_Match__c",
+          "newProperties" : {
+            "label" : "Maximum Match True",
+            "name" : "HAM_Maximum_Match__c_True"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES59_copy0" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES58_copy0" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "desig_recordtype.Name",
+          "newProperties" : {
+            "label" : "Designation Record Type Name True",
+            "name" : "desig_recordtype.Name_True"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES60" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES59_copy0" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Aggregatet.SUM_ucinn_ascendv2__Amt_Paid_to_Date_Same_Desig_Roll_Up__c",
+          "newProperties" : {
+            "label" : "Amount Paid to Date (Same Designation) True",
+            "name" : "Aggregatet.SUM_ucinn_ascendv2__Amt_Paid_to_Date_Same_Desig_Roll_Up__c_True"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES62" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES60" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "HAM_Match_Expiration_Date__c",
+          "newProperties" : {
+            "label" : "Match Expiration Date True",
+            "name" : "HAM_Match_Expiration_Date__c_True"
+          }
+        } ]
+      }
+    },
+    "JOIN45" : {
+      "action" : "join",
+      "sources" : [ "EDIT_ATTRIBUTES62", "EDIT_ATTRIBUTES63" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "OUTER",
+        "leftKeys" : [ "ucinn_ascendv2__Parent_Designation__c" ],
+        "rightQualifier" : "Quasi",
+        "rightKeys" : [ "ucinn_ascendv2__Parent_Designation__c" ]
+      }
+    },
+    "FILTER4" : {
+      "action" : "filter",
+      "sources" : [ "JOIN46" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "HAM_Match__c",
+          "operator" : "IS_NOT_NULL",
+          "operands" : [ ]
+        }, {
+          "type" : "TEXT",
+          "field" : "desig_recordtype.Name",
+          "operator" : "EQUAL",
+          "operands" : [ "Gift Designation" ]
+        }, {
+          "type" : "TEXT",
+          "field" : "ucinn_ascendv2__Parent_Designation__c",
+          "operator" : "IS_NOT_NULL",
+          "operands" : [ ]
+        } ]
+      }
+    },
+    "FORMULA0" : {
+      "action" : "formula",
+      "sources" : [ "JOIN45" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Parent_Designation",
+          "label" : "Parent_Designation",
+          "formulaExpression" : "coalesce(ucinn_ascendv2__Parent_Designation__c,\"Quasi.ucinn_ascendv2__Parent_Designation__c\")",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "DROP_FIELDS3" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA0" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "ucinn_ascendv2__Parent_Designation__c", "Quasi.ucinn_ascendv2__Parent_Designation__c" ]
+        }
+      }
+    },
+    "JOIN46" : {
+      "action" : "join",
+      "sources" : [ "JOIN42_copy0", "AGGREGATE1" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Id" ],
+        "rightQualifier" : "Aggregatet",
+        "rightKeys" : [ "ucinn_ascendv2__Designation__c" ]
+      }
+    },
+    "FORMULA3" : {
+      "action" : "formula",
+      "sources" : [ "DROP_FIELDS1" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "True_Less_Quasi_Paid_to_Date",
+          "label" : "True Less Quasi Paid to Date",
+          "formulaExpression" : "\"Aggregatet.SUM_ucinn_ascendv2__Amt_Paid_to_Date_Same_Desig_Roll_Up__c_True\"-\"Quasi.Aggregatet.SUM_ucinn_ascendv2__Amt_Paid_to_Date_Same_Desig_Roll_Up__c_Quasi\"",
+          "precision" : 10,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA4" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA3" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Fund_Balance_Quasi",
+          "label" : "Fund Balance-Quasi",
+          "formulaExpression" : "\"Quasi.HAM_Maximum_Match__c_Quasi\"-\"Quasi.Aggregatet.SUM_ucinn_ascendv2__Amt_Paid_to_Date_Same_Desig_Roll_Up__c_Quasi\"",
+          "precision" : 10,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA5" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA4" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "New_Amount_Eligible_for_Match",
+          "label" : "New Amount Eligible for Match",
+          "formulaExpression" : "case \r\n    when True_Less_Quasi_Paid_to_Date>Fund_Balance_Quasi\r\n    then Fund_Balance_Quasi\r\n    else\r\n    True_Less_Quasi_Paid_to_Date\r\nend",
+          "precision" : 10,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "OUTPUT1" : {
+      "action" : "save",
+      "sources" : [ "FILTER0" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "temp",
+          "name" : "temp"
+        },
+        "measuresToCurrencies" : [ ]
+      }
+    },
+    "OUTPUT2" : {
+      "action" : "save",
+      "sources" : [ "FILTER5" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "temp 1",
+          "name" : "temp1"
+        },
+        "measuresToCurrencies" : [ ]
+      }
+    },
+    "FILTER5" : {
+      "action" : "filter",
+      "sources" : [ "JOIN46" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "Name",
+          "operator" : "CONTAINS",
+          "operands" : [ "HAD" ]
+        } ]
+      }
+    },
+    "LOAD_DATASET22" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Id", "StageName" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "Opportunity",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "Opportunity"
+        },
+        "sampleDetails" : {
+          "type" : "TopN"
+        }
+      }
+    },
+    "JOIN47" : {
+      "action" : "join",
+      "sources" : [ "LOAD_DATASET5_copy0", "LOAD_DATASET22" ],
+      "schema" : {
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "ucinn_ascendv2__Opportunity__c" ],
+        "rightQualifier" : "Opportunity",
+        "rightKeys" : [ "Id" ]
+      }
+    },
+    "FILTER6" : {
+      "action" : "filter",
+      "sources" : [ "JOIN47" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "Opportunity.StageName",
+          "operator" : "NOT",
+          "operands" : [ "Adjusted" ]
+        } ]
+      }
+    }
+  },
+  "ui" : {
+    "nodes" : {
+      "LOAD_DATASET4_copy0" : {
+        "label" : "ucinn_ascendv2__Designation__c",
+        "description" : "",
+        "type" : "LOAD_DATASET",
+        "top" : 1091.5,
+        "left" : 112.1,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "LOAD_DATASET21_copy0_copy0" : {
+        "label" : "RecordType",
+        "description" : "",
+        "type" : "LOAD_DATASET",
+        "top" : 674,
+        "left" : 252.10000000000002,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN42_copy0" : {
+        "label" : "lookup record type to designation",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 811.8,
+        "left" : 112
+      },
+      "TRANSFORM23_copy0" : {
+        "label" : "Rename Record Type Name",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 252.10000000000002,
+        "left" : 112,
+        "graph" : {
+          "EDIT_ATTRIBUTES47_copy0" : {
+            "label" : "Edit Attributes"
+          },
+          "DROP_FIELDS2" : {
+            "label" : "Drop Columns"
+          }
+        },
+        "connectors" : [ {
+          "source" : "EDIT_ATTRIBUTES47_copy0",
+          "target" : "DROP_FIELDS2"
+        } ]
+      },
+      "LOAD_DATASET5_copy0" : {
+        "label" : "ucinn_ascendv2__Designation_Detail__c",
+        "description" : "",
+        "type" : "LOAD_DATASET",
+        "top" : 951,
+        "left" : 392.1,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "FILTER0" : {
+        "label" : "Filter to Parent Match Eligible",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 112.69999999999999,
+        "left" : 1091.7
+      },
+      "AGGREGATE0" : {
+        "label" : "Aggregate to Designation",
+        "description" : "",
+        "type" : "AGGREGATE",
+        "top" : 534,
+        "left" : 252.10000000000002,
+        "graph" : {
+          "EXTRACT0" : null,
+          "AGGREGATE1" : null
+        },
+        "connectors" : [ {
+          "source" : "EXTRACT0",
+          "target" : "AGGREGATE1"
+        } ]
+      },
+      "OUTPUT0" : {
+        "label" : "MacLennan",
+        "description" : "",
+        "type" : "OUTPUT",
+        "top" : 252,
+        "left" : 1372
+      },
+      "FILTER1" : {
+        "label" : "Filter to Match Eligible",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 1091.7,
+        "left" : 252.10000000000002
+      },
+      "TRANSFORM24" : {
+        "label" : "Keep ID and Match Eligible Flag",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 1092.3,
+        "left" : 812.6,
+        "graph" : {
+          "DROP_FIELDS0" : {
+            "label" : "Drop Columns"
+          },
+          "EDIT_ATTRIBUTES48" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES49" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES50" : {
+            "label" : "Edit Attributes"
+          }
+        },
+        "connectors" : [ {
+          "source" : "DROP_FIELDS0",
+          "target" : "EDIT_ATTRIBUTES48"
+        }, {
+          "source" : "EDIT_ATTRIBUTES48",
+          "target" : "EDIT_ATTRIBUTES49"
+        }, {
+          "source" : "EDIT_ATTRIBUTES49",
+          "target" : "EDIT_ATTRIBUTES50"
+        } ]
+      },
+      "JOIN44" : {
+        "label" : "Lookup Parent Designation Attributes",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 254,
+        "left" : 812.1
+      },
+      "TRANSFORM25" : {
+        "label" : "Drop Fields",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 254.10000000000002,
+        "left" : 952.1,
+        "graph" : {
+          "DROP_FIELDS1" : {
+            "label" : "Drop Columns"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "FILTER2" : {
+        "label" : "Filter to Quasi",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 251.60000000000002,
+        "left" : 252
+      },
+      "TRANSFORM26" : {
+        "label" : "Rename Fields Quasi",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 392,
+        "left" : 392,
+        "graph" : {
+          "EDIT_ATTRIBUTES51" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES52" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES53" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES54" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES55" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES56" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES57" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES58" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES59" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES61" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES63" : {
+            "label" : "Edit Attributes"
+          }
+        },
+        "connectors" : [ {
+          "source" : "EDIT_ATTRIBUTES51",
+          "target" : "EDIT_ATTRIBUTES52"
+        }, {
+          "source" : "EDIT_ATTRIBUTES52",
+          "target" : "EDIT_ATTRIBUTES53"
+        }, {
+          "source" : "EDIT_ATTRIBUTES53",
+          "target" : "EDIT_ATTRIBUTES54"
+        }, {
+          "source" : "EDIT_ATTRIBUTES54",
+          "target" : "EDIT_ATTRIBUTES55"
+        }, {
+          "source" : "EDIT_ATTRIBUTES55",
+          "target" : "EDIT_ATTRIBUTES56"
+        }, {
+          "source" : "EDIT_ATTRIBUTES56",
+          "target" : "EDIT_ATTRIBUTES57"
+        }, {
+          "source" : "EDIT_ATTRIBUTES57",
+          "target" : "EDIT_ATTRIBUTES58"
+        }, {
+          "source" : "EDIT_ATTRIBUTES58",
+          "target" : "EDIT_ATTRIBUTES59"
+        }, {
+          "source" : "EDIT_ATTRIBUTES59",
+          "target" : "EDIT_ATTRIBUTES61"
+        }, {
+          "source" : "EDIT_ATTRIBUTES61",
+          "target" : "EDIT_ATTRIBUTES63"
+        } ]
+      },
+      "FILTER3" : {
+        "label" : "Filter to True",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 111.6,
+        "left" : 252
+      },
+      "TRANSFORM26_copy0" : {
+        "label" : "Rename Fields True",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 252,
+        "left" : 392,
+        "graph" : {
+          "EDIT_ATTRIBUTES51_copy0" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES52_copy0" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES53_copy0" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES54_copy0" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES55_copy0" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES56_copy0" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES57_copy0" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES58_copy0" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES59_copy0" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES60" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES62" : {
+            "label" : "Edit Attributes"
+          }
+        },
+        "connectors" : [ {
+          "source" : "EDIT_ATTRIBUTES51_copy0",
+          "target" : "EDIT_ATTRIBUTES52_copy0"
+        }, {
+          "source" : "EDIT_ATTRIBUTES52_copy0",
+          "target" : "EDIT_ATTRIBUTES53_copy0"
+        }, {
+          "source" : "EDIT_ATTRIBUTES53_copy0",
+          "target" : "EDIT_ATTRIBUTES54_copy0"
+        }, {
+          "source" : "EDIT_ATTRIBUTES54_copy0",
+          "target" : "EDIT_ATTRIBUTES55_copy0"
+        }, {
+          "source" : "EDIT_ATTRIBUTES55_copy0",
+          "target" : "EDIT_ATTRIBUTES56_copy0"
+        }, {
+          "source" : "EDIT_ATTRIBUTES56_copy0",
+          "target" : "EDIT_ATTRIBUTES57_copy0"
+        }, {
+          "source" : "EDIT_ATTRIBUTES57_copy0",
+          "target" : "EDIT_ATTRIBUTES58_copy0"
+        }, {
+          "source" : "EDIT_ATTRIBUTES58_copy0",
+          "target" : "EDIT_ATTRIBUTES59_copy0"
+        }, {
+          "source" : "EDIT_ATTRIBUTES59_copy0",
+          "target" : "EDIT_ATTRIBUTES60"
+        }, {
+          "source" : "EDIT_ATTRIBUTES60",
+          "target" : "EDIT_ATTRIBUTES62"
+        } ]
+      },
+      "JOIN45" : {
+        "label" : "Outer Join True and Quasi",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 254,
+        "left" : 532.1
+      },
+      "FILTER4" : {
+        "label" : "Filter to match name is not null and type=gift desig with parent desig",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 394,
+        "left" : 112.1
+      },
+      "TRANSFORM27" : {
+        "label" : "Create Parent Desig Match Key",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 254,
+        "left" : 672.1,
+        "graph" : {
+          "FORMULA0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Parent_Designation"
+          },
+          "DROP_FIELDS3" : {
+            "label" : "Drop Columns"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA0",
+          "target" : "DROP_FIELDS3"
+        } ]
+      },
+      "JOIN46" : {
+        "label" : "Lookup Paid to Date Same Desig",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 534,
+        "left" : 112.1
+      },
+      "TRANSFORM28" : {
+        "label" : "Match Calcs",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 252,
+        "left" : 1232,
+        "graph" : {
+          "FORMULA3" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "True Less Quasi Paid to Date"
+          },
+          "FORMULA4" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Fund Balance-Quasi"
+          },
+          "FORMULA5" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "New Amount Eligible for Match"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA3",
+          "target" : "FORMULA4"
+        }, {
+          "source" : "FORMULA4",
+          "target" : "FORMULA5"
+        } ]
+      },
+      "OUTPUT1" : {
+        "label" : "Output 1",
+        "type" : "OUTPUT",
+        "top" : 112,
+        "left" : 1232
+      },
+      "OUTPUT2" : {
+        "label" : "Output 2",
+        "type" : "OUTPUT",
+        "top" : 672,
+        "left" : 672.1
+      },
+      "FILTER5" : {
+        "label" : "Filter 5",
+        "type" : "FILTER",
+        "top" : 671.8,
+        "left" : 532.1
+      },
+      "LOAD_DATASET22" : {
+        "label" : "Opportunity",
+        "type" : "LOAD_DATASET",
+        "top" : 952.6,
+        "left" : 531.9,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN47" : {
+        "label" : "Look up to Opportunity",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 812.1,
+        "left" : 392.1
+      },
+      "FILTER6" : {
+        "label" : "Filter out Adjusted",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 671.8,
+        "left" : 392
+      }
+    },
+    "connectors" : [ {
+      "source" : "TRANSFORM27",
+      "target" : "JOIN44"
+    }, {
+      "source" : "LOAD_DATASET4_copy0",
+      "target" : "JOIN42_copy0"
+    }, {
+      "source" : "LOAD_DATASET21_copy0_copy0",
+      "target" : "JOIN42_copy0"
+    }, {
+      "source" : "FILTER4",
+      "target" : "TRANSFORM23_copy0"
+    }, {
+      "source" : "TRANSFORM25",
+      "target" : "FILTER0"
+    }, {
+      "source" : "FILTER6",
+      "target" : "AGGREGATE0"
+    }, {
+      "source" : "LOAD_DATASET4_copy0",
+      "target" : "FILTER1"
+    }, {
+      "source" : "FILTER1",
+      "target" : "TRANSFORM24"
+    }, {
+      "source" : "TRANSFORM24",
+      "target" : "JOIN44"
+    }, {
+      "source" : "JOIN44",
+      "target" : "TRANSFORM25"
+    }, {
+      "source" : "TRANSFORM23_copy0",
+      "target" : "FILTER2"
+    }, {
+      "source" : "FILTER2",
+      "target" : "TRANSFORM26"
+    }, {
+      "source" : "TRANSFORM23_copy0",
+      "target" : "FILTER3"
+    }, {
+      "source" : "FILTER3",
+      "target" : "TRANSFORM26_copy0"
+    }, {
+      "source" : "TRANSFORM26_copy0",
+      "target" : "JOIN45"
+    }, {
+      "source" : "TRANSFORM26",
+      "target" : "JOIN45"
+    }, {
+      "source" : "JOIN46",
+      "target" : "FILTER4"
+    }, {
+      "source" : "JOIN45",
+      "target" : "TRANSFORM27"
+    }, {
+      "source" : "JOIN42_copy0",
+      "target" : "JOIN46"
+    }, {
+      "source" : "AGGREGATE0",
+      "target" : "JOIN46"
+    }, {
+      "source" : "TRANSFORM28",
+      "target" : "OUTPUT0"
+    }, {
+      "source" : "TRANSFORM25",
+      "target" : "TRANSFORM28"
+    }, {
+      "source" : "FILTER0",
+      "target" : "OUTPUT1"
+    }, {
+      "source" : "FILTER5",
+      "target" : "OUTPUT2"
+    }, {
+      "source" : "JOIN46",
+      "target" : "FILTER5"
+    }, {
+      "source" : "LOAD_DATASET5_copy0",
+      "target" : "JOIN47"
+    }, {
+      "source" : "LOAD_DATASET22",
+      "target" : "JOIN47"
+    }, {
+      "source" : "JOIN47",
+      "target" : "FILTER6"
+    } ],
+    "hiddenColumns" : [ ]
+  },
+  "runMode" : "full"
+}

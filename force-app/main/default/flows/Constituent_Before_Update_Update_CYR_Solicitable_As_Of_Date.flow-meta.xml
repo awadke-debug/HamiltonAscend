@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>59.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <decisions>
+        <description>This decision will check if the CYR Solicitable field is updated.</description>
+        <name>Is_CYR_Solicitable_Updated</name>
+        <label>Is CYR Solicitable Updated ?</label>
+        <locationX>182</locationX>
+        <locationY>287</locationY>
+        <defaultConnectorLabel>No, Not Updated</defaultConnectorLabel>
+        <rules>
+            <name>Yes_Updated</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.HAM_CYR_Solicitable__c</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record__Prior.HAM_CYR_Solicitable__c</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <elementReference>$Record.HAM_CYR_Solicitable__c</elementReference>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_CYR_Solicitable_As_Of_Date</targetReference>
+            </connector>
+            <label>Yes, Updated</label>
+        </rules>
+    </decisions>
+    <description>This Flow is a before update flow which will run on the Contact object. This will update the value on the Contact field based on condition.</description>
+    <environments>Default</environments>
+    <formulas>
+        <name>todayDateFormula</name>
+        <dataType>Date</dataType>
+        <expression>TODAY()</expression>
+    </formulas>
+    <interviewLabel>Constituent - Before Update - Update CYR Solicitable As Of {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Constituent - Before Update - Update CYR Solicitable As Of Date</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordUpdates>
+        <description>This will update the Date to Today for this field.</description>
+        <name>Update_CYR_Solicitable_As_Of_Date</name>
+        <label>Update CYR Solicitable As Of Date</label>
+        <locationX>50</locationX>
+        <locationY>395</locationY>
+        <inputAssignments>
+            <field>HAM_CYR_Solicitable_As_Of__c</field>
+            <value>
+                <elementReference>todayDateFormula</elementReference>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <start>
+        <locationX>56</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Is_CYR_Solicitable_Updated</targetReference>
+        </connector>
+        <object>Contact</object>
+        <recordTriggerType>Update</recordTriggerType>
+        <triggerType>RecordBeforeSave</triggerType>
+    </start>
+    <status>Obsolete</status>
+</Flow>

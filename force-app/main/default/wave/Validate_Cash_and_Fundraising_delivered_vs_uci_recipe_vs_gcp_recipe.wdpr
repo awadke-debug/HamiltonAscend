@@ -1,0 +1,370 @@
+{
+  "version" : "60.0",
+  "nodes" : {
+    "LOAD_DATASET0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Lifetime_Cash_Amount", "Aggregate.Sum.Lifetime_Committed_Amount", "Lifetime_Fundraising_Amount", "Aggregate.Sum.Lifetime_Collected_Amount", "Name", "Account.Name", "Account_or_Contact_Id" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Account and Contact Dataset",
+          "name" : "Account_and_Contact_Dataset"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "LOAD_DATASET1" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Account.Id", "Contact.Id", "ucinn_ascendv2__Credit_Amount__c", "fundraising_flag", "cash_flag" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Giving Insights Gifts",
+          "name" : "Giving_Insights_Gifts"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "EDIT_ATTRIBUTES0" : {
+      "action" : "schema",
+      "sources" : [ "LOAD_DATASET0" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Aggregate.Sum.Lifetime_Committed_Amount",
+          "newProperties" : {
+            "label" : "Lifetime Fundraising Amount-GCP Recipe",
+            "name" : "Aggregate.Sum.Lifetime_Committed_Amount"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES1" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES0" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Aggregate.Sum.Lifetime_Collected_Amount",
+          "newProperties" : {
+            "label" : "Lifetime Cash Amount-GCP Recipe",
+            "name" : "Aggregate.Sum.Lifetime_Collected_Amount"
+          }
+        } ]
+      }
+    },
+    "FORMULA0" : {
+      "action" : "formula",
+      "sources" : [ "LOAD_DATASET1" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Lifetime_Cash_Donor_Insights",
+          "label" : "Lifetime Cash Donor Insights",
+          "formulaExpression" : "ucinn_ascendv2__Credit_Amount__c*cash_flag",
+          "precision" : 10,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA1" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Lifetime_Fundraising_Donor_Insights",
+          "label" : "Lifetime Fundraising Donor Insights",
+          "formulaExpression" : "ucinn_ascendv2__Credit_Amount__c*fundraising_flag",
+          "precision" : 10,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA2" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA1" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Account_or_Contact_Id",
+          "label" : "Account or Contact Id",
+          "formulaExpression" : "coalesce(\"Contact.Id\",\"Account.Id\")",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "EXTRACT0" : {
+      "action" : "extractGrains",
+      "sources" : [ "FORMULA2" ],
+      "parameters" : {
+        "grainExtractions" : [ ]
+      }
+    },
+    "AGGREGATE1" : {
+      "action" : "aggregate",
+      "sources" : [ "EXTRACT0" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "SUM_Lifetime_Cash_Donor_Insights",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        }, {
+          "name" : "SUM_Lifetime_Fundraising_Donor_Insights",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        } ]
+      },
+      "parameters" : {
+        "aggregations" : [ {
+          "action" : "SUM",
+          "source" : "Lifetime_Cash_Donor_Insights",
+          "name" : "SUM_Lifetime_Cash_Donor_Insights",
+          "label" : "Lifetime Cash Donor Insights"
+        }, {
+          "action" : "SUM",
+          "source" : "Lifetime_Fundraising_Donor_Insights",
+          "name" : "SUM_Lifetime_Fundraising_Donor_Insights",
+          "label" : "Lifetime Fundraising Donor Insights"
+        } ],
+        "groupings" : [ "Account_or_Contact_Id" ],
+        "pivots" : [ ],
+        "nodeType" : "STANDARD"
+      }
+    },
+    "JOIN0" : {
+      "action" : "join",
+      "sources" : [ "EDIT_ATTRIBUTES1", "AGGREGATE1" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Account_or_Contact_Id" ],
+        "rightQualifier" : "Aggregate0",
+        "rightKeys" : [ "Account_or_Contact_Id" ]
+      }
+    },
+    "FORMULA3" : {
+      "action" : "formula",
+      "sources" : [ "JOIN0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Cash_Match_Flag",
+          "label" : "Cash Match Flag",
+          "formulaExpression" : "case \r\n    when \"Aggregate.Sum.Lifetime_Collected_Amount\"=Lifetime_Cash_Amount and \"Aggregate.Sum.Lifetime_Collected_Amount\"=\"Aggregate0.SUM_Lifetime_Cash_Donor_Insights\"\r\n    then 'match all'\r\n    when \"Aggregate.Sum.Lifetime_Collected_Amount\"=Lifetime_Cash_Amount \r\n    then 'match GCP recipe and delivered'\r\n    when \"Aggregate.Sum.Lifetime_Collected_Amount\"=\"Aggregate0.SUM_Lifetime_Cash_Donor_Insights\"\r\n    then 'match GCP recipe and Donor Insights Recipe'\r\n    when Lifetime_Cash_Amount=\"Aggregate0.SUM_Lifetime_Cash_Donor_Insights\"\r\n    then 'match Delivered and Donor Insights Recipe'\r\n    else\r\n    'No Match'\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA4" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA3" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Fundraising_Match_Flag",
+          "label" : "Fundraising Match Flag",
+          "formulaExpression" : "case \r\n    when \"Aggregate.Sum.Lifetime_Committed_Amount\"=Lifetime_Fundraising_Amount and \"Aggregate.Sum.Lifetime_Committed_Amount\"=\"Aggregate0.SUM_Lifetime_Fundraising_Donor_Insights\"\r\n    then 'match all'\r\n    when \"Aggregate.Sum.Lifetime_Committed_Amount\"=Lifetime_Fundraising_Amount\r\n    then 'match GCP recipe and delivered'\r\n    when \"Aggregate.Sum.Lifetime_Committed_Amount\"=\"Aggregate0.SUM_Lifetime_Fundraising_Donor_Insights\"\r\n    then 'match GCP recipe and Donor Insights Recipe'\r\n    when Lifetime_Cash_Amount=\"Aggregate0.SUM_Lifetime_Fundraising_Donor_Insights\"\r\n    then 'match Delivered and Donor Insights Recipe'\r\n    else\r\n    'No Match'\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "OUTPUT0" : {
+      "action" : "save",
+      "sources" : [ "FORMULA4" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Validate_GCP_Delivered_Insights",
+          "name" : "Validate_GCP_Delivered_Insights",
+          "folderName" : "SharedApp"
+        },
+        "measuresToCurrencies" : [ ]
+      }
+    }
+  },
+  "ui" : {
+    "nodes" : {
+      "LOAD_DATASET0" : {
+        "label" : "Account and Contact Dataset",
+        "type" : "LOAD_DATASET",
+        "top" : 112,
+        "left" : 112,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "LOAD_DATASET1" : {
+        "label" : "Giving Insights Gifts",
+        "type" : "LOAD_DATASET",
+        "top" : 252,
+        "left" : 112,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "TRANSFORM0" : {
+        "label" : "Rename Fields",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 112.1,
+        "left" : 392,
+        "graph" : {
+          "EDIT_ATTRIBUTES0" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES1" : {
+            "label" : "Edit Attributes"
+          }
+        },
+        "connectors" : [ {
+          "source" : "EDIT_ATTRIBUTES0",
+          "target" : "EDIT_ATTRIBUTES1"
+        } ]
+      },
+      "TRANSFORM1" : {
+        "label" : "Create Cash and Fundraising",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 252,
+        "left" : 252,
+        "graph" : {
+          "FORMULA0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Lifetime Cash Donor Insights"
+          },
+          "FORMULA1" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Lifetime Fundraising Donor Insights"
+          },
+          "FORMULA2" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Account or Contact Id"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA0",
+          "target" : "FORMULA1"
+        }, {
+          "source" : "FORMULA1",
+          "target" : "FORMULA2"
+        } ]
+      },
+      "AGGREGATE0" : {
+        "label" : "Aggregate 0",
+        "type" : "AGGREGATE",
+        "top" : 252,
+        "left" : 392,
+        "graph" : {
+          "EXTRACT0" : null,
+          "AGGREGATE1" : null
+        },
+        "connectors" : [ {
+          "source" : "EXTRACT0",
+          "target" : "AGGREGATE1"
+        } ]
+      },
+      "JOIN0" : {
+        "label" : "Join 0",
+        "type" : "JOIN",
+        "top" : 112,
+        "left" : 532
+      },
+      "TRANSFORM2" : {
+        "label" : "Create Match Flags",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 112,
+        "left" : 672,
+        "graph" : {
+          "FORMULA3" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Cash Match Flag"
+          },
+          "FORMULA4" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Fundraising Match Flag"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA3",
+          "target" : "FORMULA4"
+        } ]
+      },
+      "OUTPUT0" : {
+        "label" : "Output 0",
+        "type" : "OUTPUT",
+        "top" : 112,
+        "left" : 812
+      }
+    },
+    "connectors" : [ {
+      "source" : "LOAD_DATASET0",
+      "target" : "TRANSFORM0"
+    }, {
+      "source" : "LOAD_DATASET1",
+      "target" : "TRANSFORM1"
+    }, {
+      "source" : "TRANSFORM1",
+      "target" : "AGGREGATE0"
+    }, {
+      "source" : "TRANSFORM0",
+      "target" : "JOIN0"
+    }, {
+      "source" : "AGGREGATE0",
+      "target" : "JOIN0"
+    }, {
+      "source" : "JOIN0",
+      "target" : "TRANSFORM2"
+    }, {
+      "source" : "TRANSFORM2",
+      "target" : "OUTPUT0"
+    } ],
+    "hiddenColumns" : [ ]
+  },
+  "runMode" : "full"
+}

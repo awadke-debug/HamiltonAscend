@@ -1,0 +1,61 @@
+{
+  "version" : "60.0",
+  "nodes" : {
+    "LOAD_DATASET0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Id", "AccountId", "LastName", "FirstName", "Salutation", "Name", "RecordTypeId", "MailingStreet", "MailingCity", "MailingState", "MailingPostalCode", "MailingCountry", "ucinn_ascendv2__Amount_of_Most_Recent_Gift__c", "ucinn_ascendv2__Amount_of_Most_Recent_Pledge_Payment__c", "ucinn_ascendv2__Amount_of_Most_Recent_Pledge__c", "ucinn_ascendv2__Contact_Type__c", "ucinn_ascendv2__Current_FY_Giving__c", "ucinn_ascendv2__Date_of_Most_Recent_Gift__c", "ucinn_ascendv2__Date_of_Most_Recent_Pledge_Payment__c", "ucinn_ascendv2__Date_of_Most_Recent_Pledge__c", "ucinn_ascendv2__Donor_ID__c", "ucinn_ascendv2__External_System_ID__c", "ucinn_ascendv2__Is_Deceased__c", "ucinn_ascendv2__Last_FY_Giving__c", "ucinn_ascendv2__Lifetime_Cash__c", "ucinn_ascendv2__Lifetime_Fundraising__c", "ucinn_ascendv2__Managers__c", "ucinn_ascendv2__Number_of_Consecutive_Giving__c", "ucinn_ascendv2__Preferred_Address_City__c", "ucinn_ascendv2__Preferred_Address_Country__c", "ucinn_ascendv2__Preferred_Address_Line_1__c", "ucinn_ascendv2__Preferred_Address_Line_2__c", "ucinn_ascendv2__Preferred_Address_Line_3__c", "ucinn_ascendv2__Preferred_Address_Postal_Code__c", "ucinn_ascendv2__Preferred_Address_State__c", "ucinn_ascendv2__Preferred_Address_Type__c", "ucinn_ascendv2__Preferred_Class_Year__c", "ucinn_ascendv2__Preferred_Spouse__c", "ucinn_ascendv2__Primary_Contact_Type__c", "ucinn_ascendv2__Preferred_Address_Formula__c", "ucinn_ascendv2__Preferred_Class_Year_Integer_Formula__c", "HAM_HF_Donor_Status__c", "HAM_Philanthropic_Donor_Status__c", "HAM_Pure_Donor_Status__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "Contact",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "Contact"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "OUTPUT0" : {
+      "action" : "save",
+      "sources" : [ "LOAD_DATASET0" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "contact dump",
+          "name" : "contact_dump",
+          "folderName" : "SharedApp"
+        },
+        "measuresToCurrencies" : [ ]
+      }
+    }
+  },
+  "ui" : {
+    "nodes" : {
+      "LOAD_DATASET0" : {
+        "label" : "Contact",
+        "type" : "LOAD_DATASET",
+        "top" : 112,
+        "left" : 112,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "OUTPUT0" : {
+        "label" : "Output 0",
+        "type" : "OUTPUT",
+        "top" : 112,
+        "left" : 252
+      }
+    },
+    "connectors" : [ {
+      "source" : "LOAD_DATASET0",
+      "target" : "OUTPUT0"
+    } ],
+    "hiddenColumns" : [ ]
+  },
+  "runMode" : "full"
+}

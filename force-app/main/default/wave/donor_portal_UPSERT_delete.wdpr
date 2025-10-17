@@ -1,0 +1,981 @@
+{
+  "version" : "64.0",
+  "nodes" : {
+    "LOAD_DATASET0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "HAM_Endowed_Fund_Date__c", "Prod_RecordTypeId", "HAM_External_System_ID__c", "HAM_Designation__c", "HAM_Fiscal_Year__c", "HAM_Status__c", "Constituent__c", "HAM_Paid__c", "HAM_Pledged__c", "HAM_Pledge_Balance__c" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Credit Aggregates for Donor Portal and JEDI initial load",
+          "name" : "Credit_Aggregates_for_Donor_Portal_and_JEDI_initial_load"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "LOAD_DATASET1" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Id", "Name", "Constituent__c", "HAM_Pledge_Balance__c", "HAM_Designation__c", "HAM_External_System_ID__c", "HAM_Pledged__c", "HAM_Paid__c", "HAM_Status__c", "HAM_Endowed_Fund_Date__c", "HAM_Fiscal_Year__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "HAM_Pledge_Balance__c",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "HAM_Pledge_Balance__c"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "FORMULA0" : {
+      "action" : "formula",
+      "sources" : [ "LOAD_DATASET0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "is_crma_file",
+          "label" : "is crma file",
+          "formulaExpression" : "'true'",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA0_copy0" : {
+      "action" : "formula",
+      "sources" : [ "LOAD_DATASET1" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "is_SF_file",
+          "label" : "is SF file",
+          "formulaExpression" : "'true'",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "JOIN0" : {
+      "action" : "join",
+      "sources" : [ "FORMULA0", "FORMULA0_copy0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "HAM_External_System_ID__c" ],
+        "rightQualifier" : "SF",
+        "rightKeys" : [ "HAM_External_System_ID__c" ]
+      }
+    },
+    "REPLACE0" : {
+      "action" : "formula",
+      "sources" : [ "JOIN0" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "fileflag.is_SF_file_replace",
+          "newProperties" : {
+            "name" : "SF.is_SF_file"
+          }
+        } ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "SF.is_SF_file" ]
+        }
+      },
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "fileflag.is_SF_file_replace",
+          "label" : "is SF file",
+          "formulaExpression" : "coalesce(\"SF.is_SF_file\", null, 'false')",
+          "precision" : 255
+        } ]
+      }
+    },
+    "REPLACE1" : {
+      "action" : "formula",
+      "sources" : [ "REPLACE0" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "is_crma_file_replace",
+          "newProperties" : {
+            "name" : "is_crma_file"
+          }
+        } ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "is_crma_file" ]
+        }
+      },
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "is_crma_file_replace",
+          "label" : "is crma file",
+          "formulaExpression" : "coalesce(is_crma_file, null, 'false')",
+          "precision" : 255
+        } ]
+      }
+    },
+    "FILTER0" : {
+      "action" : "filter",
+      "sources" : [ "REPLACE4" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "CRMA.is_crma_file",
+          "operator" : "EQUAL",
+          "operands" : [ "false" ]
+        }, {
+          "type" : "TEXT",
+          "field" : "is_SF_file",
+          "operator" : "EQUAL",
+          "operands" : [ "true" ]
+        } ]
+      }
+    },
+    "FILTER1" : {
+      "action" : "filter",
+      "sources" : [ "REPLACE1" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "is_crma_file",
+          "operator" : "EQUAL",
+          "operands" : [ "true" ]
+        }, {
+          "type" : "TEXT",
+          "field" : "SF.is_SF_file",
+          "operator" : "EQUAL",
+          "operands" : [ "false" ]
+        } ]
+      }
+    },
+    "FILTER2" : {
+      "action" : "filter",
+      "sources" : [ "REPLACE1" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "is_crma_file",
+          "operator" : "EQUAL",
+          "operands" : [ "true" ]
+        }, {
+          "type" : "TEXT",
+          "field" : "SF.is_SF_file",
+          "operator" : "EQUAL",
+          "operands" : [ "true" ]
+        } ]
+      }
+    },
+    "FORMULA1" : {
+      "action" : "formula",
+      "sources" : [ "FILTER2" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "match_type",
+          "label" : "match type",
+          "formulaExpression" : "'both'",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA1_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FILTER1" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "match_type",
+          "label" : "match type",
+          "formulaExpression" : "'CRMA only'",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA1_copy1" : {
+      "action" : "formula",
+      "sources" : [ "FILTER0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "match_type",
+          "label" : "match type",
+          "formulaExpression" : "'SF only'",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FILTER3" : {
+      "action" : "filter",
+      "sources" : [ "FORMULA1_copy1" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "HAM_Status__c",
+          "operator" : "EQUAL",
+          "operands" : [ "Active" ]
+        } ]
+      }
+    },
+    "REPLACE2" : {
+      "action" : "formula",
+      "sources" : [ "FILTER3" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "HAM_Status__c_replace",
+          "newProperties" : {
+            "name" : "HAM_Status__c"
+          }
+        } ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "HAM_Status__c" ]
+        }
+      },
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "HAM_Status__c_replace",
+          "label" : "HAM_Status",
+          "formulaExpression" : "replace(HAM_Status__c, 'Active', 'Inactive')",
+          "precision" : 255
+        } ]
+      }
+    },
+    "DROP_FIELDS0" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA1_copy0" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "SELECT",
+          "ignoreMissingFields" : true,
+          "fields" : [ "HAM_Endowed_Fund_Date__c", "Prod_RecordTypeId", "HAM_External_System_ID__c", "HAM_Designation__c", "HAM_Fiscal_Year__c", "HAM_Status__c", "Constituent__c", "HAM_Paid__c", "HAM_Pledged__c", "HAM_Pledge_Balance__c", "match_type", "SF.Id" ]
+        }
+      }
+    },
+    "DROP_FIELDS0_copy0" : {
+      "action" : "schema",
+      "sources" : [ "REPLACE2" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "SELECT",
+          "ignoreMissingFields" : true,
+          "fields" : [ "HAM_Endowed_Fund_Date__c", "Prod_RecordTypeId", "HAM_External_System_ID__c", "HAM_Designation__c", "HAM_Fiscal_Year__c", "HAM_Status__c", "Constituent__c", "HAM_Paid__c", "HAM_Pledged__c", "HAM_Pledge_Balance__c", "match_type", "RecordTypeId", "Id" ]
+        }
+      }
+    },
+    "APPEND0" : {
+      "action" : "appendV2",
+      "sources" : [ "DROP_FIELDS0", "DROP_FIELDS0_copy0" ],
+      "parameters" : {
+        "fieldMappings" : [ {
+          "top" : "HAM_Endowed_Fund_Date__c",
+          "bottom" : "HAM_Endowed_Fund_Date__c"
+        }, {
+          "top" : "Prod_RecordTypeId",
+          "bottom" : "RecordTypeId"
+        }, {
+          "top" : "HAM_External_System_ID__c",
+          "bottom" : "HAM_External_System_ID__c"
+        }, {
+          "top" : "HAM_Designation__c",
+          "bottom" : "HAM_Designation__c"
+        }, {
+          "top" : "HAM_Fiscal_Year__c",
+          "bottom" : "HAM_Fiscal_Year__c"
+        }, {
+          "top" : "HAM_Status__c",
+          "bottom" : "HAM_Status__c"
+        }, {
+          "top" : "Constituent__c",
+          "bottom" : "Constituent__c"
+        }, {
+          "top" : "HAM_Paid__c",
+          "bottom" : "HAM_Paid__c"
+        }, {
+          "top" : "HAM_Pledged__c",
+          "bottom" : "HAM_Pledged__c"
+        }, {
+          "top" : "HAM_Pledge_Balance__c",
+          "bottom" : "HAM_Pledge_Balance__c"
+        }, {
+          "top" : "SF.Id",
+          "bottom" : "Id"
+        }, {
+          "top" : "match_type",
+          "bottom" : "match_type"
+        } ]
+      }
+    },
+    "OUTPUT0" : {
+      "action" : "save",
+      "sources" : [ "APPEND1" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "donor portal for upsert",
+          "name" : "donor_portal_for_upsert",
+          "folderName" : "SharedApp"
+        },
+        "measuresToCurrencies" : [ ]
+      }
+    },
+    "FILTER4" : {
+      "action" : "sqlFilter",
+      "sources" : [ "FORMULA1" ],
+      "parameters" : {
+        "sqlFilterExpression" : "(\r\nHAM_Status__c  != \"SF.HAM_Status__c\" or\r\nHAM_Endowed_Fund_Date__c != \"SF.HAM_Endowed_Fund_Date__c\" or\r\nHAM_Paid__c !=\"SF.HAM_Paid__c\" or \r\nHAM_Pledged__c !=\"SF.HAM_Pledged__c\" or\r\nHAM_Pledge_Balance__c !=\"SF.HAM_Pledge_Balance__c\" or HAM_Fiscal_Year__c !=\"SF.HAM_Fiscal_Year__c\"\r\n)\r\nand\r\n  HAM_External_System_ID__c   is not null"
+      }
+    },
+    "DROP_FIELDS0_copy1" : {
+      "action" : "schema",
+      "sources" : [ "FILTER4" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "SELECT",
+          "ignoreMissingFields" : true,
+          "fields" : [ "HAM_Endowed_Fund_Date__c", "Prod_RecordTypeId", "HAM_External_System_ID__c", "HAM_Designation__c", "HAM_Fiscal_Year__c", "HAM_Status__c", "Constituent__c", "HAM_Paid__c", "HAM_Pledged__c", "HAM_Pledge_Balance__c", "match_type", "SF.Id" ]
+        }
+      }
+    },
+    "APPEND1" : {
+      "action" : "appendV2",
+      "sources" : [ "APPEND0", "DROP_FIELDS0_copy1" ],
+      "parameters" : {
+        "fieldMappings" : [ {
+          "top" : "HAM_Endowed_Fund_Date__c",
+          "bottom" : "HAM_Endowed_Fund_Date__c"
+        }, {
+          "top" : "Prod_RecordTypeId",
+          "bottom" : "Prod_RecordTypeId"
+        }, {
+          "top" : "HAM_External_System_ID__c",
+          "bottom" : "HAM_External_System_ID__c"
+        }, {
+          "top" : "HAM_Designation__c",
+          "bottom" : "HAM_Designation__c"
+        }, {
+          "top" : "HAM_Fiscal_Year__c",
+          "bottom" : "HAM_Fiscal_Year__c"
+        }, {
+          "top" : "HAM_Status__c",
+          "bottom" : "HAM_Status__c"
+        }, {
+          "top" : "Constituent__c",
+          "bottom" : "Constituent__c"
+        }, {
+          "top" : "HAM_Paid__c",
+          "bottom" : "HAM_Paid__c"
+        }, {
+          "top" : "HAM_Pledged__c",
+          "bottom" : "HAM_Pledged__c"
+        }, {
+          "top" : "HAM_Pledge_Balance__c",
+          "bottom" : "HAM_Pledge_Balance__c"
+        }, {
+          "top" : "SF.Id",
+          "bottom" : "SF.Id"
+        }, {
+          "top" : "match_type",
+          "bottom" : "match_type"
+        } ]
+      }
+    },
+    "OUTPUT1" : {
+      "action" : "save",
+      "sources" : [ "LOAD_DATASET1" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "ham pledge balance dump",
+          "name" : "ham_pledge_balance_dump"
+        },
+        "measuresToCurrencies" : [ ]
+      }
+    },
+    "LOAD_DATASET0_copy0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "HAM_Endowed_Fund_Date__c", "Prod_RecordTypeId", "HAM_External_System_ID__c", "HAM_Designation__c", "HAM_Fiscal_Year__c", "HAM_Status__c", "Constituent__c", "HAM_Paid__c", "HAM_Pledged__c", "HAM_Pledge_Balance__c" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Credit Aggregates for Donor Portal and JEDI initial load",
+          "name" : "Credit_Aggregates_for_Donor_Portal_and_JEDI_initial_load"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "LOAD_DATASET1_copy0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Id", "RecordTypeId", "Name", "Constituent__c", "HAM_Pledge_Balance__c", "HAM_Designation__c", "HAM_External_System_ID__c", "HAM_Pledged__c", "HAM_Paid__c", "HAM_Status__c", "HAM_Fiscal_Year__c", "HAM_Endowed_Fund_Date__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "HAM_Pledge_Balance__c",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "HAM_Pledge_Balance__c"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "FORMULA0_copy1" : {
+      "action" : "formula",
+      "sources" : [ "LOAD_DATASET0_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "is_crma_file",
+          "label" : "is crma file",
+          "formulaExpression" : "'true'",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA0_copy0_copy0" : {
+      "action" : "formula",
+      "sources" : [ "LOAD_DATASET1_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "is_SF_file",
+          "label" : "is SF file",
+          "formulaExpression" : "'true'",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "JOIN1" : {
+      "action" : "join",
+      "sources" : [ "FORMULA0_copy0_copy0", "FORMULA0_copy1" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "HAM_External_System_ID__c" ],
+        "rightQualifier" : "CRMA",
+        "rightKeys" : [ "HAM_External_System_ID__c" ]
+      }
+    },
+    "REPLACE3" : {
+      "action" : "formula",
+      "sources" : [ "JOIN1" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "CRMA.is_crma_file_replace",
+          "newProperties" : {
+            "name" : "CRMA.is_crma_file"
+          }
+        } ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "CRMA.is_crma_file" ]
+        }
+      },
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "CRMA.is_crma_file_replace",
+          "label" : "is crma file",
+          "formulaExpression" : "coalesce(\"CRMA.is_crma_file\", null, 'false')",
+          "precision" : 255
+        } ]
+      }
+    },
+    "REPLACE4" : {
+      "action" : "formula",
+      "sources" : [ "REPLACE3" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "is_SF_file_replace",
+          "newProperties" : {
+            "name" : "is_SF_file"
+          }
+        } ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "is_SF_file" ]
+        }
+      },
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "is_SF_file_replace",
+          "label" : "is SF file",
+          "formulaExpression" : "coalesce(is_SF_file, null, 'false')",
+          "precision" : 255
+        } ]
+      }
+    }
+  },
+  "ui" : {
+    "nodes" : {
+      "LOAD_DATASET0" : {
+        "label" : "Credit Aggregates for Donor Portal and JEDI initial load",
+        "type" : "LOAD_DATASET",
+        "top" : 250.3,
+        "left" : 112,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "LOAD_DATASET1" : {
+        "label" : "HAM_Pledge_Balance__c",
+        "type" : "LOAD_DATASET",
+        "top" : 392.3,
+        "left" : 111.80000000000001,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "TRANSFORM0" : {
+        "label" : "file flag",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 250.3,
+        "left" : 252,
+        "graph" : {
+          "FORMULA0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "is crma file"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "TRANSFORM0_copy0" : {
+        "label" : "file flag",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 391.9,
+        "left" : 252,
+        "graph" : {
+          "FORMULA0_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "is SF file"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "JOIN0" : {
+        "label" : "lookup from SF on external id",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 250.3,
+        "left" : 392
+      },
+      "TRANSFORM1" : {
+        "label" : "Transform 1",
+        "type" : "TRANSFORM",
+        "top" : 250.2,
+        "left" : 532,
+        "graph" : {
+          "REPLACE0" : {
+            "parameters" : {
+              "type" : "REPLACE_UI"
+            },
+            "label" : "Replace"
+          },
+          "REPLACE1" : {
+            "parameters" : {
+              "type" : "REPLACE_UI"
+            },
+            "label" : "Replace"
+          }
+        },
+        "connectors" : [ {
+          "source" : "REPLACE0",
+          "target" : "REPLACE1"
+        } ]
+      },
+      "FILTER0" : {
+        "label" : "Filter to SF only",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 672,
+        "left" : 812.1
+      },
+      "FILTER1" : {
+        "label" : "Filter to CRMA only",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 252.39999999999998,
+        "left" : 812.7
+      },
+      "FILTER2" : {
+        "label" : "Filter to both CRMA and SF",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 532,
+        "left" : 812.2
+      },
+      "TRANSFORM2" : {
+        "label" : "match type",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 531.7,
+        "left" : 952,
+        "graph" : {
+          "FORMULA1" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "match type"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "TRANSFORM2_copy0" : {
+        "label" : "match type",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 252.39999999999998,
+        "left" : 952.5,
+        "graph" : {
+          "FORMULA1_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "match type"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "TRANSFORM2_copy1" : {
+        "label" : "match type",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 672.4,
+        "left" : 952,
+        "graph" : {
+          "FORMULA1_copy1" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "match type"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "FILTER3" : {
+        "label" : "Filter to active records only",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 672,
+        "left" : 1092.2
+      },
+      "TRANSFORM3" : {
+        "label" : "Recode active to inactive",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 672,
+        "left" : 1231.3,
+        "graph" : {
+          "REPLACE2" : {
+            "parameters" : {
+              "type" : "REPLACE_UI"
+            },
+            "label" : "Replace"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "TRANSFORM4" : {
+        "label" : "Keep CRMA Fields only",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 252.39999999999998,
+        "left" : 1372,
+        "graph" : {
+          "DROP_FIELDS0" : {
+            "label" : "Keep Columns"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "TRANSFORM4_copy0" : {
+        "label" : "Keep SFFields only",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 671.7,
+        "left" : 1372.7,
+        "graph" : {
+          "DROP_FIELDS0_copy0" : {
+            "label" : "Keep Columns"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "APPEND0" : {
+        "label" : "Append 0",
+        "type" : "APPEND",
+        "top" : 252.3,
+        "left" : 1511.9
+      },
+      "OUTPUT0" : {
+        "label" : "Output 0",
+        "type" : "OUTPUT",
+        "top" : 252.39999999999998,
+        "left" : 1790.4
+      },
+      "FILTER4" : {
+        "label" : "Filter to changed records-INCOMPLETE",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 532.1,
+        "left" : 1092.4
+      },
+      "TRANSFORM4_copy1" : {
+        "label" : "Keep CRMA Fields only",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 531.7,
+        "left" : 1372.1,
+        "graph" : {
+          "DROP_FIELDS0_copy1" : {
+            "label" : "Keep Columns"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "APPEND1" : {
+        "label" : "Append 1",
+        "type" : "APPEND",
+        "top" : 252.8,
+        "left" : 1651.8
+      },
+      "OUTPUT1" : {
+        "label" : "Output 1",
+        "type" : "OUTPUT",
+        "top" : 531.8,
+        "left" : 112
+      },
+      "LOAD_DATASET0_copy0" : {
+        "label" : "Credit Aggregates for Donor Portal and JEDI initial load Copy",
+        "type" : "LOAD_DATASET",
+        "top" : 672,
+        "left" : 112.19999999999999,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "LOAD_DATASET1_copy0" : {
+        "label" : "HAM_Pledge_Balance__c",
+        "type" : "LOAD_DATASET",
+        "top" : 814,
+        "left" : 112,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "TRANSFORM0_copy1" : {
+        "label" : "file flag Copy",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 672,
+        "left" : 252.2,
+        "graph" : {
+          "FORMULA0_copy1" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "is crma file"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "TRANSFORM0_copy0_copy0" : {
+        "label" : "file flag Copy1",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 813.5999999999999,
+        "left" : 252.2,
+        "graph" : {
+          "FORMULA0_copy0_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "is SF file"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "JOIN1" : {
+        "label" : "lookup from CRMA on external id",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 672.1,
+        "left" : 392.1
+      },
+      "TRANSFORM1_copy0" : {
+        "label" : "Transform 1 Copy",
+        "type" : "TRANSFORM",
+        "top" : 670,
+        "left" : 532.1,
+        "graph" : {
+          "REPLACE3" : {
+            "parameters" : {
+              "type" : "REPLACE_UI"
+            },
+            "label" : "Replace"
+          },
+          "REPLACE4" : {
+            "parameters" : {
+              "type" : "REPLACE_UI"
+            },
+            "label" : "Replace"
+          }
+        },
+        "connectors" : [ {
+          "source" : "REPLACE3",
+          "target" : "REPLACE4"
+        } ]
+      }
+    },
+    "connectors" : [ {
+      "source" : "LOAD_DATASET0",
+      "target" : "TRANSFORM0"
+    }, {
+      "source" : "LOAD_DATASET1",
+      "target" : "TRANSFORM0_copy0"
+    }, {
+      "source" : "TRANSFORM0",
+      "target" : "JOIN0"
+    }, {
+      "source" : "TRANSFORM0_copy0",
+      "target" : "JOIN0"
+    }, {
+      "source" : "JOIN0",
+      "target" : "TRANSFORM1"
+    }, {
+      "source" : "TRANSFORM1",
+      "target" : "FILTER1"
+    }, {
+      "source" : "TRANSFORM1",
+      "target" : "FILTER2"
+    }, {
+      "source" : "FILTER2",
+      "target" : "TRANSFORM2"
+    }, {
+      "source" : "FILTER1",
+      "target" : "TRANSFORM2_copy0"
+    }, {
+      "source" : "FILTER0",
+      "target" : "TRANSFORM2_copy1"
+    }, {
+      "source" : "FILTER3",
+      "target" : "TRANSFORM3"
+    }, {
+      "source" : "TRANSFORM2_copy0",
+      "target" : "TRANSFORM4"
+    }, {
+      "source" : "TRANSFORM2_copy1",
+      "target" : "FILTER3"
+    }, {
+      "source" : "TRANSFORM3",
+      "target" : "TRANSFORM4_copy0"
+    }, {
+      "source" : "TRANSFORM4",
+      "target" : "APPEND0"
+    }, {
+      "source" : "TRANSFORM4_copy0",
+      "target" : "APPEND0"
+    }, {
+      "source" : "APPEND1",
+      "target" : "OUTPUT0"
+    }, {
+      "source" : "TRANSFORM2",
+      "target" : "FILTER4"
+    }, {
+      "source" : "FILTER4",
+      "target" : "TRANSFORM4_copy1"
+    }, {
+      "source" : "APPEND0",
+      "target" : "APPEND1"
+    }, {
+      "source" : "TRANSFORM4_copy1",
+      "target" : "APPEND1"
+    }, {
+      "source" : "LOAD_DATASET1",
+      "target" : "OUTPUT1"
+    }, {
+      "source" : "LOAD_DATASET0_copy0",
+      "target" : "TRANSFORM0_copy1"
+    }, {
+      "source" : "LOAD_DATASET1_copy0",
+      "target" : "TRANSFORM0_copy0_copy0"
+    }, {
+      "source" : "TRANSFORM0_copy0_copy0",
+      "target" : "JOIN1"
+    }, {
+      "source" : "TRANSFORM0_copy1",
+      "target" : "JOIN1"
+    }, {
+      "source" : "JOIN1",
+      "target" : "TRANSFORM1_copy0"
+    }, {
+      "source" : "TRANSFORM1_copy0",
+      "target" : "FILTER0"
+    } ],
+    "hiddenColumns" : [ ]
+  },
+  "runMode" : "full"
+}

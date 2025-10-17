@@ -1,0 +1,415 @@
+/* Base Container for the entire nav bar (always sticky) */
+.nav-bar-container {
+    background-color: #e9f0f9;
+    border-bottom: 1px solid #dcdcdc;
+    padding: 0.75rem 1.5rem;
+    width: 100%;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Left Navigation Links */
+.nav-links-left {
+    display: flex; /* Ensure these are flex */
+    align-items: center;
+    width: max-content;
+}
+
+.nav-section-right-box{
+    width: max-content;
+}
+.nav-links-left .nav-link {
+    color: #686E78;
+    font-weight: 500;
+    text-decoration: none;
+    padding: 0 1.5rem;
+    position: relative;
+    padding-bottom: 0.5rem;
+    font-size: 18px;
+    white-space: nowrap;
+}
+
+.nav-links-left .nav-link:hover {
+    color: #0A2F87;
+}
+
+.nav-links-left .nav-link.active {
+    color: #0A2F87;
+    font-weight: 600;
+}
+
+.nav-links-left .nav-link.active::after {
+    content: '';
+    position: absolute;
+    left: 1.5rem;
+    right: 1.5rem;
+    bottom: 0;
+    height: 3px;
+    background-color: #0070d2;
+    border-radius: 2px;
+}
+
+/* My Links Dropdown (now a Menu) Styling */
+.my-links-menu-container {
+    width: auto;
+}
+
+.my-links-button-menu {
+    /* --sds-c-button-neutral-color-border: #d8dde6;
+    --sds-c-button-neutral-color-background: white;
+    --sds-c-button-neutral-text-color: #4b5a7a;
+    --sds-c-button-neutral-color-border-hover: #0070d2;
+    --sds-c-button-neutral-color-background-hover: white;
+    --sds-c-button-neutral-text-color-hover: #0070d2;
+    --sds-c-button-neutral-color-border-active: #0070d2;
+    --sds-c-button-neutral-color-background-active: white;
+    --sds-c-button-neutral-text-color-active: #0070d2; */
+
+    border-radius: 0.25rem;
+    font-size: 0.95rem;
+    height: var(--sds-c-button-height, 2rem);
+    padding: 0 0.75rem;
+    min-width: 90px;
+    text-align: left;
+}
+
+.my-links-button-menu {
+    background: transparent !important;
+    color: red;
+}
+
+.my-links-button-menu button, .my-links-button-menu .slds-button_neutral, .my-links-button-menu .slds-button {
+    padding: 0 0.75rem;
+    background-color: transparent !important;
+    color: #231F20 !important;
+}
+
+.my-links-button-menu lightning-icon {
+    --sds-c-icon-color-foreground: #4b5a7a;
+}
+.my-links-button-menu:hover lightning-icon {
+     --sds-c-icon-color-foreground: #0070d2;
+}
+
+/* Make a Gift Button Sizing and Styling */
+.make-a-gift-button {
+    background-color: #002F86;
+    /* background-image: linear-gradient(to bottom, #0070d2, #005fb2); */
+    color: white;
+    /* border-color: #005fb2; */
+    border-radius: 12px;
+    padding: 20px 25px;
+    font-weight: 500;
+    font-size: 18px;
+    /* box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1); */
+    height: var(--sds-c-button-height, 2rem);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.make-a-gift-button:hover {
+    background-color: #004b8d;
+    background-image: none;
+    border-color: #004b8d;
+}
+
+.make-a-gift-button lightning-icon {
+    --slds-c-icon-color-foreground-default: white;
+    margin-right: 0.25rem;
+}
+.make-a-gift-button lightning-icon .slds-icon_container {
+    width: 0.9rem;
+    height: 0.9rem;
+}
+
+/* Gear icon styling */
+.menu-item {
+    display: flex;
+    align-items: center;
+    padding: 0.4rem 0.75rem;
+}
+
+.menu-icon {
+    margin-right: 0.5rem; /* Reduce gap between icon and text */
+    flex-shrink: 0;
+}
+
+.menu-label {
+    white-space: nowrap;
+    font-size: 0.875rem;
+}
+
+
+
+.gear-icon {
+    --slds-c-icon-color-foreground-default: #1b96ff;
+    cursor: pointer;
+} 
+
+
+
+.my-links-wrapper {
+    position: relative;
+    display: inline-block;
+    margin-right: 1rem;
+}
+
+.my-links-button {
+    background-color: transparent;
+    color: #231F20;
+    /* border: 2px solid yellow; */
+    border-radius: 6px;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    min-width: 120px;
+    user-select: none;
+    font-size: 18px;
+    line-height: 30px;
+}
+
+.dropdown-icon {
+    width: 26px;
+    height: 26px;
+    fill: #0A2F87;
+    margin-left: auto;
+    color: #0A2F87;
+}
+
+.my-links-dropdown {
+    position: absolute;
+    top: calc(100% + 0.25rem);
+    right: 0;
+    background-color: #d9ecfa;
+    border: 1px solid #d8dde6;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    border-radius: 8px;
+    z-index: 1000;
+    min-width: 160px;
+    padding: 0.5rem 0;
+}
+
+.my-links-item {
+    display: block;
+    padding: 0.5rem 1rem;
+    color: #231F20;
+    text-decoration: none;
+    font-weight: 500;
+    white-space: nowrap;
+    font-size: 16px;
+    line-height: 30px;
+}
+
+.my-links-item:hover {
+    color: #0A2F87;
+}
+
+.slds-dropdown_right{
+    border-radius: 12px !important;
+    padding: 12px !important;
+    margin-top: 15px;
+    border: 1px solid #d9ecfa;
+    min-width: max-content !important;
+    width: max-content;
+}
+
+.slds-dropdown__list{
+    width: max-content;
+}
+
+.my-settings-menu {
+    cursor: pointer;
+    margin-bottom: 12px;
+}
+
+.my-settings-menu:nth-last-of-type(1) {
+    margin-bottom: 0px;
+}
+
+.my-settings-menu .menu-label{
+    color: #0A2F87;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 100%;
+
+}
+.my-settings-menu a{
+    text-decoration: none;
+}
+.my-settings-menu a .menu-label{
+    color: #0A2F87;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 100%;
+}
+
+.make-gift-img{
+    width: 24px;
+    margin-bottom: 5px;
+}
+
+.make-gift-img-mobile, .hamburger-icon-mobile{
+    width: 35px;
+    height: 35px;
+}
+.settings-popup-icon{
+    margin-right: 10px;
+}
+
+.edit-profile-menu-open img, .logout-menu-open img{
+    margin-right: 7px; 
+    margin-bottom: 2px;
+}
+
+.mb-5{
+    margin-bottom: 5px;
+}
+
+@media (max-width: 768px) {
+    /* My Impact label on mobile header */
+    .nav-title-mobile {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #0A2F87;
+        padding-right: 1rem;
+        display: flex;
+        align-items: center;
+        flex-grow: 1;
+    }
+
+    /* Mobile Header Icons Container */
+    .mobile-header-icons {
+        gap: 0.5rem;
+    }
+
+    .mobile-icon lightning-button-icon {
+        --sds-c-icon-color-foreground: #00addf;
+        --sds-c-icon-color-foreground-default: #00addf;
+        padding: 0.5rem;
+        border: 1px solid #d8dde6;
+        border-radius: 50%;
+        background-color: white;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        height: 38px;
+        width: 38px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .mobile-icon lightning-button-icon:hover {
+        --sds-c-icon-color-foreground: #008cb2;
+        border-color: #0070d2;
+    }
+    .mobile-icon lightning-icon {
+        --sds-c-icon-size-small: 18px;
+    }
+
+    /* Mobile Menu Overlay */
+    .mobile-menu-overlay {
+        position: fixed;
+        top: 0;
+        left: 8%;
+        width: 85%;
+        /* max-width: 350px; */
+        height: 75%;
+        background-color: #002e6d; 
+        z-index: 1001; /* Above navbar */
+        display: flex;
+        box-shadow:10px 10px 10px 100px rgba(245, 245, 245, 0.868);
+        flex-direction: column;
+        overflow-y: auto; /* Allow scrolling if content is too long */
+        margin-top: 100px; /* Space for the implicit "Hamilton" header if it's there */
+        /* margin-left: 2.5rem;
+        margin-right: 2.5rem; */
+        border-radius: 0.75rem;
+    }
+
+    .mobile-menu-content {
+        flex-grow: 1;
+        padding: 1.5rem; /* Padding inside the blue menu */
+        position: relative !important;
+    }
+
+    .mobile-menu-content-cross-icon{
+        position: absolute;
+        top: 0px;
+        font-size: 32px;
+        right: 7%;
+    }
+
+    /* Styling for main mobile menu items (My Impact, Alumni Directory) */
+    .mobile-menu-item {
+        display: block;
+        padding: 0.75rem 0;
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: white;
+        text-decoration: none;
+        transition: background-color 0.15s ease-in-out;
+    }
+    .mobile-menu-item:hover {
+        background-color: rgba(255, 255, 255, 0.1); /* Subtle white hover */
+    }
+
+    /* "My Links" Section Header */
+    .my-links-header {
+        font-size: 1.05rem;
+        font-weight: 600;
+        color: #a0c2e3;
+        margin-top: 1.5rem;
+        margin-bottom: 0.75rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    /* Styling for "My Links" sub-items */
+    .mobile-sub-item {
+        font-size: 1rem;
+        font-weight: 400;
+        color: white;
+        padding-left: 1rem;
+        border-bottom: none;
+    }
+
+    /* Make a Gift Button in Mobile Menu */
+    .mobile-gift-button-container {
+        text-align: center;
+        margin-top: 2rem;
+        margin-bottom: 2rem;
+        background-color: white;
+        border-radius: 0.75rem;
+        width: 100%;
+        max-width: 300px;
+    }
+
+    .mobile-make-a-gift-button {
+        --slds-c-icon-color-foreground-default: #002e6d;
+        border-width: 1.5px;
+        border-radius: 0.25rem;
+        padding: 0.75rem 2rem;
+        font-size: 1.05rem;
+        font-weight: 600;
+        width: 100%;
+        max-width: 300px;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .mobile-make-a-gift-button lightning-icon {
+        --slds-c-icon-color-foreground-default: #002e6d;
+        margin-right: 0.5rem;
+    }
+    .mobile-make-a-gift-button:hover lightning-icon {
+        --sds-c-icon-color-foreground: #002e6d;
+    }
+    .mobile-menu-item lightning-icon {
+        --slds-c-icon-color-foreground-default: white;
+    }
+}

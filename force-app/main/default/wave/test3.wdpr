@@ -1,0 +1,248 @@
+{
+  "version" : "64.0",
+  "nodes" : {
+    "OUTPUT0" : {
+      "action" : "save",
+      "sources" : [ "FILTER1" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "test",
+          "name" : "test"
+        },
+        "measuresToCurrencies" : [ ]
+      }
+    },
+    "LOAD_DATASET0_copy1" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "HAM_Endowed_Fund_Date__c", "Prod_RecordTypeId", "HAM_External_System_ID__c", "HAM_Designation__c", "HAM_Fiscal_Year__c", "match_type", "HAM_Status__c", "Constituent__c", "HAM_Paid__c", "HAM_Pledged__c", "HAM_Pledge_Balance__c", "SF.Id" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "donor portal for upsert",
+          "name" : "donor_portal_for_upsert"
+        },
+        "sampleDetails" : {
+          "type" : "Random",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "FILTER0_copy1" : {
+      "action" : "filter",
+      "sources" : [ "JOIN0_copy0" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "tester.is_portal_tester",
+          "operator" : "EQUAL",
+          "operands" : [ "true" ]
+        } ]
+      }
+    },
+    "LOAD_DATASET1_copy0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Constituent_Employer", "First_Name", "Contact_ID", "Is_Active", "Last_Login", "Last_Name", "Username", "Profile" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Portal_Test_Users",
+          "name" : "Portal_Test_Users"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "FORMULA0_copy0" : {
+      "action" : "formula",
+      "sources" : [ "LOAD_DATASET1_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "is_portal_tester",
+          "label" : "is portal tester",
+          "formulaExpression" : "'true'",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA1" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA0_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Constituent_Employer_formula",
+          "label" : "Constituent Employer Formula",
+          "formulaExpression" : "char_length(Contact_ID)",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "JOIN0_copy0" : {
+      "action" : "join",
+      "sources" : [ "FORMULA3", "FORMULA1" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Contact_Id_for_Lightning" ],
+        "rightQualifier" : "tester",
+        "rightKeys" : [ "Contact_ID" ]
+      }
+    },
+    "FORMULA3" : {
+      "action" : "formula",
+      "sources" : [ "LOAD_DATASET0_copy1" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Contact_Id_for_Lightning",
+          "label" : "Contact Id for Lightning",
+          "formulaExpression" : "substr(Constituent__c, 1, 15)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FILTER1" : {
+      "action" : "filter",
+      "sources" : [ "FILTER0_copy1" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "tester.Last_Name",
+          "operator" : "EQUAL",
+          "operands" : [ "Ross", "Schmoker", "Torres", "Zucker" ]
+        } ]
+      }
+    }
+  },
+  "ui" : {
+    "nodes" : {
+      "OUTPUT0" : {
+        "label" : "Output 0",
+        "type" : "OUTPUT",
+        "top" : 252.3,
+        "left" : 952.6
+      },
+      "LOAD_DATASET0_copy1" : {
+        "label" : "donor portal for upsert Copy",
+        "type" : "LOAD_DATASET",
+        "top" : 252,
+        "left" : 112,
+        "parameters" : {
+          "sampleSize" : 10000
+        }
+      },
+      "FILTER0_copy1" : {
+        "label" : "Filter 0 Copy",
+        "type" : "FILTER",
+        "top" : 252,
+        "left" : 532
+      },
+      "LOAD_DATASET1_copy0" : {
+        "label" : "Portal_Test_Users",
+        "type" : "LOAD_DATASET",
+        "top" : 392,
+        "left" : 112,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "TRANSFORM1_copy0" : {
+        "label" : "Transform 1",
+        "type" : "TRANSFORM",
+        "top" : 392,
+        "left" : 252,
+        "graph" : {
+          "FORMULA0_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "is portal tester"
+          },
+          "FORMULA1" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Formula"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA0_copy0",
+          "target" : "FORMULA1"
+        } ]
+      },
+      "JOIN0_copy0" : {
+        "label" : "look up testers",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 252,
+        "left" : 392
+      },
+      "TRANSFORM2" : {
+        "label" : "Transform 2",
+        "type" : "TRANSFORM",
+        "top" : 252,
+        "left" : 252,
+        "graph" : {
+          "FORMULA3" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Contact Id for Lightning"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "FILTER1" : {
+        "label" : "Filter 1",
+        "type" : "FILTER",
+        "top" : 252,
+        "left" : 810.9
+      }
+    },
+    "connectors" : [ {
+      "source" : "JOIN0_copy0",
+      "target" : "FILTER0_copy1"
+    }, {
+      "source" : "LOAD_DATASET1_copy0",
+      "target" : "TRANSFORM1_copy0"
+    }, {
+      "source" : "TRANSFORM2",
+      "target" : "JOIN0_copy0"
+    }, {
+      "source" : "TRANSFORM1_copy0",
+      "target" : "JOIN0_copy0"
+    }, {
+      "source" : "FILTER1",
+      "target" : "OUTPUT0"
+    }, {
+      "source" : "LOAD_DATASET0_copy1",
+      "target" : "TRANSFORM2"
+    }, {
+      "source" : "FILTER0_copy1",
+      "target" : "FILTER1"
+    } ],
+    "hiddenColumns" : [ ]
+  },
+  "runMode" : "full"
+}

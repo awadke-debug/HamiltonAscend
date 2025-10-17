@@ -1,0 +1,67 @@
+<template>
+    <div class="backgroundWhite">
+        <lightning-accordion allow-multiple-sections-open="true" active-section-name={activeReportSection} onsectiontoggle={handleReportSectionToggle}>
+            <lightning-accordion-section name="Contact Reports" label="Contact Reports">
+                <!-- Button Row Right-Aligned -->
+                <div class="slds-grid slds-grid_align-end slds-p-bottom_small">
+                    <lightning-button label="Create Contact Report" onclick={openFlowModal}></lightning-button>
+                </div>
+
+                <!-- Modal for Flow -->
+                <template if:true={isFlowModalOpen}>
+                    <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open slds-modal_small">
+                        <div class="slds-modal__container">
+                            <header class="slds-modal__header">
+                                <h2 class="slds-modal__title">New Contact Report</h2>
+                                <button class="slds-button slds-button_icon slds-modal__close" title="Close" onclick={closeFlowModal}>
+                                    <lightning-icon icon-name="utility:close" alternative-text="close" size="small"></lightning-icon>
+                                </button>
+                            </header>
+                            <div class="slds-modal__content slds-p-around_medium">
+                                <lightning-flow
+                                    flow-api-name="Contact_Report_Create_New_Contact_Report_Gift_Officers"
+                                    flow-input-variables={flowInputVariables}
+                                    onstatuschange={handleFlowStatusChange}>
+                                </lightning-flow>
+                            </div>
+                        </div>
+                    </section>
+                    <div class="slds-backdrop slds-backdrop_open"></div>
+                </template>
+
+                <!-- Spinner -->
+                <template if:true={loading}>
+                    <lightning-spinner alternative-text="Loading..." size="medium" variant="brand"></lightning-spinner>
+                </template>
+
+                <!-- Table -->
+                <template lwc:if={pageReports}>
+                    <div class="slds-p-around_small" style="width: 100%;">
+                        <div class="label slds-text-title_caps slds-text-color_brand">Contact Reports</div>
+                        <div style="overflow-x: auto;">
+                            <lightning-datatable
+                                key-field="Id" 
+                                data={pageReports} 
+                                columns={contactReportColumns} 
+                                hide-checkbox-column 
+                                sorted-by={sortedBy}
+                                sorted-direction={sortedDirection}
+                                onsort={handleReportSort}>
+                            </lightning-datatable>
+                        </div>
+                        
+                        <!-- Updated Pagination Controls to Match Working Component -->
+                        <div class="slds-m-top_small slds-grid slds-grid_align-spread slds-align_absolute-center">
+                            <lightning-button label="Prev" onclick={prevPage} disabled={isFirstPage}></lightning-button>
+                            <div class="slds-m-horizontal_small">
+                                Page {pageNumber} of {totalPages} · {totalRecords} total
+                            </div>
+                            <lightning-button label="Next" onclick={nextPage} disabled={isLastPage}></lightning-button>
+                        </div>
+                    </div>
+                </template>
+                <template lwc:else> No Contact Reports Found </template>
+            </lightning-accordion-section>
+        </lightning-accordion>
+    </div>
+</template>

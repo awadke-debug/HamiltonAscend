@@ -1,0 +1,216 @@
+{
+  "version" : "63.0",
+  "nodes" : {
+    "LOAD_DATASET0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Private_Societies_Edited", "HAM_Name_w_Suffix__c", "NCAA_Edited", "Account_or_Contact_Id", "Preferred_Address.ucinn_ascendv2__Address_State_Formula__c_bucket", "Is_500_HF_DONOR", "Primary_Relationship_Manager.Assigned_User_Name", "Wealth_Rating.HAM_Wealth_Rating_Number__c_bucket", "Persistence_500_HF_Flag", "Aggregate.SUM_FY01_Collected_Amount_HF", "Aggregate.SUM_FY04_Collected_Amount_HF", "Age_Edited_1YR", "HF_Change_2YR_percent", "Aggregate.SUM_FY02_Collected_Amount_HF", "Persistence_HF_Flag", "HF_Change_3YR_percent", "Lifetime_Cash_Collected_as_of_2YR", "Is_500_HF_Donor_int", "Aggregate.SUM_FY03_Collected_Amount_HF" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Model 500 LYR Version 2",
+          "name" : "Model_500_LYR_Version_2"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "FILTER0" : {
+      "action" : "filter",
+      "sources" : [ "LOAD_DATASET0" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "NUMBER",
+          "field" : "Lifetime_Cash_Collected_as_of_2YR",
+          "operator" : "NOT",
+          "operands" : [ "0" ]
+        }, {
+          "type" : "NUMBER",
+          "field" : "Age_Edited_1YR",
+          "operator" : "LESS_THAN",
+          "operands" : [ "35" ]
+        } ],
+        "filterBooleanLogic" : "1 OR 2"
+      }
+    },
+    "OUTPUT0" : {
+      "action" : "save",
+      "sources" : [ "EDIT_ATTRIBUTES5" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Model 500 LYR Validation",
+          "name" : "Model_500_LYR_Validation",
+          "folderName" : "SharedApp"
+        },
+        "measuresToCurrencies" : [ ]
+      }
+    },
+    "EDIT_ATTRIBUTES0" : {
+      "action" : "schema",
+      "sources" : [ "FILTER0" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Aggregate.SUM_FY01_Collected_Amount_HF",
+          "newProperties" : {
+            "label" : "CYR Paid (HF)",
+            "name" : "Aggregate.SUM_FY01_Collected_Amount_HF",
+            "typeProperties" : null
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES1" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES0" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Aggregate.SUM_FY02_Collected_Amount_HF",
+          "newProperties" : {
+            "label" : "1YR Paid (HF)",
+            "name" : "Aggregate.SUM_FY02_Collected_Amount_HF",
+            "typeProperties" : null
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES2" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES1" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Aggregate.SUM_FY03_Collected_Amount_HF",
+          "newProperties" : {
+            "label" : "2YR Paid (HF)",
+            "name" : "Aggregate.SUM_FY03_Collected_Amount_HF",
+            "typeProperties" : null
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES3" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES2" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Aggregate.SUM_FY04_Collected_Amount_HF",
+          "newProperties" : {
+            "label" : "3YR Paid (HF)",
+            "name" : "Aggregate.SUM_FY04_Collected_Amount_HF",
+            "typeProperties" : null
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES4" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES3" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "HF_Change_2YR_percent",
+          "newProperties" : {
+            "label" : "1YR HF Change%",
+            "name" : "HF_Change_2YR_percent",
+            "typeProperties" : null
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES5" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES4" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "HF_Change_3YR_percent",
+          "newProperties" : {
+            "label" : "2YR HF Change%",
+            "name" : "HF_Change_3YR_percent",
+            "typeProperties" : null
+          }
+        } ]
+      }
+    }
+  },
+  "ui" : {
+    "nodes" : {
+      "LOAD_DATASET0" : {
+        "label" : "Model 500 LYR Version 2",
+        "type" : "LOAD_DATASET",
+        "top" : 112,
+        "left" : 112,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "FILTER0" : {
+        "label" : "Filter 0",
+        "type" : "FILTER",
+        "top" : 112,
+        "left" : 252
+      },
+      "OUTPUT0" : {
+        "label" : "Output 0",
+        "type" : "OUTPUT",
+        "top" : 112.19999999999999,
+        "left" : 531.6
+      },
+      "TRANSFORM0" : {
+        "label" : "Transform 0",
+        "type" : "TRANSFORM",
+        "top" : 112,
+        "left" : 392,
+        "graph" : {
+          "EDIT_ATTRIBUTES0" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES1" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES2" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES3" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES4" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES5" : {
+            "label" : "Edit Attributes"
+          }
+        },
+        "connectors" : [ {
+          "source" : "EDIT_ATTRIBUTES0",
+          "target" : "EDIT_ATTRIBUTES1"
+        }, {
+          "source" : "EDIT_ATTRIBUTES1",
+          "target" : "EDIT_ATTRIBUTES2"
+        }, {
+          "source" : "EDIT_ATTRIBUTES2",
+          "target" : "EDIT_ATTRIBUTES3"
+        }, {
+          "source" : "EDIT_ATTRIBUTES3",
+          "target" : "EDIT_ATTRIBUTES4"
+        }, {
+          "source" : "EDIT_ATTRIBUTES4",
+          "target" : "EDIT_ATTRIBUTES5"
+        } ]
+      }
+    },
+    "connectors" : [ {
+      "source" : "LOAD_DATASET0",
+      "target" : "FILTER0"
+    }, {
+      "source" : "TRANSFORM0",
+      "target" : "OUTPUT0"
+    }, {
+      "source" : "FILTER0",
+      "target" : "TRANSFORM0"
+    } ],
+    "hiddenColumns" : [ ]
+  },
+  "runMode" : "full"
+}
