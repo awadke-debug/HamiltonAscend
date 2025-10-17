@@ -1,0 +1,59 @@
+{
+  "version" : "65.0",
+  "nodes" : {
+    "LOAD_DATASET0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "HAM_Is_Active__c", "HAM_Reunion_Year__c", "Id", "AccountId", "LastName", "FirstName", "Salutation", "MiddleName", "Suffix", "Name", "RecordTypeId", "MailingStreet", "MailingCity", "MailingState", "MailingPostalCode", "MailingCountry", "Title", "Birthdate", "GenderIdentity", "ucinn_ascendv2__Amount_of_Most_Recent_Gift__c", "ucinn_ascendv2__Amount_of_Most_Recent_Pledge_Payment__c", "ucinn_ascendv2__Amount_of_Most_Recent_Pledge__c", "ucinn_ascendv2__Birth_Year__c", "ucinn_ascendv2__Contact_Type__c", "ucinn_ascendv2__Current_FY_Giving__c", "ucinn_ascendv2__Data_Source__c", "ucinn_ascendv2__Date_Marked_Deceased__c", "ucinn_ascendv2__Date_of_Most_Recent_Gift__c", "ucinn_ascendv2__Date_of_Most_Recent_Pledge_Payment__c", "ucinn_ascendv2__Date_of_Most_Recent_Pledge__c", "ucinn_ascendv2__Deceased_Date__c", "ucinn_ascendv2__Donor_ID__c", "ucinn_ascendv2__Ethnicity__c", "ucinn_ascendv2__External_System_ID__c", "ucinn_ascendv2__Full_Name_Formula__c", "ucinn_ascendv2__Gender__c", "ucinn_ascendv2__Is_Anonymous__c", "ucinn_ascendv2__Is_Deceased__c", "ucinn_ascendv2__Last_FY_Giving__c", "ucinn_ascendv2__Lifetime_Cash__c", "ucinn_ascendv2__Lifetime_Fundraising__c", "ucinn_ascendv2__Managers__c", "ucinn_ascendv2__Number_of_Consecutive_Giving__c", "ucinn_ascendv2__PRM__c", "ucinn_ascendv2__Preferred_Address_City__c", "ucinn_ascendv2__Preferred_Address_Country__c", "ucinn_ascendv2__Preferred_Address_Line_1__c", "ucinn_ascendv2__Preferred_Address_Line_2__c", "ucinn_ascendv2__Preferred_Address_Line_3__c", "ucinn_ascendv2__Preferred_Address_Postal_Code__c", "ucinn_ascendv2__Preferred_Address_State__c", "ucinn_ascendv2__Preferred_Address_Type__c", "ucinn_ascendv2__PRM_No_Trustee_Formula__c", "HAM_Lifetime_Bequest_Intention__c", "HAM_PRM_Role__c", "HAM_Current_Year_Hamilton_Fund_Collected__c", "HAM_Current_Yr_Hamilton_Fund_Fundraising__c", "HAM_Last_Year_Hamilton_Fund_Collected__c", "HAM_Last_Year_Hamilton_Fund_Fundraising__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "Contact",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "Contact"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "OUTPUT0" : {
+      "action" : "save",
+      "sources" : [ "LOAD_DATASET0" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "contact_dump",
+          "name" : "contact_dump"
+        }
+      }
+    }
+  },
+  "ui" : {
+    "nodes" : {
+      "LOAD_DATASET0" : {
+        "label" : "Contact",
+        "type" : "LOAD_DATASET",
+        "top" : 112,
+        "left" : 112,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "OUTPUT0" : {
+        "label" : "Output 0",
+        "type" : "OUTPUT",
+        "top" : 112,
+        "left" : 252
+      }
+    },
+    "connectors" : [ {
+      "source" : "LOAD_DATASET0",
+      "target" : "OUTPUT0"
+    } ],
+    "hiddenColumns" : [ ]
+  },
+  "runMode" : "full"
+}

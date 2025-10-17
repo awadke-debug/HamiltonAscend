@@ -1,0 +1,95 @@
+{
+  "version" : "60.0",
+  "nodes" : {
+    "LOAD_DATASET0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Id", "Pure_Donor.Count_Unique.Fiscal_Years" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Account and Contact Dataset",
+          "name" : "Account_and_Contact_Dataset"
+        },
+        "sampleDetails" : {
+          "type" : "Custom",
+          "filters" : {
+            "filterExpressions" : [ {
+              "type" : "TEXT",
+              "field" : "Id",
+              "operator" : "IS_NOT_NULL",
+              "operands" : [ ]
+            } ]
+          },
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "OUTPUT0" : {
+      "action" : "outputExternal",
+      "sources" : [ "FILTER0" ],
+      "parameters" : {
+        "connectionName" : "SFDCconnectorHAM",
+        "object" : "Contact",
+        "operation" : "upsert",
+        "externalIdFieldName" : "Id",
+        "hyperFileName" : "",
+        "fieldsMapping" : [ {
+          "sourceField" : "Id",
+          "targetField" : "Id"
+        }, {
+          "sourceField" : "Pure_Donor.Count_Unique.Fiscal_Years",
+          "targetField" : "HAM_Total_Years_of_Giving__c"
+        } ],
+        "connectorType" : "SALESFORCE_OUTPUT"
+      }
+    },
+    "FILTER0" : {
+      "action" : "filter",
+      "sources" : [ "LOAD_DATASET0" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "Id",
+          "operator" : "IS_NOT_NULL",
+          "operands" : [ ]
+        } ]
+      }
+    }
+  },
+  "ui" : {
+    "nodes" : {
+      "LOAD_DATASET0" : {
+        "label" : "Account and Contact Dataset",
+        "description" : "",
+        "type" : "LOAD_DATASET",
+        "top" : 252.3,
+        "left" : 391.7,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "OUTPUT0" : {
+        "label" : "Output 0",
+        "type" : "OUTPUT",
+        "top" : 252,
+        "left" : 672
+      },
+      "FILTER0" : {
+        "label" : "Filter 0",
+        "type" : "FILTER",
+        "top" : 252,
+        "left" : 532
+      }
+    },
+    "connectors" : [ {
+      "source" : "FILTER0",
+      "target" : "OUTPUT0"
+    }, {
+      "source" : "LOAD_DATASET0",
+      "target" : "FILTER0"
+    } ],
+    "hiddenColumns" : [ ]
+  },
+  "runMode" : "full"
+}

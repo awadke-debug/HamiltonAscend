@@ -1,0 +1,165 @@
+<template>
+    <!-- Template tag to render desktop view -->
+    <template if:true={isDesktopView}>
+        <div class="slds-p-around_medium nav-bar-container">
+            <div class="slds-grid slds-grid_align-spread slds-grid_vertical-align-center">
+
+                <div class="slds-col slds-size_1-of-2 nav-links-left">
+                    <a href="#" class={computedMyImpactClass} data-name={label.myimpact} onclick={handleNavLinkClick}>{label.myimpact}</a>
+                    <a href="#" class={computedAlumniDirectoryClass} data-name={label.alumnidirectory} onclick={handleNavLinkClick}>{label.alumnidirectory}</a>
+                </div>
+
+                <div class="slds-col slds-size_1-of-2 slds-align_absolute-right slds-grid slds-grid_vertical-align-center slds-grid_align-end nav-section-right-box">
+                    <div class="my-links-wrapper">
+                        <div class="my-links-button" onclick={handleLinksClick}>
+                            <span>My Links</span>
+                            <svg class="dropdown-icon" viewBox="0 0 52 52" aria-hidden="true">
+                                <path d="M26 32L14 20h24z" fill="currentColor"></path>
+                            </svg>
+                        </div>
+                    
+                        <template if:true={isLinksOpen}>
+                            <div class="my-links-dropdown" onclick={handleDropdownClick}>
+                                <template for:each={myLinks} for:item="linkItem">
+                                    <template if:true={linkItem.value}>
+                                        <a key={linkItem.id} class="my-links-item" href={linkItem.value} target="_blank">{linkItem.label}</a>
+                                    </template>
+                                    <template if:false={linkItem.value}>
+                                        <a key={linkItem.id} class="my-links-item" style="cursor: not-allowed;">{linkItem.label} 
+                                            <br> <Span style="font-size: 12px;">(To be developed - Phase 2)</Span></a>
+                                    </template>
+                                </template>
+                            </div>
+                        </template>
+                    </div>
+
+                    <div class="slds-m-right_medium">
+                        <a href={label.makeagiftlink} target="_self" class="slds-button slds-button_brand make-a-gift-button">
+                            <span class="icon"><img class="make-gift-img" src={images.makeaGiftImage} alt={label.makeagift}></img></span>
+                            <span class="slds-m-left_x-small">{label.makeagift}</span>
+                        </a>
+                    </div>
+
+                    <div class="slds-m-right_medium">
+                        <a href={label.feedbacklink} target="_blank" class="slds-button slds-button_brand make-a-gift-button">
+                            <span class="slds-m-left_x-small">{label.feedback}</span>
+                        </a>
+                    </div>
+                    <div>
+
+                        <span class="icon gear-icon" onclick={handleSettingsClick} ><img src={images.settingsImage} alt="Settings"></img></span>
+
+                        <div if:true={isSettingsOpen} class="slds-dropdown slds-dropdown_right slds-dropdown_small">
+                            <ul class="slds-dropdown__list" role="menu" onclick={handleDropdownClick}>
+                                <li class="my-settings-menu" role="presentation" data-name="managesub" onclick={handleSettingsMenuClick}>
+                                    <span class="icon settings-popup-icon"><img src={images.manageSubscriptionImage} alt={label.managesubscription}></img></span>
+                                    <span class="menu-label">{label.managesubscription}</span>
+                                </li>
+
+                                <li class="my-settings-menu" role="presentation" data-name="editprof" onclick={handleSettingsMenuClick}>
+                                    <span class="icon settings-popup-icon"><img src={images.editProfileImage} alt={label.editprofile}></img></span>
+                                    <span class="menu-label">{label.editprofile}</span>
+                                </li>
+
+                                <li class="my-settings-menu" role="presentation" data-name="logout" onclick={handleSettingsMenuClick}>
+                                    <span class="icon settings-popup-icon"><img src={images.logoutImage} alt={label.logout}></img></span>
+                                    <span class="menu-label">{label.logout}</span>
+                                    
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+    <!-- Template tag to render mobile view -->
+    <template if:true={isMobileView}> 
+        <div class="slds-grid slds-grid_align-spread slds-grid_vertical-align-center nav-bar-container">
+            <div class="nav-title-mobile">
+                <span class="nav-link active">{activeTab}</span>
+            </div>
+
+            <div class="slds-grid slds-grid_vertical-align-center mobile-header-icons">
+                <div class="slds-m-right_small">
+
+                    <a href={label.makeagiftlink} target="_blank" >
+                        <span class="icon"><img class="make-gift-img-mobile" src={images.makeaGiftImageMobile} alt={label.makeagift}></img></span>
+                    </a>          
+                    
+                </div>
+                <div>
+                    <span class="icon"><img class="mobile-icon hamburger-icon-mobile" onclick={toggleMobileMenu} src={images.hamburgerMobile} alt="Menu"></img></span>
+                </div>
+            </div>
+        </div>
+
+        <template if:true={isMobileMenuOpen}>
+            <div class="mobile-menu-overlay">
+                <div class="mobile-menu-content slds-p-around_medium" data-id="menuContent">
+
+                    <div style="color: #fff;" class="mobile-menu-content-cross-icon" onclick={toggleMobileMenu}>×</div>
+
+                    <a class="mobile-menu-item" onclick={handleMobileMenuItemClick} data-name={label.myimpact}>{label.myimpact}</a>
+                    <a class="mobile-menu-item" onclick={handleMobileMenuItemClick} data-name={label.alumnidirectory}>{label.alumnidirectory}</a>
+
+                    <h3 class="my-links-header slds-m-top_large slds-m-bottom_small">My Links</h3>
+                    <template for:each={myLinks} for:item="linkItem">
+                        <template if:true={linkItem.value}>
+                            <a href={linkItem.value} target="_blank" class="mobile-menu-item mobile-sub-item" key={linkItem.id} onclick={handleMobileMenuItemClick} data-name={linkItem.label}>{linkItem.label}</a>
+                        </template>                        
+                        <template if:false={linkItem.value}>
+                            <a key={linkItem.id} class="obile-menu-item mobile-sub-item" style="cursor: not-allowed;">{linkItem.label} 
+                                <br> <Span style="font-size: 12px;">(To be developed - Phase 2)</Span></a>
+                        </template>
+                    </template>
+
+                    <div class="slds-m-vertical_x-large mobile-gift-button-container">
+                        <a href={label.makeagiftlink} target="_blank" class="slds-button slds-button_outline mobile-make-a-gift-button">
+                            <span class="icon mb-5"><img src={images.makeaGiftBoxImageMobile} alt={label.makeagift}></img></span>
+                            <span class="slds-m-left_x-small">{label.makeagift}</span>
+                        </a>
+                    </div>
+
+                    <div class="slds-m-vertical_x-large mobile-gift-button-container">
+                        <a href={label.feedbacklink} target="_blank" class="slds-button slds-button_outline mobile-make-a-gift-button">
+                            <span class="slds-m-left_x-small">{label.feedback}</span>
+                        </a>
+                    </div>
+
+                    <li class="mobile-menu-item" onclick={handleMobileMenuItemClick} data-name="Manage Subscriptions">
+                        <span class="logout-menu-open"><img src={images.manageSubscriptionImageMobile} alt={label.managesubscription}></img></span>
+                        {label.managesubscription}
+                    </li>
+                    <li class="mobile-menu-item" onclick={handleMobileMenuItemClick} data-name="Edit Profile">
+                        <span class="icon edit-profile-menu-open"><img src={images.editProfileImageMobile} alt={label.editprofile}></img></span>
+                        {label.editprofile}
+                    </li>
+                    <li class="mobile-menu-item" href={label.logoutlink} data-name="logout">
+                        <a href={label.logoutlink} class="mobile-menu-item" onclick={handleMobileMenuItemClick} data-name={label.logout} target="_self">
+                            <span class="icon logout-menu-open"><img src={images.logoutImageMobile} alt={label.logout}></img></span>
+                            {label.logout}
+                        </a>
+                    </li>
+                </div>
+            </div>
+        </template>
+    </template>
+    <!-- My Impact and Alumni directory embedded     -->
+    <template if:true={isMyImpactActive}>
+        <c-ham_my-impact-cmp main-resource={mainResource.hamIcons} user-contact-id={currentUserContactId}></c-ham_my-impact-cmp>
+    </template>
+    <template if:true={isAlumniDirectoryActive}>
+        <c-ham_alumni-display-cmp main-resource={mainResource.hamIcons} user-contact-id={currentUserContactId}></c-ham_alumni-display-cmp>
+    </template>
+    <template if:true={isEditProfile}>
+        <section
+            role="dialog"
+            tabindex="-1"
+            aria-modal="true"
+            class="slds-modal slds-fade-in-open">   
+            <c-ham_edit-profile-cmp main-resource={mainResource.hamIcons} user-contact-id={currentUserContactId} onclose={handleEditProfileClose}></c-ham_edit-profile-cmp>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+</template>

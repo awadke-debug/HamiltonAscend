@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Advising_Appointment_Subtype_Required</fullName>
+    <active>true</active>
+    <description>A subtype is required when Advising Appointment Type is selected</description>
+    <errorConditionFormula>ISPICKVAL( HAM_Activity_Type__c , &apos;Advising Appointment&apos;)&amp;&amp;  ISPICKVAL( HAM_Activity_Subtype__c,&quot;&quot;)</errorConditionFormula>
+    <errorDisplayField>HAM_Activity_Type__c</errorDisplayField>
+    <errorMessage>An Activity Subtype is required when &apos;Advising Appointment&apos; is selected</errorMessage>
+</ValidationRule>

@@ -1,0 +1,136 @@
+<template>
+    <div class="backgroundWhite">
+        <template if:true={loading}>
+            <lightning-spinner
+                alternative-text="Loading..."
+                size="medium"
+                variant="brand">
+            </lightning-spinner>
+        </template>
+        <lightning-accordion allow-multiple-sections-open="true" active-section-name={activeBalanceSection}>
+            <!-- Upcoming Meetings Section -->
+            <lightning-accordion-section name="Upcoming Meetings" label="Upcoming Meetings">
+                <template lwc:if={pageUpcomingEvents}>
+                    <div class="slds-p-around_small" style="width: 100%;">
+                        <div class="label slds-text-title_caps slds-text-color_brand">Upcoming (Scheduled, Planed, Rescheduled) Meetings</div>
+                        <div style="overflow-x: auto;">
+                            <lightning-datatable
+                                key-field="Id" 
+                                data={pageUpcomingEvents} 
+                                columns={eventColumnsNoCancelReason} 
+                                hide-checkbox-column
+                                sorted-by={upcomingSortedBy}
+                                sorted-direction={upcomingSortedDirection}
+                                onsort={handleUpcomingSort}>
+                            </lightning-datatable>
+                        </div>
+                        
+                        <!-- Pagination for Upcoming Meetings -->
+                        <template if:true={showUpcomingPagination}>
+                            <div class="slds-m-top_small slds-grid slds-grid_align-spread slds-align_absolute-center">
+                                <lightning-button label="Prev" onclick={prevUpcomingPage} disabled={isUpcomingFirstPage}></lightning-button>
+                                <div class="slds-m-horizontal_small">
+                                    Page {upcomingPageNumber} of {upcomingTotalPages} · {upcomingTotalRecords} total
+                                </div>
+                                <lightning-button label="Next" onclick={nextUpcomingPage} disabled={isUpcomingLastPage}></lightning-button>
+                            </div>
+                        </template>
+                    </div>
+                </template>
+            </lightning-accordion-section>
+
+            <!-- Completed Meetings Section -->
+            <lightning-accordion-section name="Completed Meetings" label="Completed Meetings">
+                <template lwc:if={pageCompletedEvents}>
+                    <div class="slds-p-around_small" style="width: 100%;">
+                        <div class="label slds-text-title_caps slds-text-color_brand">Completed Meetings</div>
+                        <div style="overflow-x: auto;">
+                            <lightning-datatable
+                                key-field="Id" 
+                                data={pageCompletedEvents} 
+                                columns={eventColumnsNoCancelReason} 
+                                hide-checkbox-column
+                                sorted-by={completedSortedBy}
+                                sorted-direction={completedSortedDirection}
+                                onsort={handleCompletedSort}>
+                            </lightning-datatable>
+                        </div>
+                        
+                        <!-- Pagination for Completed Meetings -->
+                        <template if:true={showCompletedPagination}>
+                            <div class="slds-m-top_small slds-grid slds-grid_align-spread slds-align_absolute-center">
+                                <lightning-button label="Prev" onclick={prevCompletedPage} disabled={isCompletedFirstPage}></lightning-button>
+                                <div class="slds-m-horizontal_small">
+                                    Page {completedPageNumber} of {completedTotalPages} · {completedTotalRecords} total
+                                </div>
+                                <lightning-button label="Next" onclick={nextCompletedPage} disabled={isCompletedLastPage}></lightning-button>
+                            </div>
+                        </template>
+                    </div>
+                </template>
+            </lightning-accordion-section>
+
+            <!-- Rejected Meetings Section -->
+            <lightning-accordion-section name="Rejected Meetings" label="Rejected Meetings">
+                <template lwc:if={pageRejectedEvents}>
+                    <div class="slds-p-around_small" style="width: 100%;">
+                        <div class="label slds-text-title_caps slds-text-color_brand">Rejected (Cancelled, Attempted Unresponsive,unavailable) Meetings</div>
+                        <div style="overflow-x: auto;">
+                            <lightning-datatable
+                                key-field="Id" 
+                                data={pageRejectedEvents} 
+                                columns={eventColumns} 
+                                hide-checkbox-column
+                                sorted-by={rejectedSortedBy}
+                                sorted-direction={rejectedSortedDirection}
+                                onsort={handleRejectedSort}>
+                            </lightning-datatable>
+                        </div>
+                        
+                        <!-- Pagination for Rejected Meetings -->
+                        <template if:true={showRejectedPagination}>
+                            <div class="slds-m-top_small slds-grid slds-grid_align-spread slds-align_absolute-center">
+                                <lightning-button label="Prev" onclick={prevRejectedPage} disabled={isRejectedFirstPage}></lightning-button>
+                                <div class="slds-m-horizontal_small">
+                                    Page {rejectedPageNumber} of {rejectedTotalPages} · {rejectedTotalRecords} total
+                                </div>
+                                <lightning-button label="Next" onclick={nextRejectedPage} disabled={isRejectedLastPage}></lightning-button>
+                            </div>
+                        </template>
+                    </div>
+                </template>
+            </lightning-accordion-section>
+
+            <!-- Open Tasks Section -->
+            <lightning-accordion-section name="Open Task" label="Open Task">
+                <template lwc:if={pageOpenTasks}>
+                    <div class="slds-p-around_small" style="width: 100%;">
+                        <div class="label slds-text-title_caps slds-text-color_brand">Open Task List</div>
+                        <div style="overflow-x: auto;">
+                            <lightning-datatable
+                                key-field="Id" 
+                                data={pageOpenTasks} 
+                                columns={taskColumns} 
+                                hide-checkbox-column
+                                sorted-by={tasksSortedBy}
+                                sorted-direction={tasksSortedDirection}
+                                onsort={handleTasksSort}>
+                            </lightning-datatable>
+                        </div>
+                        
+                        <!-- Pagination for Open Tasks -->
+                        <template if:true={showTasksPagination}>
+                            <div class="slds-m-top_small slds-grid slds-grid_align-spread slds-align_absolute-center">
+                                <lightning-button label="Prev" onclick={prevTasksPage} disabled={isTasksFirstPage}></lightning-button>
+                                <div class="slds-m-horizontal_small">
+                                    Page {tasksPageNumber} of {tasksTotalPages} · {tasksTotalRecords} total
+                                </div>
+                                <lightning-button label="Next" onclick={nextTasksPage} disabled={isTasksLastPage}></lightning-button>
+                            </div>
+                        </template>
+                    </div>
+                </template>
+            </lightning-accordion-section>
+        </lightning-accordion>
+    </div>
+</template>

@@ -1,0 +1,1396 @@
+{
+  "version" : "63.0",
+  "nodes" : {
+    "LOAD_DATASET0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Account_or_Contact_Id", "HAM_Reunion_Year__c", "Aggregate.SUM_FY05_Collected_Amount", "Aggregate.Sum.FY03_Collected_Amount", "Aggregate.Sum.FY04_Collected_Amount", "Aggregate.Sum.FY01_Collected_Amount", "Aggregate.SUM_FY05_Collected_Amount_HF", "Aggregate.SUM_FY04_Collected_Amount_HF", "Aggregate.Sum.FY02_Collected_Amount", "Aggregate.SUM_FY03_Collected_Amount_HF", "Aggregate.SUM_FY01_Collected_Amount_HF", "Aggregate.SUM_FY02_Collected_Amount_HF" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Account and Contact Dataset",
+          "name" : "Account_and_Contact_Dataset"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "FILTER0" : {
+      "action" : "filter",
+      "sources" : [ "LOAD_DATASET0" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "HAM_Reunion_Year__c",
+          "operator" : "IS_NOT_NULL",
+          "operands" : [ ]
+        } ]
+      }
+    },
+    "FORMULA0" : {
+      "action" : "formula",
+      "sources" : [ "FILTER0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Empty",
+          "label" : "Empty",
+          "formulaExpression" : "''",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA1" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA5" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "FY23_Alumni_Segment",
+          "label" : "FY23 Alumni Segment",
+          "formulaExpression" : "case \r\n    when 2023-HAM_Reunion_Year__c=0 \r\n    then 'a:Seniors' \r\n    when 2023-HAM_Reunion_Year__c=4\r\n    then 'b:Gold 4'\r\n    when 2023-HAM_Reunion_Year__c=5\r\n    then 'c:Gold 5'\r\n    when 2023-HAM_Reunion_Year__c=9\r\n    then 'd:Gold 9'\r\n    when 2023-HAM_Reunion_Year__c=10\r\n    then 'e:Gold 10'\r\n    when 2023-HAM_Reunion_Year__c>0 and 2023-HAM_Reunion_Year__c<9 and     2023-HAM_Reunion_Year__c!=0  and 2023-HAM_Reunion_Year__c!=4 and 2023-HAM_Reunion_Year__c!=5    \r\n    then 'f:Gold Core'\r\n    when \r\n    2023-HAM_Reunion_Year__c=24 or 2023-HAM_Reunion_Year__c=49\r\n    then 'g:Non Gold Major Reunion-1'\r\n    when \r\n    2023-HAM_Reunion_Year__c=25 or 2023-HAM_Reunion_Year__c=50\r\n    then 'h:Non Gold Major Reunion'\r\n    when 2023-HAM_Reunion_Year__c>10 and (2023-HAM_Reunion_Year__c)%5=4 and (2023-HAM_Reunion_Year__c)%5!=24 and (2023-HAM_Reunion_Year__c)%5!=49\r\n    then 'i:Non Gold Minor Reunion-1'\r\n    when 2023-HAM_Reunion_Year__c>10 and (2023-HAM_Reunion_Year__c)%5=0 and (2023-HAM_Reunion_Year__c)%5!=25 and (2023-HAM_Reunion_Year__c)%5!=50\r\n    then 'j:Non Gold Minor Reunion'\r\n    when 2023-HAM_Reunion_Year__c>10 and (2023-HAM_Reunion_Year__c)%5!=4 and (2023-HAM_Reunion_Year__c)%5!=0 \r\n    then 'k:Non Gold Core'\r\n\r\nend\r\n\r\n",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA5" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "FY24_Alumni_Segment",
+          "label" : "FY24 Alumni Segment",
+          "formulaExpression" : "case \r\n    when 2024-HAM_Reunion_Year__c=0 \r\n    then 'a:Seniors' \r\n    when 2024-HAM_Reunion_Year__c=4\r\n    then 'b:Gold 4'\r\n    when 2024-HAM_Reunion_Year__c=5\r\n    then 'c:Gold 5'\r\n    when 2024-HAM_Reunion_Year__c=9\r\n    then 'd:Gold 9'\r\n    when 2024-HAM_Reunion_Year__c=10\r\n    then 'e:Gold 10'\r\n    when 2024-HAM_Reunion_Year__c>0 and 2024-HAM_Reunion_Year__c<9 and     2024-HAM_Reunion_Year__c!=0  and 2024-HAM_Reunion_Year__c!=4 and 2024-HAM_Reunion_Year__c!=5    \r\n    then 'f:Gold Core'\r\n    when \r\n    2024-HAM_Reunion_Year__c=24 or 2024-HAM_Reunion_Year__c=49\r\n    then 'g:Non Gold Major Reunion-1'\r\n    when \r\n    2024-HAM_Reunion_Year__c=25 or 2024-HAM_Reunion_Year__c=50\r\n    then 'h:Non Gold Major Reunion'\r\n    when 2024-HAM_Reunion_Year__c>10 and (2024-HAM_Reunion_Year__c)%5=4 and (2024-HAM_Reunion_Year__c)%5!=24 and (2024-HAM_Reunion_Year__c)%5!=49\r\n    then 'i:Non Gold Minor Reunion-1'\r\n    when 2024-HAM_Reunion_Year__c>10 and (2024-HAM_Reunion_Year__c)%5=0 and (2024-HAM_Reunion_Year__c)%5!=25 and (2024-HAM_Reunion_Year__c)%5!=50\r\n    then 'j:Non Gold Minor Reunion'\r\n    when 2024-HAM_Reunion_Year__c>10 and (2024-HAM_Reunion_Year__c)%5!=4 and (2024-HAM_Reunion_Year__c)%5!=0 \r\n    then 'k:Non Gold Core'\r\nend\r\n\r\n",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "OUTPUT0" : {
+      "action" : "save",
+      "sources" : [ "JOIN2" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Retention Research Dataset",
+          "name" : "Retention_Research_Dataset",
+          "folderName" : "SharedApp"
+        },
+        "dateConfigurationName" : "July_Fiscal_Year",
+        "measuresToCurrencies" : [ ]
+      }
+    },
+    "EDIT_ATTRIBUTES0" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA1" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Aggregate.Sum.FY01_Collected_Amount",
+          "newProperties" : {
+            "label" : "FY24 Paid",
+            "name" : "Aggregate.Sum.FY01_Collected_Amount"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES1" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES0" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Aggregate.Sum.FY02_Collected_Amount",
+          "newProperties" : {
+            "label" : "FY23 Paid",
+            "name" : "Aggregate.Sum.FY02_Collected_Amount"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES2" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES1" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Aggregate.Sum.FY03_Collected_Amount",
+          "newProperties" : {
+            "label" : "FY22 Paid",
+            "name" : "Aggregate.Sum.FY03_Collected_Amount"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES3" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES2" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Aggregate.Sum.FY04_Collected_Amount",
+          "newProperties" : {
+            "label" : "FY21 Paid",
+            "name" : "Aggregate.Sum.FY04_Collected_Amount"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES4" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES3" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Aggregate.SUM_FY05_Collected_Amount",
+          "newProperties" : {
+            "label" : "FY20 Paid",
+            "name" : "Aggregate.SUM_FY05_Collected_Amount"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES5" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES4" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Aggregate.SUM_FY01_Collected_Amount_HF",
+          "newProperties" : {
+            "label" : "FY24 HF Paid",
+            "name" : "Aggregate.SUM_FY01_Collected_Amount_HF"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES6" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES5" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Aggregate.SUM_FY02_Collected_Amount_HF",
+          "newProperties" : {
+            "label" : "FY23 HF Paid",
+            "name" : "Aggregate.SUM_FY02_Collected_Amount_HF"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES7" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES6" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Aggregate.SUM_FY03_Collected_Amount_HF",
+          "newProperties" : {
+            "label" : "FY22 HF Paid",
+            "name" : "Aggregate.SUM_FY03_Collected_Amount_HF"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES8" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES7" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Aggregate.SUM_FY04_Collected_Amount_HF",
+          "newProperties" : {
+            "label" : "FY21 HF Paid",
+            "name" : "Aggregate.SUM_FY04_Collected_Amount_HF"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES9" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES8" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Aggregate.SUM_FY05_Collected_Amount_HF",
+          "newProperties" : {
+            "label" : "FY20 HF Paid",
+            "name" : "Aggregate.SUM_FY05_Collected_Amount_HF"
+          }
+        } ]
+      }
+    },
+    "DROP_FIELDS0" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES9" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "SELECT",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Account_or_Contact_Id", "HAM_Reunion_Year__c", "FY24_Alumni_Segment", "FY23_Alumni_Segment" ]
+        }
+      }
+    },
+    "FORMULA6" : {
+      "action" : "formula",
+      "sources" : [ "DROP_FIELDS0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Fiscal_Year",
+          "label" : "Fiscal Year",
+          "formulaExpression" : "'2024'",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "DROP_FIELDS1" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA6" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "SELECT",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Account_or_Contact_Id", "HAM_Reunion_Year__c", "FY24_Alumni_Segment", "Fiscal_Year" ]
+        }
+      }
+    },
+    "FORMULA7" : {
+      "action" : "formula",
+      "sources" : [ "DROP_FIELDS0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Fiscal_Year",
+          "label" : "Fiscal Year",
+          "formulaExpression" : "'2023'",
+          "precision" : 10,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "DROP_FIELDS2" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA7" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "SELECT",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Account_or_Contact_Id", "HAM_Reunion_Year__c", "FY23_Alumni_Segment", "Fiscal_Year" ]
+        }
+      }
+    },
+    "APPEND0" : {
+      "action" : "appendV2",
+      "sources" : [ "JOIN0", "JOIN1" ],
+      "parameters" : {
+        "fieldMappings" : [ {
+          "top" : "Account_or_Contact_Id",
+          "bottom" : "Account_or_Contact_Id"
+        }, {
+          "top" : "HAM_Reunion_Year__c",
+          "bottom" : "HAM_Reunion_Year__c"
+        }, {
+          "top" : "FY24_Alumni_Segment",
+          "bottom" : "FY23_Alumni_Segment"
+        }, {
+          "top" : "Fiscal_Year",
+          "bottom" : "Fiscal_Year"
+        }, {
+          "top" : "TRANSFORM6.SUM_FY23_Paid_HF",
+          "bottom" : "TRANSFORM7.SUM_FY23_Paid_HF"
+        }, {
+          "top" : "TRANSFORM6.SUM_FY22_Paid_HF",
+          "bottom" : "TRANSFORM7.SUM_FY22_Paid_HF"
+        }, {
+          "top" : "TRANSFORM6.SUM_FY21_Paid_HF",
+          "bottom" : "TRANSFORM7.SUM_FY21_Paid_HF"
+        }, {
+          "top" : "TRANSFORM6.SUM_FY20_Paid_HF",
+          "bottom" : "TRANSFORM7.SUM_FY20_Paid_HF"
+        }, {
+          "top" : "TRANSFORM6.SUM_FY19_Paid_HF",
+          "bottom" : "TRANSFORM7.SUM_FY19_Paid_HF"
+        }, {
+          "top" : "TRANSFORM6.SUM_FY18_Paid_HF",
+          "bottom" : "TRANSFORM7.SUM_FY18_Paid_HF"
+        }, {
+          "top" : "TRANSFORM6.SUM_FY24_Paid_HF",
+          "bottom" : "TRANSFORM7.SUM_FY24_Paid_HF"
+        }, {
+          "top" : "TRANSFORM6.T5K_in_Last_5YR",
+          "bottom" : "TRANSFORM7.T5K_in_Last_5YR"
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES10" : {
+      "action" : "schema",
+      "sources" : [ "APPEND0" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "FY24_Alumni_Segment",
+          "newProperties" : {
+            "label" : "Alumni Segment",
+            "name" : "Alumni_Segment"
+          }
+        } ]
+      }
+    },
+    "TO_DIMENSION0" : {
+      "action" : "typeCast",
+      "sources" : [ "EDIT_ATTRIBUTES10" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "TRANSFORM6.T5K_in_Last_5YR_to_dimension",
+          "newProperties" : {
+            "name" : "TRANSFORM6.T5K_in_Last_5YR"
+          }
+        } ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "TRANSFORM6.T5K_in_Last_5YR" ]
+        }
+      },
+      "parameters" : {
+        "fields" : [ {
+          "name" : "TRANSFORM6.T5K_in_Last_5YR",
+          "newProperties" : {
+            "label" : "5K in Last 5YR",
+            "name" : "TRANSFORM6.T5K_in_Last_5YR_to_dimension",
+            "typeProperties" : {
+              "type" : "TEXT",
+              "length" : 255
+            }
+          }
+        } ]
+      }
+    },
+    "LOAD_DATASET1" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "ucinn_ascendv2__Credit_Type__c", "Object", "Designation.ucinn_ascendv2__Areas_of_Giving_CASE_Type__c", "Fiscal_Year", "Constituent_or_Account_Id", "Cash_Amount" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Gift Credit and Payment",
+          "name" : "Gift_Credit_and_Payment"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "FORMULA86_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FILTER35_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "FY23_Paid_HF",
+          "label" : "FY23 Paid (HF)",
+          "formulaExpression" : "case\r\nwhen\r\n    Fiscal_Year=2023\r\n    and\r\n    contains(\"Designation.ucinn_ascendv2__Areas_of_Giving_CASE_Type__c\",'Hamilton Fund')\r\n    \r\nthen\r\n    Cash_Amount\r\nelse\r\n    0\r\nend",
+          "precision" : 10,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES65_copy0" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA155_copy0" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Constituent_or_Account_Id",
+          "newProperties" : {
+            "label" : "Account or Contact Id",
+            "name" : "Account_or_Contact_Id"
+          }
+        } ]
+      }
+    },
+    "FORMULA151_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA165" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "FY22_Paid_HF",
+          "label" : "FY22 Paid (HF)",
+          "formulaExpression" : "case\r\nwhen\r\n    Fiscal_Year=2022\r\n    and\r\n    contains(\"Designation.ucinn_ascendv2__Areas_of_Giving_CASE_Type__c\",'Hamilton Fund')\r\n    \r\nthen\r\n    Cash_Amount\r\nelse\r\n    0\r\nend",
+          "precision" : 10,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA152_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA151_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "FY21_Paid_HF",
+          "label" : "FY21 Paid (HF)",
+          "formulaExpression" : "case\r\nwhen\r\n    Fiscal_Year=2021\r\n    and\r\n    contains(\"Designation.ucinn_ascendv2__Areas_of_Giving_CASE_Type__c\",'Hamilton Fund')\r\n    \r\nthen\r\n    Cash_Amount\r\nelse\r\n    0\r\nend",
+          "precision" : 10,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA153_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA152_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "FY20_Paid_HF",
+          "label" : "FY20 Paid (HF)",
+          "formulaExpression" : "case\r\nwhen\r\n    Fiscal_Year=2020\r\n    and\r\n    contains(\"Designation.ucinn_ascendv2__Areas_of_Giving_CASE_Type__c\",'Hamilton Fund')\r\n    \r\nthen\r\n    Cash_Amount\r\nelse\r\n    0\r\nend",
+          "precision" : 10,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA154_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA153_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "FY19_Paid_HF",
+          "label" : "FY19 Paid (HF)",
+          "formulaExpression" : "case\r\nwhen\r\n    Fiscal_Year=2019\r\n    and\r\n    contains(\"Designation.ucinn_ascendv2__Areas_of_Giving_CASE_Type__c\",'Hamilton Fund')\r\n   \r\nthen\r\n    Cash_Amount\r\nelse\r\n    0\r\nend",
+          "precision" : 10,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA155_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA154_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "FY18_Paid_HF",
+          "label" : "FY18 Paid (HF)",
+          "formulaExpression" : "case\r\nwhen\r\n    Fiscal_Year=2018\r\n    and\r\n    contains(\"Designation.ucinn_ascendv2__Areas_of_Giving_CASE_Type__c\",'Hamilton Fund')\r\n    \r\nthen\r\n    Cash_Amount\r\nelse\r\n    0\r\nend",
+          "precision" : 10,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA165" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA86_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "FY24_Paid_HF",
+          "label" : "FY24 Paid (HF)",
+          "formulaExpression" : "case\r\nwhen\r\n    Fiscal_Year=2024\r\n    and\r\n    contains(\"Designation.ucinn_ascendv2__Areas_of_Giving_CASE_Type__c\",'Hamilton Fund')\r\n    \r\nthen\r\n    Cash_Amount\r\nelse\r\n    0\r\nend",
+          "precision" : 10,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FILTER35_copy0" : {
+      "action" : "filter",
+      "sources" : [ "LOAD_DATASET1" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "Object",
+          "operator" : "EQUAL",
+          "operands" : [ "Hard and Soft Credit" ]
+        } ]
+      }
+    },
+    "EXTRACT0" : {
+      "action" : "extractGrains",
+      "sources" : [ "EDIT_ATTRIBUTES65_copy0" ],
+      "parameters" : {
+        "grainExtractions" : [ ]
+      }
+    },
+    "AGGREGATE1" : {
+      "action" : "aggregate",
+      "sources" : [ "EXTRACT0" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "SUM_FY23_Paid_HF",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        }, {
+          "name" : "SUM_FY22_Paid_HF",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        }, {
+          "name" : "SUM_FY21_Paid_HF",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        }, {
+          "name" : "SUM_FY20_Paid_HF",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        }, {
+          "name" : "SUM_FY19_Paid_HF",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        }, {
+          "name" : "SUM_FY18_Paid_HF",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        }, {
+          "name" : "SUM_FY24_Paid_HF",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        } ]
+      },
+      "parameters" : {
+        "aggregations" : [ {
+          "action" : "SUM",
+          "source" : "FY23_Paid_HF",
+          "name" : "SUM_FY23_Paid_HF",
+          "label" : "FY23 Paid (HF)"
+        }, {
+          "action" : "SUM",
+          "source" : "FY22_Paid_HF",
+          "name" : "SUM_FY22_Paid_HF",
+          "label" : "FY22 Paid (HF)"
+        }, {
+          "action" : "SUM",
+          "source" : "FY21_Paid_HF",
+          "name" : "SUM_FY21_Paid_HF",
+          "label" : "FY21 Paid (HF)"
+        }, {
+          "action" : "SUM",
+          "source" : "FY20_Paid_HF",
+          "name" : "SUM_FY20_Paid_HF",
+          "label" : "FY20 Paid (HF)"
+        }, {
+          "action" : "SUM",
+          "source" : "FY19_Paid_HF",
+          "name" : "SUM_FY19_Paid_HF",
+          "label" : "FY19 Paid (HF)"
+        }, {
+          "action" : "SUM",
+          "source" : "FY18_Paid_HF",
+          "name" : "SUM_FY18_Paid_HF",
+          "label" : "FY18 Paid (HF)"
+        }, {
+          "action" : "SUM",
+          "source" : "FY24_Paid_HF",
+          "name" : "SUM_FY24_Paid_HF",
+          "label" : "FY24 Paid (HF)"
+        } ],
+        "groupings" : [ "Account_or_Contact_Id" ],
+        "pivots" : [ ],
+        "nodeType" : "STANDARD"
+      }
+    },
+    "FORMULA156" : {
+      "action" : "formula",
+      "sources" : [ "AGGREGATE1" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Is_FY23_HF_over_5K",
+          "label" : "Is FY23 HF over 5K",
+          "formulaExpression" : "case \r\nwhen SUM_FY23_Paid_HF>=5000 \r\nthen 1\r\nelse 0\r\nend",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA157" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA164" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Is_FY22_HF_over_5K",
+          "label" : "Is FY22 HF over 5K",
+          "formulaExpression" : "case \r\nwhen SUM_FY22_Paid_HF>=5000 \r\nthen 1\r\nelse 0\r\nend",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA158" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA157" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Is_FY21_HF_over_5K",
+          "label" : "Is FY21 HF over 5K",
+          "formulaExpression" : "case \r\nwhen SUM_FY21_Paid_HF>=5000 \r\nthen 1\r\nelse 0\r\nend",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA159" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA158" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Is_FY20_HF_over_5K",
+          "label" : "Is FY20 HF over 5K",
+          "formulaExpression" : "case \r\nwhen SUM_FY20_Paid_HF>=5000 \r\nthen 1\r\nelse 0\r\nend",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA160" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA159" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Is_FY19_HF_over_5K",
+          "label" : "Is FY19 HF over 5K",
+          "formulaExpression" : "case \r\nwhen SUM_FY19_Paid_HF>=5000 \r\nthen 1\r\nelse 0\r\nend",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA161" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA160" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Is_FY18_HF_over_5K",
+          "label" : "Is FY18 HF over 5K",
+          "formulaExpression" : "case \r\nwhen SUM_FY18_Paid_HF>=5000 \r\nthen 1\r\nelse 0\r\nend",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA164" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA156" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Is_FY24_HF_over_5K",
+          "label" : "Is FY24 HF over 5K",
+          "formulaExpression" : "case \r\nwhen SUM_FY24_Paid_HF>=5000 \r\nthen 1\r\nelse 0\r\nend",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA162" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA161" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "T5K_in_Last_5YR",
+          "label" : "5K in Last 5YR",
+          "formulaExpression" : "Is_FY24_HF_over_5K+Is_FY23_HF_over_5K+Is_FY22_HF_over_5K+Is_FY21_HF_over_5K+Is_FY20_HF_over_5K",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "DROP_FIELDS3" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA162" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "SELECT",
+          "ignoreMissingFields" : true,
+          "fields" : [ "T5K_in_Last_5YR", "Account_or_Contact_Id", "SUM_FY23_Paid_HF", "SUM_FY22_Paid_HF", "SUM_FY21_Paid_HF", "SUM_FY20_Paid_HF", "SUM_FY19_Paid_HF", "SUM_FY18_Paid_HF", "SUM_FY24_Paid_HF" ]
+        }
+      }
+    },
+    "FORMULA163" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA161" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "T5K_in_Last_5YR",
+          "label" : "5K in Last 5YR",
+          "formulaExpression" : "Is_FY23_HF_over_5K+Is_FY22_HF_over_5K+Is_FY21_HF_over_5K+Is_FY20_HF_over_5K+Is_FY19_HF_over_5K",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "DROP_FIELDS4" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA163" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "SELECT",
+          "ignoreMissingFields" : true,
+          "fields" : [ "T5K_in_Last_5YR", "Account_or_Contact_Id", "SUM_FY23_Paid_HF", "SUM_FY22_Paid_HF", "SUM_FY21_Paid_HF", "SUM_FY20_Paid_HF", "SUM_FY19_Paid_HF", "SUM_FY18_Paid_HF", "SUM_FY24_Paid_HF" ]
+        }
+      }
+    },
+    "JOIN0" : {
+      "action" : "join",
+      "sources" : [ "DROP_FIELDS1", "DROP_FIELDS3" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "TRANSFORM6.Account_or_Contact_Id" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Account_or_Contact_Id" ],
+        "rightQualifier" : "TRANSFORM6",
+        "rightKeys" : [ "Account_or_Contact_Id" ]
+      }
+    },
+    "JOIN1" : {
+      "action" : "join",
+      "sources" : [ "DROP_FIELDS2", "DROP_FIELDS4" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "TRANSFORM7.Account_or_Contact_Id" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Account_or_Contact_Id" ],
+        "rightQualifier" : "TRANSFORM7",
+        "rightKeys" : [ "Account_or_Contact_Id" ]
+      }
+    },
+    "LOAD_DATASET0_copy0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "ucinn_ascendv2__Is_Deceased__c", "HAM_Name_w_Suffix__c", "Account_or_Contact_Id", "All_Private_Societies_Involvements", "All_NCAA_Involvements", "All_Involvements", "Primary_Relationship_Manager.Assigned_User_Name", "ucinn_ascendv2__Primary_Contact_Type__c" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Account and Contact Dataset",
+          "name" : "Account_and_Contact_Dataset"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN2" : {
+      "action" : "join",
+      "sources" : [ "TO_DIMENSION0", "LOAD_DATASET0_copy0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Accountand.Account_or_Contact_Id" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Account_or_Contact_Id" ],
+        "rightQualifier" : "Accountand",
+        "rightKeys" : [ "Account_or_Contact_Id" ]
+      }
+    }
+  },
+  "ui" : {
+    "nodes" : {
+      "LOAD_DATASET0" : {
+        "label" : "Account and Contact Dataset",
+        "type" : "LOAD_DATASET",
+        "top" : 112,
+        "left" : 112,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "FILTER0" : {
+        "label" : "Filter 0",
+        "type" : "FILTER",
+        "top" : 112.19999999999999,
+        "left" : 251.5
+      },
+      "TRANSFORM0" : {
+        "label" : "Transform 0",
+        "type" : "TRANSFORM",
+        "top" : 112.19999999999999,
+        "left" : 392,
+        "graph" : {
+          "FORMULA0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Empty"
+          },
+          "FORMULA1" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "FY23 Alumni Segment"
+          },
+          "FORMULA5" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "FY24 Alumni Segment"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA5",
+          "target" : "FORMULA1"
+        }, {
+          "source" : "FORMULA0",
+          "target" : "FORMULA5"
+        } ]
+      },
+      "OUTPUT0" : {
+        "label" : "Output 0",
+        "type" : "OUTPUT",
+        "top" : 112.1,
+        "left" : 2071.2
+      },
+      "TRANSFORM1" : {
+        "label" : "Transform 1",
+        "type" : "TRANSFORM",
+        "top" : 112.30000000000001,
+        "left" : 531.9,
+        "graph" : {
+          "EDIT_ATTRIBUTES0" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES1" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES2" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES3" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES4" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES5" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES6" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES7" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES8" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES9" : {
+            "label" : "Edit Attributes"
+          },
+          "DROP_FIELDS0" : {
+            "label" : "Keep Columns"
+          }
+        },
+        "connectors" : [ {
+          "source" : "EDIT_ATTRIBUTES0",
+          "target" : "EDIT_ATTRIBUTES1"
+        }, {
+          "source" : "EDIT_ATTRIBUTES1",
+          "target" : "EDIT_ATTRIBUTES2"
+        }, {
+          "source" : "EDIT_ATTRIBUTES2",
+          "target" : "EDIT_ATTRIBUTES3"
+        }, {
+          "source" : "EDIT_ATTRIBUTES3",
+          "target" : "EDIT_ATTRIBUTES4"
+        }, {
+          "source" : "EDIT_ATTRIBUTES4",
+          "target" : "EDIT_ATTRIBUTES5"
+        }, {
+          "source" : "EDIT_ATTRIBUTES5",
+          "target" : "EDIT_ATTRIBUTES6"
+        }, {
+          "source" : "EDIT_ATTRIBUTES6",
+          "target" : "EDIT_ATTRIBUTES7"
+        }, {
+          "source" : "EDIT_ATTRIBUTES7",
+          "target" : "EDIT_ATTRIBUTES8"
+        }, {
+          "source" : "EDIT_ATTRIBUTES8",
+          "target" : "EDIT_ATTRIBUTES9"
+        }, {
+          "source" : "EDIT_ATTRIBUTES9",
+          "target" : "DROP_FIELDS0"
+        } ]
+      },
+      "TRANSFORM2" : {
+        "label" : "2024",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 112.1,
+        "left" : 1372,
+        "graph" : {
+          "FORMULA6" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Fiscal Year"
+          },
+          "DROP_FIELDS1" : {
+            "label" : "Keep Columns"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA6",
+          "target" : "DROP_FIELDS1"
+        } ]
+      },
+      "TRANSFORM3" : {
+        "label" : "2023",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 532.1,
+        "left" : 1372.1,
+        "graph" : {
+          "FORMULA7" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Fiscal Year"
+          },
+          "DROP_FIELDS2" : {
+            "label" : "Keep Columns"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA7",
+          "target" : "DROP_FIELDS2"
+        } ]
+      },
+      "APPEND0" : {
+        "label" : "Append 0",
+        "type" : "APPEND",
+        "top" : 112.30000000000001,
+        "left" : 1652.6
+      },
+      "TRANSFORM4" : {
+        "label" : "Transform 4",
+        "type" : "TRANSFORM",
+        "top" : 112.30000000000001,
+        "left" : 1792.6,
+        "graph" : {
+          "EDIT_ATTRIBUTES10" : {
+            "label" : "Edit Attributes"
+          },
+          "TO_DIMENSION0" : {
+            "label" : "To Text"
+          }
+        },
+        "connectors" : [ {
+          "source" : "EDIT_ATTRIBUTES10",
+          "target" : "TO_DIMENSION0"
+        } ]
+      },
+      "LOAD_DATASET1" : {
+        "label" : "Gift Credit and Payment",
+        "type" : "LOAD_DATASET",
+        "top" : 252.10000000000002,
+        "left" : 672.3,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "TRANSFORM4_copy0_copy0" : {
+        "label" : "Enrich Credit Gift Payment",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 252.2,
+        "left" : 952.3,
+        "graph" : {
+          "FORMULA86_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "FY23 Paid (HF)"
+          },
+          "EDIT_ATTRIBUTES65_copy0" : {
+            "label" : "Edit Attributes"
+          },
+          "FORMULA151_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "FY22 Paid (HF)"
+          },
+          "FORMULA152_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "FY21 Paid (HF)"
+          },
+          "FORMULA153_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "FY20 Paid (HF)"
+          },
+          "FORMULA154_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "FY19 Paid (HF)"
+          },
+          "FORMULA155_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "FY18 Paid (HF)"
+          },
+          "FORMULA165" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "FY24 Paid (HF)"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA151_copy0",
+          "target" : "FORMULA152_copy0"
+        }, {
+          "source" : "FORMULA152_copy0",
+          "target" : "FORMULA153_copy0"
+        }, {
+          "source" : "FORMULA153_copy0",
+          "target" : "FORMULA154_copy0"
+        }, {
+          "source" : "FORMULA154_copy0",
+          "target" : "FORMULA155_copy0"
+        }, {
+          "source" : "FORMULA155_copy0",
+          "target" : "EDIT_ATTRIBUTES65_copy0"
+        }, {
+          "source" : "FORMULA165",
+          "target" : "FORMULA151_copy0"
+        }, {
+          "source" : "FORMULA86_copy0",
+          "target" : "FORMULA165"
+        } ]
+      },
+      "FILTER35_copy0" : {
+        "label" : "Filter Hard and Soft Credit",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 252.2,
+        "left" : 812.3
+      },
+      "AGGREGATE0" : {
+        "label" : "Aggregate 0",
+        "type" : "AGGREGATE",
+        "top" : 252.2,
+        "left" : 1092.3,
+        "graph" : {
+          "EXTRACT0" : null,
+          "AGGREGATE1" : null
+        },
+        "connectors" : [ {
+          "source" : "EXTRACT0",
+          "target" : "AGGREGATE1"
+        } ]
+      },
+      "TRANSFORM5" : {
+        "label" : "5K Flag",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 252,
+        "left" : 1232.3,
+        "graph" : {
+          "FORMULA156" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Is FY23 HF over 5K"
+          },
+          "FORMULA157" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Is FY22 HF over 5K"
+          },
+          "FORMULA158" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Is FY21 HF over 5K"
+          },
+          "FORMULA159" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Is FY20 HF over 5K"
+          },
+          "FORMULA160" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Is FY19 HF over 5K"
+          },
+          "FORMULA161" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Is FY18 HF over 5K"
+          },
+          "FORMULA164" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Is FY24 HF over 5K"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA157",
+          "target" : "FORMULA158"
+        }, {
+          "source" : "FORMULA158",
+          "target" : "FORMULA159"
+        }, {
+          "source" : "FORMULA159",
+          "target" : "FORMULA160"
+        }, {
+          "source" : "FORMULA160",
+          "target" : "FORMULA161"
+        }, {
+          "source" : "FORMULA164",
+          "target" : "FORMULA157"
+        }, {
+          "source" : "FORMULA156",
+          "target" : "FORMULA164"
+        } ]
+      },
+      "TRANSFORM6" : {
+        "label" : "2024",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 252.10000000000002,
+        "left" : 1371.8,
+        "graph" : {
+          "FORMULA162" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "5K in Last 5YR"
+          },
+          "DROP_FIELDS3" : {
+            "label" : "Keep Columns"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA162",
+          "target" : "DROP_FIELDS3"
+        } ]
+      },
+      "TRANSFORM7" : {
+        "label" : "2023",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 392.1,
+        "left" : 1371.6,
+        "graph" : {
+          "FORMULA163" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "5K in Last 5YR"
+          },
+          "DROP_FIELDS4" : {
+            "label" : "Keep Columns"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA163",
+          "target" : "DROP_FIELDS4"
+        } ]
+      },
+      "JOIN0" : {
+        "label" : "Join 0",
+        "type" : "JOIN",
+        "top" : 112,
+        "left" : 1512
+      },
+      "JOIN1" : {
+        "label" : "Join 1",
+        "type" : "JOIN",
+        "top" : 532,
+        "left" : 1512
+      },
+      "LOAD_DATASET0_copy0" : {
+        "label" : "Account and Contact Dataset",
+        "description" : "",
+        "type" : "LOAD_DATASET",
+        "top" : 251.89999999999998,
+        "left" : 1932,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN2" : {
+        "label" : "Join 2",
+        "type" : "JOIN",
+        "top" : 112.1,
+        "left" : 1932
+      }
+    },
+    "connectors" : [ {
+      "source" : "LOAD_DATASET0",
+      "target" : "FILTER0"
+    }, {
+      "source" : "FILTER0",
+      "target" : "TRANSFORM0"
+    }, {
+      "source" : "JOIN2",
+      "target" : "OUTPUT0"
+    }, {
+      "source" : "TRANSFORM0",
+      "target" : "TRANSFORM1"
+    }, {
+      "source" : "TRANSFORM1",
+      "target" : "TRANSFORM2"
+    }, {
+      "source" : "TRANSFORM1",
+      "target" : "TRANSFORM3"
+    }, {
+      "source" : "JOIN0",
+      "target" : "APPEND0"
+    }, {
+      "source" : "JOIN1",
+      "target" : "APPEND0"
+    }, {
+      "source" : "APPEND0",
+      "target" : "TRANSFORM4"
+    }, {
+      "source" : "FILTER35_copy0",
+      "target" : "TRANSFORM4_copy0_copy0"
+    }, {
+      "source" : "LOAD_DATASET1",
+      "target" : "FILTER35_copy0"
+    }, {
+      "source" : "TRANSFORM4_copy0_copy0",
+      "target" : "AGGREGATE0"
+    }, {
+      "source" : "AGGREGATE0",
+      "target" : "TRANSFORM5"
+    }, {
+      "source" : "TRANSFORM5",
+      "target" : "TRANSFORM6"
+    }, {
+      "source" : "TRANSFORM5",
+      "target" : "TRANSFORM7"
+    }, {
+      "source" : "TRANSFORM2",
+      "target" : "JOIN0"
+    }, {
+      "source" : "TRANSFORM6",
+      "target" : "JOIN0"
+    }, {
+      "source" : "TRANSFORM3",
+      "target" : "JOIN1"
+    }, {
+      "source" : "TRANSFORM7",
+      "target" : "JOIN1"
+    }, {
+      "source" : "TRANSFORM4",
+      "target" : "JOIN2"
+    }, {
+      "source" : "LOAD_DATASET0_copy0",
+      "target" : "JOIN2"
+    } ],
+    "hiddenColumns" : [ ]
+  },
+  "runMode" : "full"
+}

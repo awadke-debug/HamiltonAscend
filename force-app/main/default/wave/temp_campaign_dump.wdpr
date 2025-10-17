@@ -1,0 +1,117 @@
+{
+  "version" : "61.0",
+  "nodes" : {
+    "LOAD_DATASET23_copy0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "HAM_Fiscal_Year__c", "Id", "Name", "RecordTypeId" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "Campaign",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "Campaign"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "LOAD_DATASET25_copy0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Id", "Name" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "RecordType",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "RecordType"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN37_copy0" : {
+      "action" : "join",
+      "sources" : [ "LOAD_DATASET23_copy0", "LOAD_DATASET25_copy0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "RecordTypeId", "Record_Type.Id" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "RecordTypeId" ],
+        "rightQualifier" : "Record_Type",
+        "rightKeys" : [ "Id" ]
+      }
+    },
+    "OUTPUT0" : {
+      "action" : "save",
+      "sources" : [ "JOIN37_copy0" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "temp_campaign",
+          "name" : "temp_campaign"
+        },
+        "measuresToCurrencies" : [ ]
+      }
+    }
+  },
+  "ui" : {
+    "nodes" : {
+      "LOAD_DATASET23_copy0" : {
+        "label" : "Campaign",
+        "type" : "LOAD_DATASET",
+        "top" : 252.10000000000002,
+        "left" : 112,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "LOAD_DATASET25_copy0" : {
+        "label" : "RecordType",
+        "type" : "LOAD_DATASET",
+        "top" : 112,
+        "left" : 394.3,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN37_copy0" : {
+        "label" : "Lookup Record Type To Campaign",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 112.10000000000002,
+        "left" : 112
+      },
+      "OUTPUT0" : {
+        "label" : "Output 0",
+        "type" : "OUTPUT",
+        "top" : 112,
+        "left" : 254.3
+      }
+    },
+    "connectors" : [ {
+      "source" : "LOAD_DATASET23_copy0",
+      "target" : "JOIN37_copy0"
+    }, {
+      "source" : "LOAD_DATASET25_copy0",
+      "target" : "JOIN37_copy0"
+    }, {
+      "source" : "JOIN37_copy0",
+      "target" : "OUTPUT0"
+    } ],
+    "hiddenColumns" : [ ]
+  },
+  "runMode" : "full"
+}

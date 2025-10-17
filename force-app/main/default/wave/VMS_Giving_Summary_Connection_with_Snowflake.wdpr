@@ -1,0 +1,107 @@
+{
+  "version" : "64.0",
+  "nodes" : {
+    "LOAD_DATASET0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "HAMILTON_FUND_WITHOUT_EVENT_FEES_LAST_DATE", "ucinn_ascendv2__Is_Anonymous__c", "HAM_Is_Active__c", "HAM_Is_Contactable__c", "ucinn_ascendv2__External_System_ID__c", "ucinn_ascendv2__Primary_Contact_Type__c", "HAM_Privacy_Flag__c", "TOTAL_WITHOUT_EVENT_FEES_LAST_DATE", "Id", "Accountand.Aggregate.SUM_FY00_Collected_Amount_HF", "Accountand.Aggregate.SUM_FY04_Collected_Amount_HF", "Accountand.Aggregate.Sum.FY04_Collected_Amount", "TOTAL_COLLECTED_WITHOUT_EVENT_FEES_FY19", "Accountand.Aggregate.SUM_FY05_Collected_Amount", "Accountand.Aggregate.SUM_FY01_Collected_Amount_HF", "Accountand.Aggregate.SUM_FY05_Collected_Amount_HF", "Accountand.Aggregate.Sum.FY01_Collected_Amount", "HAMILTON_FUND_WITHOUT_EVENT_FEES_COLLECTED_FY19", "Accountand.Aggregate.Sum.FY03_Collected_Amount", "Accountand.Aggregate.SUM_FY02_Collected_Amount_HF", "Accountand.Aggregate.Sum.FY02_Collected_Amount", "FISCAL_YEAR", "Accountand.Aggregate.SUM_FY03_Collected_Amount_HF", "Accountand.Aggregate.Sum.FY00_Collected_Amount" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Giving for VMS",
+          "name" : "Giving_for_VMS"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "OUTPUT0" : {
+      "action" : "outputExternal",
+      "sources" : [ "LOAD_DATASET0" ],
+      "parameters" : {
+        "connectionName" : "ascend_Production_Data_Lake_OUTBOUND",
+        "object" : "VMS_GIVING_SUMMARY_ASCEND",
+        "operation" : "",
+        "externalIdFieldName" : "",
+        "hyperFileName" : "",
+        "fieldsMapping" : [ {
+          "sourceField" : "HAMILTON_FUND_WITHOUT_EVENT_FEES_LAST_DATE",
+          "targetField" : "HAMILTON_FUND_WITHOUT_EVENT_FEES_LAST_DATE"
+        }, {
+          "sourceField" : "ucinn_ascendv2__External_System_ID__c",
+          "targetField" : "ID"
+        }, {
+          "sourceField" : "TOTAL_WITHOUT_EVENT_FEES_LAST_DATE",
+          "targetField" : "TOTAL_WITHOUT_EVENT_FEES_LAST_DATE"
+        }, {
+          "sourceField" : "Accountand.Aggregate.SUM_FY00_Collected_Amount_HF",
+          "targetField" : "HAMILTON_FUND_WITHOUT_EVENT_FEES_COLLECTED"
+        }, {
+          "sourceField" : "Accountand.Aggregate.SUM_FY04_Collected_Amount_HF",
+          "targetField" : "HAMILTON_FUND_WITHOUT_EVENT_FEES_COLLECTED_FY22"
+        }, {
+          "sourceField" : "Accountand.Aggregate.Sum.FY04_Collected_Amount",
+          "targetField" : "TOTAL_COLLECTED_WITHOUT_EVENT_FEES_FY22"
+        }, {
+          "sourceField" : "Accountand.Aggregate.SUM_FY05_Collected_Amount",
+          "targetField" : "TOTAL_COLLECTED_WITHOUT_EVENT_FEES_FY21"
+        }, {
+          "sourceField" : "Accountand.Aggregate.SUM_FY01_Collected_Amount_HF",
+          "targetField" : "HAMILTON_FUND_WITHOUT_EVENT_FEES_COLLECTED_FY25"
+        }, {
+          "sourceField" : "Accountand.Aggregate.SUM_FY05_Collected_Amount_HF",
+          "targetField" : "HAMILTON_FUND_WITHOUT_EVENT_FEES_COLLECTED_FY21"
+        }, {
+          "sourceField" : "Accountand.Aggregate.Sum.FY01_Collected_Amount",
+          "targetField" : "TOTAL_COLLECTED_WITHOUT_EVENT_FEES_FY25"
+        }, {
+          "sourceField" : "Accountand.Aggregate.Sum.FY03_Collected_Amount",
+          "targetField" : "TOTAL_COLLECTED_WITHOUT_EVENT_FEES_FY23"
+        }, {
+          "sourceField" : "Accountand.Aggregate.SUM_FY02_Collected_Amount_HF",
+          "targetField" : "HAMILTON_FUND_WITHOUT_EVENT_FEES_COLLECTED_FY24"
+        }, {
+          "sourceField" : "Accountand.Aggregate.Sum.FY02_Collected_Amount",
+          "targetField" : "TOTAL_COLLECTED_WITHOUT_EVENT_FEES_FY24"
+        }, {
+          "sourceField" : "FISCAL_YEAR",
+          "targetField" : "FISCAL_YEAR"
+        }, {
+          "sourceField" : "Accountand.Aggregate.SUM_FY03_Collected_Amount_HF",
+          "targetField" : "HAMILTON_FUND_WITHOUT_EVENT_FEES_COLLECTED_FY23"
+        }, {
+          "sourceField" : "Accountand.Aggregate.Sum.FY00_Collected_Amount",
+          "targetField" : "TOTAL_COLLECTED_WITHOUT_EVENT_FEES"
+        } ],
+        "connectorType" : "SNOWFLAKE_OUTPUT"
+      }
+    }
+  },
+  "ui" : {
+    "nodes" : {
+      "LOAD_DATASET0" : {
+        "label" : "Giving for VMS",
+        "type" : "LOAD_DATASET",
+        "top" : 112,
+        "left" : 112,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "OUTPUT0" : {
+        "label" : "Output 0",
+        "type" : "OUTPUT",
+        "top" : 112,
+        "left" : 252
+      }
+    },
+    "connectors" : [ {
+      "source" : "LOAD_DATASET0",
+      "target" : "OUTPUT0"
+    } ],
+    "hiddenColumns" : [ ]
+  },
+  "runMode" : "full"
+}

@@ -1,0 +1,182 @@
+{
+  "version" : "62.0",
+  "nodes" : {
+    "LOAD_DATASET0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "ucinn_ascendv2__Is_Anonymous__c", "Contact.ucinn_ascendv2__Is_Anonymous__c", "Opportunity.ucinn_ascendv2__Is_Anonymous__c", "LastModifiedDate", "ucinn_ascendv2__Credit_Type__c", "HAM_Pledge_Gift_Adjusted_Pledge_Gift__c", "Contact.ucinn_ascendv2__Full_Name_Formula__c", "Designation.ucinn_ascendv2__Designation_Name__c", "ucinn_ascendv2__Credit_Date_Formula__c", "CreatedDate", "Primary_Relationship_Manager.Assigned_User", "Object", "Opportunity.Name", "ucinn_ascendv2__Gift_Type_Formula__c", "Organization_or_Contact_External_Id", "Opportunity.StageName", "Contact.ucinn_ascendv2__Primary_Contact_Type__c", "Constituent_or_Account_Id", "ucinn_ascendv2__Is_Ready_for_G_L_Formula__c", "Account.Name", "ucinn_ascendv2__Credit_Amount__c", "Cash_Amount", "Fundraising_Amount" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Gift Credit and Payment",
+          "name" : "Gift_Credit_and_Payment"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "LOAD_DATASET1" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Aggregate.Sum.FY00_Committed_Amount", "Aggregate.Sum.FY00_Collected_Amount", "Spouse.Name", "Account_or_Contact_Id", "ucinn_ascendv2__Preferred_Spouse__c", "Spouse.ucinn_ascendv2__Primary_Contact_Type__c", "Is_Primary_Contact" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Account and Contact Dataset",
+          "name" : "Account_and_Contact_Dataset"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "FILTER0" : {
+      "action" : "filter",
+      "sources" : [ "LOAD_DATASET0" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "Object",
+          "operator" : "EQUAL",
+          "operands" : [ "Hard and Soft Credit" ]
+        }, {
+          "type" : "NUMBER",
+          "field" : "Cash_Amount",
+          "operator" : "GREATER_OR_EQUAL",
+          "operands" : [ "10000" ]
+        }, {
+          "type" : "NUMBER",
+          "field" : "Fundraising_Amount",
+          "operator" : "GREATER_OR_EQUAL",
+          "operands" : [ "10000" ]
+        } ],
+        "filterBooleanLogic" : "1 AND (2 OR 3)"
+      }
+    },
+    "JOIN0" : {
+      "action" : "join",
+      "sources" : [ "FILTER0", "LOAD_DATASET1" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Constituent_or_Account_Id" ],
+        "rightQualifier" : "AccntCntct",
+        "rightKeys" : [ "Account_or_Contact_Id" ]
+      }
+    },
+    "OUTPUT0" : {
+      "action" : "save",
+      "sources" : [ "FORMULA0" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "VP acknowledgment",
+          "name" : "VP_acknowledgment",
+          "folderName" : "AIS_Ad_Hoc"
+        },
+        "dateConfigurationName" : "July_Fiscal_Year",
+        "measuresToCurrencies" : [ ]
+      }
+    },
+    "FORMULA0" : {
+      "action" : "formula",
+      "sources" : [ "JOIN0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "sort_key",
+          "label" : "sort_key",
+          "formulaExpression" : "concat(\"Account.Name\",Constituent_or_Account_Id, 1/ucinn_ascendv2__Credit_Amount__c)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    }
+  },
+  "ui" : {
+    "nodes" : {
+      "LOAD_DATASET0" : {
+        "label" : "Gift Credit and Payment",
+        "type" : "LOAD_DATASET",
+        "top" : 112,
+        "left" : 112,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "LOAD_DATASET1" : {
+        "label" : "Account and Contact Dataset",
+        "type" : "LOAD_DATASET",
+        "top" : 252,
+        "left" : 112,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "FILTER0" : {
+        "label" : "Filter to $10K+",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 112,
+        "left" : 252
+      },
+      "JOIN0" : {
+        "label" : "Join 0",
+        "type" : "JOIN",
+        "top" : 112,
+        "left" : 392
+      },
+      "OUTPUT0" : {
+        "label" : "Output 0",
+        "type" : "OUTPUT",
+        "top" : 112.1,
+        "left" : 812.3
+      },
+      "TRANSFORM0" : {
+        "label" : "Transform 0",
+        "type" : "TRANSFORM",
+        "top" : 112,
+        "left" : 532,
+        "graph" : {
+          "FORMULA0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "sort_key"
+          }
+        },
+        "connectors" : [ ]
+      }
+    },
+    "connectors" : [ {
+      "source" : "LOAD_DATASET0",
+      "target" : "FILTER0"
+    }, {
+      "source" : "FILTER0",
+      "target" : "JOIN0"
+    }, {
+      "source" : "LOAD_DATASET1",
+      "target" : "JOIN0"
+    }, {
+      "source" : "TRANSFORM0",
+      "target" : "OUTPUT0"
+    }, {
+      "source" : "JOIN0",
+      "target" : "TRANSFORM0"
+    } ],
+    "hiddenColumns" : [ ]
+  },
+  "runMode" : "full"
+}

@@ -1,0 +1,281 @@
+{
+  "version" : "64.0",
+  "nodes" : {
+    "LOAD_DATASET0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Aggregate.SUM_Current_Calendar_Year_Total_Hard_Credit_Cash", "Aggregate.SUM_Calendar_Year_Total_Hard_Credit_Cash_1YR", "Is_Contactable", "Is_Contactable_By_Text", "Is_Active", "Is_Past_Parent_Inactive", "Is_Couper_Guild", "Is_Contactable_By_Email", "EnrichHami.Max_HF_Cash_Date_1YR", "Substantive_meeting.Last_Substantive_Meeting_Date", "Hamilton_Fund_CYR_Solicitable_Status", "All_Children", "Is_Founders_Circle", "Is_Magazine_Eligible", "Is_Ten_to_the_Fifth", "Id", "Is_Solicitable_By_Email", "Is_Solicitable", "ActiveCB.Is_Active_Chapel_Bell", "Is_Solicitable_By_Phone", "Is_JBA_non_expired", "Enrich1812.Is_1812_CYR_with_Full_CB", "Is_Contactable_By_Phone", "Is_Solicitable_By_Mail", "Is_Glade_and_Glen_Eligible", "Pure_Donor.Status_Date", "Is_Solicitable_By_Text", "Is_Contactable_By_Mail", "Aggregate.SUM_FY00_Collected_Amount_HF", "Number_of_Solicitable_Channels", "Pure_Donor.Count_Unique.Fiscal_Years", "Aggregate.SUM_FY00_Committed_Amount_HF", "Aggregate_02.Sum.Is_Consecutive_Year", "Aggregate.SUM_FY01_Collected_Amount_HF", "Aggregate.SUM_Committed_Excluding_BQI", "Outstanding_Balance_Excluding_Bequest_Intentions", "Pure_Donor_Status", "Hamilton_Fund_Donor_Status", "Number_of_Contactable_Channels", "Aggregate.Sum.FY00_Collected_Amount", "Philanthropic_Donor_Status", "Aggregate.Sum.FY01_Collected_Amount", "Aggregate.SUM_Bequest_Intention" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Account and Contact Dataset",
+          "name" : "Account_and_Contact_Dataset"
+        },
+        "sampleDetails" : {
+          "type" : "Custom",
+          "filters" : {
+            "filterExpressions" : [ {
+              "type" : "TEXT",
+              "field" : "Id",
+              "operator" : "IS_NOT_NULL",
+              "operands" : [ ]
+            } ]
+          },
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "LOAD_DATASET1" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "HAM_Hard_Credit_Current_Calendar_Year__c", "HAM_Hard_Credit_Last_Calendar_Year__c", "Id", "ucinn_ascendv2__Current_FY_Giving__c", "ucinn_ascendv2__Last_FY_Giving__c", "HAM_CYR_Solicitable__c", "HAM_Lifetime_Bequest_Intention__c", "HAM_1812__c", "HAM_Consecutive_Years_of_Giving__c", "HAM_HF_Donor_Status__c", "HAM_JBA__c", "HAM_Philanthropic_Donor_Status__c", "HAM_Pure_Donor_Status__c", "HAM_Is_Active__c", "HAM_Contactable_by_Mail__c", "HAM_Contactable_by_Email__c", "HAM_Contactable_by_Text__c", "HAM_Contactable_by_Phone__c", "HAM_Number_of_Channels_Contactable__c", "HAM_Is_Contactable__c", "HAM_Solicitable_by_Mail__c", "HAM_Solicitable_by_Email__c", "HAM_Solicitable_by_Text__c", "HAM_Solicitable_by_Phone__c", "HAM_Number_of_Channels_Solicitable__c", "HAM_Is_Solicitable__c", "HAM_Total_Years_of_Giving__c", "HAM_Current_Year_Hamilton_Fund_Collected__c", "HAM_Current_Yr_Hamilton_Fund_Fundraising__c", "HAM_Last_Year_Hamilton_Fund_Collected__c", "HAM_Last_Year_Hamilton_Fund_Fundraising__c", "HAM_Founders_Circle__c", "HAM_Ten_to_Fifth__c", "HAM_Outstanding_Balance__c", "HAM_Past_Parent_Inactive__c", "HAM_Last_Meeting_Date__c", "HAM_Last_Gift_Date__c", "HAM_Chapel_Bell__c", "HAM_Children__c", "HAM_HF_Anniversary_Date_1YR__c", "HAM_Lifetime_Committed__c", "HAM_Is_Magazine_Eligible__c", "HAM_is_Glade_and_Glen_Eligible__c", "HAM_Couper_Guild__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "Contact",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "Contact"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN0" : {
+      "action" : "join",
+      "sources" : [ "TO_DATE0", "LOAD_DATASET1" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Contact.Id" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Id" ],
+        "rightQualifier" : "Contact",
+        "rightKeys" : [ "Id" ]
+      }
+    },
+    "FILTER0" : {
+      "action" : "sqlFilter",
+      "sources" : [ "FORMULA4" ],
+      "parameters" : {
+        "sqlFilterExpression" : "(\r\n    Pure_Donor_Status != \"Contact.HAM_Pure_Donor_Status__c\"\r\nor\r\n    Philanthropic_Donor_Status != \"Contact.HAM_Philanthropic_Donor_Status__c\"\r\nor\r\n    Hamilton_Fund_Donor_Status != \"Contact.HAM_HF_Donor_Status__c\"\r\nor\r\n    Is_Active != \"Contact.HAM_Is_Active__c\"\r\nor\r\n    Is_Contactable != \"Contact.HAM_Is_Contactable__c\"\r\nor\r\n    Is_Contactable_By_Email != \"Contact.HAM_Contactable_by_Email__c\"\r\nor\r\n    Is_Contactable_By_Phone != \"Contact.HAM_Contactable_by_Phone__c\"\r\nor\r\n    Is_Contactable_By_Text != \"Contact.HAM_Contactable_by_Text__c\"\r\nor\r\n    Is_Contactable_By_Mail != \"Contact.HAM_Contactable_by_Mail__c\"\r\n\r\nor \r\n    Number_of_Contactable_Channels != \"Contact.HAM_Number_of_Channels_Contactable__c\"\r\nor\r\n    Is_Solicitable != \"Contact.HAM_Is_Solicitable__c\"\r\nor\r\n    Is_Solicitable_By_Email != \"Contact.HAM_Solicitable_by_Email__c\"\r\nor\r\n    Is_Solicitable_By_Phone != \"Contact.HAM_Solicitable_by_Phone__c\"\r\nor\r\n    Is_Solicitable_By_Text != \"Contact.HAM_Solicitable_by_Text__c\"\r\nor\r\n    Is_Solicitable_By_Mail != \"Contact.HAM_Solicitable_by_Mail__c\"\r\nor\r\n    Number_of_Solicitable_Channels != \"Contact.HAM_Number_of_Channels_Solicitable__c\"\r\nor\r\n    Hamilton_Fund_CYR_Solicitable_Status != \"Contact.HAM_CYR_Solicitable__c\"\r\nor\r\n    \"Pure_Donor.Count_Unique.Fiscal_Years\" != \"Contact.HAM_Total_Years_of_Giving__c\"\r\n\r\nor \"Contact.HAM_Current_Year_Hamilton_Fund_Collected__c\" != \"Aggregate.SUM_FY00_Collected_Amount_HF\"\r\n\r\nor \"Contact.HAM_Current_Yr_Hamilton_Fund_Fundraising__c\" != \"Aggregate.SUM_FY00_Committed_Amount_HF\"\r\n\r\nor \"Contact.HAM_Last_Year_Hamilton_Fund_Collected__c\" != \"Aggregate.SUM_FY01_Collected_Amount_HF\"\r\nor \"Contact.HAM_Last_Year_Hamilton_Fund_Fundraising__c\"\r\n!=\"Aggregate.SUM_FY01_Collected_Amount_HF\"\r\nor \"Contact.HAM_Lifetime_Bequest_Intention__c\"!=\"Aggregate.SUM_Bequest_Intention\"\r\nor \r\n\"Contact.HAM_Consecutive_Years_of_Giving__c\"!=\"Aggregate_02.Sum.Is_Consecutive_Year\"\r\nor \r\n\"Contact.HAM_HF_Anniversary_Date_1YR__c\"\r\n!= \r\n\"EnrichHami.Max_HF_Cash_Date_1YR_to_date\"\r\nor\t\"Contact.HAM_HF_Anniversary_Date_1YR__c\"\r\n is null and \"EnrichHami.Max_HF_Cash_Date_1YR_to_date\"\r\n is not null\r\n\r\n\r\n\r\n\r\nor \"Contact.HAM_Outstanding_Balance__c\"!=Outstanding_Balance_Excluding_Bequest_Intentions\r\nor \"Contact.HAM_Ten_to_Fifth__c\"!=Is_Ten_to_the_Fifth\r\nor \"Contact.HAM_Founders_Circle__c\"!=Is_Founders_Circle\r\nor \"Contact.HAM_Last_Meeting_Date__c\"!=\"Substantive_meeting.Last_Substantive_Meeting_Date\"\r\nor Is_Substantive_meeting_for_upsert='true'\r\nor \"Contact.HAM_Past_Parent_Inactive__c\"!=Is_Past_Parent_Inactive\r\nor  Is_children_for_upsert='true'\r\nor\r\n\"Contact.HAM_Chapel_Bell__c\"!=is_active_chapel_bell_recode\r\nor \r\n\"Contact.HAM_1812__c\"!=\r\nIs_1812_CYR_with_Full_CB_recode\r\n\r\n\r\nor \r\n\"Contact.HAM_Last_Gift_Date__c\"\r\n!= \r\n\"Pure_Donor.Status_Date\"\r\n\r\nor\t\"Contact.HAM_Last_Gift_Date__c\"\r\n is null and \"Pure_Donor.Status_Date\"\r\n is not null\r\n\r\n  \r\nor \"Contact.ucinn_ascendv2__Current_FY_Giving__c\" != \"Aggregate.Sum.FY00_Collected_Amount\" \r\n\r\n\r\nor \r\n\"Contact.ucinn_ascendv2__Last_FY_Giving__c\" !=\r\n\"Aggregate.Sum.FY01_Collected_Amount\"\r\n\r\nor \"Contact.HAM_Past_Parent_Inactive__c\" !=\r\nIs_Past_Parent_Inactive\r\n\r\nor \"Contact.HAM_Lifetime_Committed__c\" !=\"Aggregate.SUM_Committed_Excluding_BQI\"\r\n\r\nor \"Contact.HAM_Is_Magazine_Eligible__c\" !=Is_Magazine_Eligible\r\n\r\nor \"Contact.HAM_is_Glade_and_Glen_Eligible__c\"!=Is_Glade_and_Glen_Eligible \r\nOR \"Contact.HAM_JBA__c\"!=Is_JBA_non_expired\r\n\r\nOR \"Contact.HAM_Couper_Guild__c\"!=Is_Couper_Guild\r\n\r\nOR \"Contact.HAM_Hard_Credit_Last_Calendar_Year__c\"!=\"Aggregate.SUM_Calendar_Year_Total_Hard_Credit_Cash_1YR\"\r\n\r\nor \"Contact.HAM_Hard_Credit_Current_Calendar_Year__c\"!=\"Aggregate.SUM_Current_Calendar_Year_Total_Hard_Credit_Cash\"\r\n\r\n\r\n)\r\nand\r\n    Id is not null"
+      }
+    },
+    "TO_DATE0" : {
+      "action" : "typeCast",
+      "sources" : [ "LOAD_DATASET0" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "EnrichHami.Max_HF_Cash_Date_1YR",
+          "newProperties" : {
+            "label" : "Max HF Cash Date 1YR To Date",
+            "name" : "EnrichHami.Max_HF_Cash_Date_1YR_to_date",
+            "typeProperties" : {
+              "type" : "DATETIME",
+              "format" : "yyyy-MM-dd"
+            }
+          }
+        } ]
+      }
+    },
+    "FORMULA1" : {
+      "action" : "formula",
+      "sources" : [ "JOIN0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Is_Substantive_meeting_for_upsert",
+          "label" : "Is Substantive meeting for upsert",
+          "formulaExpression" : "case \r\n\twhen \"Contact.HAM_Last_Meeting_Date__c\"!=\"Substantive_meeting.Last_Substantive_Meeting_Date\"\r\n\tthen 'true'\r\n\twhen \r\n\t\"Contact.HAM_Last_Meeting_Date__c\" is null and \"Substantive_meeting.Last_Substantive_Meeting_Date\"is not null\r\n\tthen 'true'\r\n\telse\r\n\t'false'\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA2" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA1" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Is_children_for_upsert",
+          "label" : "Is children for upsert",
+          "formulaExpression" : "case \r\n\twhen \"Contact.HAM_Children__c\"!=All_Children\r\n\tthen 'true'\r\n\twhen \r\n\t\"Contact.HAM_Children__c\" is null and All_Children is not null\r\n\tthen 'true'\r\n\telse 'false' end",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA3" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA2" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "is_active_chapel_bell_recode",
+          "label" : "is active chapel bell recode",
+          "formulaExpression" : "case \r\n\twhen \r\n\t\"ActiveCB.Is_Active_Chapel_Bell\" is null \r\n\tthen 'false'\r\n\telse \"ActiveCB.Is_Active_Chapel_Bell\" end",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA4" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA3" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Is_1812_CYR_with_Full_CB_recode",
+          "label" : "Is 1812 CYR with Full CB recode",
+          "formulaExpression" : "case \r\n\twhen \r\n\t\"Enrich1812.Is_1812_CYR_with_Full_CB\" is null \r\n\tthen 'false'\r\n\telse \"Enrich1812.Is_1812_CYR_with_Full_CB\" end",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "OUTPUT0" : {
+      "action" : "save",
+      "sources" : [ "FILTER0" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "test",
+          "name" : "test"
+        },
+        "measuresToCurrencies" : [ ]
+      }
+    }
+  },
+  "ui" : {
+    "nodes" : {
+      "LOAD_DATASET0" : {
+        "label" : "Account and Contact Dataset",
+        "description" : "",
+        "type" : "LOAD_DATASET",
+        "top" : 252.3,
+        "left" : 391.7,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "LOAD_DATASET1" : {
+        "label" : "Contact",
+        "description" : "",
+        "type" : "LOAD_DATASET",
+        "top" : 392.2,
+        "left" : 672,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN0" : {
+        "label" : "Lookup Current values from contact",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 252,
+        "left" : 672
+      },
+      "FILTER0" : {
+        "label" : "Filter Contacts With Changed Donor Status",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 252,
+        "left" : 1094
+      },
+      "TRANSFORM1" : {
+        "label" : "Convert Max Date to Date type",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 252,
+        "left" : 532,
+        "graph" : {
+          "TO_DATE0" : {
+            "label" : "To Date"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "TRANSFORM2" : {
+        "label" : "Transform 2",
+        "type" : "TRANSFORM",
+        "top" : 252,
+        "left" : 812,
+        "graph" : {
+          "FORMULA1" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Is Substantive meeting for upsert"
+          },
+          "FORMULA2" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Is children for upsert"
+          },
+          "FORMULA3" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "is active chapel bell recode"
+          },
+          "FORMULA4" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Is 1812 CYR with Full CB recode"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA1",
+          "target" : "FORMULA2"
+        }, {
+          "source" : "FORMULA2",
+          "target" : "FORMULA3"
+        }, {
+          "source" : "FORMULA3",
+          "target" : "FORMULA4"
+        } ]
+      },
+      "OUTPUT0" : {
+        "label" : "Output 0",
+        "type" : "OUTPUT",
+        "top" : 252,
+        "left" : 1232
+      }
+    },
+    "connectors" : [ {
+      "source" : "TRANSFORM1",
+      "target" : "JOIN0"
+    }, {
+      "source" : "LOAD_DATASET1",
+      "target" : "JOIN0"
+    }, {
+      "source" : "LOAD_DATASET0",
+      "target" : "TRANSFORM1"
+    }, {
+      "source" : "JOIN0",
+      "target" : "TRANSFORM2"
+    }, {
+      "source" : "TRANSFORM2",
+      "target" : "FILTER0"
+    }, {
+      "source" : "FILTER0",
+      "target" : "OUTPUT0"
+    } ],
+    "hiddenColumns" : [ ]
+  },
+  "runMode" : "full"
+}

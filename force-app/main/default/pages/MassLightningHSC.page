@@ -1,0 +1,40 @@
+<apex:page standardController="ucinn_ascendv2__Hard_and_Soft_Credit__c" recordSetVar="units">
+<script src="/soap/ajax/26.0/connection.js"> </script>
+<script src="/support/console/26.0/integration.js"> </script>
+<apex:dataTable value="{!selected}" var="un">
+    <apex:column >
+        <apex:outputLabel styleClass="ids">{!un.Id}</apex:outputLabel>
+    </apex:column>
+</apex:dataTable>
+<style>
+.ids{visibility : hidden}
+</style>
+<script type="text/javascript">
+    document.addEventListener("DOMContentLoaded", function(event) { 
+        var elems = document.body.getElementsByClassName("ids");
+        var ids = new Array();
+        for (var i = elems.length - 1; i >= 0; i--) {
+            ids[i] = elems[i].innerHTML;    
+        }
+        console.log(ids);
+        if (!ids || ids.length < 1)
+            alert('Please select at least one record.');
+        else
+        {
+             var instanceName = window.location.hostname;
+            var newLocation = '/apex/loop__jobqueuestatus';
+            console.log(instanceName+newLocation);
+            var redirectUrl = '/apex/loop__masslooplus?';
+ 
+            redirectUrl += '&recordIds='+ids.join(',');
+            redirectUrl += '&sessionId={!$Api.Session_ID}';
+            redirectUrl += '&retURL='+newLocation;
+            if (sforce && sforce.one && sforce.one.navigateToURL) {
+    sforce.one.navigateToURL(redirectUrl);
+} else {
+    window.location.href = redirectUrl;
+}
+        }
+    });
+</script>
+</apex:page>

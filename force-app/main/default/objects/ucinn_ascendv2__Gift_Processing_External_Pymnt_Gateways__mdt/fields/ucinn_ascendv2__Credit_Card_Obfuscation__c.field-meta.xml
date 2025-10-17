@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>ucinn_ascendv2__Credit_Card_Obfuscation__c</fullName>
+    <deprecated>false</deprecated>
+    <description>Determines the level of masking on credit card values within stored XML requests.</description>
+    <fieldManageability>SubscriberControlled</fieldManageability>
+    <inlineHelpText>Determines the level of masking on credit card values within stored XML requests.</inlineHelpText>
+    <label>Credit Card Obfuscation</label>
+    <required>false</required>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Show First 4 Digits</fullName>
+                <default>true</default>
+                <label>Show First 4 Digits</label>
+            </value>
+            <value>
+                <fullName>Show Last 4 Digits</fullName>
+                <default>false</default>
+                <label>Show Last 4 Digits</label>
+            </value>
+            <value>
+                <fullName>Hide All Digits</fullName>
+                <default>false</default>
+                <label>Hide All Digits</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

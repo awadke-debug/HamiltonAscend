@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>ucinn_ascendv2__Account_Number_Unmasked_View_Length__c</fullName>
+    <defaultValue>&apos;4&apos;</defaultValue>
+    <deprecated>false</deprecated>
+    <fieldManageability>SubscriberControlled</fieldManageability>
+    <inlineHelpText>Determines how much of the Account Number field is unmasked for view. For example, if the Account Number is 123456790: 1: *********0, 2: ********90, 3: *******890, 4: ******7890. Shorter ACH / Direct Debit account numbers should display fewer visible digits. For example: ****0, ***90.</inlineHelpText>
+    <label>Account Number Unmasked View Length</label>
+    <required>false</required>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>1</fullName>
+                <default>true</default>
+                <label>1</label>
+            </value>
+            <value>
+                <fullName>2</fullName>
+                <default>false</default>
+                <label>2</label>
+            </value>
+            <value>
+                <fullName>3</fullName>
+                <default>false</default>
+                <label>3</label>
+            </value>
+            <value>
+                <fullName>4</fullName>
+                <default>false</default>
+                <label>4</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

@@ -1,0 +1,568 @@
+{
+  "version" : "64.0",
+  "nodes" : {
+    "LOAD_DATASET0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Constituent_or_Account_Id", "Designation.ucinn_ascendv2__Designation_Name__c", "SUM_Fundraising_Amount", "SUM_Cash_Amount", "Pledge_Balance", "ucinn_ascendv2__Contact__c" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Pledge Balance",
+          "name" : "Pledge_Balance"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "EXTRACT0" : {
+      "action" : "extractGrains",
+      "sources" : [ "FILTER3" ],
+      "parameters" : {
+        "grainExtractions" : [ ]
+      }
+    },
+    "AGGREGATE1" : {
+      "action" : "aggregate",
+      "sources" : [ "EXTRACT0" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "SUM_Pledge_Balance",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        }, {
+          "name" : "Pledge_Cash_Amount",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        }, {
+          "name" : "Pledge_Fundraising_Amount",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        } ]
+      },
+      "parameters" : {
+        "aggregations" : [ {
+          "action" : "SUM",
+          "source" : "Pledge_Balance",
+          "name" : "SUM_Pledge_Balance",
+          "label" : "Sum of Pledge Balance"
+        }, {
+          "action" : "SUM",
+          "source" : "SUM_Cash_Amount",
+          "name" : "Pledge_Cash_Amount",
+          "label" : "Pledge Cash Amount"
+        }, {
+          "action" : "SUM",
+          "source" : "SUM_Fundraising_Amount",
+          "name" : "Pledge_Fundraising_Amount",
+          "label" : "Pledge Fundraising Amount"
+        } ],
+        "groupings" : [ "Constituent_or_Account_Id", "Designation.ucinn_ascendv2__Designation_Name__c" ],
+        "pivots" : [ ],
+        "nodeType" : "STANDARD"
+      }
+    },
+    "FORMULA0" : {
+      "action" : "formula",
+      "sources" : [ "AGGREGATE1" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "External_Record_ID",
+          "label" : "External Record ID",
+          "formulaExpression" : "concat(Constituent_or_Account_Id,\"Designation.ucinn_ascendv2__Designation_Name__c\")",
+          "precision" : 32000,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA2" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Pledge_Balance_Status",
+          "label" : "Pledge Balance Status",
+          "formulaExpression" : "'active'",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA4" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA2" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Record_ID",
+          "label" : "Record ID",
+          "formulaExpression" : "''",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "LOAD_DATASET1" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Id", "Name", "Constituent__c", "HAM_Pledge_Balance__c", "HAM_Designation__c", "HAM_Pledged__c", "HAM_Paid__c", "HAM_Status__c", "HAM_External_System_ID__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "HAM_Pledge_Balance__c",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "HAM_Pledge_Balance__c"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN0" : {
+      "action" : "join",
+      "sources" : [ "LOAD_DATASET1", "DROP_FIELDS0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "HAM_External_System_ID__c" ],
+        "rightQualifier" : "CRMA",
+        "rightKeys" : [ "External_Record_ID" ]
+      }
+    },
+    "DROP_FIELDS0" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA4" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "SELECT",
+          "ignoreMissingFields" : true,
+          "fields" : [ "External_Record_ID", "Pledge_Balance_Status" ]
+        }
+      }
+    },
+    "FILTER1" : {
+      "action" : "filter",
+      "sources" : [ "JOIN0" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "CRMA.Pledge_Balance_Status",
+          "operator" : "NOT",
+          "operands" : [ "active" ]
+        } ]
+      }
+    },
+    "DROP_FIELDS2" : {
+      "action" : "schema",
+      "sources" : [ "FILTER1" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "CRMA.Pledge_Balance_Status" ]
+        }
+      }
+    },
+    "FORMULA3" : {
+      "action" : "formula",
+      "sources" : [ "DROP_FIELDS2" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "CRMA.Pledge_Balance_Status",
+          "label" : "Pledge_Balance_Status",
+          "formulaExpression" : "'Former'",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FILTER2" : {
+      "action" : "sqlFilter",
+      "sources" : [ "JOIN1" ],
+      "parameters" : {
+        "sqlFilterExpression" : "(\r\n\"HAM_Pledge.HAM_Pledged__c\" is null or    \r\n\"HAM_Pledge.HAM_Pledged__c\"!=Pledge_Fundraising_Amount or\r\n\"HAM_Pledge.HAM_Paid__c\"!=Pledge_Cash_Amount or\r\n\"HAM_Pledge.HAM_Pledge_Balance__c\"!=SUM_Pledge_Balance\r\n) AND External_Record_ID is not null"
+      }
+    },
+    "JOIN1" : {
+      "action" : "join",
+      "sources" : [ "FORMULA4", "LOAD_DATASET1" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "External_Record_ID" ],
+        "rightQualifier" : "HAM_Pledge",
+        "rightKeys" : [ "HAM_External_System_ID__c" ]
+      }
+    },
+    "DROP_FIELDS3" : {
+      "action" : "schema",
+      "sources" : [ "FILTER2" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "HAM_Pledge.Name", "HAM_Pledge.Constituent__c", "HAM_Pledge.HAM_Pledge_Balance__c", "HAM_Pledge.HAM_Designation__c", "HAM_Pledge.HAM_Pledged__c", "HAM_Pledge.HAM_Paid__c", "HAM_Pledge.HAM_Status__c", "HAM_Pledge.HAM_External_System_ID__c", "Record_ID" ]
+        }
+      }
+    },
+    "FILTER3" : {
+      "action" : "filter",
+      "sources" : [ "LOAD_DATASET0" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "ucinn_ascendv2__Contact__c",
+          "operator" : "IS_NOT_NULL",
+          "operands" : [ ]
+        } ]
+      }
+    },
+    "OUTPUT1" : {
+      "action" : "save",
+      "sources" : [ "APPEND0" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "pledge_balance_changed",
+          "name" : "pledge_balance_changed"
+        },
+        "measuresToCurrencies" : [ ]
+      }
+    },
+    "OUTPUT2" : {
+      "action" : "save",
+      "sources" : [ "JOIN1" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "crma_pledge_bal_comparison",
+          "name" : "crma_pledge_bal_comparison"
+        },
+        "measuresToCurrencies" : [ ]
+      }
+    },
+    "APPEND0" : {
+      "action" : "appendV2",
+      "sources" : [ "DROP_FIELDS3", "FORMULA3" ],
+      "parameters" : {
+        "fieldMappings" : [ {
+          "top" : "Constituent_or_Account_Id",
+          "bottom" : "Constituent__c"
+        }, {
+          "top" : "Designation.ucinn_ascendv2__Designation_Name__c",
+          "bottom" : "HAM_Designation__c"
+        }, {
+          "top" : "SUM_Pledge_Balance",
+          "bottom" : "HAM_Pledge_Balance__c"
+        }, {
+          "top" : "Pledge_Cash_Amount",
+          "bottom" : "HAM_Paid__c"
+        }, {
+          "top" : "Pledge_Fundraising_Amount",
+          "bottom" : "HAM_Pledged__c"
+        }, {
+          "top" : "External_Record_ID",
+          "bottom" : "HAM_External_System_ID__c"
+        }, {
+          "top" : "Pledge_Balance_Status",
+          "bottom" : "HAM_Status__c"
+        }, {
+          "top" : "HAM_Pledge.Id",
+          "bottom" : "Id"
+        } ]
+      }
+    }
+  },
+  "ui" : {
+    "nodes" : {
+      "LOAD_DATASET0" : {
+        "label" : "Pledge Balance",
+        "type" : "LOAD_DATASET",
+        "top" : 112,
+        "left" : 112,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "AGGREGATE0" : {
+        "label" : "Aggregate to id and desig",
+        "description" : "",
+        "type" : "AGGREGATE",
+        "top" : 112.19999999999999,
+        "left" : 392,
+        "graph" : {
+          "EXTRACT0" : null,
+          "AGGREGATE1" : null
+        },
+        "connectors" : [ {
+          "source" : "EXTRACT0",
+          "target" : "AGGREGATE1"
+        } ]
+      },
+      "TRANSFORM0" : {
+        "label" : "Transform CRMA Pledge Balance (today)",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 112,
+        "left" : 532.5,
+        "graph" : {
+          "FORMULA0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "External Record ID"
+          },
+          "FORMULA2" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Pledge Balance Status"
+          },
+          "FORMULA4" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Record ID"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA0",
+          "target" : "FORMULA2"
+        }, {
+          "source" : "FORMULA2",
+          "target" : "FORMULA4"
+        } ]
+      },
+      "LOAD_DATASET1" : {
+        "label" : "HAM_Pledge_Balance__c",
+        "type" : "LOAD_DATASET",
+        "top" : 532.2,
+        "left" : 112.19999999999999,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "TRANSFORM1" : {
+        "label" : "Transform SF Pledge Balance (yesterday)",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 532.1,
+        "left" : 533.2,
+        "graph" : { },
+        "connectors" : [ ]
+      },
+      "JOIN0" : {
+        "label" : "Lookup status from CRMA",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 392.1,
+        "left" : 532
+      },
+      "TRANSFORM2" : {
+        "label" : "Keep id and status",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 251.60000000000002,
+        "left" : 531.9,
+        "graph" : {
+          "DROP_FIELDS0" : {
+            "label" : "Drop Columns"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "FILTER1" : {
+        "label" : "keep status NE active",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 391.7,
+        "left" : 952.4
+      },
+      "TRANSFORM3" : {
+        "label" : "recode status",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 391.3,
+        "left" : 1232.2,
+        "graph" : {
+          "DROP_FIELDS2" : {
+            "label" : "Drop Columns"
+          },
+          "FORMULA3" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Pledge_Balance_Status"
+          }
+        },
+        "connectors" : [ {
+          "source" : "DROP_FIELDS2",
+          "target" : "FORMULA3"
+        } ]
+      },
+      "FILTER2" : {
+        "label" : "filter to changed records",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 112.19999999999999,
+        "left" : 954.1
+      },
+      "TRANSFORM4" : {
+        "label" : "CRMA",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 112,
+        "left" : 672,
+        "graph" : { },
+        "connectors" : [ ]
+      },
+      "JOIN1" : {
+        "label" : "Lookup SF to CRMA",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 112,
+        "left" : 812
+      },
+      "TRANSFORM5" : {
+        "label" : "drop SF fields",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 112,
+        "left" : 1092,
+        "graph" : {
+          "DROP_FIELDS3" : {
+            "label" : "Drop Columns"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "FILTER3" : {
+        "label" : "Keep constituents only",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 112,
+        "left" : 252
+      },
+      "OUTPUT1" : {
+        "label" : "Output changed records",
+        "description" : "",
+        "type" : "OUTPUT",
+        "top" : 112.5,
+        "left" : 1372.1
+      },
+      "OUTPUT2" : {
+        "label" : "Output 2",
+        "type" : "OUTPUT",
+        "top" : 252.2,
+        "left" : 812
+      },
+      "APPEND0" : {
+        "label" : "Append 0",
+        "type" : "APPEND",
+        "top" : 112.19999999999999,
+        "left" : 1232.1
+      }
+    },
+    "connectors" : [ {
+      "source" : "FILTER3",
+      "target" : "AGGREGATE0"
+    }, {
+      "source" : "AGGREGATE0",
+      "target" : "TRANSFORM0"
+    }, {
+      "source" : "LOAD_DATASET1",
+      "target" : "TRANSFORM1"
+    }, {
+      "source" : "TRANSFORM1",
+      "target" : "JOIN0"
+    }, {
+      "source" : "TRANSFORM2",
+      "target" : "JOIN0"
+    }, {
+      "source" : "TRANSFORM0",
+      "target" : "TRANSFORM2"
+    }, {
+      "source" : "JOIN0",
+      "target" : "FILTER1"
+    }, {
+      "source" : "FILTER1",
+      "target" : "TRANSFORM3"
+    }, {
+      "source" : "JOIN1",
+      "target" : "FILTER2"
+    }, {
+      "source" : "TRANSFORM0",
+      "target" : "TRANSFORM4"
+    }, {
+      "source" : "TRANSFORM4",
+      "target" : "JOIN1"
+    }, {
+      "source" : "LOAD_DATASET1",
+      "target" : "JOIN1"
+    }, {
+      "source" : "FILTER2",
+      "target" : "TRANSFORM5"
+    }, {
+      "source" : "LOAD_DATASET0",
+      "target" : "FILTER3"
+    }, {
+      "source" : "JOIN1",
+      "target" : "OUTPUT2"
+    }, {
+      "source" : "TRANSFORM5",
+      "target" : "APPEND0"
+    }, {
+      "source" : "TRANSFORM3",
+      "target" : "APPEND0"
+    }, {
+      "source" : "APPEND0",
+      "target" : "OUTPUT1"
+    } ],
+    "hiddenColumns" : [ ]
+  },
+  "runMode" : "full"
+}

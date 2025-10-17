@@ -1,0 +1,692 @@
+{
+  "version" : "61.0",
+  "nodes" : {
+    "LOAD_DATASET0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "bt_stripe__Related_Contact__c", "Id", "Name", "bt_stripe__Balance_Status__c", "bt_stripe__Payment_Gateway__c", "bt_stripe__Payment_Method_Billing_Email__c", "bt_stripe__Payment_Method_Last_4__c", "bt_stripe__Payment_Method__c", "bt_stripe__Payment_Status__c", "bt_stripe__Processed_Date__c", "bt_stripe__Sales_Document__c", "bt_stripe__Stripe_Customer__c", "bt_stripe__Transaction_Status__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "bt_stripe__Transaction__c",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "bt_stripe__Transaction__c"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "LOAD_DATASET1" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Id", "Name", "bt_stripe__Item_Name__c", "bt_stripe__Sales_Document__c", "bt_stripe__Unit_Price__c", "conference360__Attendee__c", "conference360__Event__c", "HAM_Gift_Amount__c", "HAM_Gift_Designation_Code__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "bt_stripe__Line_Item__c",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "bt_stripe__Line_Item__c"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "LOAD_DATASET2" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Id", "Name" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "bt_stripe__Payment_Method__c",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "bt_stripe__Payment_Method__c"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "OUTPUT0" : {
+      "action" : "save",
+      "sources" : [ "EDIT_ATTRIBUTES5" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "NDB Event Registration Fees and Round Up",
+          "name" : "NDB_Event_Registration_Fees_and_Round_Up",
+          "folderName" : "SharedApp"
+        },
+        "dateConfigurationName" : "July_Fiscal_Year",
+        "measuresToCurrencies" : [ ]
+      }
+    },
+    "EDIT_ATTRIBUTES0" : {
+      "action" : "schema",
+      "sources" : [ "JOIN10" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Id",
+          "newProperties" : {
+            "label" : "Transaction Id",
+            "name" : "Transaction_Id"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES4" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES0" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "bt_stripe__Related_Contact__c",
+          "newProperties" : {
+            "label" : "Transaction Contact",
+            "name" : "bt_stripe__Related_Contact__c"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES6" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES4" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Contact.Name",
+          "newProperties" : {
+            "label" : "Transaction Contact Name",
+            "name" : "Contact.Name",
+            "typeProperties" : null
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES7" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES6" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Contact.ucinn_ascendv2__Donor_ID__c",
+          "newProperties" : {
+            "label" : "Transaction Contact Donor ID",
+            "name" : "Contact.ucinn_ascendv2__Donor_ID__c"
+          }
+        } ]
+      }
+    },
+    "FORMULA0" : {
+      "action" : "formula",
+      "sources" : [ "JOIN8" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Payment_Amount",
+          "label" : "Payment Amount",
+          "formulaExpression" : "case \r\nwhen bt_stripe__Item_Name__c='Make a Gift' \r\nthen bt_stripe__Unit_Price__c \r\nelse HAM_Gift_Amount__c \r\nend",
+          "precision" : 10,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES2" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA2" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Id",
+          "newProperties" : {
+            "label" : "Line Item Id",
+            "name" : "Line_Item_Id"
+          }
+        } ]
+      }
+    },
+    "FORMULA1" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Opportunity_Type",
+          "label" : "Opportunity Type",
+          "formulaExpression" : "case \r\nwhen bt_stripe__Item_Name__c='Make a Gift' \r\nthen 'Round Up'\r\nelse 'Event Fee'\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA2" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA1" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Appeal",
+          "label" : "Appeal",
+          "formulaExpression" : "case \r\nwhen bt_stripe__Item_Name__c='Make a Gift' \r\nthen 'RU'\r\nelse 'EV'\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES3" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES2" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "LookupPaym.bt_stripe__Processed_Date__c",
+          "newProperties" : {
+            "label" : "Processed Date",
+            "name" : "LookupPaym.bt_stripe__Processed_Date__c",
+            "typeProperties" : {
+              "type" : "DATETIME",
+              "format" : "yyyy-MM-dd"
+            }
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES5" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES3" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Contact.Name",
+          "newProperties" : {
+            "label" : "Donor Name",
+            "name" : "Contact.Name"
+          }
+        } ]
+      }
+    },
+    "LOAD_DATASET4" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Name", "Id", "ucinn_ascendv2__Donor_ID__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "Contact",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "Contact"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "EDIT_ATTRIBUTES1" : {
+      "action" : "schema",
+      "sources" : [ "LOAD_DATASET2" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Name",
+          "newProperties" : {
+            "label" : "Payment Method Id",
+            "name" : "Payment_Method_Id"
+          }
+        } ]
+      }
+    },
+    "FILTER0" : {
+      "action" : "filter",
+      "sources" : [ "LOAD_DATASET1" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "bt_stripe__Item_Name__c",
+          "operator" : "EQUAL",
+          "operands" : [ "Make a Gift" ]
+        }, {
+          "type" : "NUMBER",
+          "field" : "HAM_Gift_Amount__c",
+          "operator" : "GREATER_THAN",
+          "operands" : [ "0" ]
+        } ],
+        "filterBooleanLogic" : "1 or 2"
+      }
+    },
+    "LOAD_DATASET5" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Id", "conference360__Attendee_Full_Name__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "conference360__Attendee__c",
+          "connectionName" : "Updated_Hourly",
+          "sourceObjectName" : "conference360__Attendee__c"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN5" : {
+      "action" : "join",
+      "sources" : [ "JOIN6", "LOAD_DATASET5" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "conference.Id" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "conference360__Attendee__c" ],
+        "rightQualifier" : "conference",
+        "rightKeys" : [ "Id" ]
+      }
+    },
+    "LOAD_DATASET6" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Id", "Name" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "conference360__Event__c",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "conference360__Event__c"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN6" : {
+      "action" : "join",
+      "sources" : [ "FILTER0", "LOAD_DATASET6" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "conference.Id" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "conference360__Event__c" ],
+        "rightQualifier" : "conference",
+        "rightKeys" : [ "Id" ]
+      }
+    },
+    "JOIN7" : {
+      "action" : "join",
+      "sources" : [ "EDIT_ATTRIBUTES7", "EDIT_ATTRIBUTES1" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Rename.Id" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "bt_stripe__Payment_Method__c" ],
+        "rightQualifier" : "Rename",
+        "rightKeys" : [ "Id" ]
+      }
+    },
+    "JOIN8" : {
+      "action" : "join",
+      "sources" : [ "JOIN9", "JOIN7" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "LookupPaym.bt_stripe__Sales_Document__c" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LEFT_OUTER",
+        "leftKeys" : [ "bt_stripe__Sales_Document__c" ],
+        "rightQualifier" : "LookupPaym",
+        "rightKeys" : [ "bt_stripe__Sales_Document__c" ]
+      }
+    },
+    "LOAD_DATASET7" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Id", "Name" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "bt_stripe__Sales_Document__c",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "bt_stripe__Sales_Document__c"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN9" : {
+      "action" : "join",
+      "sources" : [ "JOIN5", "LOAD_DATASET7" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "bt_stripe_.Id" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "bt_stripe__Sales_Document__c" ],
+        "rightQualifier" : "bt_stripe_",
+        "rightKeys" : [ "Id" ]
+      }
+    },
+    "JOIN10" : {
+      "action" : "join",
+      "sources" : [ "LOAD_DATASET0", "LOAD_DATASET4" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Contact.Id" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "bt_stripe__Related_Contact__c" ],
+        "rightQualifier" : "Contact",
+        "rightKeys" : [ "Id" ]
+      }
+    }
+  },
+  "ui" : {
+    "nodes" : {
+      "LOAD_DATASET0" : {
+        "label" : "bt_stripe__Transaction__c",
+        "type" : "LOAD_DATASET",
+        "top" : 813.5,
+        "left" : 951.2,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "LOAD_DATASET1" : {
+        "label" : "bt_stripe__Line_Item__c",
+        "type" : "LOAD_DATASET",
+        "top" : 252.3,
+        "left" : 113.80000000000001,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "LOAD_DATASET2" : {
+        "label" : "bt_stripe__Payment_Method__c",
+        "type" : "LOAD_DATASET",
+        "top" : 392.2,
+        "left" : 1231.6,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "OUTPUT0" : {
+        "label" : "Output 0",
+        "type" : "OUTPUT",
+        "top" : 252.39999999999998,
+        "left" : 1791.6
+      },
+      "TRANSFORM1" : {
+        "label" : "Rename",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 532.1,
+        "left" : 952.1,
+        "graph" : {
+          "EDIT_ATTRIBUTES0" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES4" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES6" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES7" : {
+            "label" : "Edit Attributes"
+          }
+        },
+        "connectors" : [ {
+          "source" : "EDIT_ATTRIBUTES0",
+          "target" : "EDIT_ATTRIBUTES4"
+        }, {
+          "source" : "EDIT_ATTRIBUTES4",
+          "target" : "EDIT_ATTRIBUTES6"
+        }, {
+          "source" : "EDIT_ATTRIBUTES6",
+          "target" : "EDIT_ATTRIBUTES7"
+        } ]
+      },
+      "TRANSFORM2" : {
+        "label" : "Enrich Fields",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 252.60000000000002,
+        "left" : 1651.9,
+        "graph" : {
+          "FORMULA0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Payment Amount"
+          },
+          "EDIT_ATTRIBUTES2" : {
+            "label" : "Edit Attributes"
+          },
+          "FORMULA1" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Opportunity Type"
+          },
+          "FORMULA2" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Appeal"
+          },
+          "EDIT_ATTRIBUTES3" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES5" : {
+            "label" : "Edit Attributes"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA0",
+          "target" : "FORMULA1"
+        }, {
+          "source" : "FORMULA2",
+          "target" : "EDIT_ATTRIBUTES2"
+        }, {
+          "source" : "FORMULA1",
+          "target" : "FORMULA2"
+        }, {
+          "source" : "EDIT_ATTRIBUTES2",
+          "target" : "EDIT_ATTRIBUTES3"
+        }, {
+          "source" : "EDIT_ATTRIBUTES3",
+          "target" : "EDIT_ATTRIBUTES5"
+        } ]
+      },
+      "LOAD_DATASET4" : {
+        "label" : "Contact",
+        "type" : "LOAD_DATASET",
+        "top" : 672,
+        "left" : 1091.9,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "TRANSFORM3" : {
+        "label" : "Rename",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 392.2,
+        "left" : 1091.6,
+        "graph" : {
+          "EDIT_ATTRIBUTES1" : {
+            "label" : "Edit Attributes"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "FILTER0" : {
+        "label" : "Filter Make a Gift or Gift Amount",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 251.89999999999998,
+        "left" : 252
+      },
+      "LOAD_DATASET5" : {
+        "label" : "conference360__Attendee__c",
+        "type" : "LOAD_DATASET",
+        "top" : 392,
+        "left" : 672.2,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN5" : {
+        "label" : "Lookup Attendee to Line Item",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 252,
+        "left" : 672.2
+      },
+      "LOAD_DATASET6" : {
+        "label" : "conference360__Event__c",
+        "type" : "LOAD_DATASET",
+        "top" : 392.1,
+        "left" : 532,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN6" : {
+        "label" : "Lookup Event Name to Line Item",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 252.10000000000002,
+        "left" : 532.1
+      },
+      "JOIN7" : {
+        "label" : "Lookup Payment Method to Transaction",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 392.1,
+        "left" : 952
+      },
+      "JOIN8" : {
+        "label" : "Left Join Transaction to Line Item",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 251.89999999999998,
+        "left" : 952
+      },
+      "LOAD_DATASET7" : {
+        "label" : "bt_stripe__Sales_Document__c",
+        "type" : "LOAD_DATASET",
+        "top" : 392,
+        "left" : 812,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN9" : {
+        "label" : "Lookup Invoice Name to Line Item",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 251.8,
+        "left" : 812
+      },
+      "JOIN10" : {
+        "label" : "Lookup Contact to Transaction",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 672,
+        "left" : 952.3
+      }
+    },
+    "connectors" : [ {
+      "source" : "FILTER0",
+      "target" : "JOIN6"
+    }, {
+      "source" : "JOIN6",
+      "target" : "JOIN5"
+    }, {
+      "source" : "JOIN10",
+      "target" : "TRANSFORM1"
+    }, {
+      "source" : "LOAD_DATASET2",
+      "target" : "TRANSFORM3"
+    }, {
+      "source" : "LOAD_DATASET1",
+      "target" : "FILTER0"
+    }, {
+      "source" : "LOAD_DATASET5",
+      "target" : "JOIN5"
+    }, {
+      "source" : "LOAD_DATASET6",
+      "target" : "JOIN6"
+    }, {
+      "source" : "TRANSFORM2",
+      "target" : "OUTPUT0"
+    }, {
+      "source" : "TRANSFORM1",
+      "target" : "JOIN7"
+    }, {
+      "source" : "TRANSFORM3",
+      "target" : "JOIN7"
+    }, {
+      "source" : "JOIN9",
+      "target" : "JOIN8"
+    }, {
+      "source" : "JOIN7",
+      "target" : "JOIN8"
+    }, {
+      "source" : "JOIN8",
+      "target" : "TRANSFORM2"
+    }, {
+      "source" : "JOIN5",
+      "target" : "JOIN9"
+    }, {
+      "source" : "LOAD_DATASET7",
+      "target" : "JOIN9"
+    }, {
+      "source" : "LOAD_DATASET0",
+      "target" : "JOIN10"
+    }, {
+      "source" : "LOAD_DATASET4",
+      "target" : "JOIN10"
+    } ],
+    "hiddenColumns" : [ ]
+  },
+  "runMode" : "full"
+}

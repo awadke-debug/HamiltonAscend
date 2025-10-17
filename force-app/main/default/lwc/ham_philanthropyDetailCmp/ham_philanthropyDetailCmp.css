@@ -1,0 +1,340 @@
+.card-phildet {
+  background-color: #e9f4fd;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  min-width: 100%;
+}
+
+.card-header-phildet {
+  background-color: #002f87;
+  color: white;
+  font-size: 1.1rem;
+  padding: 0.75rem 1rem;
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+  font-family: 'Mallory', sans-serif;
+  font-weight: 500;
+  font-size: 20px;
+}
+
+.card-header-phildet.collapsed {
+  background-color: #F4F4F4;
+  color: #002F85;
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  cursor: pointer;
+  user-select: none;
+  font-family: 'Mallory', sans-serif;
+  font-weight: 500;
+  font-size: 20px;
+}
+
+.card-body-phildet {
+  padding: 1rem;
+}
+
+.dashboard-container {
+	/* padding: 0 1rem; */
+	/* font-family: 'Open Sans', sans-serif; */
+}
+
+.section-subtitle {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: #231F20;
+}
+
+.info-section {
+  margin-bottom: 2rem;
+}
+
+.field-label {
+  display: flex;
+  align-items: center;
+  flex: 0 0 calc(50% - 1.5rem); /* Each takes exactly 50% minus half the gap */
+  margin-right: 3rem; /* Total gap between columns is 3rem */
+  margin-bottom: 0.5rem; 
+}
+
+.field-label:nth-child(2n) { 
+    margin-right: 0; /* Remove margin from the second item in each pair */
+}
+
+.field-label label {
+    font-weight: 700;
+    margin-right: 0.75rem; /* Explicit space between label and input */
+    white-space: nowrap; /* Keep labels on one line for desktop */
+    color: #231F20;
+    flex-shrink: 0; 
+    flex-grow: 0; 
+    text-align: right;
+    font-size: 14px;
+    min-width: 70px; /* Ensure labels have some minimal space */
+}
+
+.field-label span {
+  border: 1.5px solid #D3EBFB;
+  background-color: #F6FBFF;
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  font-size: 14px;
+  /* flex-grow: 1; 
+  width: auto;
+  min-width: 120px;  */
+  max-width: 180px; 
+  /* text-align: center;  */
+  /* color: #231F20;
+  font-weight: 400; */
+  box-sizing: border-box;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  /* opacity: 80%; */
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 0; 
+  margin-bottom: 0.75rem; 
+}
+
+.heading-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.card-phildet-acc-container{
+  align-items: center !important;
+  border-top-left-radius: 0 !important;
+  border-top-right-radius: 0 !important;
+  padding-bottom: 50px;
+}
+
+.card-phildet-acc-container section{
+  width: 98%;
+  border: 1px solid #D1EDFF;
+  border-radius: 16px;
+  margin-top: 1rem;
+}
+.accordion-header {
+  background-color: #003366;
+  color: white;
+  padding: 0.75rem;
+  font-weight: 500;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  font-size: 20px;
+  border: 1px solid #D1EDFF;
+  border-top-left-radius: 16px;
+  border-top-right-radius: 16px;
+}
+
+.accordion-header-collapsed {
+  background-color: #FFFFFF;
+  color: #002F85;
+  padding: 0.75rem;
+  font-weight: 500;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  font-size: 20px;
+  border: 1px solid #D1EDFF;
+  border-radius: 16px;
+}
+
+.accordion-content {
+  display: none;
+  padding: 1rem;
+  background-color: white;
+  border: 1px solid #ccc;
+}
+
+.accordion-content.open {
+  display: block;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  /* margin-top: 1rem; */
+  border: 1px solid #D1EDFF !important;
+  border-radius: 16px !important;
+}
+
+.data-table th,
+.data-table td {
+  padding: 0.75rem;
+  border: 1px solid #ccc;
+  text-align: left;
+}
+
+.data-table th {
+  background-color: #f0f0f0;
+  cursor: pointer;
+}
+
+.load-more-row {
+  cursor: pointer;
+  background-color: #E8E8E8;
+  font-weight: 800;
+  font-size: 16px;
+  color: #231F20;
+}
+
+/* Visibility control using media queries */
+.desktop-only {
+    display: block; /* Show data table by default on desktop */
+    width: 96%;
+    margin: 20px auto;
+}
+
+.mobile-only {
+    display: none; /* Hide cards by default on desktop */
+}
+
+.button-group {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 1rem;
+    gap: 1rem;
+    max-height: 40px;
+    width: 97%;
+    margin-bottom: 20px;
+}
+
+.slds-popover {
+    background-color: white;
+    padding: 12px;
+    border-radius: 12px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    min-width: 250px;
+}
+
+.popup-item {
+    display: flex;
+    align-items: left;
+    margin-bottom: 10px;
+}
+
+.popup-icon {
+    margin-right: 8px;
+}
+
+.slds-popover {
+    background-color: white;
+    padding: 12px;
+    border-radius: 12px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    min-width: 250px;
+    float: right;
+}
+
+.popup-local {
+    
+    top: 100%;      
+    left: 0;  
+    z-index: 100; 
+    margin-top: 5px; 
+
+    /* Basic styling for visibility */
+    background-color: white;
+    border: 1px solid #ccc;
+    padding: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+
+.action-button {
+    background-color: transparent;
+    color: #002F86;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-weight: 500px;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+    border: 1px solid #002F86;
+}
+
+.action-button:hover{
+  background-color: #003da5;
+  color: #FFFFFF;
+}
+
+.slds-popover__close{
+  cursor: pointer;
+}
+
+@media screen and (max-width: 767px) { 
+    .desktop-only {
+        display: none; /* Hide data table on mobile */
+    }
+
+    .mobile-only {
+        display: block; /* Show cards on mobile */
+    }
+
+    .dashboard-container {
+        padding: 0 5px;
+    }
+
+    .card-phildet {
+        margin-bottom: 10px;
+    }
+
+    .card-header-phildet {
+        font-size: 1.1em;
+        padding: 12px 15px;
+    }
+
+    .card-body-phildet {
+        padding: 15px;
+    }
+
+    
+.card-phildet-acc-container section{
+  width: 92%;
+}
+    .accordion-header {
+        font-size: 1em;
+        padding: 10px 15px;
+        background-color: #D7EFFF;
+        color: #0A2F87;
+    }
+
+    .accordion-header-collapsed {
+        font-size: 14px;
+        padding: 10px 15px;
+        background-color: #D7EFFF;
+        color: #0A2F87;
+    }
+
+    .row{
+      flex-direction: column;
+    }
+
+    .field-label {
+        margin-bottom: 5px;
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .field-label label {
+      text-align: left;
+      white-space: pre-wrap; 
+      width: 60%;
+      font-size: 14px;
+    }
+
+    .field-label span {
+        padding: 6px;
+        font-size: 14px;
+        /* font-weight: 400; */
+    }
+}

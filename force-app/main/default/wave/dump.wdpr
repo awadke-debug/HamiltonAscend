@@ -1,0 +1,108 @@
+{
+  "version" : "62.0",
+  "nodes" : {
+    "LOAD_DATASET0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "ucinn_ascendv2__Is_Anonymous__c", "HAM_Is_Active__c", "Id", "AccountId", "LastName", "FirstName", "Salutation", "MiddleName", "Suffix", "Name", "RecordTypeId", "MailingStreet", "MailingCity", "MailingState", "MailingPostalCode", "MailingCountry", "Phone", "MobilePhone", "Email", "Title", "Birthdate", "PhotoUrl", "GenderIdentity", "ucinn_ascendv2__Amount_of_Most_Recent_Gift__c", "ucinn_ascendv2__Amount_of_Most_Recent_Pledge_Payment__c", "ucinn_ascendv2__Amount_of_Most_Recent_Pledge__c", "ucinn_ascendv2__Birth_Year__c", "ucinn_ascendv2__Contact_Type__c", "ucinn_ascendv2__Current_FY_Giving__c", "ucinn_ascendv2__Data_Source__c", "ucinn_ascendv2__Date_Marked_Deceased__c", "ucinn_ascendv2__Date_of_Most_Recent_Gift__c", "ucinn_ascendv2__Date_of_Most_Recent_Pledge_Payment__c", "ucinn_ascendv2__Date_of_Most_Recent_Pledge__c", "ucinn_ascendv2__Deceased_Date__c", "ucinn_ascendv2__Do_Not_Call__c", "ucinn_ascendv2__Do_Not_Email__c", "ucinn_ascendv2__Do_Not_Mail__c", "ucinn_ascendv2__Do_Not_Solicit__c", "ucinn_ascendv2__Donor_ID__c", "ucinn_ascendv2__Ethnicity__c", "ucinn_ascendv2__External_System_ID__c", "ucinn_ascendv2__Full_Name_Formula__c", "ucinn_ascendv2__Gender__c", "ucinn_ascendv2__Is_Deceased__c", "ucinn_ascendv2__Last_FY_Giving__c", "ucinn_ascendv2__Lifetime_Cash__c", "ucinn_ascendv2__Lifetime_Fundraising__c", "ucinn_ascendv2__Managers__c", "ucinn_ascendv2__Number_of_Consecutive_Giving__c", "ucinn_ascendv2__PRM__c", "ucinn_ascendv2__Wealth_Rating__c", "HAM_Past_Parent_Inactive__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "Contact",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "Contact"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "LOAD_DATASET1" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Id", "Name", "RecordTypeId", "ucinn_ascendv2__Account__c", "ucinn_ascendv2__Contact__c", "ucinn_ascendv2__Wealth_Rating_Comment__c", "ucinn_ascendv2__Type__c", "ucinn_ascendv2__Wealth_Rating__c", "HAM_Wealth_Rating_Number__c", "HAM_Ask_Amount__c", "HAM_Attend__c", "HAM_Connect__c", "HAM_Decile_Number__c", "HAM_Expected_Amount__c", "HAM_Fiscal_Year__c", "HAM_Give__c", "HAM_Probability__c", "HAM_Raw_Score__c", "HAM_Stage__c", "HAM_Start_Date__c", "HAM_Status__c", "HAM_Volunteer__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "ucinn_ascendv2__Wealth_Rating__c",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "ucinn_ascendv2__Wealth_Rating__c"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "OUTPUT0" : {
+      "action" : "save",
+      "sources" : [ "LOAD_DATASET0" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "dump_contact",
+          "name" : "dump_contact"
+        },
+        "measuresToCurrencies" : [ ]
+      }
+    },
+    "OUTPUT1" : {
+      "action" : "save",
+      "sources" : [ "LOAD_DATASET1" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "dump_wealth",
+          "name" : "dump_wealth"
+        },
+        "measuresToCurrencies" : [ ]
+      }
+    }
+  },
+  "ui" : {
+    "nodes" : {
+      "LOAD_DATASET0" : {
+        "label" : "Contact",
+        "type" : "LOAD_DATASET",
+        "top" : 112,
+        "left" : 112,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "LOAD_DATASET1" : {
+        "label" : "ucinn_ascendv2__Wealth_Rating__c",
+        "type" : "LOAD_DATASET",
+        "top" : 252,
+        "left" : 112,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "OUTPUT0" : {
+        "label" : "Output 0",
+        "type" : "OUTPUT",
+        "top" : 112,
+        "left" : 252
+      },
+      "OUTPUT1" : {
+        "label" : "Output 1",
+        "type" : "OUTPUT",
+        "top" : 252,
+        "left" : 252
+      }
+    },
+    "connectors" : [ {
+      "source" : "LOAD_DATASET0",
+      "target" : "OUTPUT0"
+    }, {
+      "source" : "LOAD_DATASET1",
+      "target" : "OUTPUT1"
+    } ],
+    "hiddenColumns" : [ ]
+  },
+  "runMode" : "full"
+}

@@ -1,0 +1,236 @@
+{
+  "version" : "64.0",
+  "nodes" : {
+    "LOAD_DATASET2" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Aggregate.SUM_Calendar_Year_Total_Hard_Credit_Cash_1YR", "Aggregate.SUM_Current_Calendar_Year_Total_Hard_Credit_Cash", "Account.Id" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Account and Contact Dataset",
+          "name" : "Account_and_Contact_Dataset"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "EXTRACT0" : {
+      "action" : "extractGrains",
+      "sources" : [ "LOAD_DATASET2" ],
+      "parameters" : {
+        "grainExtractions" : [ ]
+      }
+    },
+    "AGGREGATE1" : {
+      "action" : "aggregate",
+      "sources" : [ "EXTRACT0" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "SUM_Calendar_Year_Total_Hard_Credit_Cash_1YR",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        }, {
+          "name" : "SUM_Current_Calendar_Year_Total_Hard_Credit_Cash",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        } ]
+      },
+      "parameters" : {
+        "aggregations" : [ {
+          "action" : "SUM",
+          "source" : "Aggregate.SUM_Calendar_Year_Total_Hard_Credit_Cash_1YR",
+          "name" : "SUM_Calendar_Year_Total_Hard_Credit_Cash_1YR",
+          "label" : "1YR Calendar Year Total Hard Credit Cash"
+        }, {
+          "action" : "SUM",
+          "source" : "Aggregate.SUM_Current_Calendar_Year_Total_Hard_Credit_Cash",
+          "name" : "SUM_Current_Calendar_Year_Total_Hard_Credit_Cash",
+          "label" : "Current Calendar Year Total Hard Credit Cash"
+        } ],
+        "groupings" : [ "Account.Id" ],
+        "pivots" : [ ],
+        "nodeType" : "STANDARD"
+      }
+    },
+    "LOAD_DATASET3" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "HAM_Hard_Credit_Current_Calendar_Year__c", "HAM_Hard_Credit_Last_Calendar_Year__c", "Id" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "Account",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "Account"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN1" : {
+      "action" : "join",
+      "sources" : [ "AGGREGATE1", "LOAD_DATASET3" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Account.Id" ],
+        "rightKeys" : [ "Id" ]
+      }
+    },
+    "FILTER1" : {
+      "action" : "sqlFilter",
+      "sources" : [ "JOIN1" ],
+      "parameters" : {
+        "sqlFilterExpression" : "(\r\nHAM_Hard_Credit_Last_Calendar_Year__c!=SUM_Calendar_Year_Total_Hard_Credit_Cash_1YR\r\nOR\r\nHAM_Hard_Credit_Current_Calendar_Year__c!=SUM_Current_Calendar_Year_Total_Hard_Credit_Cash\r\n    \r\n\r\n)\r\nand\r\n    Id is not null"
+      }
+    },
+    "DROP_FIELDS1" : {
+      "action" : "schema",
+      "sources" : [ "FILTER1" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "SELECT",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Account.Id", "SUM_Calendar_Year_Total_Hard_Credit_Cash_1YR", "SUM_Current_Calendar_Year_Total_Hard_Credit_Cash" ]
+        }
+      }
+    },
+    "OUTPUT2" : {
+      "action" : "outputExternal",
+      "sources" : [ "DROP_FIELDS1" ],
+      "parameters" : {
+        "connectionName" : "SFDCconnectorHAM",
+        "object" : "Account",
+        "operation" : "upsert",
+        "externalIdFieldName" : "Id",
+        "hyperFileName" : "",
+        "fieldsMapping" : [ {
+          "sourceField" : "Account.Id",
+          "targetField" : "Id"
+        }, {
+          "sourceField" : "SUM_Calendar_Year_Total_Hard_Credit_Cash_1YR",
+          "targetField" : "HAM_Hard_Credit_Last_Calendar_Year__c"
+        }, {
+          "sourceField" : "SUM_Current_Calendar_Year_Total_Hard_Credit_Cash",
+          "targetField" : "HAM_Hard_Credit_Current_Calendar_Year__c"
+        } ],
+        "connectorType" : "SALESFORCE_OUTPUT"
+      }
+    }
+  },
+  "ui" : {
+    "nodes" : {
+      "LOAD_DATASET2" : {
+        "label" : "Account and Contact Dataset",
+        "type" : "LOAD_DATASET",
+        "top" : 252.8,
+        "left" : 112.4,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "AGGREGATE0" : {
+        "label" : "Aggregate to account id",
+        "description" : "",
+        "type" : "AGGREGATE",
+        "top" : 252.8,
+        "left" : 252.39999999999998,
+        "graph" : {
+          "EXTRACT0" : null,
+          "AGGREGATE1" : null
+        },
+        "connectors" : [ {
+          "source" : "EXTRACT0",
+          "target" : "AGGREGATE1"
+        } ]
+      },
+      "LOAD_DATASET3" : {
+        "label" : "Account",
+        "type" : "LOAD_DATASET",
+        "top" : 392.8,
+        "left" : 392.5,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN1" : {
+        "label" : "look up current values from account",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 252.8,
+        "left" : 392.4
+      },
+      "FILTER1" : {
+        "label" : "Filter to changed records",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 252.7,
+        "left" : 812.5
+      },
+      "TRANSFORM3" : {
+        "label" : "Keep account and contact fields",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 252.7,
+        "left" : 952.5,
+        "graph" : {
+          "DROP_FIELDS1" : {
+            "label" : "Drop Columns"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "OUTPUT2" : {
+        "label" : "Upsert Updated Account Records",
+        "description" : "",
+        "type" : "OUTPUT",
+        "top" : 252.8,
+        "left" : 1092.5
+      }
+    },
+    "connectors" : [ {
+      "source" : "LOAD_DATASET2",
+      "target" : "AGGREGATE0"
+    }, {
+      "source" : "AGGREGATE0",
+      "target" : "JOIN1"
+    }, {
+      "source" : "LOAD_DATASET3",
+      "target" : "JOIN1"
+    }, {
+      "source" : "JOIN1",
+      "target" : "FILTER1"
+    }, {
+      "source" : "FILTER1",
+      "target" : "TRANSFORM3"
+    }, {
+      "source" : "TRANSFORM3",
+      "target" : "OUTPUT2"
+    } ],
+    "hiddenColumns" : [ ]
+  },
+  "runMode" : "full"
+}

@@ -1,0 +1,113 @@
+{
+  "version" : "64.0",
+  "nodes" : {
+    "LOAD_DATASET0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Largest_Pledge.Largest_Pledge_Date", "Largest_Cash.Largest_Cash.Daily_Designation", "Id", "Largest_Pledge.Largest_Pledge.Daily_Designation", "Largest_HFCash.Largest_HF_Cash.Daily_Designation", "Largest_HFCash.Largest_HF_Cash_Date", "Largest_HFPledge.Largest_HF_Pledge_Date", "Largest_Cash.Largest_Cash_Date", "Largest_HFPledge.Largest_HFPledge.Daily_Designation", "Largest_Pledge.Largest_Pledge_Amount", "ML_cash.Last_Cash_Amount", "Largest_HFPledge.Largest_HF_Pledge_Amount", "Largest_HFCash.Largest_HF_Cash_Amount", "Largest_Cash.Largest_Cash_Amount" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Account and Contact Dataset",
+          "name" : "Account_and_Contact_Dataset"
+        },
+        "sampleDetails" : {
+          "type" : "Custom",
+          "filters" : {
+            "filterExpressions" : [ {
+              "type" : "TEXT",
+              "field" : "Id",
+              "operator" : "IS_NOT_NULL",
+              "operands" : [ ]
+            } ]
+          },
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "OUTPUT0" : {
+      "action" : "save",
+      "sources" : [ "FILTER0" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Largest Gift Attributes for data loader",
+          "name" : "Largest_Gift_Attributes_for_data_loader",
+          "folderName" : "SharedApp"
+        },
+        "measuresToCurrencies" : [ ]
+      }
+    },
+    "FILTER0" : {
+      "action" : "filter",
+      "sources" : [ "LOAD_DATASET0" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "Id",
+          "operator" : "IS_NOT_NULL",
+          "operands" : [ ]
+        } ]
+      }
+    },
+    "OUTPUT1" : {
+      "action" : "export",
+      "sources" : [ "FILTER0" ],
+      "parameters" : {
+        "format" : "CSV",
+        "userId" : "005U1000007B5egIAC",
+        "csvHeaderRowValueType" : "FULLY_QUALIFIED_NAME",
+        "fields" : [ ],
+        "limitsPerPart" : {
+          "maxRowCount" : 100000,
+          "maxFileSizeInBytes" : 10485760
+        }
+      }
+    }
+  },
+  "ui" : {
+    "nodes" : {
+      "LOAD_DATASET0" : {
+        "label" : "Account and Contact Dataset",
+        "description" : "",
+        "type" : "LOAD_DATASET",
+        "top" : 112.19999999999999,
+        "left" : 113.1,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "OUTPUT0" : {
+        "label" : "Output 0",
+        "type" : "OUTPUT",
+        "top" : 112,
+        "left" : 392
+      },
+      "FILTER0" : {
+        "label" : "Filter 0",
+        "type" : "FILTER",
+        "top" : 112,
+        "left" : 252
+      },
+      "OUTPUT1" : {
+        "label" : "Output 1",
+        "type" : "OUTPUT",
+        "top" : 252.39999999999998,
+        "left" : 392
+      }
+    },
+    "connectors" : [ {
+      "source" : "FILTER0",
+      "target" : "OUTPUT0"
+    }, {
+      "source" : "LOAD_DATASET0",
+      "target" : "FILTER0"
+    }, {
+      "source" : "FILTER0",
+      "target" : "OUTPUT1"
+    } ],
+    "hiddenColumns" : [ ]
+  },
+  "runMode" : "full"
+}

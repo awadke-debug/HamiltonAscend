@@ -1,0 +1,25 @@
+<template>
+  <div class="backgroundWhite">
+    This is Prospect Giving Overview page.
+      <p>{recordId}</p>
+    <div>
+        This is Header indicators
+    </div>
+    <div class="slds-grid">
+        <div class="slds-col slds-size--2-of-5">
+          <template if:true={prospectData}>
+              <c-ham-prospect-bio-data contactrecord={prospectData}></c-ham-prospect-bio-data>
+          </template>
+        </div>
+        <div class="slds-col slds-size--3-of-5">
+          <template if:true={givingData}>
+              <c-ham-prospect-giving-overview contactgivingrecord={givingData}></c-ham-prospect-giving-overview>
+          </template>
+        </div>
+    </div>
+    <div>
+      This is Student section and other tables
+    </div>
+  </div>
+
+</template>

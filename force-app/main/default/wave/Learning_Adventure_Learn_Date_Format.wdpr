@@ -1,0 +1,123 @@
+{
+  "version" : "53.0",
+  "nodes" : {
+    "LOAD_DATASET0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Status", "Task_Subtype", "ActivityDate", "Closed", "Priority", "Subject" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Simple Task Data",
+          "name" : "Simple_Task_Data"
+        }
+      }
+    },
+    "DATE_PATTERN_CONVERSION0" : {
+      "action" : "formatDate",
+      "sources" : [ "LOAD_DATASET0" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "ActivityDate_datePatternConversion",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "DATETIME",
+              "format" : "M-d-yyyy"
+            }
+          }
+        } ]
+      },
+      "parameters" : {
+        "sourceField" : "ActivityDate",
+        "targetField" : {
+          "name" : "ActivityDate_datePatternConversion",
+          "label" : "Completed Date"
+        },
+        "sourceFormats" : [ {
+          "regex" : "^([1-9]|1[0-2])/([1-9]|[12][0-9]|3[0-1])/(\\d{2})$",
+          "groups" : [ "M", "d", "yy" ],
+          "construction" : [ "M", "/", "d", "/", "yy" ]
+        }, {
+          "regex" : "^([1-9]|1[0-2])/([1-9]|[12][0-9]|3[0-1])/(\\d{4})$",
+          "groups" : [ "M", "d", "yyyy" ],
+          "construction" : [ "M", "/", "d", "/", "yyyy" ]
+        }, {
+          "regex" : "^(0[1-9]|[12][0-9]|3[0-1])\\.(0[1-9]|1[0-2])\\.(\\d{2})$",
+          "groups" : [ "dd", "MM", "yy" ],
+          "construction" : [ "dd", ".", "MM", ".", "yy" ]
+        }, {
+          "regex" : "^(0[1-9]|1[0-2])/(0[1-9]|[12][0-9]|3[0-1])/(\\d{2})$",
+          "groups" : [ "MM", "dd", "yy" ],
+          "construction" : [ "MM", "/", "dd", "/", "yy" ]
+        }, {
+          "regex" : "^(\\d{4})-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[0-1])$",
+          "groups" : [ "yyyy", "MM", "dd" ],
+          "construction" : [ "yyyy", "-", "MM", "-", "dd" ]
+        }, {
+          "regex" : "^([1-9]|[12][0-9]|3[0-1])-([1-9]|1[0-2])-(\\d{2})$",
+          "groups" : [ "d", "M", "yy" ],
+          "construction" : [ "d", "-", "M", "-", "yy" ]
+        } ],
+        "targetFormat" : {
+          "regex" : "^([1-9]|1[0-2])-([1-9]|[12][0-9]|3[0-1])-(\\d{4})$",
+          "groups" : [ "M", "d", "yyyy" ],
+          "construction" : [ "M", "-", "d", "-", "yyyy" ]
+        }
+      }
+    },
+    "OUTPUT0" : {
+      "action" : "save",
+      "sources" : [ "DATE_PATTERN_CONVERSION0" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Learn - Date Format",
+          "name" : "Learn_Date_Format",
+          "folderName" : "Learning_Adventure"
+        }
+      }
+    }
+  },
+  "ui" : {
+    "nodes" : {
+      "LOAD_DATASET0" : {
+        "label" : "Tasks with Various Date Formats",
+        "type" : "LOAD_DATASET",
+        "top" : 112,
+        "left" : 112,
+        "graph" : {
+          "LOAD_DATASET0" : null
+        },
+        "connectors" : [ ],
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "TRANSFORM0" : {
+        "label" : "Date Format Transform",
+        "type" : "TRANSFORM",
+        "top" : 112,
+        "left" : 252,
+        "graph" : {
+          "DATE_PATTERN_CONVERSION0" : null
+        },
+        "connectors" : [ ]
+      },
+      "OUTPUT0" : {
+        "label" : "Output with Standardized Dates",
+        "type" : "OUTPUT",
+        "top" : 112,
+        "left" : 392
+      }
+    },
+    "connectors" : [ {
+      "source" : "LOAD_DATASET0",
+      "target" : "TRANSFORM0"
+    }, {
+      "source" : "TRANSFORM0",
+      "target" : "OUTPUT0"
+    } ],
+    "hiddenColumns" : [ ]
+  }
+}

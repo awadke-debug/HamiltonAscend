@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>62.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <decisions>
+        <name>Check_If_Today_Is_First_Day_of_the_Month</name>
+        <label>Check If Today Is First Day of the Month</label>
+        <locationX>182</locationX>
+        <locationY>252</locationY>
+        <defaultConnectorLabel>Not First Day of Month - Do Nothing</defaultConnectorLabel>
+        <rules>
+            <name>Is_First_of_the_Month</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>IsTodaytheFirstDayofMonth</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Create_a_Board_Dashboard_Approval_Record</targetReference>
+            </connector>
+            <label>Is First of the Month</label>
+        </rules>
+    </decisions>
+    <description>On the first of every month create a Board Dashboard Datapoint which represents whether or not totals are approved to be pushed to the warehouse and OIR.</description>
+    <environments>Default</environments>
+    <formulas>
+        <name>BoardDashboardApprovalName</name>
+        <dataType>String</dataType>
+        <expression>&quot;Board Dashboard Approval - &quot;&amp; Text({!$Flow.CurrentDate})</expression>
+    </formulas>
+    <formulas>
+        <name>IsTodaytheFirstDayofMonth</name>
+        <dataType>Boolean</dataType>
+        <expression>IF(DAY({!$Flow.CurrentDate}) = 1,TRUE,FALSE)</expression>
+    </formulas>
+    <interviewLabel>HAM Create Board Dashboard Approval Record {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>HAM Create Board Dashboard Approval Record</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordCreates>
+        <name>Create_a_Board_Dashboard_Approval_Record</name>
+        <label>Create a Board Dashboard Approval Record</label>
+        <locationX>50</locationX>
+        <locationY>360</locationY>
+        <inputAssignments>
+            <field>HAM_Start_Date__c</field>
+            <value>
+                <elementReference>$Flow.CurrentDateTime</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Name</field>
+            <value>
+                <elementReference>BoardDashboardApprovalName</elementReference>
+            </value>
+        </inputAssignments>
+        <object>HAM_Board_Dashboard_Data__c</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordCreates>
+    <start>
+        <locationX>56</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Check_If_Today_Is_First_Day_of_the_Month</targetReference>
+        </connector>
+        <schedule>
+            <frequency>Daily</frequency>
+            <startDate>2025-02-01</startDate>
+            <startTime>03:45:00.000Z</startTime>
+        </schedule>
+        <triggerType>Scheduled</triggerType>
+    </start>
+    <status>Active</status>
+</Flow>

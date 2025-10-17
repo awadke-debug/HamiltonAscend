@@ -1,0 +1,287 @@
+{
+  "version" : "63.0",
+  "nodes" : {
+    "LOAD_DATASET0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Donor_Status", "AF_Donor_Status", "ucinn_ascendv2__Preferred_Address_State__c", "ucinn_ascendv2__Preferred_Address_City__c", "ucinn_ascendv2__Preferred_Address_Line_1__c", "ucinn_ascendv2__Home_Phone_No_Trustee_Formula__c", "MobilePhone", "Preferred_First_Name", "Email", "HAM_Spouse_Reunion_Year__c", "HAM_Reunion_Year__c", "LastName", "HAM_Birth_Name__c", "FirstName", "AFFILIATION_6_YEAR", "AFFILIATION_4_YEAR", "AFFILIATION_1_YEAR", "AFFILIATION_5", "AFFILIATION_3_YEAR", "AFFILIATION_6", "AFFILIATION_3", "AFFILIATION_4", "AFFILIATION_1", "AFFILIATION_2", "AFFILIATION_2_YEAR", "AFFILIATION_5_YEAR", "ucinn_ascendv2__Primary_Contact_Type__c", "ENGAGEMENT_SCORE_3YR", "ENGAGEMENT_SCORE_1YR", "ENGAGEMENT_SCORE_4YR", "ANNUAL_FUND_OFFICER_ASSIGNMENT", "ENGAGEMENT_SCORE_2YR", "ucinn_ascendv2__PRM_No_Trustee_Formula__c", "ENGAGEMENT_SCORE_5YR", "ENGAGEMENT_SCORE_CYR", "SELECTABLE_FLAG", "ucinn_ascendv2__Spouse_No_Trustee_Formula__c", "HAM_Spouse_External_System_ID__c", "Contact_Restrictions_Text", "Contact_Restrictions_Email", "Contact_Restrictions_Phone", "Contact_Restrictions_Directmail", "HAM_CYR_HF_Ask__c", "ucinn_ascendv2__Preferred_Address_Country__c", "HAM_Preferred_Chapter__c", "ucinn_ascendv2__Preferred_Address_Postal_Code__c", "ucinn_ascendv2__External_System_ID__c" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Constituent File for VMS",
+          "name" : "Constituent_File_for_VMS"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "TO_DIMENSION0" : {
+      "action" : "typeCast",
+      "sources" : [ "LOAD_DATASET0" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "HAM_CYR_HF_Ask__c_to_dimension",
+          "newProperties" : {
+            "name" : "HAM_CYR_HF_Ask__c"
+          }
+        } ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "HAM_CYR_HF_Ask__c" ]
+        }
+      },
+      "parameters" : {
+        "fields" : [ {
+          "name" : "HAM_CYR_HF_Ask__c",
+          "newProperties" : {
+            "label" : "ASK_AMOUNT",
+            "name" : "HAM_CYR_HF_Ask__c_to_dimension",
+            "typeProperties" : {
+              "type" : "TEXT",
+              "length" : 255
+            }
+          }
+        } ]
+      }
+    },
+    "DROP_FIELDS0" : {
+      "action" : "schema",
+      "sources" : [ "TO_DIMENSION0" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "AFFILIATION_1" ]
+        }
+      }
+    },
+    "EDIT_ATTRIBUTES0" : {
+      "action" : "schema",
+      "sources" : [ "DROP_FIELDS0" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "ucinn_ascendv2__Primary_Contact_Type__c",
+          "newProperties" : {
+            "label" : "AFFILIATION_1",
+            "name" : "ucinn_ascendv2__Primary_Contact_Type__c"
+          }
+        } ]
+      }
+    },
+    "OUTPUT0" : {
+      "action" : "outputExternal",
+      "sources" : [ "EDIT_ATTRIBUTES0" ],
+      "parameters" : {
+        "connectionName" : "ascend_Production_Data_Lake_OUTBOUND",
+        "object" : "VMS_CONSTITUENTS_ASCEND",
+        "operation" : "",
+        "externalIdFieldName" : "",
+        "hyperFileName" : "",
+        "fieldsMapping" : [ {
+          "sourceField" : "Donor_Status",
+          "targetField" : "DONOR_STATUS"
+        }, {
+          "sourceField" : "AF_Donor_Status",
+          "targetField" : "AF_DONOR_STATUS"
+        }, {
+          "sourceField" : "ucinn_ascendv2__Preferred_Address_State__c",
+          "targetField" : "STATE"
+        }, {
+          "sourceField" : "ucinn_ascendv2__Preferred_Address_City__c",
+          "targetField" : "CITY"
+        }, {
+          "sourceField" : "ucinn_ascendv2__Preferred_Address_Line_1__c",
+          "targetField" : "STREET_ADDRESS_1"
+        }, {
+          "sourceField" : "MobilePhone",
+          "targetField" : "CELL_PHONE"
+        }, {
+          "sourceField" : "Preferred_First_Name",
+          "targetField" : "PREFERRED_FIRST_NAME"
+        }, {
+          "sourceField" : "HAM_Spouse_Reunion_Year__c",
+          "targetField" : "SPOUSE_CLASS_YEAR"
+        }, {
+          "sourceField" : "HAM_Reunion_Year__c",
+          "targetField" : "CLASS_YEAR"
+        }, {
+          "sourceField" : "LastName",
+          "targetField" : "LAST_NAME"
+        }, {
+          "sourceField" : "HAM_Birth_Name__c",
+          "targetField" : "BIRTH_NAME_LAST"
+        }, {
+          "sourceField" : "FirstName",
+          "targetField" : "FIRST_NAME"
+        }, {
+          "sourceField" : "AFFILIATION_6_YEAR",
+          "targetField" : "AFFILIATION_6_YEAR"
+        }, {
+          "sourceField" : "AFFILIATION_4_YEAR",
+          "targetField" : "AFFILIATION_4_YEAR"
+        }, {
+          "sourceField" : "AFFILIATION_1_YEAR",
+          "targetField" : "AFFILIATION_1_YEAR"
+        }, {
+          "sourceField" : "AFFILIATION_5",
+          "targetField" : "AFFILIATION_5"
+        }, {
+          "sourceField" : "AFFILIATION_3_YEAR",
+          "targetField" : "AFFILIATION_3_YEAR"
+        }, {
+          "sourceField" : "AFFILIATION_6",
+          "targetField" : "AFFILIATION_6"
+        }, {
+          "sourceField" : "AFFILIATION_3",
+          "targetField" : "AFFILIATION_3"
+        }, {
+          "sourceField" : "AFFILIATION_4",
+          "targetField" : "AFFILIATION_4"
+        }, {
+          "sourceField" : "AFFILIATION_2",
+          "targetField" : "AFFILIATION_2"
+        }, {
+          "sourceField" : "AFFILIATION_2_YEAR",
+          "targetField" : "AFFILIATION_2_YEAR"
+        }, {
+          "sourceField" : "AFFILIATION_5_YEAR",
+          "targetField" : "AFFILIATION_5_YEAR"
+        }, {
+          "sourceField" : "ucinn_ascendv2__Primary_Contact_Type__c",
+          "targetField" : "AFFILIATION_1"
+        }, {
+          "sourceField" : "ENGAGEMENT_SCORE_3YR",
+          "targetField" : "ENGAGEMENT_SCORE_3YR"
+        }, {
+          "sourceField" : "ENGAGEMENT_SCORE_1YR",
+          "targetField" : "ENGAGEMENT_SCORE_1YR"
+        }, {
+          "sourceField" : "ENGAGEMENT_SCORE_4YR",
+          "targetField" : "ENGAGEMENT_SCORE_4YR"
+        }, {
+          "sourceField" : "ANNUAL_FUND_OFFICER_ASSIGNMENT",
+          "targetField" : "ANNUAL_FUND_OFFICER_ASSIGNMENT"
+        }, {
+          "sourceField" : "ENGAGEMENT_SCORE_2YR",
+          "targetField" : "ENGAGEMENT_SCORE_2YR"
+        }, {
+          "sourceField" : "ucinn_ascendv2__PRM_No_Trustee_Formula__c",
+          "targetField" : "DEVELOPMENT_OFFICER_ASSIGNMENT"
+        }, {
+          "sourceField" : "ENGAGEMENT_SCORE_5YR",
+          "targetField" : "ENGAGEMENT_SCORE_5YR"
+        }, {
+          "sourceField" : "ENGAGEMENT_SCORE_CYR",
+          "targetField" : "ENGAGEMENT_SCORE_CYR"
+        }, {
+          "sourceField" : "SELECTABLE_FLAG",
+          "targetField" : "SELECTABLE_FLAG"
+        }, {
+          "sourceField" : "ucinn_ascendv2__Spouse_No_Trustee_Formula__c",
+          "targetField" : "SPOUSE_NAME"
+        }, {
+          "sourceField" : "HAM_Spouse_External_System_ID__c",
+          "targetField" : "SPOUSE_ID"
+        }, {
+          "sourceField" : "Contact_Restrictions_Text",
+          "targetField" : "CONTACT_RESTRICTIONS_TEXT"
+        }, {
+          "sourceField" : "Contact_Restrictions_Email",
+          "targetField" : "CONTACT_RESTRICTIONS_EMAIL"
+        }, {
+          "sourceField" : "Contact_Restrictions_Phone",
+          "targetField" : "CONTACT_RESTRICTIONS_PHONE"
+        }, {
+          "sourceField" : "Contact_Restrictions_Directmail",
+          "targetField" : "CONTACT_RESTRICTIONS_DIRECTMAIL"
+        }, {
+          "sourceField" : "ucinn_ascendv2__Preferred_Address_Country__c",
+          "targetField" : "COUNTRY"
+        }, {
+          "sourceField" : "HAM_Preferred_Chapter__c",
+          "targetField" : "CHAPTER_CODE"
+        }, {
+          "sourceField" : "ucinn_ascendv2__Preferred_Address_Postal_Code__c",
+          "targetField" : "ZIP"
+        }, {
+          "sourceField" : "ucinn_ascendv2__External_System_ID__c",
+          "targetField" : "ID"
+        }, {
+          "sourceField" : "HAM_CYR_HF_Ask__c",
+          "targetField" : "ASK_AMOUNT"
+        }, {
+          "sourceField" : "ucinn_ascendv2__Home_Phone_No_Trustee_Formula__c",
+          "targetField" : "HOME_PHONE"
+        }, {
+          "sourceField" : "Email",
+          "targetField" : "PREFERRED_EMAIL"
+        } ],
+        "connectorType" : "SNOWFLAKE_OUTPUT"
+      }
+    }
+  },
+  "ui" : {
+    "nodes" : {
+      "LOAD_DATASET0" : {
+        "label" : "Constituent File for VMS",
+        "type" : "LOAD_DATASET",
+        "top" : 112,
+        "left" : 112,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "TRANSFORM0" : {
+        "label" : "Transform 0",
+        "type" : "TRANSFORM",
+        "top" : 112,
+        "left" : 252,
+        "graph" : {
+          "TO_DIMENSION0" : {
+            "label" : "To Text"
+          },
+          "DROP_FIELDS0" : {
+            "label" : "Drop Columns"
+          },
+          "EDIT_ATTRIBUTES0" : {
+            "label" : "Edit Attributes"
+          }
+        },
+        "connectors" : [ {
+          "source" : "TO_DIMENSION0",
+          "target" : "DROP_FIELDS0"
+        }, {
+          "source" : "DROP_FIELDS0",
+          "target" : "EDIT_ATTRIBUTES0"
+        } ]
+      },
+      "OUTPUT0" : {
+        "label" : "Output 0",
+        "type" : "OUTPUT",
+        "top" : 112,
+        "left" : 392
+      }
+    },
+    "connectors" : [ {
+      "source" : "LOAD_DATASET0",
+      "target" : "TRANSFORM0"
+    }, {
+      "source" : "TRANSFORM0",
+      "target" : "OUTPUT0"
+    } ],
+    "hiddenColumns" : [ {
+      "fieldName" : "Email",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Constituent_File_for_VMS"
+    }, {
+      "fieldName" : "ucinn_ascendv2__Home_Phone_No_Trustee_Formula__c",
+      "objectType" : "analyticsDataset",
+      "objectName" : "Constituent_File_for_VMS"
+    } ]
+  },
+  "runMode" : "full"
+}

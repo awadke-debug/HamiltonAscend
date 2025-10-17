@@ -1,0 +1,207 @@
+{
+  "version" : "63.0",
+  "nodes" : {
+    "LOAD_DATASET0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Fiscal_Year", "Report_Update_Date", "Committed_Including_Bequest_Intention_FYTD", "SUM_HF_Received", "Committed_Including_Bequest_Intention", "Received", "Received_FYTD", "HF_Received_FYTD" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Board Dashboard ADV Aggregates History",
+          "name" : "Board_Dashboard_ADV_Aggregates_History"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "LOAD_DATASET1" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Report_Update_Date", "Committed_Including_Bequest_Intention_FYTD", "SUM_HF_Received", "Committed_Including_Bequest_Intention", "Received", "Fiscal_Year", "Received_FYTD", "HF_Received_FYTD" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Board Dashboard ADV Aggregates",
+          "name" : "Board_Dashboard_ADV_Aggregates"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "APPEND0" : {
+      "action" : "appendV2",
+      "sources" : [ "LOAD_DATASET0", "TO_DIMENSION0" ],
+      "parameters" : {
+        "fieldMappings" : [ {
+          "top" : "Fiscal_Year",
+          "bottom" : "Fiscal_Year"
+        }, {
+          "top" : "Report_Update_Date",
+          "bottom" : "Report_Update_Date"
+        }, {
+          "top" : "Committed_Including_Bequest_Intention_FYTD",
+          "bottom" : "Committed_Including_Bequest_Intention_FYTD"
+        }, {
+          "top" : "SUM_HF_Received",
+          "bottom" : "SUM_HF_Received"
+        }, {
+          "top" : "Committed_Including_Bequest_Intention",
+          "bottom" : "Committed_Including_Bequest_Intention"
+        }, {
+          "top" : "Received",
+          "bottom" : "Received"
+        }, {
+          "top" : "Received_FYTD",
+          "bottom" : "Received_FYTD"
+        }, {
+          "top" : "HF_Received_FYTD",
+          "bottom" : "HF_Received_FYTD"
+        } ]
+      }
+    },
+    "OUTPUT0" : {
+      "action" : "save",
+      "sources" : [ "FORMULA0" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Board Dashboard ADV Aggregates History",
+          "name" : "Board_Dashboard_ADV_Aggregates_History",
+          "folderName" : "SharedApp"
+        },
+        "dateConfigurationName" : "July_Fiscal_Year",
+        "measuresToCurrencies" : [ ]
+      }
+    },
+    "TO_DIMENSION0" : {
+      "action" : "typeCast",
+      "sources" : [ "LOAD_DATASET1" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "Fiscal_Year_to_dimension",
+          "newProperties" : {
+            "name" : "Fiscal_Year"
+          }
+        } ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Fiscal_Year" ]
+        }
+      },
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Fiscal_Year",
+          "newProperties" : {
+            "label" : "Fiscal Year",
+            "name" : "Fiscal_Year_to_dimension",
+            "typeProperties" : {
+              "type" : "TEXT",
+              "length" : 255
+            }
+          }
+        } ]
+      }
+    },
+    "FORMULA0" : {
+      "action" : "formula",
+      "sources" : [ "APPEND0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Report_Update_Date_text",
+          "label" : "Report Update Date ",
+          "formulaExpression" : "string(date_format(Report_Update_Date, 'yyyy-MM-dd'))",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    }
+  },
+  "ui" : {
+    "nodes" : {
+      "LOAD_DATASET0" : {
+        "label" : "Board Dashboard ADV Aggregates History",
+        "type" : "LOAD_DATASET",
+        "top" : 112,
+        "left" : 112,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "LOAD_DATASET1" : {
+        "label" : "Board Dashboard ADV Aggregates",
+        "type" : "LOAD_DATASET",
+        "top" : 252.3,
+        "left" : 112,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "APPEND0" : {
+        "label" : "Append 0",
+        "type" : "APPEND",
+        "top" : 112,
+        "left" : 252
+      },
+      "OUTPUT0" : {
+        "label" : "Output 0",
+        "type" : "OUTPUT",
+        "top" : 112,
+        "left" : 530.7
+      },
+      "TRANSFORM0" : {
+        "label" : "Transform 0",
+        "type" : "TRANSFORM",
+        "top" : 252,
+        "left" : 252,
+        "graph" : {
+          "TO_DIMENSION0" : {
+            "label" : "To Text"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "TRANSFORM1" : {
+        "label" : "Transform 1",
+        "type" : "TRANSFORM",
+        "top" : 112,
+        "left" : 392,
+        "graph" : {
+          "FORMULA0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Formula"
+          }
+        },
+        "connectors" : [ ]
+      }
+    },
+    "connectors" : [ {
+      "source" : "LOAD_DATASET0",
+      "target" : "APPEND0"
+    }, {
+      "source" : "TRANSFORM0",
+      "target" : "APPEND0"
+    }, {
+      "source" : "TRANSFORM1",
+      "target" : "OUTPUT0"
+    }, {
+      "source" : "LOAD_DATASET1",
+      "target" : "TRANSFORM0"
+    }, {
+      "source" : "APPEND0",
+      "target" : "TRANSFORM1"
+    } ],
+    "hiddenColumns" : [ ]
+  },
+  "runMode" : "full"
+}

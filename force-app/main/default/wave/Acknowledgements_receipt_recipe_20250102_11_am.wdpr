@@ -1,0 +1,1931 @@
+{
+  "version" : "62.0",
+  "nodes" : {
+    "LOAD_DATASET0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "PaymentGL.ucinn_ascendv2__Session_Approved_Date_Formula__c_payment", "ucinn_ascendv2__Payment__c", "ucinn_ascendv2__Credit_Type__c", "HAM_Pledge_Gift_Adjusted_Pledge_Gift__c", "HAM_Tender_Type__c", "Opportunity.tribute.ucinn_ascendv2__Contact_Text__c_tribute", "Opportunity.ucinn_asce.ucinn_ascendv2__Tributee__c", "Designation.ucinn_ascendv2__Designation_Name__c", "ucinn_ascendv2__Credit_Date_Formula__c", "Contact.Name", "Opportunity.tribute.ucinn_ascendv2__Contact__c_tribute", "Id", "AdjustedOpp.ucinn_ascendv2__Credit_Date__c_Adjusted_Opportunity", "ucinn_ascendv2__Gift_Type_Formula__c", "HAM_Gift_Receipt_Generated__c", "Opportunity.StageName", "Opportunity.ucinn_asce.ucinn_ascendv2__Tribute_Type__c", "Designation.Name", "Constituent_or_Account_Id", "Account.Name", "Cash_Amount" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Gift Credit and Payment",
+          "name" : "Gift_Credit_and_Payment"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "FILTER0" : {
+      "action" : "filter",
+      "sources" : [ "FORMULA15" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "ucinn_ascendv2__Credit_Type__c",
+          "operator" : "EQUAL",
+          "operands" : [ "Hard" ]
+        }, {
+          "type" : "NUMBER",
+          "field" : "Cash_Amount",
+          "operator" : "GREATER_THAN",
+          "operands" : [ "10" ]
+        }, {
+          "type" : "TEXT",
+          "field" : "Opportunity.StageName",
+          "operator" : "NOT",
+          "operands" : [ "Adjusted" ]
+        }, {
+          "type" : "TEXT",
+          "field" : "HAM_Tender_Type__c",
+          "operator" : "NOT",
+          "operands" : [ "IRA (Individual Retirement Account)" ]
+        }, {
+          "type" : "TEXT",
+          "field" : "ucinn_ascendv2__Gift_Type_Formula__c",
+          "operator" : "NOT",
+          "operands" : [ "Matching Gift Payment", "Recurring Gift Payment" ]
+        }, {
+          "type" : "TEXT",
+          "field" : "Designation.Name",
+          "operator" : "NOT",
+          "operands" : [ "AF-EVENT-FEE", "AF-ROUND-UP" ]
+        }, {
+          "type" : "TEXT",
+          "field" : "date_select",
+          "operator" : "EQUAL",
+          "operands" : [ "true" ]
+        }, {
+          "type" : "TEXT",
+          "field" : "Accountand.ucinn_ascendv2__Primary_Contact_Type__c",
+          "operator" : "IS_NOT_NULL",
+          "operands" : [ ]
+        } ]
+      }
+    },
+    "FORMULA0" : {
+      "action" : "formula",
+      "sources" : [ "FILTER0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "for_receipt",
+          "label" : "for receipt",
+          "formulaExpression" : "concat('• ',Formatted_Cash2,' to ',\"Designation.ucinn_ascendv2__Designation_Name__c\",' on ',\r\nstring(month(ucinn_ascendv2__Credit_Date_Formula__c)), '/',\r\nstring(day(ucinn_ascendv2__Credit_Date_Formula__c)), '/',\r\nstring(year(ucinn_ascendv2__Credit_Date_Formula__c))\r\n\r\n\r\n\r\n)\r\n\r\n\r\n",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "OUTPUT0" : {
+      "action" : "save",
+      "sources" : [ "FORMULA30" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Acknowledgements receipt data",
+          "name" : "Acknowledgements_receipt_data",
+          "folderName" : "SharedApp"
+        },
+        "measuresToCurrencies" : [ ]
+      }
+    },
+    "FORMULA2" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA29" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "All_receipts_list",
+          "label" : "All receipts list",
+          "formulaExpression" : "array_join(All_for_receipt_multivariate, '\\n')",
+          "precision" : 30000,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA3" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA2" ],
+      "parameters" : {
+        "partitionBy" : [ "Constituent_or_Account_Id" ],
+        "orderBy" : [ {
+          "fieldName" : "for_receipt",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "last_value_All_receipts_list",
+          "label" : "last_value (All_receipts_list)",
+          "formulaExpression" : "last_value(All_receipts_list)",
+          "precision" : 30000,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA9" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA27" ],
+      "parameters" : {
+        "partitionBy" : [ "Constituent_or_Account_Id" ],
+        "orderBy" : [ {
+          "fieldName" : "receipt_sort_key",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "MULTIVALUE",
+          "name" : "All_record_ids_for_receipt_multivariate",
+          "label" : "All record ids for receipt multivariate",
+          "formulaExpression" : "collect_list(Object_Record_Id_with_linebreak)"
+        } ]
+      }
+    },
+    "FORMULA10" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA9" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "All_Record_Ids_list",
+          "label" : "All Record Ids list",
+          "formulaExpression" : "array_join(All_record_ids_for_receipt_multivariate, '\\n')",
+          "precision" : 30000,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA11" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA10" ],
+      "parameters" : {
+        "partitionBy" : [ "Constituent_or_Account_Id" ],
+        "orderBy" : [ {
+          "fieldName" : "for_receipt",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "last_value_all_record_ids_list",
+          "label" : "last value (all record ids list)",
+          "formulaExpression" : "last_value(All_Record_Ids_list)",
+          "precision" : 30000,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "DROP_FIELDS5" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA11" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "SELECT",
+          "ignoreMissingFields" : true,
+          "fields" : [ "All_for_receipt_multivariate", "All_record_ids_for_receipt_multivariate", "Constituent_or_Account_Id" ]
+        }
+      }
+    },
+    "FORMULA27" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA3" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Object_Record_Id_with_linebreak",
+          "label" : "Object Record Id with linebreak",
+          "formulaExpression" : "concat(Id, '\\n')",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA28" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "For_receipt_with_linebreak",
+          "label" : "For receipt with linebreak",
+          "formulaExpression" : "concat(for_receipt, '\\n')",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA29" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA28" ],
+      "parameters" : {
+        "partitionBy" : [ "Constituent_or_Account_Id" ],
+        "orderBy" : [ {
+          "fieldName" : "receipt_sort_key",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "MULTIVALUE",
+          "name" : "All_for_receipt_multivariate",
+          "label" : "All for receipt multivariate",
+          "formulaExpression" : "collect_list(For_receipt_with_linebreak)"
+        } ]
+      }
+    },
+    "EXTRACT0" : {
+      "action" : "extractGrains",
+      "sources" : [ "FORMULA0" ],
+      "parameters" : {
+        "grainExtractions" : [ ]
+      }
+    },
+    "AGGREGATE1" : {
+      "action" : "aggregate",
+      "sources" : [ "EXTRACT0" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "SUM_Cash_Amount",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        } ]
+      },
+      "parameters" : {
+        "aggregations" : [ {
+          "action" : "UNIQUE",
+          "source" : "Account.Name",
+          "name" : "UNIQUE_Account.Name",
+          "label" : "Unique Account Name"
+        }, {
+          "action" : "SUM",
+          "source" : "Cash_Amount",
+          "name" : "SUM_Cash_Amount",
+          "label" : "Sum of Cash Amount"
+        } ],
+        "groupings" : [ "Contact.Name", "Constituent_or_Account_Id" ],
+        "pivots" : [ ],
+        "nodeType" : "STANDARD"
+      }
+    },
+    "LOAD_DATASET1" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Account.Type", "ucinn_ascendv2__Primary_Contact_Type__c", "Preferred_Address.ucinn_ascendv2__Address_State_Formula__c", "ucinn_ascendv2__Preferred_Address_Country__c", "Account_or_Contact_Id", "Preferred_Address.ucinn_ascendv2__Address_Street_Formula__c", "Preferred_Address.ucinn_ascendv2__Type__c", "ucinn_ascendv2__Preferred_Address_Formula__c", "HAM_Letter_Salutation__c", "Preferred_Address.ucinn_ascendv2__Address_City_Formula__c", "HAM_Letter_Addressee__c", "Preferred_Address.ucinn_ascendv2__Full_Address_Formula__c", "Preferred_Address.ucinn_ascendv2__Address_Postal_Code_Formula__c", "Account.Name" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Account and Contact Dataset",
+          "name" : "Account_and_Contact_Dataset"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN0" : {
+      "action" : "join",
+      "sources" : [ "FORMULA26_copy0", "LOAD_DATASET1" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Constituent_or_Account_Id" ],
+        "rightQualifier" : "Accountand",
+        "rightKeys" : [ "Account_or_Contact_Id" ]
+      }
+    },
+    "FORMULA4" : {
+      "action" : "formula",
+      "sources" : [ "JOIN0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "test_address",
+          "label" : "test address",
+          "formulaExpression" : "concat(\"Accountand.Preferred_Address.ucinn_ascendv2__Address_Street_Formula__c\", '\\n',\"Accountand.Preferred_Address.ucinn_ascendv2__Address_City_Formula__c\",', ',\"Accountand.Preferred_Address.ucinn_ascendv2__Address_State_Formula__c\",' ',\"Accountand.Preferred_Address.ucinn_ascendv2__Address_Postal_Code_Formula__c\",'\\n',\"Accountand.ucinn_ascendv2__Preferred_Address_Country__c\")",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA5" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA4" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Preferred_Address_with_Line_Breaks",
+          "label" : "Preferred Address with Line Breaks",
+          "formulaExpression" : "replace(\"Accountand.ucinn_ascendv2__Preferred_Address_Formula__c\", '<br>', '\\n')",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "LOAD_DATASET2" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Id", "HAM_Hard_Credit_Receipt_Gen_Start_Date__c", "HAM_Hard_Credit_Receipt_Gen_End_Date__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "HAM_Acknowledgement__c",
+          "connectionName" : "Updated_Hourly",
+          "sourceObjectName" : "HAM_Acknowledgement__c"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "FORMULA6" : {
+      "action" : "formula",
+      "sources" : [ "LOAD_DATASET0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Acknowledgement_key",
+          "label" : "Acknowledgement key",
+          "formulaExpression" : "'a'",
+          "precision" : 10,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA6_copy0" : {
+      "action" : "formula",
+      "sources" : [ "LOAD_DATASET2" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Acknowledgement_key",
+          "label" : "Acknowledgement key",
+          "formulaExpression" : "'a'",
+          "precision" : 10,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "JOIN1" : {
+      "action" : "join",
+      "sources" : [ "FORMULA6", "FORMULA6_copy0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Acknowledgement_key" ],
+        "rightQualifier" : "key",
+        "rightKeys" : [ "Acknowledgement_key" ]
+      }
+    },
+    "FORMULA7" : {
+      "action" : "formula",
+      "sources" : [ "JOIN2" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "date_select",
+          "label" : "date select",
+          "formulaExpression" : "case \r\n    when \"PaymentGL.ucinn_ascendv2__Session_Approved_Date_Formula__c_payment\">= \"key.HAM_Hard_Credit_Receipt_Gen_Start_Date__c\" and \"PaymentGL.ucinn_ascendv2__Session_Approved_Date_Formula__c_payment\"<=\"key.HAM_Hard_Credit_Receipt_Gen_End_Date__c\"\r\n    then 'true'\r\n    else\r\n    'false'\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "DROP_FIELDS0" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA7" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Acknowledgement_key" ]
+        }
+      }
+    },
+    "FORMULA8" : {
+      "action" : "formula",
+      "sources" : [ "DROP_FIELDS0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Formatted_Cash",
+          "label" : "Formatted Cash",
+          "formulaExpression" : "case \r\nwhen  Cash_Amount<1000\r\n    then \r\n    concat('$',string(round(Cash_Amount,2))) \r\nwhen  Cash_Amount<1000000\r\n    then\r\nconcat('$',string(floor(Cash_Amount/1000)),\r\n',', string(round(Cash_Amount,2)-(floor(Cash_Amount/1000))*1000))\r\n\r\nwhen  Cash_Amount>=1000000\r\n    then\r\nconcat('$',string(floor(Cash_Amount/1000000)),\r\n',', \r\n\r\nstring(floor(\r\nround(Cash_Amount,2)-(floor(Cash_Amount/1000000))*1000000)/1000)\r\n,\r\n\r\n',', string(round(Cash_Amount,2)-(floor(Cash_Amount/1000))*1000))\r\n\r\n\r\n\r\n     \r\n     \r\n     \r\n     else\r\n''\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA12" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA8" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Cash_Amount_text",
+          "label" : "Cash Amount text",
+          "formulaExpression" : "string(round(Cash_Amount, 2))\r\n\r\n\r\n",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA13" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA12" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Cash_Amount_text_len",
+          "label" : "Cash_Amount_text_len",
+          "formulaExpression" : "char_length(Cash_Amount_text)",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA14" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA13" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Formatted_Cash2",
+          "label" : "Formatted Cash2",
+          "formulaExpression" : "case \r\n    when Cash_Amount<1000\r\n    then concat('$',Cash_Amount_text)\r\n    \r\n    when Cash_Amount<1000000\r\n    then concat('$',\r\n\r\n    substr(Cash_Amount_text, 1, Cash_Amount_text_len-6),',',\r\n    substr(Cash_Amount_text, Cash_Amount_text_len-5)\r\n    )\r\n    when Cash_Amount>=1000000\r\n    then concat('$',\r\n\r\n    substr(Cash_Amount_text, 1, Cash_Amount_text_len-9),',',\r\n    substr(Cash_Amount_text,Cash_Amount_text_len-8,3),',',\r\n    substr(Cash_Amount_text, Cash_Amount_text_len-5)\r\n    )\r\n\r\n\r\n\r\n    else\r\n    'check'\r\n    \r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA15" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA14" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "receipt_sort_key",
+          "label" : "receipt sort key",
+          "formulaExpression" : "concat(string(ucinn_ascendv2__Credit_Date_Formula__c),'-',\"Designation.ucinn_ascendv2__Designation_Name__c\",'-',Id)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "OUTPUT1" : {
+      "action" : "save",
+      "sources" : [ "FORMULA15" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "temp",
+          "name" : "temp"
+        },
+        "measuresToCurrencies" : [ ]
+      }
+    },
+    "JOIN2" : {
+      "action" : "join",
+      "sources" : [ "JOIN1", "DROP_FIELDS1" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Constituent_or_Account_Id" ],
+        "rightQualifier" : "Accountand",
+        "rightKeys" : [ "Account_or_Contact_Id" ]
+      }
+    },
+    "DROP_FIELDS1" : {
+      "action" : "schema",
+      "sources" : [ "LOAD_DATASET1" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "SELECT",
+          "ignoreMissingFields" : true,
+          "fields" : [ "ucinn_ascendv2__Primary_Contact_Type__c", "Account_or_Contact_Id" ]
+        }
+      }
+    },
+    "DROP_FIELDS2" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA0" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "SELECT",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Id" ]
+        }
+      }
+    },
+    "FORMULA16" : {
+      "action" : "formula",
+      "sources" : [ "DROP_FIELDS2" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "sent_for_receipt",
+          "label" : "sent for receipt",
+          "formulaExpression" : "'true'",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "OUTPUT2" : {
+      "action" : "save",
+      "sources" : [ "FORMULA16" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Credit Record IDs for Receipts",
+          "name" : "Credit_Record_IDs_for_Receipts",
+          "folderName" : "SharedApp"
+        },
+        "measuresToCurrencies" : [ ]
+      }
+    },
+    "OUTPUT3" : {
+      "action" : "save",
+      "sources" : [ "DROP_FIELDS5" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Test for Collect List",
+          "name" : "Test_for_Collect_List"
+        },
+        "dateConfigurationName" : "July_Fiscal_Year",
+        "measuresToCurrencies" : [ ]
+      }
+    },
+    "OUTPUT5" : {
+      "action" : "save",
+      "sources" : [ "DROP_FIELDS4" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "stock_payment",
+          "name" : "stock_payment"
+        },
+        "measuresToCurrencies" : [ ]
+      }
+    },
+    "FORMULA17" : {
+      "action" : "formula",
+      "sources" : [ "LOAD_DATASET5" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "payment_amount_text",
+          "label" : "payment amount text",
+          "formulaExpression" : "string(round(ucinn_ascendv2__Payment_Amount_Formula__c, 2))",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA18" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA20" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "payment_amount_text_len",
+          "label" : "payment amount text len",
+          "formulaExpression" : "char_length(payment_amount_text)",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA19" : {
+      "action" : "formula",
+      "sources" : [ "EDIT_ATTRIBUTES0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Formatted_Stock_Payment",
+          "label" : "Formatted Stock Payment",
+          "formulaExpression" : "case \r\n    when ucinn_ascendv2__Payment_Amount_Formula__c<1000\r\n    then concat('$',payment_amount_text)\r\n    \r\n    when ucinn_ascendv2__Payment_Amount_Formula__c<1000000\r\n    then concat('$',\r\n\r\n    substr(payment_amount_text, 1, payment_amount_text_len-6),',',\r\n    substr(payment_amount_text, payment_amount_text_len-5)\r\n    )\r\n    when ucinn_ascendv2__Payment_Amount_Formula__c>=1000000\r\n    then concat('$',\r\n\r\n    substr(payment_amount_text, 1, payment_amount_text_len-9),',',\r\n    substr(payment_amount_text,payment_amount_text_len-8,3),',',\r\n    substr(payment_amount_text, payment_amount_text_len-5)\r\n    )\r\n\r\n\r\n\r\n    else\r\n    'check'\r\n    \r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA20" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA17" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Number_of_Shares_text",
+          "label" : "Number of Shares text",
+          "formulaExpression" : "string(round(ucinn_ascendv2__Number_of_Shares_Formula__c, 2))",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA21" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA18" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Number_of_Shares_text_len",
+          "label" : "Number of Shares text len",
+          "formulaExpression" : "char_length(Number_of_Shares_text)",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES0" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA21" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "ucinn_ascendv2__Number_of_Shares_Formula__c",
+          "newProperties" : {
+            "label" : "Number of Shares",
+            "name" : "ucinn_ascendv2__Number_of_Shares_Formula__c",
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2
+            }
+          }
+        } ]
+      }
+    },
+    "FORMULA22" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA19" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Formatted_Stock_Shares",
+          "label" : "Formatted Stock Shares",
+          "formulaExpression" : "case \r\n    when ucinn_ascendv2__Number_of_Shares_Formula__c<1000\r\n    then concat(Number_of_Shares_text)\r\n    \r\n    when ucinn_ascendv2__Number_of_Shares_Formula__c<1000000\r\n    then concat(\r\n\r\n    substr(Number_of_Shares_text, 1, Number_of_Shares_text_len-6),',',\r\n    substr(Number_of_Shares_text, Number_of_Shares_text_len-5)\r\n    )\r\n    when ucinn_ascendv2__Number_of_Shares_Formula__c>=1000000\r\n    then concat(\r\n\r\n    substr(Number_of_Shares_text, 1, Number_of_Shares_text_len-9),',',\r\n    substr(Number_of_Shares_text,Number_of_Shares_text_len-8,3),',',\r\n    substr(Number_of_Shares_text, Number_of_Shares_text_len-5)\r\n    )\r\n\r\n\r\n\r\n    else\r\n    'check'\r\n    \r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA23" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA22" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Stock_Text_Field",
+          "label" : "Stock Text Field",
+          "formulaExpression" : "concat(Formatted_Stock_Shares,' shares of ',ucinn_ascendv2__Company_Name__c,' valued at ',Formatted_Stock_Payment, '\\n')\r\n\r\n",
+          "precision" : 30000,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA24" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA23" ],
+      "parameters" : {
+        "partitionBy" : [ "ucinn_ascendv2__Payment__c" ],
+        "orderBy" : [ {
+          "fieldName" : "ucinn_ascendv2__Company_Name__c",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "MULTIVALUE",
+          "name" : "Stock_Text_Field_MV",
+          "label" : "Stock Text Field MV",
+          "formulaExpression" : "collect_list(Stock_Text_Field)"
+        } ]
+      }
+    },
+    "LOAD_DATASET4" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Id", "Object" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Gift Credit and Payment",
+          "name" : "Gift_Credit_and_Payment"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "FILTER1" : {
+      "action" : "filter",
+      "sources" : [ "LOAD_DATASET4" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "Object",
+          "operator" : "EQUAL",
+          "operands" : [ "Payment" ]
+        } ]
+      }
+    },
+    "FORMULA25" : {
+      "action" : "formula",
+      "sources" : [ "JOIN7" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Flatten_Stock_text",
+          "label" : "Flatten Stock text",
+          "formulaExpression" : "string(\"lookup_stock.lookup_selection.collectlist.Stock_Text_Field_MV\")",
+          "precision" : 30000,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "REPLACE0" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA25" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "Flatten_Stock_text_replace",
+          "newProperties" : {
+            "name" : "Flatten_Stock_text"
+          }
+        } ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Flatten_Stock_text" ]
+        }
+      },
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Flatten_Stock_text_replace",
+          "label" : "Flatten Stock text",
+          "formulaExpression" : "replace(Flatten_Stock_text, '[', ' ')",
+          "precision" : 30000
+        } ]
+      }
+    },
+    "FORMULA26" : {
+      "action" : "formula",
+      "sources" : [ "REPLACE1" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Flatten_Stock_text_for_receipt",
+          "label" : "Flatten Stock text for receipt",
+          "formulaExpression" : "replace(Flatten_Stock_text, '\\n,', '\\n')",
+          "precision" : 30000,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "REPLACE1" : {
+      "action" : "formula",
+      "sources" : [ "REPLACE0" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "Flatten_Stock_text_replace",
+          "newProperties" : {
+            "name" : "Flatten_Stock_text"
+          }
+        } ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Flatten_Stock_text" ]
+        }
+      },
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Flatten_Stock_text_replace",
+          "label" : "Flatten Stock text",
+          "formulaExpression" : "replace(Flatten_Stock_text, ']', ' ')",
+          "precision" : 30000
+        } ]
+      }
+    },
+    "DROP_FIELDS4" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA26" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "SELECT",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Flatten_Stock_text_for_receipt", "Constituent_or_Account_Id" ]
+        }
+      }
+    },
+    "JOIN3" : {
+      "action" : "join",
+      "sources" : [ "FILTER1", "DROP_FIELDS3" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "MULTI_VALUE_LOOKUP",
+        "leftKeys" : [ "Id" ],
+        "rightQualifier" : "collectlist",
+        "rightKeys" : [ "ucinn_ascendv2__Payment__c" ]
+      }
+    },
+    "DROP_FIELDS3" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA24" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "SELECT",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Stock_Text_Field_MV", "ucinn_ascendv2__Payment__c" ]
+        }
+      }
+    },
+    "LOAD_DATASET5" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Id", "OwnerId", "IsDeleted", "Name", "CreatedDate", "LastModifiedDate", "LastModifiedById", "SystemModstamp", "ucinn_ascendv2__Payment_Group_ID__c", "ucinn_ascendv2__Payment__c", "ucinn_ascendv2__Receipt_Number__c", "ucinn_ascendv2__Stock_Payment_Name_Auto_Number__c", "ucinn_ascendv2__Stock__c", "ucinn_ascendv2__Company_Name__c", "ucinn_ascendv2__High_Value_On_Date_Formula__c", "ucinn_ascendv2__Low_Value_On_Date_Formula__c", "ucinn_ascendv2__Number_of_Shares_Formula__c", "ucinn_ascendv2__Payment_Amount_Formula__c", "ucinn_ascendv2__Received_Date_Formula__c", "ucinn_ascendv2__Ticker_Symbol_Formula__c", "ucinn_ascendv2__Operating_Entity_Currency_Iso_Code__c", "ucinn_ascendv2__Operating_Entity_Payment_Amount__c", "ucinn_ascendv2__Stock_Currency_High_Value_On_Date__c", "ucinn_ascendv2__Stock_Currency_Low_Value_on_Date__c", "ucinn_ascendv2__Transaction_Currency_Iso_Code__c", "ucinn_ascendv2__Transaction_Payment_Amount__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "ucinn_ascendv2__Stock_Payment__c",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "ucinn_ascendv2__Stock_Payment__c"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "FILTER2" : {
+      "action" : "filter",
+      "sources" : [ "JOIN3" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "collectlist.ucinn_ascendv2__Payment__c",
+          "operator" : "IS_NOT_NULL",
+          "operands" : [ ]
+        } ]
+      }
+    },
+    "JOIN5" : {
+      "action" : "join",
+      "sources" : [ "AGGREGATE1", "DROP_FIELDS5" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "MULTI_VALUE_LOOKUP",
+        "leftKeys" : [ "Constituent_or_Account_Id" ],
+        "rightQualifier" : "lookup_receipt",
+        "rightKeys" : [ "Constituent_or_Account_Id" ]
+      }
+    },
+    "FORMULA25_copy0" : {
+      "action" : "formula",
+      "sources" : [ "JOIN5" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Flatten_Receipt_text",
+          "label" : "Flatten Receipt text",
+          "formulaExpression" : "string(\"lookup_receipt.All_for_receipt_multivariate\")",
+          "precision" : 30000,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "REPLACE0_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA25_copy0" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "Flatten_Stock_text_replace",
+          "newProperties" : {
+            "name" : "Flatten_Receipt_text"
+          }
+        } ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Flatten_Receipt_text" ]
+        }
+      },
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Flatten_Stock_text_replace",
+          "label" : "Flatten Stock text",
+          "formulaExpression" : "replace(Flatten_Receipt_text, '[', ' ')",
+          "precision" : 30000
+        } ]
+      }
+    },
+    "FORMULA26_copy0" : {
+      "action" : "formula",
+      "sources" : [ "REPLACE1_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Flatten_Receipt_text_remove_commas",
+          "label" : "Flatten Receipt text remove commas",
+          "formulaExpression" : "replace(Flatten_Receipt_text, '\\n,', '\\n')",
+          "precision" : 30000,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "REPLACE1_copy0" : {
+      "action" : "formula",
+      "sources" : [ "REPLACE0_copy0" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "Flatten_Stock_text_replace",
+          "newProperties" : {
+            "name" : "Flatten_Receipt_text"
+          }
+        } ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Flatten_Receipt_text" ]
+        }
+      },
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Flatten_Stock_text_replace",
+          "label" : "Flatten Stock text",
+          "formulaExpression" : "replace(Flatten_Receipt_text, ']', ' ')",
+          "precision" : 30000
+        } ]
+      }
+    },
+    "JOIN6" : {
+      "action" : "join",
+      "sources" : [ "FILTER0", "FILTER2" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "MULTI_VALUE_LOOKUP",
+        "leftKeys" : [ "ucinn_ascendv2__Payment__c" ],
+        "rightQualifier" : "lookup_selection",
+        "rightKeys" : [ "Id" ]
+      }
+    },
+    "JOIN7" : {
+      "action" : "join",
+      "sources" : [ "JOIN0", "JOIN6" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "MULTI_VALUE_LOOKUP",
+        "leftKeys" : [ "Constituent_or_Account_Id" ],
+        "rightQualifier" : "lookup_stock",
+        "rightKeys" : [ "Constituent_or_Account_Id" ]
+      }
+    },
+    "JOIN8" : {
+      "action" : "join",
+      "sources" : [ "FORMULA5", "DROP_FIELDS4" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Constituent_or_Account_Id" ],
+        "rightQualifier" : "stock",
+        "rightKeys" : [ "Constituent_or_Account_Id" ]
+      }
+    },
+    "OUTPUT6" : {
+      "action" : "save",
+      "sources" : [ "FORMULA26_copy0" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "test_receipt_flatten",
+          "name" : "test_receipt_flatten"
+        },
+        "measuresToCurrencies" : [ ]
+      }
+    },
+    "OUTPUT7" : {
+      "action" : "save",
+      "sources" : [ "JOIN5" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "test receipt append",
+          "name" : "test_receipt_append"
+        },
+        "measuresToCurrencies" : [ ]
+      }
+    },
+    "OUTPUT8" : {
+      "action" : "save",
+      "sources" : [ "JOIN6" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "test stock lookup",
+          "name" : "test_stock_lookup"
+        },
+        "measuresToCurrencies" : [ ]
+      }
+    },
+    "FORMULA30" : {
+      "action" : "formula",
+      "sources" : [ "JOIN8" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "is_stock_receipt",
+          "label" : "is stock receipt",
+          "formulaExpression" : "case \r\n    when \"stock.Flatten_Stock_text_for_receipt\" =null\r\n    then 'false'\r\n    else\r\n    'true'\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    }
+  },
+  "ui" : {
+    "nodes" : {
+      "LOAD_DATASET0" : {
+        "label" : "Gift Credit and Payment",
+        "type" : "LOAD_DATASET",
+        "top" : 112,
+        "left" : 112,
+        "parameters" : {
+          "sampleSize" : 10000
+        }
+      },
+      "FILTER0" : {
+        "label" : "Filter to hard credit and user defined dates",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 112,
+        "left" : 812.1
+      },
+      "TRANSFORM0" : {
+        "label" : "line item receipt",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 112.4,
+        "left" : 1091.9,
+        "graph" : {
+          "FORMULA0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "for receipt"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "OUTPUT0" : {
+        "label" : "Output Receipt Data",
+        "description" : "",
+        "type" : "OUTPUT",
+        "top" : 112,
+        "left" : 2492
+      },
+      "TRANSFORM1" : {
+        "label" : "receipt   array",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 252,
+        "left" : 1372,
+        "graph" : {
+          "FORMULA2" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "All receipts list"
+          },
+          "FORMULA3" : {
+            "label" : "last_value (All_receipts_list)"
+          },
+          "FORMULA9" : {
+            "label" : "All record ids for receipt multivariate"
+          },
+          "FORMULA10" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "All Record Ids list"
+          },
+          "FORMULA11" : {
+            "label" : "last value (all record ids list)"
+          },
+          "DROP_FIELDS5" : {
+            "label" : "Drop Columns"
+          },
+          "FORMULA27" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Object Record Id with linebreak"
+          },
+          "FORMULA28" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "For receipt with linebreak"
+          },
+          "FORMULA29" : {
+            "label" : "All for receipt multivariate"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA2",
+          "target" : "FORMULA3"
+        }, {
+          "source" : "FORMULA9",
+          "target" : "FORMULA10"
+        }, {
+          "source" : "FORMULA10",
+          "target" : "FORMULA11"
+        }, {
+          "source" : "FORMULA27",
+          "target" : "FORMULA9"
+        }, {
+          "source" : "FORMULA3",
+          "target" : "FORMULA27"
+        }, {
+          "source" : "FORMULA29",
+          "target" : "FORMULA2"
+        }, {
+          "source" : "FORMULA28",
+          "target" : "FORMULA29"
+        }, {
+          "source" : "FORMULA11",
+          "target" : "DROP_FIELDS5"
+        } ]
+      },
+      "AGGREGATE0" : {
+        "label" : "Aggregate to ID",
+        "description" : "",
+        "type" : "AGGREGATE",
+        "top" : 112,
+        "left" : 1512,
+        "graph" : {
+          "EXTRACT0" : null,
+          "AGGREGATE1" : null
+        },
+        "connectors" : [ {
+          "source" : "EXTRACT0",
+          "target" : "AGGREGATE1"
+        } ]
+      },
+      "LOAD_DATASET1" : {
+        "label" : "Account and Contact Dataset",
+        "type" : "LOAD_DATASET",
+        "top" : 672.2,
+        "left" : 112.30000000000001,
+        "parameters" : {
+          "sampleSize" : 10000
+        }
+      },
+      "JOIN0" : {
+        "label" : "Look up account and contact to aggregate receipt",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 112,
+        "left" : 1932
+      },
+      "TRANSFORM2" : {
+        "label" : "Transform 2",
+        "type" : "TRANSFORM",
+        "top" : 112.19999999999999,
+        "left" : 2071.8,
+        "graph" : {
+          "FORMULA4" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Formula"
+          },
+          "FORMULA5" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Preferred Address with Line Breaks"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA4",
+          "target" : "FORMULA5"
+        } ]
+      },
+      "LOAD_DATASET2" : {
+        "label" : "HAM_Acknowledgement__c",
+        "type" : "LOAD_DATASET",
+        "top" : 252,
+        "left" : 112,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "TRANSFORM3" : {
+        "label" : "Acknowledgement key",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 112,
+        "left" : 252,
+        "graph" : {
+          "FORMULA6" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Acknowledgement key"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "TRANSFORM3_copy0" : {
+        "label" : "Acknowledgement key",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 252.10000000000002,
+        "left" : 252.39999999999998,
+        "graph" : {
+          "FORMULA6_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Acknowledgement key"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "JOIN1" : {
+        "label" : "look up user defined date range",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 112,
+        "left" : 392
+      },
+      "TRANSFORM4" : {
+        "label" : "Transform date select and cash",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 112,
+        "left" : 672.1,
+        "graph" : {
+          "FORMULA7" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "date select"
+          },
+          "DROP_FIELDS0" : {
+            "label" : "Drop Columns"
+          },
+          "FORMULA8" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Formatted Cash"
+          },
+          "FORMULA12" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Cash Amount text"
+          },
+          "FORMULA13" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Cash_Amount_text_len"
+          },
+          "FORMULA14" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Formatted Cash2"
+          },
+          "FORMULA15" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "receipt sort key"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA7",
+          "target" : "DROP_FIELDS0"
+        }, {
+          "source" : "DROP_FIELDS0",
+          "target" : "FORMULA8"
+        }, {
+          "source" : "FORMULA8",
+          "target" : "FORMULA12"
+        }, {
+          "source" : "FORMULA12",
+          "target" : "FORMULA13"
+        }, {
+          "source" : "FORMULA13",
+          "target" : "FORMULA14"
+        }, {
+          "source" : "FORMULA14",
+          "target" : "FORMULA15"
+        } ]
+      },
+      "OUTPUT1" : {
+        "label" : "test",
+        "description" : "",
+        "type" : "OUTPUT",
+        "top" : 252.3,
+        "left" : 672
+      },
+      "JOIN2" : {
+        "label" : "Lookup Primary Constituent Type",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 112,
+        "left" : 532.1
+      },
+      "TRANSFORM5" : {
+        "label" : "Keep primary constituent type",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 252,
+        "left" : 532,
+        "graph" : {
+          "DROP_FIELDS1" : {
+            "label" : "Drop Columns"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "TRANSFORM6" : {
+        "label" : "isolate record ids",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 252,
+        "left" : 1092.1,
+        "graph" : {
+          "DROP_FIELDS2" : {
+            "label" : "Drop Columns"
+          },
+          "FORMULA16" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "sent for receipt"
+          }
+        },
+        "connectors" : [ {
+          "source" : "DROP_FIELDS2",
+          "target" : "FORMULA16"
+        } ]
+      },
+      "OUTPUT2" : {
+        "label" : "Output credit record ids",
+        "description" : "",
+        "type" : "OUTPUT",
+        "top" : 391.9,
+        "left" : 1092.2
+      },
+      "OUTPUT3" : {
+        "label" : "Output 3",
+        "type" : "OUTPUT",
+        "top" : 392,
+        "left" : 1372.1
+      },
+      "OUTPUT5" : {
+        "label" : "delete",
+        "description" : "",
+        "type" : "OUTPUT",
+        "top" : 811.1,
+        "left" : 2210.7
+      },
+      "TRANSFORM7" : {
+        "label" : "Transform payment and shares",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 813.4,
+        "left" : 252.2,
+        "graph" : {
+          "FORMULA17" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "payment amount text"
+          },
+          "FORMULA18" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "payment amount text len"
+          },
+          "FORMULA19" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Formatted Stock Payment"
+          },
+          "FORMULA20" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Number of Shares text"
+          },
+          "FORMULA21" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Number of Shares text len"
+          },
+          "EDIT_ATTRIBUTES0" : {
+            "label" : "Edit Attributes"
+          },
+          "FORMULA22" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Formatted Stock Shares"
+          },
+          "FORMULA23" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Stock Text Field"
+          },
+          "FORMULA24" : {
+            "label" : "Stock Text Field MV"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA20",
+          "target" : "FORMULA18"
+        }, {
+          "source" : "FORMULA17",
+          "target" : "FORMULA20"
+        }, {
+          "source" : "FORMULA18",
+          "target" : "FORMULA21"
+        }, {
+          "source" : "EDIT_ATTRIBUTES0",
+          "target" : "FORMULA19"
+        }, {
+          "source" : "FORMULA21",
+          "target" : "EDIT_ATTRIBUTES0"
+        }, {
+          "source" : "FORMULA19",
+          "target" : "FORMULA22"
+        }, {
+          "source" : "FORMULA22",
+          "target" : "FORMULA23"
+        }, {
+          "source" : "FORMULA23",
+          "target" : "FORMULA24"
+        } ]
+      },
+      "LOAD_DATASET4" : {
+        "label" : "Gift Credit and Payment",
+        "type" : "LOAD_DATASET",
+        "top" : 953.4,
+        "left" : 112.19999999999999,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "FILTER1" : {
+        "label" : "Filter to payment",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 953.4,
+        "left" : 252.2
+      },
+      "TRANSFORM8" : {
+        "label" : "Flatten Stock text",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 812.1,
+        "left" : 2072,
+        "graph" : {
+          "FORMULA25" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Flatten Stock text"
+          },
+          "REPLACE0" : {
+            "parameters" : {
+              "type" : "REPLACE_UI"
+            },
+            "label" : "Replace"
+          },
+          "FORMULA26" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Flatten Stock text for receipt"
+          },
+          "REPLACE1" : {
+            "parameters" : {
+              "type" : "REPLACE_UI"
+            },
+            "label" : "Replace"
+          },
+          "DROP_FIELDS4" : {
+            "label" : "Drop Columns"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA25",
+          "target" : "REPLACE0"
+        }, {
+          "source" : "REPLACE1",
+          "target" : "FORMULA26"
+        }, {
+          "source" : "REPLACE0",
+          "target" : "REPLACE1"
+        }, {
+          "source" : "FORMULA26",
+          "target" : "DROP_FIELDS4"
+        } ]
+      },
+      "JOIN3" : {
+        "label" : "Lookup Stock to Payment",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 813.4,
+        "left" : 532.2
+      },
+      "TRANSFORM9" : {
+        "label" : "Keep Fields",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 813.4,
+        "left" : 392.2,
+        "graph" : {
+          "DROP_FIELDS3" : {
+            "label" : "Drop Columns"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "LOAD_DATASET5" : {
+        "label" : "ucinn_ascendv2__Stock_Payment__c",
+        "type" : "LOAD_DATASET",
+        "top" : 813.4,
+        "left" : 112.19999999999999,
+        "parameters" : {
+          "sampleSize" : 10000
+        }
+      },
+      "FILTER2" : {
+        "label" : "Filter to stock payments",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 813.4,
+        "left" : 672.2
+      },
+      "JOIN5" : {
+        "label" : "lookup receipt",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 112,
+        "left" : 1652
+      },
+      "TRANSFORM8_copy0" : {
+        "label" : "Flatten Receipt text",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 112,
+        "left" : 1792,
+        "graph" : {
+          "FORMULA25_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Flatten Receipt text"
+          },
+          "REPLACE0_copy0" : {
+            "parameters" : {
+              "type" : "REPLACE_UI"
+            },
+            "label" : "Replace"
+          },
+          "FORMULA26_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Flatten receipt text remove commas"
+          },
+          "REPLACE1_copy0" : {
+            "parameters" : {
+              "type" : "REPLACE_UI"
+            },
+            "label" : "Replace"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA25_copy0",
+          "target" : "REPLACE0_copy0"
+        }, {
+          "source" : "REPLACE1_copy0",
+          "target" : "FORMULA26_copy0"
+        }, {
+          "source" : "REPLACE0_copy0",
+          "target" : "REPLACE1_copy0"
+        } ]
+      },
+      "JOIN6" : {
+        "label" : "Look up stock to selection",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 812,
+        "left" : 812
+      },
+      "JOIN7" : {
+        "label" : "Look up to Constituent Ids",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 811.9,
+        "left" : 1932.2
+      },
+      "JOIN8" : {
+        "label" : "Lookup flattened stock",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 112,
+        "left" : 2212
+      },
+      "OUTPUT6" : {
+        "label" : "Output 6",
+        "type" : "OUTPUT",
+        "top" : 252.10000000000002,
+        "left" : 1792
+      },
+      "OUTPUT7" : {
+        "label" : "Output 7",
+        "type" : "OUTPUT",
+        "top" : 391.5,
+        "left" : 1652.1
+      },
+      "OUTPUT8" : {
+        "label" : "Output 8",
+        "type" : "OUTPUT",
+        "top" : 813.3,
+        "left" : 952
+      },
+      "TRANSFORM10" : {
+        "label" : "Add stock flag",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 112,
+        "left" : 2352,
+        "graph" : {
+          "FORMULA30" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "is stock receipt"
+          }
+        },
+        "connectors" : [ ]
+      }
+    },
+    "connectors" : [ {
+      "source" : "TRANSFORM8_copy0",
+      "target" : "JOIN0"
+    }, {
+      "source" : "TRANSFORM4",
+      "target" : "FILTER0"
+    }, {
+      "source" : "TRANSFORM0",
+      "target" : "TRANSFORM1"
+    }, {
+      "source" : "TRANSFORM10",
+      "target" : "OUTPUT0"
+    }, {
+      "source" : "LOAD_DATASET1",
+      "target" : "JOIN0"
+    }, {
+      "source" : "LOAD_DATASET0",
+      "target" : "TRANSFORM3"
+    }, {
+      "source" : "LOAD_DATASET2",
+      "target" : "TRANSFORM3_copy0"
+    }, {
+      "source" : "TRANSFORM3",
+      "target" : "JOIN1"
+    }, {
+      "source" : "TRANSFORM3_copy0",
+      "target" : "JOIN1"
+    }, {
+      "source" : "JOIN2",
+      "target" : "TRANSFORM4"
+    }, {
+      "source" : "TRANSFORM4",
+      "target" : "OUTPUT1"
+    }, {
+      "source" : "JOIN1",
+      "target" : "JOIN2"
+    }, {
+      "source" : "TRANSFORM5",
+      "target" : "JOIN2"
+    }, {
+      "source" : "LOAD_DATASET1",
+      "target" : "TRANSFORM5"
+    }, {
+      "source" : "TRANSFORM6",
+      "target" : "OUTPUT2"
+    }, {
+      "source" : "TRANSFORM1",
+      "target" : "OUTPUT3"
+    }, {
+      "source" : "LOAD_DATASET4",
+      "target" : "FILTER1"
+    }, {
+      "source" : "FILTER1",
+      "target" : "JOIN3"
+    }, {
+      "source" : "TRANSFORM9",
+      "target" : "JOIN3"
+    }, {
+      "source" : "TRANSFORM7",
+      "target" : "TRANSFORM9"
+    }, {
+      "source" : "LOAD_DATASET5",
+      "target" : "TRANSFORM7"
+    }, {
+      "source" : "JOIN3",
+      "target" : "FILTER2"
+    }, {
+      "source" : "TRANSFORM8",
+      "target" : "OUTPUT5"
+    }, {
+      "source" : "TRANSFORM0",
+      "target" : "TRANSFORM6"
+    }, {
+      "source" : "TRANSFORM0",
+      "target" : "AGGREGATE0"
+    }, {
+      "source" : "AGGREGATE0",
+      "target" : "JOIN5"
+    }, {
+      "source" : "TRANSFORM1",
+      "target" : "JOIN5"
+    }, {
+      "source" : "JOIN5",
+      "target" : "TRANSFORM8_copy0"
+    }, {
+      "source" : "FILTER0",
+      "target" : "JOIN6"
+    }, {
+      "source" : "FILTER2",
+      "target" : "JOIN6"
+    }, {
+      "source" : "FILTER0",
+      "target" : "TRANSFORM0"
+    }, {
+      "source" : "JOIN0",
+      "target" : "JOIN7"
+    }, {
+      "source" : "JOIN6",
+      "target" : "JOIN7"
+    }, {
+      "source" : "JOIN0",
+      "target" : "TRANSFORM2"
+    }, {
+      "source" : "JOIN7",
+      "target" : "TRANSFORM8"
+    }, {
+      "source" : "TRANSFORM2",
+      "target" : "JOIN8"
+    }, {
+      "source" : "TRANSFORM8",
+      "target" : "JOIN8"
+    }, {
+      "source" : "TRANSFORM8_copy0",
+      "target" : "OUTPUT6"
+    }, {
+      "source" : "JOIN5",
+      "target" : "OUTPUT7"
+    }, {
+      "source" : "JOIN6",
+      "target" : "OUTPUT8"
+    }, {
+      "source" : "JOIN8",
+      "target" : "TRANSFORM10"
+    } ],
+    "hiddenColumns" : [ ]
+  },
+  "runMode" : "full"
+}

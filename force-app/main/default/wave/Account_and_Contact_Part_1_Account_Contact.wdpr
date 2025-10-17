@@ -1,0 +1,554 @@
+{
+  "version" : "64.0",
+  "nodes" : {
+    "OUTPUT0" : {
+      "action" : "save",
+      "sources" : [ "FORMULA110_copy0" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Account and Contact Dataset Part 1 (Account, Contact)",
+          "name" : "Account_and_Contact_Dataset_Part_1_Account_Contact",
+          "folderName" : "SharedApp"
+        },
+        "dateConfigurationName" : "July_Fiscal_Year",
+        "measuresToCurrencies" : [ ]
+      }
+    },
+    "LOAD_DATASET18" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Id", "Name" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "RecordType",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "RecordType"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "LOAD_DATASET26" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "HAM_Is_Foreign_Entity__c", "Id", "Name", "Type", "RecordTypeId", "ucinn_ascendv2__Donor_ID__c", "ucinn_ascendv2__External_System_ID__c", "ucinn_ascendv2__Lifetime_Cash__c", "ucinn_ascendv2__Lifetime_Fundraising__c", "ucinn_ascendv2__Primary_Contact__c", "HAM_Because_Hamilton__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "Account",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "Account"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "LOAD_DATASET27" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "HAM_CYR_Solicitable_Override__c", "Id", "AccountId", "LastName", "FirstName", "Salutation", "Name", "RecordTypeId", "Email", "Title", "Birthdate", "ucinn_ascendv2__Amount_of_Most_Recent_Gift__c", "ucinn_ascendv2__Amount_of_Most_Recent_Pledge_Payment__c", "ucinn_ascendv2__Amount_of_Most_Recent_Pledge__c", "ucinn_ascendv2__Contact_Type__c", "ucinn_ascendv2__Current_FY_Giving__c", "ucinn_ascendv2__Date_Marked_Deceased__c", "ucinn_ascendv2__Date_of_Most_Recent_Gift__c", "ucinn_ascendv2__Date_of_Most_Recent_Pledge_Payment__c", "ucinn_ascendv2__Date_of_Most_Recent_Pledge__c", "ucinn_ascendv2__Deceased_Date__c", "ucinn_ascendv2__Donor_ID__c", "ucinn_ascendv2__Ethnicity__c", "ucinn_ascendv2__External_System_ID__c", "ucinn_ascendv2__Full_Name_Formula__c", "ucinn_ascendv2__Gender__c", "ucinn_ascendv2__Is_Anonymous__c", "ucinn_ascendv2__Is_Deceased__c", "ucinn_ascendv2__Last_FY_Giving__c", "ucinn_ascendv2__Lifetime_Cash__c", "ucinn_ascendv2__Lifetime_Fundraising__c", "ucinn_ascendv2__Preferred_Address_Country__c", "ucinn_ascendv2__Preferred_Address_Geolocation__Latitude__s", "ucinn_ascendv2__Preferred_Address_Geolocation__Longitude__s", "ucinn_ascendv2__Preferred_Address_Postal_Code__c", "ucinn_ascendv2__Preferred_Class_Year__c", "ucinn_ascendv2__Preferred_Spouse__c", "ucinn_ascendv2__Primary_Contact_Type__c", "ucinn_ascendv2__Recognition_Name__c", "ucinn_ascendv2__Wealth_Rating__c", "ucinn_ascendv2__Age_Formula__c", "ucinn_ascendv2__Preferred_Address_Formula__c", "HAM_Lifetime_Bequest_Intention__c", "HAM_1812__c", "HAM_Consecutive_Years_of_Giving__c", "HAM_JBA__c", "HAM_Letter_Salutation__c", "HAM_Preferred_Chapter__c", "HAM_Profile_Picture_URL__c", "HAM_Reunion_Year__c", "HAM_Secondary_Chapter__c", "Job_Title__c", "HAM_Institutional_Suffix__c", "HAM_CareerArea__c", "HAM_Privacy_Flag__c", "HAM_Because_Hamilton__c", "HAM_Name_w_Suffix__c", "HAM_Current_Year_Hamilton_Fund_Collected__c", "HAM_Current_Yr_Hamilton_Fund_Fundraising__c", "HAM_Last_Year_Hamilton_Fund_Collected__c", "HAM_JBA_Anonymous__c", "HAM_Hamilton_Fund_YOY_Net__c", "HAM_Outstanding_Balance__c", "HAM_CYR_HF_Ask__c", "HAM_CYR_HF_Exp__c", "HAM_CYR_HF_Notes__c", "HAM_Last_Meeting_Date__c", "HAM_Primary_Initiative_Interest__c", "HAM_Overall_Fundraising_Goal_Amount_CYR__c", "HAMOverall_Fundraising_Goal_Expected_CYR__c", "HAM_Overall_Strategy_Notes__c", "HAM_Quiver__c", "HAM_HF_Anniversary_Date_1YR__c", "HAM_Is_Primary_Constituent__c", "HAM_Letter_Addressee__c", "HAM_LiveAlumni_Job_Title__c", "HAM_LiveAlumni_Employer__c", "HAM_LiveAlumni_LinkedIn_URL__c", "HAM_Not_a_Prospect__c", "HAM_Is_Foreign_Entity__c", "HAM_Hamilton_Fund_Overdue__c", "HAM_Couper_Guild__c", "HAM_Alternate_Chapter__c", "HAM_Current_Chapters__c", "HAM_Preferred_Chapter_Code_Name__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "Contact",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "Contact"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "FORMULA73" : {
+      "action" : "formula",
+      "sources" : [ "JOIN47" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Account_or_Contact_Id",
+          "label" : "Account or Contact Id",
+          "formulaExpression" : "coalesce(Id,\"Account.Id\")",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA136" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA73" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Account_or_Contact_Donor_Id",
+          "label" : "Account or Contact Donor Id",
+          "formulaExpression" : "coalesce(ucinn_ascendv2__Donor_ID__c,\"Account.ucinn_ascendv2__Donor_ID__c\")",
+          "precision" : 10,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA266" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA280" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Account_or_Contact_Because_Hamilton_Fundraising",
+          "label" : "Account or Contact Because Hamilton Fundraising",
+          "formulaExpression" : "coalesce(HAM_Because_Hamilton__c,\"Account.HAM_Because_Hamilton__c\")",
+          "precision" : 10,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "DROP_FIELDS57" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA281" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "HAM_Because_Hamilton__c", "Account.HAM_Because_Hamilton__c", "HAM_Is_Foreign_Entity__c", "Account.HAM_Is_Foreign_Entity__c" ]
+        }
+      }
+    },
+    "FORMULA280" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA136" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Account_or_Contact_External_Id",
+          "label" : "Account or Contact External Id",
+          "formulaExpression" : "coalesce(ucinn_ascendv2__External_System_ID__c, \"Account.ucinn_ascendv2__External_System_ID__c\")",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA281" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA266" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Is_Foreign_Entity",
+          "label" : "Is Foreign Entity",
+          "formulaExpression" : "coalesce(HAM_Is_Foreign_Entity__c, \"Account.HAM_Is_Foreign_Entity__c\")",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "JOIN47" : {
+      "action" : "join",
+      "sources" : [ "JOIN49", "JOIN48" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "AccountId" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "OUTER",
+        "leftKeys" : [ "AccountId" ],
+        "rightQualifier" : "Account",
+        "rightKeys" : [ "Id" ]
+      }
+    },
+    "JOIN48" : {
+      "action" : "join",
+      "sources" : [ "LOAD_DATASET26", "LOAD_DATASET18" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "RecordTypeId", "Record_Type.Id" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "RecordTypeId" ],
+        "rightQualifier" : "Record_Type",
+        "rightKeys" : [ "Id" ]
+      }
+    },
+    "JOIN49" : {
+      "action" : "join",
+      "sources" : [ "LOAD_DATASET27", "LOAD_DATASET18" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "RecordTypeId", "Record_Type.Id" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "RecordTypeId" ],
+        "rightQualifier" : "Record_Type",
+        "rightKeys" : [ "Id" ]
+      }
+    },
+    "EDIT_ATTRIBUTES39_copy0" : {
+      "action" : "schema",
+      "sources" : [ "DROP_FIELDS57" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Account.Id",
+          "newProperties" : {
+            "label" : "Account Id",
+            "name" : "Account.Id"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES40_copy0" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES39_copy0" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Id",
+          "newProperties" : {
+            "label" : "Contact Id",
+            "name" : "Id"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES42_copy0" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES40_copy0" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Record_Type.Name",
+          "newProperties" : {
+            "label" : "Contact Record Type",
+            "name" : "Record_Type.Name"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES43_copy0" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES42_copy0" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Account.Record_Type.Name",
+          "newProperties" : {
+            "label" : "Account Record Type",
+            "name" : "Account.Record_Type.Name"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES63_copy0" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES43_copy0" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Account.ucinn_ascendv2__External_System_ID__c",
+          "newProperties" : {
+            "label" : "Account External System Id",
+            "name" : "Account.ucinn_ascendv2__External_System_ID__c"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES64_copy0" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES63_copy0" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "ucinn_ascendv2__External_System_ID__c",
+          "newProperties" : {
+            "label" : "Contact External System Id",
+            "name" : "ucinn_ascendv2__External_System_ID__c"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES113" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES64_copy0" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "ucinn_ascendv2__Donor_ID__c",
+          "newProperties" : {
+            "label" : "Contact Donor ID",
+            "name" : "ucinn_ascendv2__Donor_ID__c"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES114" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES113" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Account.ucinn_ascendv2__Donor_ID__c",
+          "newProperties" : {
+            "label" : "Account Donor ID",
+            "name" : "Account.ucinn_ascendv2__Donor_ID__c"
+          }
+        } ]
+      }
+    },
+    "FORMULA110_copy0" : {
+      "action" : "formula",
+      "sources" : [ "EDIT_ATTRIBUTES114" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "User_Defined_Fiscal_Year",
+          "label" : "User Defined Fiscal Year",
+          "formulaExpression" : "2026",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    }
+  },
+  "ui" : {
+    "nodes" : {
+      "OUTPUT0" : {
+        "label" : "Output Account and Contact Dataset",
+        "description" : "",
+        "type" : "OUTPUT",
+        "top" : 252.3,
+        "left" : 952
+      },
+      "LOAD_DATASET18" : {
+        "label" : "RecordType",
+        "type" : "LOAD_DATASET",
+        "top" : 392.5,
+        "left" : 252.10000000000002,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "LOAD_DATASET26" : {
+        "label" : "Account",
+        "type" : "LOAD_DATASET",
+        "top" : 532.5,
+        "left" : 392.2,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "LOAD_DATASET27" : {
+        "label" : "Contact",
+        "type" : "LOAD_DATASET",
+        "top" : 252.5,
+        "left" : 112.1,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "TRANSFORM20" : {
+        "label" : "Account or Contact Id",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 252.5,
+        "left" : 532.1,
+        "graph" : {
+          "FORMULA73" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Account or Contact Id"
+          },
+          "FORMULA136" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Account or Contact Donor ID"
+          },
+          "FORMULA266" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Account or Contact Because Hamilton Fundraising"
+          },
+          "DROP_FIELDS57" : {
+            "label" : "Drop Columns"
+          },
+          "FORMULA280" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Account or Contact External Id"
+          },
+          "FORMULA281" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Is Foreign Entity"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA73",
+          "target" : "FORMULA136"
+        }, {
+          "source" : "FORMULA280",
+          "target" : "FORMULA266"
+        }, {
+          "source" : "FORMULA136",
+          "target" : "FORMULA280"
+        }, {
+          "source" : "FORMULA281",
+          "target" : "DROP_FIELDS57"
+        }, {
+          "source" : "FORMULA266",
+          "target" : "FORMULA281"
+        } ]
+      },
+      "JOIN47" : {
+        "label" : "Outer Join All Accounts",
+        "description" : "Create a list of all Account and all Contacts",
+        "type" : "JOIN",
+        "top" : 252.5,
+        "left" : 392.1
+      },
+      "JOIN48" : {
+        "label" : "Lookup Record Type To Account",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 392.5,
+        "left" : 392.1
+      },
+      "JOIN49" : {
+        "label" : "Lookup Record Type To Contact",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 252.5,
+        "left" : 252.10000000000002
+      },
+      "TRANSFORM3_copy0" : {
+        "label" : "Relabel Fields",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 252.3,
+        "left" : 672.5,
+        "graph" : {
+          "EDIT_ATTRIBUTES39_copy0" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES40_copy0" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES42_copy0" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES43_copy0" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES63_copy0" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES64_copy0" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES113" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES114" : {
+            "label" : "Edit Attributes"
+          }
+        },
+        "connectors" : [ {
+          "source" : "EDIT_ATTRIBUTES39_copy0",
+          "target" : "EDIT_ATTRIBUTES40_copy0"
+        }, {
+          "source" : "EDIT_ATTRIBUTES42_copy0",
+          "target" : "EDIT_ATTRIBUTES43_copy0"
+        }, {
+          "source" : "EDIT_ATTRIBUTES63_copy0",
+          "target" : "EDIT_ATTRIBUTES64_copy0"
+        }, {
+          "source" : "EDIT_ATTRIBUTES40_copy0",
+          "target" : "EDIT_ATTRIBUTES42_copy0"
+        }, {
+          "source" : "EDIT_ATTRIBUTES64_copy0",
+          "target" : "EDIT_ATTRIBUTES113"
+        }, {
+          "source" : "EDIT_ATTRIBUTES113",
+          "target" : "EDIT_ATTRIBUTES114"
+        }, {
+          "source" : "EDIT_ATTRIBUTES43_copy0",
+          "target" : "EDIT_ATTRIBUTES63_copy0"
+        } ]
+      },
+      "TRANSFORM35_copy0" : {
+        "label" : "User Required Input",
+        "description" : "Variables requiring manual updates by User",
+        "type" : "TRANSFORM",
+        "top" : 252.3,
+        "left" : 812.5,
+        "graph" : {
+          "FORMULA110_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "User Defined Fiscal Year"
+          }
+        },
+        "connectors" : [ ]
+      }
+    },
+    "connectors" : [ {
+      "source" : "JOIN49",
+      "target" : "JOIN47"
+    }, {
+      "source" : "JOIN48",
+      "target" : "JOIN47"
+    }, {
+      "source" : "JOIN47",
+      "target" : "TRANSFORM20"
+    }, {
+      "source" : "LOAD_DATASET26",
+      "target" : "JOIN48"
+    }, {
+      "source" : "LOAD_DATASET27",
+      "target" : "JOIN49"
+    }, {
+      "source" : "LOAD_DATASET18",
+      "target" : "JOIN49"
+    }, {
+      "source" : "LOAD_DATASET18",
+      "target" : "JOIN48"
+    }, {
+      "source" : "TRANSFORM3_copy0",
+      "target" : "TRANSFORM35_copy0"
+    }, {
+      "source" : "TRANSFORM35_copy0",
+      "target" : "OUTPUT0"
+    }, {
+      "source" : "TRANSFORM20",
+      "target" : "TRANSFORM3_copy0"
+    } ],
+    "hiddenColumns" : [ ]
+  },
+  "runMode" : "full"
+}

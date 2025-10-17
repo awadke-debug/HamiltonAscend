@@ -1,0 +1,309 @@
+{
+  "version" : "63.0",
+  "nodes" : {
+    "LOAD_DATASET0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Private_Societies_Edited", "HAM_Name_w_Suffix__c", "NCAA_Edited", "Account_or_Contact_Id", "Preferred_Address.ucinn_ascendv2__Address_State_Formula__c_bucket", "Is_500_HF_DONOR", "Primary_Relationship_Manager.Assigned_User_Name", "Wealth_Rating.HAM_Wealth_Rating_Number__c_bucket", "Persistence_500_HF_Flag", "Aggregate.SUM_FY01_Collected_Amount_HF", "HF_Change_1YR_percent", "Age_Edited_1YR", "Aggregate.SUM_FY00_Collected_Amount_HF", "Is_500HF_Donor_int", "HF_Change_2YR_percent", "Lifetime_Cash_Collected_as_of_1YR", "Aggregate.SUM_FY02_Collected_Amount_HF", "Persistence_HF_Flag", "Aggregate.SUM_FY03_Collected_Amount_HF" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Model 500 CYR Version 2",
+          "name" : "Model_500_CYR_Version_2"
+        },
+        "sampleDetails" : {
+          "type" : "TopN"
+        }
+      }
+    },
+    "FORMULA0" : {
+      "action" : "formula",
+      "sources" : [ "LOAD_DATASET0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "dataset",
+          "label" : "dataset",
+          "formulaExpression" : "'dev'",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "DROP_FIELDS1" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA0" ],
+      "parameters" : {
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Aggregate.SUM_FY01_Collected_Amount_HF", "HF_Change_1YR_percent", "Aggregate.SUM_FY02_Collected_Amount_HF", "Aggregate.SUM_FY03_Collected_Amount_HF", "Aggregate.SUM_FY00_Collected_Amount_HF", "HF_Change_2YR_percent" ]
+        }
+      }
+    },
+    "LOAD_DATASET1" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Private_Societies_Edited", "HAM_Name_w_Suffix__c", "NCAA_Edited", "Account_or_Contact_Id", "Preferred_Address.ucinn_ascendv2__Address_State_Formula__c_bucket", "Is_500_HF_DONOR", "Primary_Relationship_Manager.Assigned_User_Name", "Wealth_Rating.HAM_Wealth_Rating_Number__c_bucket", "Persistence_500_HF_Flag", "Aggregate.SUM_FY01_Collected_Amount_HF", "Aggregate.SUM_FY04_Collected_Amount_HF", "Age_Edited_1YR", "HF_Change_2YR_percent", "Aggregate.SUM_FY02_Collected_Amount_HF", "Persistence_HF_Flag", "HF_Change_3YR_percent", "Lifetime_Cash_Collected_as_of_2YR", "Is_500_HF_Donor_int", "Aggregate.SUM_FY03_Collected_Amount_HF" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Model 500 LYR Validation",
+          "name" : "Model_500_LYR_Validation"
+        },
+        "sampleDetails" : {
+          "type" : "TopN"
+        }
+      }
+    },
+    "FORMULA1" : {
+      "action" : "formula",
+      "sources" : [ "LOAD_DATASET1" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "dataset",
+          "label" : "dataset",
+          "formulaExpression" : "'val'",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "DROP_FIELDS0" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA1" ],
+      "parameters" : {
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Aggregate.SUM_FY01_Collected_Amount_HF", "Aggregate.SUM_FY02_Collected_Amount_HF", "Aggregate.SUM_FY03_Collected_Amount_HF", "Aggregate.SUM_FY04_Collected_Amount_HF", "HF_Change_2YR_percent", "HF_Change_3YR_percent" ]
+        }
+      }
+    },
+    "APPEND0" : {
+      "action" : "appendV2",
+      "sources" : [ "DROP_FIELDS1", "DROP_FIELDS0" ],
+      "parameters" : {
+        "fieldMappings" : [ {
+          "top" : "Private_Societies_Edited",
+          "bottom" : "Private_Societies_Edited"
+        }, {
+          "top" : "HAM_Name_w_Suffix__c",
+          "bottom" : "HAM_Name_w_Suffix__c"
+        }, {
+          "top" : "NCAA_Edited",
+          "bottom" : "NCAA_Edited"
+        }, {
+          "top" : "Account_or_Contact_Id",
+          "bottom" : "Account_or_Contact_Id"
+        }, {
+          "top" : "Preferred_Address.ucinn_ascendv2__Address_State_Formula__c_bucket",
+          "bottom" : "Preferred_Address.ucinn_ascendv2__Address_State_Formula__c_bucket"
+        }, {
+          "top" : "Is_500_HF_DONOR",
+          "bottom" : "Is_500_HF_DONOR"
+        }, {
+          "top" : "Primary_Relationship_Manager.Assigned_User_Name",
+          "bottom" : "Primary_Relationship_Manager.Assigned_User_Name"
+        }, {
+          "top" : "Wealth_Rating.HAM_Wealth_Rating_Number__c_bucket",
+          "bottom" : "Wealth_Rating.HAM_Wealth_Rating_Number__c_bucket"
+        }, {
+          "top" : "Persistence_500_HF_Flag",
+          "bottom" : "Persistence_500_HF_Flag"
+        }, {
+          "top" : "Age_Edited_1YR",
+          "bottom" : "Age_Edited_1YR"
+        }, {
+          "top" : "Is_500HF_Donor_int",
+          "bottom" : "Is_500_HF_Donor_int"
+        }, {
+          "top" : "Lifetime_Cash_Collected_as_of_1YR",
+          "bottom" : "Lifetime_Cash_Collected_as_of_2YR"
+        }, {
+          "top" : "Persistence_HF_Flag",
+          "bottom" : "Persistence_HF_Flag"
+        }, {
+          "top" : "dataset",
+          "bottom" : "dataset"
+        } ]
+      }
+    },
+    "FILTER0" : {
+      "action" : "filter",
+      "sources" : [ "APPEND0" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "dataset",
+          "operator" : "EQUAL",
+          "operands" : [ "dev" ]
+        } ]
+      }
+    },
+    "OUTPUT0" : {
+      "action" : "save",
+      "sources" : [ "FILTER0" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Model CYR 500 Dev",
+          "name" : "Model_CYR_500_Dev",
+          "folderName" : "SharedApp"
+        }
+      }
+    },
+    "FILTER1" : {
+      "action" : "filter",
+      "sources" : [ "APPEND0" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "dataset",
+          "operator" : "EQUAL",
+          "operands" : [ "val" ]
+        } ]
+      }
+    },
+    "OUTPUT1" : {
+      "action" : "save",
+      "sources" : [ "FILTER1" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Model 500 LYR Validation Dataset",
+          "name" : "Model_500_LYR_Validation_Dataset",
+          "folderName" : "SharedApp"
+        }
+      }
+    }
+  },
+  "ui" : {
+    "nodes" : {
+      "LOAD_DATASET0" : {
+        "label" : "Model 500 CYR Version 2",
+        "type" : "LOAD_DATASET",
+        "top" : 112,
+        "left" : 112,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "TRANSFORM0" : {
+        "label" : "Transform 0",
+        "type" : "TRANSFORM",
+        "top" : 112,
+        "left" : 252,
+        "graph" : {
+          "FORMULA0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "dataset"
+          },
+          "DROP_FIELDS1" : {
+            "label" : "Drop Columns"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA0",
+          "target" : "DROP_FIELDS1"
+        } ]
+      },
+      "LOAD_DATASET1" : {
+        "label" : "Model 500 LYR Validation",
+        "type" : "LOAD_DATASET",
+        "top" : 252,
+        "left" : 112,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "TRANSFORM1" : {
+        "label" : "Transform 1",
+        "type" : "TRANSFORM",
+        "top" : 252,
+        "left" : 252,
+        "graph" : {
+          "FORMULA1" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Formula"
+          },
+          "DROP_FIELDS0" : {
+            "label" : "Drop Columns"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA1",
+          "target" : "DROP_FIELDS0"
+        } ]
+      },
+      "APPEND0" : {
+        "label" : "Append 0",
+        "type" : "APPEND",
+        "top" : 112,
+        "left" : 392
+      },
+      "FILTER0" : {
+        "label" : "Filter 0",
+        "type" : "FILTER",
+        "top" : 112,
+        "left" : 532
+      },
+      "OUTPUT0" : {
+        "label" : "CYR Dev",
+        "description" : "",
+        "type" : "OUTPUT",
+        "top" : 112,
+        "left" : 672
+      },
+      "FILTER1" : {
+        "label" : "Filter 1",
+        "type" : "FILTER",
+        "top" : 252,
+        "left" : 532
+      },
+      "OUTPUT1" : {
+        "label" : "LYR Val",
+        "description" : "",
+        "type" : "OUTPUT",
+        "top" : 252,
+        "left" : 672
+      }
+    },
+    "connectors" : [ {
+      "source" : "LOAD_DATASET0",
+      "target" : "TRANSFORM0"
+    }, {
+      "source" : "LOAD_DATASET1",
+      "target" : "TRANSFORM1"
+    }, {
+      "source" : "TRANSFORM0",
+      "target" : "APPEND0"
+    }, {
+      "source" : "TRANSFORM1",
+      "target" : "APPEND0"
+    }, {
+      "source" : "FILTER0",
+      "target" : "OUTPUT0"
+    }, {
+      "source" : "APPEND0",
+      "target" : "FILTER0"
+    }, {
+      "source" : "APPEND0",
+      "target" : "FILTER1"
+    }, {
+      "source" : "FILTER1",
+      "target" : "OUTPUT1"
+    } ],
+    "hiddenColumns" : [ ]
+  },
+  "runMode" : "full"
+}

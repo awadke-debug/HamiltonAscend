@@ -1,0 +1,317 @@
+{
+  "version" : "65.0",
+  "nodes" : {
+    "LOAD_DATASET0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Preferred_Email.ucinn_ascendv2__Email_Address__c", "Preferred_Address.ucinn_ascendv2__Full_Address_Formula__c", "HAM_Name_w_Suffix__c", "HAM_LiveAlumni_Employer__c", "Preferred_Phone.ucinn_ascendv2__Phone_Number__c", "Degree.All_Concentrations", "HAM_Reunion_Year__c", "Current_Employer.Organization.Name", "Account_or_Contact_Id", "Title", "HAM_LiveAlumni_Job_Title__c", "HAM_LiveAlumni_LinkedIn_URL__c", "Job_Title__c" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Account and Contact Dataset",
+          "name" : "Account_and_Contact_Dataset"
+        },
+        "sampleDetails" : {
+          "type" : "TopN"
+        }
+      }
+    },
+    "LOAD_DATASET3_copy0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "RecordTypeId", "ucinn_ascendv2__Contact__c", "ucinn_ascendv2__Degree_Type__c", "HAM_Degree_Institution_Name_Formula__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "ucinn_ascendv2__Degree_Information__c",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "ucinn_ascendv2__Degree_Information__c"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "LOAD_DATASET28_copy0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Id", "Name" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "RecordType",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "RecordType"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        },
+        "preserveCurrencyFields" : [ ]
+      }
+    },
+    "JOIN41_copy0" : {
+      "action" : "join",
+      "sources" : [ "LOAD_DATASET3_copy0", "LOAD_DATASET28_copy0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "RecordTypeId", "Record_Type.Id" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "RecordTypeId" ],
+        "rightQualifier" : "Record_Type",
+        "rightKeys" : [ "Id" ]
+      }
+    },
+    "JOIN43" : {
+      "action" : "join",
+      "sources" : [ "LOAD_DATASET0", "DROP_FIELDS14" ],
+      "schema" : {
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "DegreeInfo.ucinn_ascendv2__Contact__c" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "MULTI_VALUE_LOOKUP",
+        "leftKeys" : [ "Account_or_Contact_Id" ],
+        "rightQualifier" : "DegreeInfo",
+        "rightKeys" : [ "ucinn_ascendv2__Contact__c" ]
+      }
+    },
+    "FILTER1" : {
+      "action" : "filter",
+      "sources" : [ "JOIN41_copy0" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "Record_Type.Name",
+          "operator" : "EQUAL",
+          "operands" : [ "Non-School Degree Information" ]
+        } ]
+      }
+    },
+    "FORMULA0" : {
+      "action" : "formula",
+      "sources" : [ "FILTER1" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Institution_Name_Degree_Type",
+          "label" : "Institution Name+Degree Type",
+          "formulaExpression" : "concat(HAM_Degree_Institution_Name_Formula__c,', ',ucinn_ascendv2__Degree_Type__c)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA253" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA0" ],
+      "parameters" : {
+        "partitionBy" : [ "ucinn_ascendv2__Contact__c" ],
+        "orderBy" : [ {
+          "fieldName" : "Institution_Name_Degree_Type",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "MULTIVALUE",
+          "name" : "Advanced_Degree_Multi",
+          "label" : "Advanced Degree Multi",
+          "formulaExpression" : "collect_list(Institution_Name_Degree_Type)"
+        } ]
+      }
+    },
+    "DROP_FIELDS14" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA253" ],
+      "parameters" : {
+        "slice" : {
+          "mode" : "SELECT",
+          "ignoreMissingFields" : true,
+          "fields" : [ "ucinn_ascendv2__Contact__c", "Advanced_Degree_Multi" ]
+        }
+      }
+    },
+    "FORMULA254" : {
+      "action" : "formula",
+      "sources" : [ "JOIN43" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Advanced_Degree",
+          "label" : "Advanced Degree",
+          "formulaExpression" : "rtrim(ltrim(string(\"DegreeInfo.Advanced_Degree_Multi\"),'['),']')",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "DROP_FIELDS15" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA254" ],
+      "parameters" : {
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "DegreeInfo.Advanced_Degree_Multi" ]
+        }
+      }
+    },
+    "OUTPUT0" : {
+      "action" : "save",
+      "sources" : [ "DROP_FIELDS15" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "ASC-9704 Reunion Request",
+          "name" : "ASC_9704_Reunion_Request"
+        },
+        "dateConfigurationName" : "July_Fiscal_Year"
+      }
+    }
+  },
+  "ui" : {
+    "nodes" : {
+      "LOAD_DATASET0" : {
+        "label" : "Account and Contact Dataset",
+        "type" : "LOAD_DATASET",
+        "top" : 251.8,
+        "left" : 252.10000000000002,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "LOAD_DATASET3_copy0" : {
+        "label" : "ucinn_ascendv2__Degree_Information__c",
+        "type" : "LOAD_DATASET",
+        "top" : 392.1,
+        "left" : 252,
+        "parameters" : {
+          "sampleSize" : 10000
+        }
+      },
+      "LOAD_DATASET28_copy0" : {
+        "label" : "RecordType",
+        "type" : "LOAD_DATASET",
+        "top" : 531,
+        "left" : 392,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN41_copy0" : {
+        "label" : "Lookup Record Type To Degree",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 391.8,
+        "left" : 391.8
+      },
+      "JOIN43" : {
+        "label" : "Join 43",
+        "type" : "JOIN",
+        "top" : 252.2,
+        "left" : 672.2
+      },
+      "FILTER1" : {
+        "label" : "Filter Advanced Degree",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 392,
+        "left" : 532
+      },
+      "TRANSFORM0" : {
+        "label" : "Transform 0",
+        "type" : "TRANSFORM",
+        "top" : 392,
+        "left" : 672,
+        "graph" : {
+          "FORMULA0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Institution Name+Degree Type"
+          },
+          "FORMULA253" : {
+            "label" : "Advanced Degree Multi"
+          },
+          "DROP_FIELDS14" : {
+            "label" : "Keep Columns"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA0",
+          "target" : "FORMULA253"
+        }, {
+          "source" : "FORMULA253",
+          "target" : "DROP_FIELDS14"
+        } ]
+      },
+      "TRANSFORM1" : {
+        "label" : "Transform 1",
+        "type" : "TRANSFORM",
+        "top" : 252,
+        "left" : 812,
+        "graph" : {
+          "FORMULA254" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Advanced Degree"
+          },
+          "DROP_FIELDS15" : {
+            "label" : "Drop Columns"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA254",
+          "target" : "DROP_FIELDS15"
+        } ]
+      },
+      "OUTPUT0" : {
+        "label" : "Output 0",
+        "type" : "OUTPUT",
+        "top" : 252,
+        "left" : 952
+      }
+    },
+    "connectors" : [ {
+      "source" : "LOAD_DATASET3_copy0",
+      "target" : "JOIN41_copy0"
+    }, {
+      "source" : "LOAD_DATASET28_copy0",
+      "target" : "JOIN41_copy0"
+    }, {
+      "source" : "LOAD_DATASET0",
+      "target" : "JOIN43"
+    }, {
+      "source" : "JOIN41_copy0",
+      "target" : "FILTER1"
+    }, {
+      "source" : "FILTER1",
+      "target" : "TRANSFORM0"
+    }, {
+      "source" : "TRANSFORM0",
+      "target" : "JOIN43"
+    }, {
+      "source" : "JOIN43",
+      "target" : "TRANSFORM1"
+    }, {
+      "source" : "TRANSFORM1",
+      "target" : "OUTPUT0"
+    } ],
+    "hiddenColumns" : [ ]
+  },
+  "runMode" : "full"
+}

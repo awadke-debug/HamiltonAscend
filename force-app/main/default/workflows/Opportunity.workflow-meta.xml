@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Workflow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <alerts>
+        <fullName>ucinn_ascendv2__Proposal_Approved</fullName>
+        <description>Proposal Approved</description>
+        <protected>false</protected>
+        <recipients>
+            <type>creator</type>
+        </recipients>
+        <senderType>CurrentUser</senderType>
+        <template>ucinn_ascendv2__ascend_Email_Templates/ucinn_ascendv2__Proposal_Approved</template>
+    </alerts>
+    <alerts>
+        <fullName>ucinn_ascendv2__Proposal_Awaiting_Approval</fullName>
+        <description>Proposal Awaiting Approval</description>
+        <protected>false</protected>
+        <recipients>
+            <type>creator</type>
+        </recipients>
+        <senderType>CurrentUser</senderType>
+        <template>ucinn_ascendv2__ascend_Email_Templates/ucinn_ascendv2__Proposal_Approval_Submission</template>
+    </alerts>
+    <fieldUpdates>
+        <fullName>ucinn_ascendv2__Populate_Original_Proposal_ID</fullName>
+        <field>ucinn_ascendv2__Original_Proposal_ID__c</field>
+        <formula>ucinn_ascendv2__Proposal_ID__c</formula>
+        <name>Populate Original Proposal ID</name>
+        <notifyAssignee>false</notifyAssignee>
+        <operation>Formula</operation>
+        <protected>false</protected>
+        <reevaluateOnChange>true</reevaluateOnChange>
+    </fieldUpdates>
+    <fieldUpdates>
+        <fullName>ucinn_ascendv2__Rename_Opportunity</fullName>
+        <field>Name</field>
+        <formula>ucinn_ascendv2__Pledge_Gift_ID_Formula__c</formula>
+        <name>Rename Opportunity</name>
+        <notifyAssignee>false</notifyAssignee>
+        <operation>Formula</operation>
+        <protected>false</protected>
+        <reevaluateOnChange>false</reevaluateOnChange>
+    </fieldUpdates>
+    <fieldUpdates>
+        <fullName>ucinn_ascendv2__Set_Pledge_Status_to_Paid</fullName>
+        <field>StageName</field>
+        <literalValue>Paid</literalValue>
+        <name>Set Pledge Status to Paid</name>
+        <notifyAssignee>false</notifyAssignee>
+        <operation>Literal</operation>
+        <protected>false</protected>
+        <reevaluateOnChange>false</reevaluateOnChange>
+    </fieldUpdates>
+    <fieldUpdates>
+        <fullName>ucinn_ascendv2__Update_Amount_for_Matching_Gifts</fullName>
+        <description>Update the Amount field based on Amount to be matched and Matching Ratio</description>
+        <field>Amount</field>
+        <formula>ucinn_ascendv2__Amount_to_be_Matched_Roll_Up__c * ucinn_ascendv2__Matched_Percentage_Roll_Up__c</formula>
+        <name>Update Amount for Matching Gifts</name>
+        <notifyAssignee>false</notifyAssignee>
+        <operation>Formula</operation>
+        <protected>false</protected>
+        <reevaluateOnChange>false</reevaluateOnChange>
+    </fieldUpdates>
+    <rules>
+        <fullName>ucinn_ascendv2__Populate Original Proposal ID</fullName>
+        <actions>
+            <name>ucinn_ascendv2__Populate_Original_Proposal_ID</name>
+            <type>FieldUpdate</type>
+        </actions>
+        <active>false</active>
+        <formula>$Setup.ucinn_ascendv2__Bypass_Settings__c.ucinn_ascendv2__Bypass_Workflows__c &lt;&gt; TRUE &amp;&amp; ISBLANK(ucinn_ascendv2__Original_Proposal_ID__c) &amp;&amp;  OR( RecordType.DeveloperName = &quot;Gift&quot;,     RecordType.DeveloperName = &quot;Matching_Gift&quot;,     RecordType.DeveloperName = &quot;Pledge&quot;,     RecordType.DeveloperName = &quot;Recurring_Gift&quot;,     RecordType.DeveloperName = &quot;One_Time_Membership&quot;,     RecordType.DeveloperName = &quot;Auto_Renewing_Membership&quot;,     RecordType.DeveloperName = &quot;Installment_Based_Membership&quot;,     RecordType.DeveloperName = &quot;Installment_Based_POS&quot;,     RecordType.DeveloperName = &quot;Auto_Renewing_POS&quot;,     RecordType.DeveloperName = &quot;One_Time_POS&quot;,     RecordType.DeveloperName = &quot;Partial_Payment_POS&quot;)&amp;&amp;  RecordType.NamespacePrefix = &apos;ucinn_ascendv2&apos;</formula>
+        <triggerType>onCreateOnly</triggerType>
+    </rules>
+    <rules>
+        <fullName>ucinn_ascendv2__Populate_Amount_for_Matching_Gifts</fullName>
+        <actions>
+            <name>ucinn_ascendv2__Update_Amount_for_Matching_Gifts</name>
+            <type>FieldUpdate</type>
+        </actions>
+        <active>false</active>
+        <description>Populate the Amount field for matching gifts</description>
+        <formula>$Setup.ucinn_ascendv2__Bypass_Settings__c.ucinn_ascendv2__Bypass_Workflows__c &lt;&gt; TRUE &amp;&amp; !ISBLANK(ucinn_ascendv2__Amount_to_be_Matched_Roll_Up__c) &amp;&amp; !ISBLANK(ucinn_ascendv2__Matched_Percentage_Roll_Up__c) &amp;&amp; (ISCHANGED(ucinn_ascendv2__Amount_to_be_Matched_Roll_Up__c) || ISCHANGED(ucinn_ascendv2__Matched_Percentage_Roll_Up__c) ) &amp;&amp; RecordType.DeveloperName = &quot;Matching_Gift&quot; &amp;&amp; RecordType.NamespacePrefix = &apos;ucinn_ascendv2&apos;</formula>
+        <triggerType>onAllChanges</triggerType>
+    </rules>
+    <rules>
+        <fullName>ucinn_ascendv2__Rename Opportunity</fullName>
+        <actions>
+            <name>ucinn_ascendv2__Rename_Opportunity</name>
+            <type>FieldUpdate</type>
+        </actions>
+        <active>false</active>
+        <formula>$Setup.ucinn_ascendv2__Bypass_Settings__c.ucinn_ascendv2__Bypass_Workflows__c &lt;&gt; TRUE &amp;&amp; ucinn_ascendv2__Pledge_Gift_ID_Formula__c &lt;&gt; NULL &amp;&amp; !ISPICKVAL(StageName, &quot;Adjusted&quot;) &amp;&amp;  OR( RecordType.DeveloperName= &quot;Gift&quot;,     RecordType.DeveloperName = &quot;Matching_Gift&quot;,     RecordType.DeveloperName = &quot;Pledge&quot;,     RecordType.DeveloperName = &quot;Recurring_Gift&quot;,     RecordType.DeveloperName = &quot;One_Time_Membership&quot;,     RecordType.DeveloperName = &quot;Auto_Renewing_Membership&quot;,     RecordType.DeveloperName = &quot;Installment_Based_Membership&quot;,     RecordType.DeveloperName = &quot;One_Time_POS&quot;,     RecordType.DeveloperName = &quot;Auto_Renewing_POS&quot;,     RecordType.DeveloperName = &quot;Installment_Based_POS&quot;,     RecordType.DeveloperName = &quot;Partial_Payment_POS&quot;)&amp;&amp;  RecordType.NamespacePrefix = &apos;ucinn_ascendv2&apos;</formula>
+        <triggerType>onAllChanges</triggerType>
+    </rules>
+    <rules>
+        <fullName>ucinn_ascendv2__Set Pledge Status to Paid</fullName>
+        <actions>
+            <name>ucinn_ascendv2__Set_Pledge_Status_to_Paid</name>
+            <type>FieldUpdate</type>
+        </actions>
+        <active>false</active>
+        <description>If Remaining balance is &lt;= 0 then set Stage to Paid.</description>
+        <formula>$Setup.ucinn_ascendv2__Bypass_Settings__c.ucinn_ascendv2__Bypass_Workflows__c &lt;&gt; TRUE &amp;&amp; ucinn_ascendv2__Remaining_Amount_Due_Formula__c &lt;= 0 &amp;&amp; ucinn_ascendv2__Number_of_Payments_Roll_Up__c &gt; 0 &amp;&amp; RecordType.DeveloperName = &quot;Pledge&quot; &amp;&amp; AND( !ISPICKVAL(StageName, &quot;Paid&quot;), !ISPICKVAL(StageName, &quot;Cancelled&quot;), !ISPICKVAL(StageName, &quot;Adjusted&quot;), !ISPICKVAL(StageName, &quot;Written Off&quot;) )&amp;&amp; RecordType.NamespacePrefix = &apos;ucinn_ascendv2&apos;</formula>
+        <triggerType>onAllChanges</triggerType>
+    </rules>
+</Workflow>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<DiscoveryGoal xmlns="http://soap.sforce.com/2006/04/metadata">
+    <active>true</active>
+    <deployedModels>
+        <active>true</active>
+        <aiModel>Maximize_Is_5K_HF_Donor_CYR45</aiModel>
+        <classificationThreshold>0.851</classificationThreshold>
+        <filters>
+            <field>NCAA_Involvements</field>
+            <operator>NotEqual</operator>
+            <type>Text</type>
+            <values>
+                <type>Constant</type>
+                <value>Missing NCAA Involvements</value>
+            </values>
+        </filters>
+        <label>Is_5K_HF_Donor_CYR</label>
+        <name>Is_5K_HF_Donor_CYR</name>
+    </deployedModels>
+    <label>Predicted Propensity</label>
+    <outcome>
+        <field>Is_5K_HF_Donor_CYR</field>
+        <fieldLabel>Is 5K HF Donor CYR</fieldLabel>
+        <goal>Maximize</goal>
+    </outcome>
+    <predictionType>Classification</predictionType>
+</DiscoveryGoal>

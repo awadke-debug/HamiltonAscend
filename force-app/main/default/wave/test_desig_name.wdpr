@@ -1,0 +1,76 @@
+{
+  "version" : "64.0",
+  "nodes" : {
+    "LOAD_DATASET0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Designation.ucinn_ascendv2__Acknowledgement_Description_Formula__c", "ucinn_ascendv2__Designation_Detail__c", "Designation.ucinn_ascendv2__Designation_Name__c", "ucinn_ascendv2__Designation__c", "Designation.Id", "Ham_Designation_Label_Name__c", "Opportunity.ucinn_ascendv2__Pledge_Gift_ID_Formula__c", "ucinn_ascendv2__Opportunity__c", "Object", "Id" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Gift Credit and Payment",
+          "name" : "Gift_Credit_and_Payment"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "FILTER0" : {
+      "action" : "sqlFilter",
+      "sources" : [ "LOAD_DATASET0" ],
+      "parameters" : {
+        "sqlFilterExpression" : "\"Designation.ucinn_ascendv2__Acknowledgement_Description_Formula__c\"!=\"Designation.ucinn_ascendv2__Designation_Name__c\"\r\n AND \"Opportunity.ucinn_ascendv2__Pledge_Gift_ID_Formula__c\" is not NULL"
+      }
+    },
+    "OUTPUT0" : {
+      "action" : "save",
+      "sources" : [ "FILTER0" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Designation Records for Clean up",
+          "name" : "Designation_Records_for_Clean_up",
+          "folderName" : "SharedApp"
+        },
+        "measuresToCurrencies" : [ ]
+      }
+    }
+  },
+  "ui" : {
+    "nodes" : {
+      "LOAD_DATASET0" : {
+        "label" : "Gift Credit and Payment",
+        "type" : "LOAD_DATASET",
+        "top" : 112,
+        "left" : 112,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "FILTER0" : {
+        "label" : "Filter 0",
+        "type" : "FILTER",
+        "top" : 112,
+        "left" : 252
+      },
+      "OUTPUT0" : {
+        "label" : "Output 0",
+        "type" : "OUTPUT",
+        "top" : 112.4,
+        "left" : 392.2
+      }
+    },
+    "connectors" : [ {
+      "source" : "LOAD_DATASET0",
+      "target" : "FILTER0"
+    }, {
+      "source" : "FILTER0",
+      "target" : "OUTPUT0"
+    } ],
+    "hiddenColumns" : [ ]
+  },
+  "runMode" : "full"
+}

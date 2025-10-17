@@ -1,0 +1,23 @@
+<template>
+    <div class="card">
+        <lightning-accordion active-section-name={activeSection} onsectiontoggle={handleSectionToggle}>
+            <lightning-accordion-section name="Recent Prospects" label="Recent Prospects">
+                <div class="slds-p-around_small">
+                    <div class="content table-responsive table-full-width">
+                        <lightning-datatable
+                            key-field="id"
+                            data={records}
+                            columns={columns}
+                            hide-checkbox-column="true">
+                        </lightning-datatable>
+                    </div>
+                    <div class="footer">
+                        <div class="stats">
+                            <i></i> 10 Most Recently Viewed
+                        </div>
+                    </div>
+                </div>
+            </lightning-accordion-section>
+        </lightning-accordion>
+    </div>
+</template>

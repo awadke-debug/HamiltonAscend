@@ -1,0 +1,208 @@
+{
+  "version" : "60.0",
+  "nodes" : {
+    "LOAD_DATASET0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Id", "Philanthropic_Donor_Status", "Pure_Donor_Status", "Hamilton_Fund_Donor_Status" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Account and Contact Dataset",
+          "name" : "Account_and_Contact_Dataset"
+        },
+        "sampleDetails" : {
+          "type" : "Custom",
+          "filters" : {
+            "filterExpressions" : [ {
+              "type" : "TEXT",
+              "field" : "Id",
+              "operator" : "IS_NOT_NULL",
+              "operands" : [ ]
+            } ]
+          },
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "LOAD_DATASET1" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "HAM_HF_Donor_Status__c", "HAM_Pure_Donor_Status__c", "HAM_Philanthropic_Donor_Status__c", "Id" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "Contact",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "Contact"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN0" : {
+      "action" : "join",
+      "sources" : [ "LOAD_DATASET0", "LOAD_DATASET1" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Contact.Id" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Id" ],
+        "rightQualifier" : "Contact",
+        "rightKeys" : [ "Id" ]
+      }
+    },
+    "FILTER0" : {
+      "action" : "sqlFilter",
+      "sources" : [ "JOIN0" ],
+      "parameters" : {
+        "sqlFilterExpression" : "(\r\n    Pure_Donor_Status != \"Contact.HAM_Pure_Donor_Status__c\"\r\nor\r\n    Philanthropic_Donor_Status != \"Contact.HAM_Philanthropic_Donor_Status__c\"\r\nor\r\n    Hamilton_Fund_Donor_Status != \"Contact.HAM_HF_Donor_Status__c\"\r\n)\r\nand\r\n    Id is not null"
+      }
+    },
+    "DROP_FIELDS0" : {
+      "action" : "schema",
+      "sources" : [ "FILTER0" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "SELECT",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Id", "Philanthropic_Donor_Status", "Pure_Donor_Status", "Hamilton_Fund_Donor_Status" ]
+        }
+      }
+    },
+    "OUTPUT0" : {
+      "action" : "outputExternal",
+      "sources" : [ "DROP_FIELDS0" ],
+      "parameters" : {
+        "connectionName" : "SFDCconnectorHAM",
+        "object" : "Contact",
+        "operation" : "upsert",
+        "externalIdFieldName" : "Id",
+        "hyperFileName" : "",
+        "fieldsMapping" : [ {
+          "sourceField" : "Philanthropic_Donor_Status",
+          "targetField" : "HAM_Philanthropic_Donor_Status__c"
+        }, {
+          "sourceField" : "Pure_Donor_Status",
+          "targetField" : "HAM_Pure_Donor_Status__c"
+        }, {
+          "sourceField" : "Hamilton_Fund_Donor_Status",
+          "targetField" : "HAM_HF_Donor_Status__c"
+        }, {
+          "sourceField" : "Id",
+          "targetField" : "Id"
+        } ],
+        "connectorType" : "SALESFORCE_OUTPUT"
+      }
+    },
+    "OUTPUT1" : {
+      "action" : "save",
+      "sources" : [ "DROP_FIELDS0" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Most Recent Constituent Updates",
+          "name" : "Most_Recent_Constituent_Updates"
+        },
+        "dateConfigurationName" : "July_Fiscal_Year",
+        "measuresToCurrencies" : [ ]
+      }
+    }
+  },
+  "ui" : {
+    "nodes" : {
+      "LOAD_DATASET0" : {
+        "label" : "Account and Contact Dataset",
+        "description" : "",
+        "type" : "LOAD_DATASET",
+        "top" : 250.10000000000002,
+        "left" : 251.5,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "LOAD_DATASET1" : {
+        "label" : "Contact Object",
+        "description" : "",
+        "type" : "LOAD_DATASET",
+        "top" : 390.1,
+        "left" : 391.5,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN0" : {
+        "label" : "Lookup Current Donor Status",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 250.10000000000002,
+        "left" : 391.5
+      },
+      "FILTER0" : {
+        "label" : "Filter Contacts With Changed Donor Status",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 250.10000000000002,
+        "left" : 531.5
+      },
+      "TRANSFORM0" : {
+        "label" : "Keep Donor Status Fields",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 250.10000000000002,
+        "left" : 671.5,
+        "graph" : {
+          "DROP_FIELDS0" : {
+            "label" : "Drop Current Donor Status"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "OUTPUT0" : {
+        "label" : "Upsert Updated Constituent Records",
+        "description" : "",
+        "type" : "OUTPUT",
+        "top" : 252.39999999999998,
+        "left" : 952.1
+      },
+      "OUTPUT1" : {
+        "label" : "Output Most Recent Constituent Updates",
+        "description" : "",
+        "type" : "OUTPUT",
+        "top" : 391.7,
+        "left" : 952.8
+      }
+    },
+    "connectors" : [ {
+      "source" : "LOAD_DATASET0",
+      "target" : "JOIN0"
+    }, {
+      "source" : "LOAD_DATASET1",
+      "target" : "JOIN0"
+    }, {
+      "source" : "JOIN0",
+      "target" : "FILTER0"
+    }, {
+      "source" : "FILTER0",
+      "target" : "TRANSFORM0"
+    }, {
+      "source" : "TRANSFORM0",
+      "target" : "OUTPUT0"
+    }, {
+      "source" : "TRANSFORM0",
+      "target" : "OUTPUT1"
+    } ],
+    "hiddenColumns" : [ ]
+  },
+  "runMode" : "full"
+}

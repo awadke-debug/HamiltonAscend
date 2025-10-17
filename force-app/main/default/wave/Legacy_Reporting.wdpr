@@ -1,0 +1,793 @@
+{
+  "version" : "65.0",
+  "nodes" : {
+    "LOAD_DATASET0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "PLEDGE_ID", "CONTRIBUTION_ID", "CONTRIB_DONOR_DESIG_ID", "TYPE", "PRIMARY_DONOR", "AMOUNT", "EXPECTED_AMOUNT", "PLEDGE_BALANCE", "ACCOUNTING_DATE", "GRANTED_DATE", "ACCEPT_DATE", "CLOSED_DATE", "PIPELINE_STAGE", "PIPELINE_DATE", "RESULT_DATE", "CAMPAIGN", "CAMPAIGN_NAME", "TRANSACTION_SOURCE_CODES", "PLEDGE_DATE", "STATUS", "DOCUMENTED", "OF_AGE", "APPROVED", "PRIMARY_DONOR_CONSTITUENT_GROUP" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "TRANSACTIONS",
+          "connectionName" : "Snowflake_Advancement_Reporting",
+          "sourceObjectName" : "TRANSACTIONS"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        },
+        "preserveCurrencyFields" : [ ]
+      }
+    },
+    "LOAD_DATASET1" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "PERSON_ID", "NAME", "SORT_NAME" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "CONSTITUENT",
+          "connectionName" : "Snowflake_Advancement_Reporting",
+          "sourceObjectName" : "CONSTITUENT"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        },
+        "preserveCurrencyFields" : [ ]
+      }
+    },
+    "JOIN0" : {
+      "action" : "join",
+      "sources" : [ "LOAD_DATASET0", "LOAD_DATASET1" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "CONSTITUEN.PERSON_ID" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "PRIMARY_DONOR" ],
+        "rightQualifier" : "CONSTITUEN",
+        "rightKeys" : [ "PERSON_ID" ]
+      }
+    },
+    "FORMULA0" : {
+      "action" : "formula",
+      "sources" : [ "JOIN0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Amount_Temp",
+          "label" : "Amount Temp",
+          "formulaExpression" : "case \r\nwhen TYPE='Expected Matching Gift' \r\nthen EXPECTED_AMOUNT\r\nelse AMOUNT\r\nend",
+          "precision" : 10,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA1" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Gift_Received",
+          "label" : "Gift Received",
+          "formulaExpression" : "case \r\nwhen TYPE='Gift Received' \r\nthen Amount_Temp \r\nelse 0 \r\nend",
+          "precision" : 10,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA2" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA1" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Pledge_Payment",
+          "label" : "Pledge Payment",
+          "formulaExpression" : "case \r\nwhen TYPE='Pledge Payment' \r\nthen Amount_Temp \r\nelse 0 \r\nend",
+          "precision" : 10,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA3" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA2" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Matching_Gift_Received",
+          "label" : "Matching Gift Received",
+          "formulaExpression" : "case \r\nwhen TYPE='Matching Gift Received' \r\nthen Amount_Temp \r\nelse 0 \r\nend",
+          "precision" : 10,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA4" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA3" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Paid_to_Date",
+          "label" : "Paid to Date",
+          "formulaExpression" : "Gift_Received+Pledge_Payment+Matching_Gift_Received",
+          "precision" : 10,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA5" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA4" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Expected_Matching_Gift",
+          "label" : "Expected Matching Gift",
+          "formulaExpression" : "case \r\nwhen EXPECTED_AMOUNT>0\r\nthen EXPECTED_AMOUNT\r\nelse 0\r\nend",
+          "precision" : 10,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA6" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA5" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Pledge_Intention",
+          "label" : "Pledge Intention",
+          "formulaExpression" : "case \r\nwhen TYPE='Pledge Intention'\r\nthen Amount_Temp\r\nelse 0\r\nend",
+          "precision" : 10,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA7" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA6" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Proposal_Balance",
+          "label" : "Proposal Balance",
+          "formulaExpression" : "case \r\nwhen TYPE='Proposal Balance' and  PIPELINE_STAGE='APPROVED' \r\nthen Amount_Temp \r\nelse 0\r\nend",
+          "precision" : 10,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA10" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA7" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Gift_In_Kind",
+          "label" : "Gift In Kind",
+          "formulaExpression" : "case \r\nwhen TYPE='Gift In Kind' \r\nthen Amount_Temp \r\nelse 0 \r\nend",
+          "precision" : 10,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA11" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA10" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Bequest_Intention",
+          "label" : "Bequest Intention",
+          "formulaExpression" : "case \r\nwhen TYPE='Bequest Intention' \r\nand (APPROVED=1 or (DOCUMENTED=1 and OF_AGE=1))\r\nand Amount_Temp>1 \r\nthen Amount_Temp\r\nelse 0\r\nend",
+          "precision" : 10,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA12" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA11" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Undocumented_Bequest_Intentions",
+          "label" : "Undocumented Bequest Intentions",
+          "formulaExpression" : "case \r\nwhen \r\nTYPE='Bequest Intention' \r\nAND APPROVED=0 \r\nand STATUS != 'Voided' \r\nand STATUS != 'Declined' \r\nAND (DOCUMENTED=0 or OF_AGE=0) \r\nand Amount_Temp>1 \r\nthen Amount_Temp \r\nelse 0 \r\nEND\r\n",
+          "precision" : 10,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FILTER0" : {
+      "action" : "filter",
+      "sources" : [ "FORMULA12" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "TYPE",
+          "operator" : "EQUAL",
+          "operands" : [ "Pledge" ]
+        } ]
+      }
+    },
+    "EXTRACT0" : {
+      "action" : "extractGrains",
+      "sources" : [ "FILTER0" ],
+      "parameters" : {
+        "grainExtractions" : [ ]
+      }
+    },
+    "AGGREGATE1" : {
+      "action" : "aggregate",
+      "sources" : [ "EXTRACT0" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "AVG_PLEDGE_BALANCE",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        } ]
+      },
+      "parameters" : {
+        "aggregations" : [ {
+          "action" : "AVG",
+          "source" : "PLEDGE_BALANCE",
+          "name" : "AVG_PLEDGE_BALANCE",
+          "label" : "Pledge Balance Tableau"
+        }, {
+          "action" : "COUNT",
+          "name" : "COUNT_Rows",
+          "label" : "Rows"
+        } ],
+        "groupings" : [ "CONTRIBUTION_ID" ],
+        "pivots" : [ ],
+        "nodeType" : "STANDARD"
+      }
+    },
+    "JOIN1" : {
+      "action" : "join",
+      "sources" : [ "FORMULA12", "DROP_FIELDS0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Aggregate0.CONTRIBUTION_ID" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "CONTRIBUTION_ID" ],
+        "rightQualifier" : "Aggregate0",
+        "rightKeys" : [ "CONTRIBUTION_ID" ]
+      }
+    },
+    "FORMULA8" : {
+      "action" : "formula",
+      "sources" : [ "JOIN1" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Outstanding_Balance",
+          "label" : "Outstanding Balance",
+          "formulaExpression" : "\"Aggregate0.Pledge_Balance\"+Expected_Matching_Gift+Pledge_Intention+Proposal_Balance",
+          "precision" : 10,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA9" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA8" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Committed",
+          "label" : "Committed",
+          "formulaExpression" : "Paid_to_Date+Outstanding_Balance",
+          "precision" : 10,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA13" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA9" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Raised_Total",
+          "label" : "Raised Total",
+          "formulaExpression" : "Committed+Gift_In_Kind+Bequest_Intention+Undocumented_Bequest_Intentions",
+          "precision" : 10,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA14" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA13" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Campaign_Goal",
+          "label" : "Campaign Goal",
+          "formulaExpression" : "case \r\nwhen CAMPAIGN_NAME='175th Campaign' \r\nthen 29000000 \r\nwhen CAMPAIGN_NAME='New Century Campaign' \r\nthen 83000000 \r\nwhen contains(CAMPAIGN_NAME,'90s' )\r\nthen 66000000 \r\nwhen contains(CAMPAIGN_NAME,'Initiative') \r\nthen 117000000 \r\nwhen contains(CAMPAIGN_NAME,'Excelsior')\r\nthen 175000000 \r\nwhen CAMPAIGN_NAME='Because Hamilton'\r\nthen 400000000   \r\nend",
+          "precision" : 18,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA15" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA14" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Campaign_Goal_Adjusted",
+          "label" : "Campaign Goal Adjusted",
+          "formulaExpression" : "case \r\nwhen CAMPAIGN_NAME='175th Campaign' \r\nthen 29000000 \r\nwhen CAMPAIGN_NAME='New Century Campaign' \r\nthen 83000000 \r\nwhen contains(CAMPAIGN_NAME,'90s' )\r\nthen 66000000 \r\nwhen contains(CAMPAIGN_NAME,'Initiative')\r\nthen 117000000 \r\nwhen contains(CAMPAIGN_NAME,'Excelsior')\r\nthen 175000000 \r\nwhen contains(CAMPAIGN_NAME,'Because')\r\nthen 400000000   \r\nend\r\n",
+          "precision" : 18,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA17" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA19" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Primary_Constituent_Group",
+          "label" : "Primary Constituent Group",
+          "formulaExpression" : "case \r\nwhen \"CONSTITUEN.NAME\"='Daniel W Dietrich II Trust, Inc. Fund'\r\nthen 'Estate'\r\nwhen PRIMARY_DONOR_CONSTITUENT_GROUP != 'Trustee' and contains(TRANSACTION_SOURCE_CODES, 'SS')\r\nthen 'Alumni' \r\nwhen PRIMARY_DONOR_CONSTITUENT_GROUP='Corporation' or PRIMARY_DONOR_CONSTITUENT_GROUP='Foundation'\r\nthen 'Corps&Founds'\r\nwhen PRIMARY_DONOR_CONSTITUENT_GROUP='Employee' or PRIMARY_DONOR_CONSTITUENT_GROUP='Friend'\r\nthen 'Employee&Friend'\r\nelse PRIMARY_DONOR_CONSTITUENT_GROUP\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA18" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA15" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "DATETIME",
+          "name" : "Collected_Date",
+          "label" : "Collected Date",
+          "formulaExpression" : "case \r\n    when ACCEPT_DATE is NULL\r\n    then ACCOUNTING_DATE\r\n    \r\n    else\r\n    ACCEPT_DATE\r\nend",
+          "format" : "dd/MM/yyyy",
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA19" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA18" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "DATETIME",
+          "name" : "Commitment_Date",
+          "label" : "Commitment Date",
+          "formulaExpression" : "case \r\n  when PLEDGE_DATE != NULL and \r\n       (CLOSED_DATE = NULL or PLEDGE_DATE <= CLOSED_DATE) and\r\n       (RESULT_DATE = NULL or PLEDGE_DATE <= RESULT_DATE) and\r\n       (GRANTED_DATE = NULL or PLEDGE_DATE <= GRANTED_DATE) and\r\n       (PIPELINE_DATE = NULL or PLEDGE_DATE <= PIPELINE_DATE) and\r\n       (ACCOUNTING_DATE = NULL or PLEDGE_DATE <= ACCOUNTING_DATE)\r\n    then PLEDGE_DATE\r\n  when CLOSED_DATE != NULL and \r\n       (RESULT_DATE = NULL or CLOSED_DATE <= RESULT_DATE) and\r\n       (GRANTED_DATE = NULL or CLOSED_DATE <= GRANTED_DATE) and\r\n       (PIPELINE_DATE = NULL or CLOSED_DATE <= PIPELINE_DATE) and\r\n       (ACCOUNTING_DATE = NULL or CLOSED_DATE <= ACCOUNTING_DATE)\r\n    then CLOSED_DATE\r\n  when RESULT_DATE != NULL and \r\n       (GRANTED_DATE = NULL or RESULT_DATE <= GRANTED_DATE) and\r\n       (PIPELINE_DATE = NULL or RESULT_DATE <= PIPELINE_DATE) and\r\n       (ACCOUNTING_DATE = NULL or RESULT_DATE <= ACCOUNTING_DATE)\r\n    then RESULT_DATE\r\n  when GRANTED_DATE != NULL and \r\n       (PIPELINE_DATE = NULL or GRANTED_DATE <= PIPELINE_DATE) and\r\n       (ACCOUNTING_DATE = NULL or GRANTED_DATE <= ACCOUNTING_DATE)\r\n    then GRANTED_DATE\r\n  when PIPELINE_DATE != NULL and \r\n       (ACCOUNTING_DATE = NULL or PIPELINE_DATE <= ACCOUNTING_DATE)\r\n    then PIPELINE_DATE\r\n  else ACCOUNTING_DATE\r\nend",
+          "format" : "dd/MM/yyyy",
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA20" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA17" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "DATETIME",
+          "name" : "Campaign_Start_Date",
+          "label" : "Campaign Start Date",
+          "formulaExpression" : " \r\n    case \r\n      when CAMPAIGN_NAME = 'Because Hamilton' then  ('2013-07-01','MM/dd/yyyy') \r\n     \r\n \r\n    end",
+          "format" : "MM/dd/yyyy",
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "OUTPUT0" : {
+      "action" : "save",
+      "sources" : [ "FORMULA20" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Legacy Reporting",
+          "name" : "Legacy_Reporting",
+          "folderName" : "Data_Validation"
+        },
+        "dateConfigurationName" : "July_Fiscal_Year",
+        "measuresToCurrencies" : [ ]
+      }
+    },
+    "FORMULA16" : {
+      "action" : "formula",
+      "sources" : [ "AGGREGATE1" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Pledge_Balance",
+          "label" : "Pledge Balance",
+          "formulaExpression" : "AVG_PLEDGE_BALANCE/COUNT_Rows",
+          "precision" : 10,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "DROP_FIELDS0" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA16" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "AVG_PLEDGE_BALANCE", "COUNT_Rows" ]
+        }
+      }
+    }
+  },
+  "ui" : {
+    "nodes" : {
+      "LOAD_DATASET0" : {
+        "label" : "TRANSACTIONS",
+        "type" : "LOAD_DATASET",
+        "top" : 112,
+        "left" : 112,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "LOAD_DATASET1" : {
+        "label" : "CONSTITUENT",
+        "type" : "LOAD_DATASET",
+        "top" : 252.2,
+        "left" : 252.3,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN0" : {
+        "label" : "Join 0",
+        "type" : "JOIN",
+        "top" : 112.1,
+        "left" : 252.3
+      },
+      "TRANSFORM0" : {
+        "label" : "Transform 0",
+        "type" : "TRANSFORM",
+        "top" : 112,
+        "left" : 392,
+        "graph" : {
+          "FORMULA0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Amount Temp"
+          },
+          "FORMULA1" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Gift Received"
+          },
+          "FORMULA2" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Pledge Payment"
+          },
+          "FORMULA3" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Matching Gift Received"
+          },
+          "FORMULA4" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Paid to Date"
+          },
+          "FORMULA5" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Expected Matching Gift"
+          },
+          "FORMULA6" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Pledge Intention"
+          },
+          "FORMULA7" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Proposal Balance"
+          },
+          "FORMULA10" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Gift In Kind"
+          },
+          "FORMULA11" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Bequest Intention"
+          },
+          "FORMULA12" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Undocumented Bequest Intentions"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA0",
+          "target" : "FORMULA1"
+        }, {
+          "source" : "FORMULA1",
+          "target" : "FORMULA2"
+        }, {
+          "source" : "FORMULA2",
+          "target" : "FORMULA3"
+        }, {
+          "source" : "FORMULA3",
+          "target" : "FORMULA4"
+        }, {
+          "source" : "FORMULA4",
+          "target" : "FORMULA5"
+        }, {
+          "source" : "FORMULA5",
+          "target" : "FORMULA6"
+        }, {
+          "source" : "FORMULA6",
+          "target" : "FORMULA7"
+        }, {
+          "source" : "FORMULA7",
+          "target" : "FORMULA10"
+        }, {
+          "source" : "FORMULA10",
+          "target" : "FORMULA11"
+        }, {
+          "source" : "FORMULA11",
+          "target" : "FORMULA12"
+        } ]
+      },
+      "FILTER0" : {
+        "label" : "Filter 0",
+        "type" : "FILTER",
+        "top" : 251.7,
+        "left" : 392.1
+      },
+      "AGGREGATE0" : {
+        "label" : "Aggregate 0",
+        "type" : "AGGREGATE",
+        "top" : 391.9,
+        "left" : 392.1,
+        "graph" : {
+          "EXTRACT0" : null,
+          "AGGREGATE1" : null
+        },
+        "connectors" : [ {
+          "source" : "EXTRACT0",
+          "target" : "AGGREGATE1"
+        } ]
+      },
+      "JOIN1" : {
+        "label" : "Lookup Pledge Balance Tableau",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 113.30000000000001,
+        "left" : 532.1
+      },
+      "TRANSFORM1" : {
+        "label" : "Transform 1",
+        "type" : "TRANSFORM",
+        "top" : 112,
+        "left" : 812,
+        "graph" : {
+          "FORMULA8" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Outstanding Balance"
+          },
+          "FORMULA9" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Committed"
+          },
+          "FORMULA13" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Raised Total"
+          },
+          "FORMULA14" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Campaign Goal"
+          },
+          "FORMULA15" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Campaign Goal Adjusted"
+          },
+          "FORMULA17" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Primary Constituent Group"
+          },
+          "FORMULA18" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Collected Date"
+          },
+          "FORMULA19" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Commitment Date"
+          },
+          "FORMULA20" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Campaign Start Date"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA8",
+          "target" : "FORMULA9"
+        }, {
+          "source" : "FORMULA9",
+          "target" : "FORMULA13"
+        }, {
+          "source" : "FORMULA13",
+          "target" : "FORMULA14"
+        }, {
+          "source" : "FORMULA14",
+          "target" : "FORMULA15"
+        }, {
+          "source" : "FORMULA15",
+          "target" : "FORMULA18"
+        }, {
+          "source" : "FORMULA19",
+          "target" : "FORMULA17"
+        }, {
+          "source" : "FORMULA18",
+          "target" : "FORMULA19"
+        }, {
+          "source" : "FORMULA17",
+          "target" : "FORMULA20"
+        } ]
+      },
+      "OUTPUT0" : {
+        "label" : "Output 0",
+        "type" : "OUTPUT",
+        "top" : 112,
+        "left" : 952
+      },
+      "TRANSFORM2" : {
+        "label" : "Transform 2",
+        "type" : "TRANSFORM",
+        "top" : 391.3,
+        "left" : 532,
+        "graph" : {
+          "FORMULA16" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Pledge Balance"
+          },
+          "DROP_FIELDS0" : {
+            "label" : "Drop Columns"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA16",
+          "target" : "DROP_FIELDS0"
+        } ]
+      }
+    },
+    "connectors" : [ {
+      "source" : "LOAD_DATASET0",
+      "target" : "JOIN0"
+    }, {
+      "source" : "LOAD_DATASET1",
+      "target" : "JOIN0"
+    }, {
+      "source" : "JOIN0",
+      "target" : "TRANSFORM0"
+    }, {
+      "source" : "TRANSFORM0",
+      "target" : "FILTER0"
+    }, {
+      "source" : "FILTER0",
+      "target" : "AGGREGATE0"
+    }, {
+      "source" : "TRANSFORM0",
+      "target" : "JOIN1"
+    }, {
+      "source" : "TRANSFORM2",
+      "target" : "JOIN1"
+    }, {
+      "source" : "TRANSFORM1",
+      "target" : "OUTPUT0"
+    }, {
+      "source" : "JOIN1",
+      "target" : "TRANSFORM1"
+    }, {
+      "source" : "AGGREGATE0",
+      "target" : "TRANSFORM2"
+    } ],
+    "hiddenColumns" : [ ]
+  },
+  "runMode" : "full"
+}

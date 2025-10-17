@@ -1,0 +1,574 @@
+{
+  "version" : "63.0",
+  "nodes" : {
+    "LOAD_DATASET0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Name_and_Suffix", "Account_or_Contact_Id", "Constituent_Type_String" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Account and Contact Dataset",
+          "name" : "Account_and_Contact_Dataset"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "LOAD_DATASET7_copy0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "RecordTypeId", "ucinn_ascendv2__Account__c", "ucinn_ascendv2__Contact__c", "ucinn_ascendv2__Involvement_Code__c", "ucinn_ascendv2__Status__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "ucinn_ascendv2__Involvement__c",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "ucinn_ascendv2__Involvement__c"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "LOAD_DATASET8_copy0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Id", "Name" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "RecordType",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "RecordType"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN15_copy0" : {
+      "action" : "join",
+      "sources" : [ "LOAD_DATASET7_copy0", "LOAD_DATASET8_copy0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "RecordTypeId", "Record_Type.Id" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "RecordTypeId" ],
+        "rightQualifier" : "Record_Type",
+        "rightKeys" : [ "Id" ]
+      }
+    },
+    "LOAD_DATASET19_copy0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Id", "ucinn_ascendv2__Type__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "ucinn_ascendv2__Involvement_Value__c",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "ucinn_ascendv2__Involvement_Value__c"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN27_copy0" : {
+      "action" : "join",
+      "sources" : [ "JOIN15_copy0", "LOAD_DATASET19_copy0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Involvement_Code.Id", "ucinn_ascendv2__Involvement_Code__c" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "ucinn_ascendv2__Involvement_Code__c" ],
+        "rightQualifier" : "Involvement_Code",
+        "rightKeys" : [ "Id" ]
+      }
+    },
+    "FORMULA71_copy0" : {
+      "action" : "formula",
+      "sources" : [ "JOIN27_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Account_or_Contact_Id",
+          "label" : "Account or Contact Id",
+          "formulaExpression" : "coalesce(ucinn_ascendv2__Contact__c,ucinn_ascendv2__Account__c)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FILTER0" : {
+      "action" : "filter",
+      "sources" : [ "FORMULA71_copy0" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "ucinn_ascendv2__Status__c",
+          "operator" : "EQUAL",
+          "operands" : [ "Current" ]
+        }, {
+          "type" : "TEXT",
+          "field" : "Involvement_Code.ucinn_ascendv2__Type__c",
+          "operator" : "EQUAL",
+          "operands" : [ "Committee", "Board of Trustee" ]
+        } ]
+      }
+    },
+    "LOAD_DATASET20" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "conference360__Contact__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "conference360__Speaker__c",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "conference360__Speaker__c"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "EXTRACT0" : {
+      "action" : "extractGrains",
+      "sources" : [ "FILTER0" ],
+      "parameters" : {
+        "grainExtractions" : [ ]
+      }
+    },
+    "AGGREGATE1" : {
+      "action" : "aggregate",
+      "sources" : [ "EXTRACT0" ],
+      "parameters" : {
+        "aggregations" : [ {
+          "action" : "COUNT",
+          "name" : "COUNT_Rows",
+          "label" : "Rows"
+        } ],
+        "groupings" : [ "Account_or_Contact_Id" ],
+        "pivots" : [ ],
+        "nodeType" : "STANDARD"
+      }
+    },
+    "JOIN28" : {
+      "action" : "join",
+      "sources" : [ "LOAD_DATASET0", "FORMULA72" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "All_Current_Involvements", "Aggregate0.Account_or_Contact_Id", "Aggregate0.COUNT_Rows" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Account_or_Contact_Id" ],
+        "rightQualifier" : "Aggregate0",
+        "rightKeys" : [ "Account_or_Contact_Id" ]
+      }
+    },
+    "FORMULA72" : {
+      "action" : "formula",
+      "sources" : [ "AGGREGATE1" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Committee",
+          "label" : "Committee",
+          "formulaExpression" : "'true'",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA73" : {
+      "action" : "formula",
+      "sources" : [ "LOAD_DATASET20" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Speaker",
+          "label" : "Speaker",
+          "formulaExpression" : "'true'",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "JOIN29" : {
+      "action" : "join",
+      "sources" : [ "JOIN28", "FORMULA73" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Transform2.conference360__Contact__c", "Transform2.conference360__Status__c" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Account_or_Contact_Id" ],
+        "rightQualifier" : "Transform2",
+        "rightKeys" : [ "conference360__Contact__c" ]
+      }
+    },
+    "LOAD_DATASET21" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "HAM_Constituent__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "conference360__Sponsor__c",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "conference360__Sponsor__c"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "FORMULA74" : {
+      "action" : "formula",
+      "sources" : [ "LOAD_DATASET21" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Sponsor",
+          "label" : "Sponsor",
+          "formulaExpression" : "'true'",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "JOIN30" : {
+      "action" : "join",
+      "sources" : [ "JOIN29", "FORMULA74" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Transform21.HAM_Constituent__c", "Transform21.Name", "Transform21.conference360__Status__c" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Account_or_Contact_Id" ],
+        "rightQualifier" : "Transform21",
+        "rightKeys" : [ "HAM_Constituent__c" ]
+      }
+    },
+    "OUTPUT2" : {
+      "action" : "save",
+      "sources" : [ "FORMULA75" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "990 Volunteers",
+          "name" : "X990_Volunteers",
+          "folderName" : "SharedApp"
+        },
+        "dateConfigurationName" : "July_Fiscal_Year",
+        "measuresToCurrencies" : [ ]
+      }
+    },
+    "FORMULA75" : {
+      "action" : "formula",
+      "sources" : [ "JOIN30" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Volunteer",
+          "label" : "Volunteer",
+          "formulaExpression" : "case \r\nwhen \"Aggregate0.Committee\"='true' \r\nor \"Transform2.Speaker\"='true' \r\nor \"Transform21.Sponsor\"='true' \r\nthen 'true'\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    }
+  },
+  "ui" : {
+    "nodes" : {
+      "LOAD_DATASET0" : {
+        "label" : "Account and Contact Dataset",
+        "type" : "LOAD_DATASET",
+        "top" : 250.3,
+        "left" : 392,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "LOAD_DATASET7_copy0" : {
+        "label" : "ucinn_ascendv2__Involvement__c",
+        "type" : "LOAD_DATASET",
+        "top" : 530.3,
+        "left" : 392,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "LOAD_DATASET8_copy0" : {
+        "label" : "RecordType",
+        "type" : "LOAD_DATASET",
+        "top" : 670.3,
+        "left" : 532,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN15_copy0" : {
+        "label" : "Join Record Type To Involvement",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 530.3,
+        "left" : 532
+      },
+      "LOAD_DATASET19_copy0" : {
+        "label" : "ucinn_ascendv2__Involvement_Value__c",
+        "description" : "",
+        "type" : "LOAD_DATASET",
+        "top" : 670.3,
+        "left" : 672,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN27_copy0" : {
+        "label" : "Lookup Involvement Code To Involvement",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 530.3,
+        "left" : 672
+      },
+      "TRANSFORM26_copy0" : {
+        "label" : "Enrich Involvements",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 530.3,
+        "left" : 812,
+        "graph" : {
+          "FORMULA71_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Contact or Account Id"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "FILTER0" : {
+        "label" : "Filter 0",
+        "type" : "FILTER",
+        "top" : 530.2,
+        "left" : 952
+      },
+      "LOAD_DATASET20" : {
+        "label" : "conference360__Speaker__c",
+        "type" : "LOAD_DATASET",
+        "top" : 532,
+        "left" : 1232,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "AGGREGATE0" : {
+        "label" : "Aggregate 0",
+        "type" : "AGGREGATE",
+        "top" : 530.2,
+        "left" : 1092,
+        "graph" : {
+          "EXTRACT0" : null,
+          "AGGREGATE1" : null
+        },
+        "connectors" : [ {
+          "source" : "EXTRACT0",
+          "target" : "AGGREGATE1"
+        } ]
+      },
+      "JOIN28" : {
+        "label" : "Join 28",
+        "type" : "JOIN",
+        "top" : 250.2,
+        "left" : 1092
+      },
+      "TRANSFORM27" : {
+        "label" : "Transform 27",
+        "type" : "TRANSFORM",
+        "top" : 390.2,
+        "left" : 1092,
+        "graph" : {
+          "FORMULA72" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Committee"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "TRANSFORM28" : {
+        "label" : "Transform 28",
+        "type" : "TRANSFORM",
+        "top" : 390.2,
+        "left" : 1232,
+        "graph" : {
+          "FORMULA73" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Speaker"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "JOIN29" : {
+        "label" : "Join 29",
+        "type" : "JOIN",
+        "top" : 250.2,
+        "left" : 1232
+      },
+      "LOAD_DATASET21" : {
+        "label" : "conference360__Sponsor__c",
+        "type" : "LOAD_DATASET",
+        "top" : 532,
+        "left" : 1372,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "TRANSFORM29" : {
+        "label" : "Transform 29",
+        "type" : "TRANSFORM",
+        "top" : 392,
+        "left" : 1372,
+        "graph" : {
+          "FORMULA74" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Sponsor"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "JOIN30" : {
+        "label" : "Join 30",
+        "type" : "JOIN",
+        "top" : 252,
+        "left" : 1372
+      },
+      "OUTPUT2" : {
+        "label" : "Output 2",
+        "type" : "OUTPUT",
+        "top" : 250.3,
+        "left" : 1652
+      },
+      "TRANSFORM30" : {
+        "label" : "Transform 30",
+        "type" : "TRANSFORM",
+        "top" : 250.2,
+        "left" : 1512,
+        "graph" : {
+          "FORMULA75" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Volunteer"
+          }
+        },
+        "connectors" : [ ]
+      }
+    },
+    "connectors" : [ {
+      "source" : "JOIN15_copy0",
+      "target" : "JOIN27_copy0"
+    }, {
+      "source" : "LOAD_DATASET7_copy0",
+      "target" : "JOIN15_copy0"
+    }, {
+      "source" : "LOAD_DATASET8_copy0",
+      "target" : "JOIN15_copy0"
+    }, {
+      "source" : "LOAD_DATASET19_copy0",
+      "target" : "JOIN27_copy0"
+    }, {
+      "source" : "JOIN27_copy0",
+      "target" : "TRANSFORM26_copy0"
+    }, {
+      "source" : "TRANSFORM26_copy0",
+      "target" : "FILTER0"
+    }, {
+      "source" : "FILTER0",
+      "target" : "AGGREGATE0"
+    }, {
+      "source" : "LOAD_DATASET0",
+      "target" : "JOIN28"
+    }, {
+      "source" : "TRANSFORM27",
+      "target" : "JOIN28"
+    }, {
+      "source" : "AGGREGATE0",
+      "target" : "TRANSFORM27"
+    }, {
+      "source" : "JOIN28",
+      "target" : "JOIN29"
+    }, {
+      "source" : "TRANSFORM28",
+      "target" : "JOIN29"
+    }, {
+      "source" : "JOIN29",
+      "target" : "JOIN30"
+    }, {
+      "source" : "TRANSFORM29",
+      "target" : "JOIN30"
+    }, {
+      "source" : "TRANSFORM30",
+      "target" : "OUTPUT2"
+    }, {
+      "source" : "JOIN30",
+      "target" : "TRANSFORM30"
+    }, {
+      "source" : "LOAD_DATASET20",
+      "target" : "TRANSFORM28"
+    }, {
+      "source" : "LOAD_DATASET21",
+      "target" : "TRANSFORM29"
+    } ],
+    "hiddenColumns" : [ ]
+  },
+  "runMode" : "full"
+}

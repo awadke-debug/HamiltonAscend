@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Ask_Amount_Date</fullName>
+    <active>false</active>
+    <description>Ask date must be entered when the ask amount field is populated.</description>
+    <errorConditionFormula>$Setup.ucinn_ascendv2__Bypass_Settings__c.ucinn_ascendv2__Bypass_Validation_Rules__c &lt;&gt; TRUE &amp;&amp;
+!ISBLANK(ucinn_ascendv2__Submitted_Amount__c) &amp;&amp; ISBLANK(ucinn_ascendv2__Submitted_Date__c) &amp;&amp; RecordType.DeveloperName = &quot;Proposal&quot; &amp;&amp;
+RecordType.NamespacePrefix = &apos;ucinn_ascendv2&apos;</errorConditionFormula>
+    <errorDisplayField>ucinn_ascendv2__Submitted_Date__c</errorDisplayField>
+    <errorMessage>Ask date must be entered when the ask amount field is populated.</errorMessage>
+</ValidationRule>

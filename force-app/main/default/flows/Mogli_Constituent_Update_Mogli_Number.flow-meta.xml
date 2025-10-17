@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>63.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <description>Triggers whenever a Constituent record is created/updated AND preferred phone type = cell. Then, takes what is in the Phone field, removes non-numerical characters, adds +1 country code, and inputs this new value in the Mogli Number field.</description>
+    <environments>Default</environments>
+    <formulas>
+        <name>fPhoneMogliNumber</name>
+        <dataType>String</dataType>
+        <expression>IF(ISBLANK(TRIM({!$Record.Phone})),&quot;&quot;,
+
+IF(REGEX(TRIM({!$Record.Phone}),&quot;[\\s\\S\\w\\W]*[a-zA-Z@#$%^&amp;*&lt;&gt;!?\\[\\]_{};:&apos;/~`]+[\\s\\S\\w\\W]*&quot;),&quot;&quot;,
+
+&quot;+1&quot; &amp; SUBSTITUTE( SUBSTITUTE( SUBSTITUTE( SUBSTITUTE( SUBSTITUTE( SUBSTITUTE( SUBSTITUTE( SUBSTITUTE( SUBSTITUTE((&quot;+&quot;&amp; TRIM({!$Record.Phone})),&quot;++1&quot;,&quot;&quot;),&quot;+1&quot;,&quot;&quot;),&quot;+&quot;,&quot;&quot;),&quot;(&quot;,&quot;&quot;),&quot;)&quot;,&quot;&quot;),&quot; &quot;,&quot;&quot;),&quot;-&quot;,&quot;&quot;),&quot;,&quot;,&quot;&quot;),&quot;.&quot;,&quot;&quot;)))</expression>
+    </formulas>
+    <interviewLabel>[Mogli] Constituent: Update Mogli Number {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>[Mogli] Constituent: Update Mogli Number</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>FREE_FORM_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordUpdates>
+        <name>Update_Mogli_Number</name>
+        <label>Update Mogli Number</label>
+        <locationX>542</locationX>
+        <locationY>416</locationY>
+        <inputAssignments>
+            <field>Mogli_SMS__Mogli_Number__c</field>
+            <value>
+                <elementReference>vMogliNumber</elementReference>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <start>
+        <locationX>415</locationX>
+        <locationY>48</locationY>
+        <connector>
+            <targetReference>Update_Mogli_Number</targetReference>
+        </connector>
+        <doesRequireRecordChangedToMeetCriteria>true</doesRequireRecordChangedToMeetCriteria>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>ucinn_ascendv2__Preferred_Phone_Type__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Cell</stringValue>
+            </value>
+        </filters>
+        <object>Contact</object>
+        <recordTriggerType>CreateAndUpdate</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Active</status>
+    <variables>
+        <name>vMogliNumber</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <value>
+            <elementReference>fPhoneMogliNumber</elementReference>
+        </value>
+    </variables>
+</Flow>

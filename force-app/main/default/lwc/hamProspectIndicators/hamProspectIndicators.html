@@ -1,0 +1,27 @@
+<template>
+    <div class="backgroundWhite">
+        <template if:true={loading}>
+            <lightning-spinner
+                alternative-text="Loading..."
+                size="medium"
+                variant="brand">
+            </lightning-spinner>
+        </template>
+        <div class="slds-p-around_medium">
+            <!-- Do Not Contact Banner -->
+            <template if:true={showDoNotContact}>
+            
+                <div class="do-not-contact slds-align_absolute-center ">
+                    <span class="do-not-contact-text">No Contact with Hamilton</span>
+                </div>
+            </template>
+
+            <!-- Deceased Banner -->
+            <template if:true={showDeceased}>
+                <div class="deceased-banner slds-align_absolute-center slds-p-around_small">
+                    <span class="deceased-text">Deceased</span>
+                </div>
+            </template>
+        </div>
+    </div>
+</template>

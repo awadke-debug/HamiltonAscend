@@ -1,0 +1,167 @@
+{
+  "version" : "60.0",
+  "nodes" : {
+    "LOAD_DATASET0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "ucinn_ascendv2__Credit_Date_Formula__c", "Designation.ucinn_ascendv2__Areas_of_Giving_CASE_Type__c", "Object", "Id", "Account.Id", "Fiscal_Year", "Designation.ucinn_ascendv2__Designation_Name__c", "Designation.Name", "Opportunity.Type", "Constituent_or_Account_Id", "Contact.Name", "Account.Name", "Fundraising_Amount", "Cash_Amount" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Gift Credit and Payment",
+          "name" : "Gift_Credit_and_Payment"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "FORMULA175" : {
+      "action" : "formula",
+      "sources" : [ "FILTER0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "HF_Cash_Amount",
+          "label" : "HF Cash Amount",
+          "formulaExpression" : "case when\r\n    Fiscal_Year = fiscalyear(current_date())\r\n    and\r\n    \"Opportunity.Type\" not in ('Event Fee','Matching','Round Up')\r\n    and\r\n    \"Designation.ucinn_ascendv2__Designation_Name__c\" != 'Misc. Gifts-In-Kind'\r\n    and\r\n    contains(\"Designation.ucinn_ascendv2__Areas_of_Giving_CASE_Type__c\",'Hamilton Fund')\r\nthen\r\n    Cash_Amount\r\nelse\r\n    0\r\nend",
+          "precision" : 10,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA176" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA175" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "HF_Fundraising_Amount",
+          "label" : "HF Fundraising Amount",
+          "formulaExpression" : "case when\r\n    Fiscal_Year = fiscalyear(current_date())\r\n    and\r\n    \"Opportunity.Type\" not in ('Event Fee','Matching','Round Up')\r\n    and\r\n    \"Designation.ucinn_ascendv2__Designation_Name__c\" != 'Misc. Gifts-In-Kind'\r\n    and\r\n    contains(\"Designation.ucinn_ascendv2__Areas_of_Giving_CASE_Type__c\",'Hamilton Fund')\r\nthen\r\n    Fundraising_Amount\r\nelse\r\n    0\r\nend",
+          "precision" : 18,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA177" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA176" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Do_Cash_and_Fundraising_Match",
+          "label" : "Do Cash and Fundraising Match",
+          "formulaExpression" : "case\r\nwhen\r\nHF_Cash_Amount != HF_Fundraising_Amount\r\nthen 'No Match'\r\nelse 'Match'\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FILTER0" : {
+      "action" : "filter",
+      "sources" : [ "LOAD_DATASET0" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "Object",
+          "operator" : "EQUAL",
+          "operands" : [ "Hard and Soft Credit" ]
+        } ]
+      }
+    },
+    "OUTPUT0" : {
+      "action" : "save",
+      "sources" : [ "FORMULA177" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "TEST Hamilton Fund Credit",
+          "name" : "TEST_Hamilton_Fund_Credit",
+          "folderName" : "Data_Validation"
+        },
+        "dateConfigurationName" : "July_Fiscal_Year"
+      }
+    }
+  },
+  "ui" : {
+    "nodes" : {
+      "LOAD_DATASET0" : {
+        "label" : "Gift Credit and Payment",
+        "type" : "LOAD_DATASET",
+        "top" : 390.5,
+        "left" : 393.1,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "TRANSFORM5" : {
+        "label" : "Enrich GCP",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 392.4,
+        "left" : 672.1,
+        "graph" : {
+          "FORMULA175" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "HF Cash Amount"
+          },
+          "FORMULA176" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "HF Fundraising Amount"
+          },
+          "FORMULA177" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Do Cash and Fundraising Match"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA175",
+          "target" : "FORMULA176"
+        }, {
+          "source" : "FORMULA176",
+          "target" : "FORMULA177"
+        } ]
+      },
+      "FILTER0" : {
+        "label" : "Filter Credit Object",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 392,
+        "left" : 532
+      },
+      "OUTPUT0" : {
+        "label" : "Output Test HF Credit",
+        "description" : "",
+        "type" : "OUTPUT",
+        "top" : 392,
+        "left" : 812
+      }
+    },
+    "connectors" : [ {
+      "source" : "FILTER0",
+      "target" : "TRANSFORM5"
+    }, {
+      "source" : "LOAD_DATASET0",
+      "target" : "FILTER0"
+    }, {
+      "source" : "TRANSFORM5",
+      "target" : "OUTPUT0"
+    } ],
+    "hiddenColumns" : [ ]
+  },
+  "runMode" : "full"
+}

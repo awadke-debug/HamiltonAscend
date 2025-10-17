@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<DiscoveryAIModel xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <content xsi:nil="true"/>
+    <algorithmType>Xgboost</algorithmType>
+    <classificationThreshold>0.9301703455292176</classificationThreshold>
+    <label>Maximize Is 100 HF Donor</label>
+    <modelFields>
+        <isDisparateImpact>false</isDisparateImpact>
+        <isSensitive>false</isSensitive>
+        <label>Region</label>
+        <name>Preferred_Address.ucinn_ascendv2__Address_State_Formula__c_bucket</name>
+        <type>Text</type>
+        <values>Northeast</values>
+        <values>South</values>
+        <values>West</values>
+        <values>International/Missing</values>
+        <values>Midwest</values>
+        <values>Other</values>
+    </modelFields>
+    <modelFields>
+        <isDisparateImpact>false</isDisparateImpact>
+        <isSensitive>false</isSensitive>
+        <label>Persistence HF Flag</label>
+        <name>Persistence_HF_Flag</name>
+        <type>Text</type>
+        <values>0</values>
+        <values>1</values>
+        <values>2</values>
+    </modelFields>
+    <modelFields>
+        <isDisparateImpact>false</isDisparateImpact>
+        <isSensitive>false</isSensitive>
+        <label>NCAA||PSI||SCI</label>
+        <name>NCAA_PSI_SCI</name>
+        <type>Text</type>
+        <values>FFT</values>
+        <values>FFF</values>
+        <values>TFT</values>
+        <values>TFF</values>
+        <values>TTF</values>
+        <values>FTT</values>
+        <values>FTF</values>
+        <values>TTT</values>
+    </modelFields>
+    <modelFields>
+        <isDisparateImpact>false</isDisparateImpact>
+        <isSensitive>false</isSensitive>
+        <label>Wealth Rating Number Bucket</label>
+        <name>Wealth_Rating.HAM_Wealth_Rating_Number__c_bucket</name>
+        <type>Text</type>
+        <values>999</values>
+        <values>13</values>
+        <values>12</values>
+        <values>11</values>
+        <values>9-10</values>
+        <values>1-8</values>
+    </modelFields>
+    <modelFields>
+        <isDisparateImpact>false</isDisparateImpact>
+        <isSensitive>false</isSensitive>
+        <label>Reunion Proximity</label>
+        <name>Years_since_graduation_bucket</name>
+        <type>Text</type>
+        <values>Other Years</values>
+        <values>Reunion-1</values>
+        <values>Reunion</values>
+        <values>Reunion+1</values>
+    </modelFields>
+    <modelFields>
+        <isDisparateImpact>false</isDisparateImpact>
+        <isSensitive>false</isSensitive>
+        <label>Lifetime Cash Collected PFYR</label>
+        <name>Lifetime_Cash_Collected_as_of_2YR</name>
+        <type>Number</type>
+        <values>0.0___1080.0</values>
+        <values>1080.0___1435.0</values>
+        <values>1435.0___1687.0</values>
+        <values>1687.0___2020.0</values>
+        <values>2020.0___2448.0</values>
+        <values>2448.0___3023.0</values>
+        <values>3023.0___3593.0</values>
+        <values>3593.0___4932.0</values>
+        <values>4932.0___6128.0</values>
+        <values>6128.0___7953.0</values>
+        <values>7953.0___12824.0</values>
+        <values>12824.0___454522.0</values>
+    </modelFields>
+    <modelFields>
+        <isDisparateImpact>false</isDisparateImpact>
+        <isSensitive>false</isSensitive>
+        <label>Age Edited</label>
+        <name>Age_Edited_1YR</name>
+        <type>Number</type>
+        <values>0.0___26.0</values>
+        <values>26.0___29.0</values>
+        <values>29.0___33.0</values>
+        <values>33.0___37.0</values>
+        <values>37.0___41.0</values>
+        <values>41.0___45.0</values>
+        <values>45.0___51.0</values>
+        <values>51.0___59.0</values>
+        <values>59.0___68.0</values>
+        <values>68.0___100.0</values>
+    </modelFields>
+    <modelFields>
+        <isDisparateImpact>false</isDisparateImpact>
+        <isSensitive>false</isSensitive>
+        <label>Is 100 HF Donor</label>
+        <name>Is_100_HF_DONOR</name>
+        <type>Text</type>
+        <values>true</values>
+        <values>false</values>
+    </modelFields>
+    <modelRuntimeType>H2O</modelRuntimeType>
+    <predictedField>Is_100_HF_DONOR</predictedField>
+    <predictionType>Classification</predictionType>
+    <sourceType>Discovery</sourceType>
+    <status>Enabled</status>
+    <trainingMetrics>{&quot;r2&quot;:0.7500943550070202,&quot;nobs&quot;:13572,&quot;confusionMatrices&quot;:{&quot;thresholds&quot;:[0.9301703455292176],&quot;tns&quot;:[13305],&quot;tps&quot;:[79],&quot;totalPositives&quot;:98,&quot;totalNegatives&quot;:13474},&quot;rmse&quot;:0.2499470379379674,&quot;type&quot;:&quot;Binomial&quot;,&quot;gini&quot;:0.9598260112724069,&quot;meanPerClassError&quot;:0.07189972496876845,&quot;mse&quot;:0.06247352177396372,&quot;logloss&quot;:0.23120963775073017,&quot;auc&quot;:0.9799130056362034}</trainingMetrics>
+</DiscoveryAIModel>

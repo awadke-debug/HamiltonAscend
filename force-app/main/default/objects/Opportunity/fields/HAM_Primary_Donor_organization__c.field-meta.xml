@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>HAM_Primary_Donor_organization__c</fullName>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <description>This field is auto populated based on the constituent or organization of the opportunity. The user still has permission to update this field if needed but it will trigger an automation to update all credits records to match the new primary donor organization.</description>
+    <inlineHelpText>This field is auto-populated based on the opportunity&apos;s constituent or organization. You may update it if needed; doing so will trigger automation to update all related credit records to reflect the new primary donor organization.</inlineHelpText>
+    <label>HAM Primary Donor organization</label>
+    <referenceTo>Account</referenceTo>
+    <relationshipLabel>Opportunities (HAM Primary Donor organization)</relationshipLabel>
+    <relationshipName>Opportunities</relationshipName>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackTrending>false</trackTrending>
+    <type>Lookup</type>
+</CustomField>

@@ -1,0 +1,904 @@
+{
+  "version" : "61.0",
+  "nodes" : {
+    "LOAD_DATASET1" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Id", "Name", "LastModifiedDate", "conference360__Answer__c", "conference360__Attendee__c", "conference360__Question__c", "conference360__Attendee_Full_Name__c", "conference360__Event__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "conference360__Form_Submission_Answer__c",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "conference360__Form_Submission_Answer__c"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "EXTRACT0" : {
+      "action" : "extractGrains",
+      "sources" : [ "LOAD_DATASET1" ],
+      "parameters" : {
+        "grainExtractions" : [ ]
+      }
+    },
+    "AGGREGATE1" : {
+      "action" : "aggregate",
+      "sources" : [ "EXTRACT0" ],
+      "parameters" : {
+        "aggregations" : [ {
+          "action" : "UNIQUE",
+          "source" : "conference360__Attendee__c",
+          "name" : "UNIQUE_conference360__Attendee__c",
+          "label" : "Unique Attendee"
+        } ],
+        "groupings" : [ "conference360__Attendee__c", "conference360__Attendee_Full_Name__c", "Name", "conference360__Question__c", "conference360__Answer__c" ],
+        "pivots" : [ ],
+        "nodeType" : "STANDARD"
+      }
+    },
+    "FORMULA0" : {
+      "action" : "computeRelative",
+      "sources" : [ "AGGREGATE1" ],
+      "parameters" : {
+        "partitionBy" : [ "conference360__Attendee__c" ],
+        "orderBy" : [ {
+          "fieldName" : "conference360__Attendee__c",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "order_within_group",
+          "label" : "Order within group",
+          "formulaExpression" : "row_number()",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA1" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "question_column",
+          "label" : "Question Column",
+          "formulaExpression" : "concat('Q', order_within_group)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "DROP_FIELDS1" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA1" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "SELECT",
+          "ignoreMissingFields" : true,
+          "fields" : [ "conference360__Attendee__c", "conference360__Question__c", "conference360__Answer__c", "question_column" ]
+        }
+      }
+    },
+    "OUTPUT0" : {
+      "action" : "save",
+      "sources" : [ "JOIN0" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Event Attendee Responses Flat",
+          "name" : "Event_Attendee_Responses_Flat",
+          "folderName" : "SharedApp"
+        },
+        "dateConfigurationName" : "July_Fiscal_Year",
+        "measuresToCurrencies" : [ ]
+      }
+    },
+    "LOAD_DATASET3" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "conference360__Event__c", "HAM_Event_Item_Public_Item_Name__c", "conference360__Event_Name__c", "Id", "Name", "conference360__Approval_Status__c", "conference360__Attendance_Status__c", "conference360__Attendance_Type__c", "conference360__Contact__c", "conference360__Registration_Status__c", "conference360__Attendee_Full_Name__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "conference360__Attendee__c",
+          "connectionName" : "Updated_Hourly",
+          "sourceObjectName" : "conference360__Attendee__c"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "FORMULA2" : {
+      "action" : "formula",
+      "sources" : [ "DROP_FIELDS1" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "q1_question",
+          "label" : "Q1 Question",
+          "formulaExpression" : "case \n    when question_column = 'Q1'\n    then conference360__Question__c\nend\n",
+          "precision" : 100,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA3" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA2" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "a1_answer",
+          "label" : "A1 Answer",
+          "formulaExpression" : "case \n    when question_column = 'Q1'\n    then conference360__Answer__c\nend\n",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA4" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA3" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "q2_question",
+          "label" : "Q2 Question",
+          "formulaExpression" : "case \n    when question_column = 'Q2'\n    then conference360__Question__c\nend\n",
+          "precision" : 100,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA5" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA4" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "a2_answer",
+          "label" : "A2 Answer",
+          "formulaExpression" : "case \n    when question_column = 'Q2'\n    then conference360__Answer__c\nend",
+          "precision" : 10,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA6" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA5" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "q3_question",
+          "label" : "Q3 Question",
+          "formulaExpression" : "case \n    when question_column = 'Q3'\n    then conference360__Question__c\nend\n\n ",
+          "precision" : 100,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA7" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA6" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "a3_answer",
+          "label" : "A3 Answer",
+          "formulaExpression" : "\ncase \n    when question_column = 'Q3'\n    then conference360__Answer__c\nend\n",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA8" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA7" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "q4_question",
+          "label" : "Q4 Question",
+          "formulaExpression" : "case \n    when question_column = 'Q4'\n    then conference360__Question__c\nend",
+          "precision" : 100,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA9" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA8" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "a4_answer",
+          "label" : "A4 Answer",
+          "formulaExpression" : "\ncase \n    when question_column = 'Q4'\n    then conference360__Answer__c\nend\n",
+          "precision" : 100,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA10" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA9" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "q5_question",
+          "label" : "Q5 Question",
+          "formulaExpression" : "case \n    when question_column = 'Q5'\n    then conference360__Question__c\nend\n",
+          "precision" : 100,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA11" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA10" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "a5_answer",
+          "label" : "A5 Answer",
+          "formulaExpression" : "case \n    when question_column = 'Q5'\n    then conference360__Answer__c\nend\n",
+          "precision" : 100,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA12" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA11" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "q6_question",
+          "label" : "Q6 Question",
+          "formulaExpression" : "case \n    when question_column = 'Q6'\n    then conference360__Question__c\nend",
+          "precision" : 100,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA13" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA12" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "a6_answer",
+          "label" : "A6 Answer",
+          "formulaExpression" : "case \n    when question_column = 'Q6'\n    then conference360__Answer__c\nend",
+          "precision" : 100,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA14" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA13" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "q7_question",
+          "label" : "Q7 Question",
+          "formulaExpression" : "case \n    when question_column = 'Q7'\n    then conference360__Question__c\nend",
+          "precision" : 100,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA15" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA14" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "a7_answer",
+          "label" : "A7 Answer",
+          "formulaExpression" : "case \n    when question_column = 'Q7'\n    then conference360__Answer__c\nend",
+          "precision" : 100,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA16" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA15" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "q8_question",
+          "label" : "Q8 question",
+          "formulaExpression" : "case \n    when question_column = 'Q8'\n    then conference360__Question__c\nend",
+          "precision" : 100,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA17" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA16" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "a8_answer",
+          "label" : "A8 Answer",
+          "formulaExpression" : "\ncase \n    when question_column = 'Q8'\n    then conference360__Answer__c\nend",
+          "precision" : 100,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA18" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA17" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "q9_question",
+          "label" : "Q9 Question",
+          "formulaExpression" : "case \n    when question_column = 'Q9'\n    then conference360__Question__c\nend",
+          "precision" : 100,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA19" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA18" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "a9_answer",
+          "label" : "A9 Answer",
+          "formulaExpression" : "case \n    when question_column = 'Q9'\n    then conference360__Answer__c\nend",
+          "precision" : 100,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA20" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA19" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "q10_question",
+          "label" : "Q10 Question",
+          "formulaExpression" : "\ncase \n    when question_column = 'Q10'\n    then conference360__Question__c\nend",
+          "precision" : 100,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA21" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA20" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "a10_answer",
+          "label" : "A10 Answer",
+          "formulaExpression" : "\ncase \n    when question_column = 'Q10'\n    then conference360__Answer__c\nend",
+          "precision" : 100,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "JOIN0" : {
+      "action" : "join",
+      "sources" : [ "LOAD_DATASET3", "FORMULA21" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "MULTI_VALUE_LOOKUP",
+        "leftKeys" : [ "Id" ],
+        "rightQualifier" : "Transform1",
+        "rightKeys" : [ "conference360__Attendee__c" ]
+      }
+    },
+    "LOAD_DATASET4" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "conference360__Contact__c", "conference360__Session__c", "conference360__Event_Item_Session__c", "Id", "conference360__Registration_Status__c", "conference360__Attendee__c", "Name" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Conference Session Attendee",
+          "name" : "Conference_Session_Attendee"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "LOAD_DATASET5" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Id", "Name", "conference360__Display_Name__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "conference360__Session__c",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "conference360__Session__c"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN1" : {
+      "action" : "join",
+      "sources" : [ "LOAD_DATASET4", "LOAD_DATASET5" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "conference360__Session__c" ],
+        "rightQualifier" : "conference",
+        "rightKeys" : [ "Id" ]
+      }
+    },
+    "EXTRACT1" : {
+      "action" : "extractGrains",
+      "sources" : [ "JOIN1" ],
+      "parameters" : {
+        "grainExtractions" : [ ]
+      }
+    },
+    "AGGREGATE3" : {
+      "action" : "aggregate",
+      "sources" : [ "EXTRACT1" ],
+      "parameters" : {
+        "aggregations" : [ {
+          "action" : "UNIQUE",
+          "source" : "conference360__Attendee__c",
+          "name" : "UNIQUE_conference360__Attendee__c",
+          "label" : "Unique Attendee"
+        } ],
+        "groupings" : [ "conference360__Attendee__c", "conference.Name", "conference.conference360__Display_Name__c", "conference360__Registration_Status__c" ],
+        "pivots" : [ ],
+        "nodeType" : "STANDARD"
+      }
+    },
+    "FORMULA22" : {
+      "action" : "computeRelative",
+      "sources" : [ "AGGREGATE3" ],
+      "parameters" : {
+        "partitionBy" : [ "conference360__Attendee__c" ],
+        "orderBy" : [ {
+          "fieldName" : "conference.Name",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "session_column",
+          "label" : "Session Column",
+          "formulaExpression" : "rank()",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "OUTPUT1" : {
+      "action" : "save",
+      "sources" : [ "FORMULA22" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Session review",
+          "name" : "Session_review"
+        },
+        "dateConfigurationName" : "July_Fiscal_Year"
+      }
+    }
+  },
+  "ui" : {
+    "nodes" : {
+      "LOAD_DATASET1" : {
+        "label" : "conference360__Form_Submission_Answer__c",
+        "type" : "LOAD_DATASET",
+        "top" : 252.10000000000002,
+        "left" : 252.3,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "AGGREGATE0" : {
+        "label" : "Aggregate",
+        "description" : "Group by Attendee, Name and Question",
+        "type" : "AGGREGATE",
+        "top" : 252.10000000000002,
+        "left" : 392.3,
+        "graph" : {
+          "EXTRACT0" : null,
+          "AGGREGATE1" : null
+        },
+        "connectors" : [ {
+          "source" : "EXTRACT0",
+          "target" : "AGGREGATE1"
+        } ]
+      },
+      "TRANSFORM0" : {
+        "label" : "Rank within group",
+        "description" : "Number questions be attendee id and question, to be used to create column names in future, since we want to take 2 columns and expand to 1 column per question and 1 column per answer",
+        "type" : "TRANSFORM",
+        "top" : 252.10000000000002,
+        "left" : 532.3,
+        "graph" : {
+          "FORMULA0" : {
+            "label" : "Formula"
+          },
+          "FORMULA1" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Question Column"
+          },
+          "DROP_FIELDS1" : {
+            "label" : "Drop Columns"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA0",
+          "target" : "FORMULA1"
+        }, {
+          "source" : "FORMULA1",
+          "target" : "DROP_FIELDS1"
+        } ]
+      },
+      "OUTPUT0" : {
+        "label" : "Output 0",
+        "type" : "OUTPUT",
+        "top" : 112.1,
+        "left" : 1090.5
+      },
+      "LOAD_DATASET3" : {
+        "label" : "conference360__Attendee__c",
+        "type" : "LOAD_DATASET",
+        "top" : 112.6,
+        "left" : 112.1,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "TRANSFORM1" : {
+        "label" : "Transform Q1",
+        "type" : "TRANSFORM",
+        "top" : 252,
+        "left" : 671.9,
+        "graph" : {
+          "FORMULA2" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Q1"
+          },
+          "FORMULA3" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "A1"
+          },
+          "FORMULA4" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Q2"
+          },
+          "FORMULA5" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "A2"
+          },
+          "FORMULA6" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Q3"
+          },
+          "FORMULA7" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "A3"
+          },
+          "FORMULA8" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Q4"
+          },
+          "FORMULA9" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "A4"
+          },
+          "FORMULA10" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Q5"
+          },
+          "FORMULA11" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "A5"
+          },
+          "FORMULA12" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Q6"
+          },
+          "FORMULA13" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "A6"
+          },
+          "FORMULA14" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Q7"
+          },
+          "FORMULA15" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "A7"
+          },
+          "FORMULA16" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Q8"
+          },
+          "FORMULA17" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "A8"
+          },
+          "FORMULA18" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Q9"
+          },
+          "FORMULA19" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "A9"
+          },
+          "FORMULA20" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Q10"
+          },
+          "FORMULA21" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "A10"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA2",
+          "target" : "FORMULA3"
+        }, {
+          "source" : "FORMULA3",
+          "target" : "FORMULA4"
+        }, {
+          "source" : "FORMULA4",
+          "target" : "FORMULA5"
+        }, {
+          "source" : "FORMULA5",
+          "target" : "FORMULA6"
+        }, {
+          "source" : "FORMULA6",
+          "target" : "FORMULA7"
+        }, {
+          "source" : "FORMULA7",
+          "target" : "FORMULA8"
+        }, {
+          "source" : "FORMULA8",
+          "target" : "FORMULA9"
+        }, {
+          "source" : "FORMULA9",
+          "target" : "FORMULA10"
+        }, {
+          "source" : "FORMULA10",
+          "target" : "FORMULA11"
+        }, {
+          "source" : "FORMULA11",
+          "target" : "FORMULA12"
+        }, {
+          "source" : "FORMULA12",
+          "target" : "FORMULA13"
+        }, {
+          "source" : "FORMULA13",
+          "target" : "FORMULA14"
+        }, {
+          "source" : "FORMULA14",
+          "target" : "FORMULA15"
+        }, {
+          "source" : "FORMULA15",
+          "target" : "FORMULA16"
+        }, {
+          "source" : "FORMULA16",
+          "target" : "FORMULA17"
+        }, {
+          "source" : "FORMULA17",
+          "target" : "FORMULA18"
+        }, {
+          "source" : "FORMULA18",
+          "target" : "FORMULA19"
+        }, {
+          "source" : "FORMULA19",
+          "target" : "FORMULA20"
+        }, {
+          "source" : "FORMULA20",
+          "target" : "FORMULA21"
+        } ]
+      },
+      "JOIN0" : {
+        "label" : "Join Q1",
+        "type" : "JOIN",
+        "top" : 112.1,
+        "left" : 671.5
+      },
+      "LOAD_DATASET4" : {
+        "label" : "Conference Session Attendee",
+        "type" : "LOAD_DATASET",
+        "top" : 532.1,
+        "left" : 112.80000000000001,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "LOAD_DATASET5" : {
+        "label" : "conference360__Session__c",
+        "type" : "LOAD_DATASET",
+        "top" : 671.8,
+        "left" : 252,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN1" : {
+        "label" : "Join Session Name",
+        "type" : "JOIN",
+        "top" : 532.1,
+        "left" : 252.2
+      },
+      "AGGREGATE2" : {
+        "label" : "Aggregate 2",
+        "type" : "AGGREGATE",
+        "top" : 532,
+        "left" : 392.5,
+        "graph" : {
+          "EXTRACT1" : null,
+          "AGGREGATE3" : null
+        },
+        "connectors" : [ {
+          "source" : "EXTRACT1",
+          "target" : "AGGREGATE3"
+        } ]
+      },
+      "TRANSFORM2" : {
+        "label" : "Rank within group",
+        "type" : "TRANSFORM",
+        "top" : 531.9,
+        "left" : 532.3,
+        "graph" : {
+          "FORMULA22" : {
+            "label" : "Formula"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "OUTPUT1" : {
+        "label" : "Output 1",
+        "type" : "OUTPUT",
+        "top" : 532,
+        "left" : 672
+      }
+    },
+    "connectors" : [ {
+      "source" : "LOAD_DATASET1",
+      "target" : "AGGREGATE0"
+    }, {
+      "source" : "AGGREGATE0",
+      "target" : "TRANSFORM0"
+    }, {
+      "source" : "LOAD_DATASET3",
+      "target" : "JOIN0"
+    }, {
+      "source" : "TRANSFORM1",
+      "target" : "JOIN0"
+    }, {
+      "source" : "JOIN0",
+      "target" : "OUTPUT0"
+    }, {
+      "source" : "TRANSFORM0",
+      "target" : "TRANSFORM1"
+    }, {
+      "source" : "LOAD_DATASET4",
+      "target" : "JOIN1"
+    }, {
+      "source" : "LOAD_DATASET5",
+      "target" : "JOIN1"
+    }, {
+      "source" : "JOIN1",
+      "target" : "AGGREGATE2"
+    }, {
+      "source" : "AGGREGATE2",
+      "target" : "TRANSFORM2"
+    }, {
+      "source" : "TRANSFORM2",
+      "target" : "OUTPUT1"
+    } ],
+    "hiddenColumns" : [ ]
+  },
+  "runMode" : "full"
+}

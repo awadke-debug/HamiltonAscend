@@ -1,0 +1,622 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>61.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <assignments>
+        <description>Append the current reunion year in the loop to the suffix component after cleansing it to be formatted correctly. In addition, increase the value of the loop counter by one to track position in loop.</description>
+        <name>Add_Cleansed_Reunion_Year_to_Suffix_Component_and_Increment_Loop_Counter</name>
+        <label>Add Cleansed Reunion Year to Suffix Component and Increment Loop Counter</label>
+        <locationX>534</locationX>
+        <locationY>1871</locationY>
+        <assignmentItems>
+            <assignToReference>SuffixComponent</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>CleansedReunionYear</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>MaxReunionYearLoopCounter</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <numberValue>1.0</numberValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Check_Whether_Comma_Needed</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <description>Add a comma to the suffix component because there are more reunion years to add.</description>
+        <name>Add_Comma_to_Suffix_Component</name>
+        <label>Add Comma to Suffix Component</label>
+        <locationX>402</locationX>
+        <locationY>2087</locationY>
+        <assignmentItems>
+            <assignToReference>SuffixComponent</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <stringValue>,</stringValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Loop_Over_Max_Reunion_Years</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <description>Add the max reunion year, provided there is one to add, for the current related Constituent to the list of max reunion years for all related Constituents.</description>
+        <name>Add_Max_Reunion_Year_to_List</name>
+        <label>Add Max Reunion Year to List</label>
+        <locationX>578</locationX>
+        <locationY>1271</locationY>
+        <assignmentItems>
+            <assignToReference>MaxReunionYears</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>Get_Hamilton_or_Kirkland_Degree_with_Max_Reunion_Year_for_Current_Related_Consti.HAM_Reunion_Integer_Date_Formula__c</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Loop_Over_Related_Constituents</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <description>Capture the size of the reunion year list in a variable so that the position within the loop used later in the flow can be tracked. In addition, initialize the suffix component that will be written to the correct Constituent suffix field with the correct starting characters(s) as determined by the triggering Relationship.</description>
+        <name>Capture_Size_of_Reunion_Year_List_and_Initialize_Suffix_Component</name>
+        <label>Capture Size of Reunion Year List and Initialize Suffix Component</label>
+        <locationX>314</locationX>
+        <locationY>1547</locationY>
+        <assignmentItems>
+            <assignToReference>MaxReunionYearsSize</assignToReference>
+            <operator>AssignCount</operator>
+            <value>
+                <elementReference>MaxReunionYears</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>SuffixComponent</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>SuffixComponentStart</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Sort_Max_Reunion_Years</targetReference>
+        </connector>
+    </assignments>
+    <collectionProcessors>
+        <description>Sort the list of max reunion years from related Constituent degrees in ascending order.</description>
+        <name>Sort_Max_Reunion_Years</name>
+        <elementSubtype>SortCollectionProcessor</elementSubtype>
+        <label>Sort Max Reunion Years Ascending</label>
+        <locationX>314</locationX>
+        <locationY>1655</locationY>
+        <collectionProcessorType>SortCollectionProcessor</collectionProcessorType>
+        <collectionReference>MaxReunionYears</collectionReference>
+        <connector>
+            <targetReference>Loop_Over_Max_Reunion_Years</targetReference>
+        </connector>
+        <sortOptions>
+            <doesPutEmptyStringAndNullFirst>false</doesPutEmptyStringAndNullFirst>
+            <sortOrder>Asc</sortOrder>
+        </sortOptions>
+    </collectionProcessors>
+    <decisions>
+        <description>Confirm that the prior get element returned a Degree Information record before adding the max reunion year to the list variable.</description>
+        <name>Check_Whether_Child_Had_Hamilton_Kirkland_Degree</name>
+        <label>Check Whether Related Constituent Had Hamilton/Kirkland Degree</label>
+        <locationX>490</locationX>
+        <locationY>1163</locationY>
+        <defaultConnector>
+            <targetReference>Add_Max_Reunion_Year_to_List</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Has Hamilton/Kirkland Degree</defaultConnectorLabel>
+        <rules>
+            <name>Does_Not_Have_Hamilton_Kirkland_Degree</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_Hamilton_or_Kirkland_Degree_with_Max_Reunion_Year_for_Current_Related_Consti</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Loop_Over_Related_Constituents</targetReference>
+            </connector>
+            <label>Does Not Have Hamilton/Kirkland Degree</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <description>Check whether the current loop item is the last loop item so that a comma is only added to the suffix component if necessary.</description>
+        <name>Check_Whether_Comma_Needed</name>
+        <label>Check Whether Comma Needed</label>
+        <locationX>534</locationX>
+        <locationY>1979</locationY>
+        <defaultConnector>
+            <targetReference>Loop_Over_Max_Reunion_Years</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Last Item</defaultConnectorLabel>
+        <rules>
+            <name>Not_Last_Item</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>MaxReunionYearLoopCounter</leftValueReference>
+                <operator>LessThan</operator>
+                <rightValue>
+                    <elementReference>MaxReunionYearsSize</elementReference>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Add_Comma_to_Suffix_Component</targetReference>
+            </connector>
+            <label>Not Last Item</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <description>Check the Related Constituent Role on the triggering record to determine whether it is of parent type, meaning multiple types of Relationship records would need querying to construct the suffix component.</description>
+        <name>Check_Whether_Triggering_Record_is_of_Parent_Type</name>
+        <label>Check Whether Triggering Record is of Parent Type</label>
+        <locationX>314</locationX>
+        <locationY>647</locationY>
+        <defaultConnector>
+            <targetReference>Get_All_Relevant_Related_Constituents_to_Grandparent_or_Widow</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Not Parent Type Relationship</defaultConnectorLabel>
+        <rules>
+            <name>Parent_Type_Relationship</name>
+            <conditionLogic>or</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.ucinn_ascendv2__Related_Contact_Role__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Parent</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.ucinn_ascendv2__Related_Contact_Role__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Step-Parent</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.ucinn_ascendv2__Related_Contact_Role__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Guardian</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Get_All_Relevant_Related_Constituents_to_Parent_Step_Parent_or_Guardian</targetReference>
+            </connector>
+            <label>Parent Type Relationship</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <description>Check the Related Constituent Role on the triggering Relationship record to determine which suffix component on their Constituent record to update.</description>
+        <name>Check_Which_Suffix_Component_to_Update</name>
+        <label>Check Which Suffix Component to Update</label>
+        <locationX>314</locationX>
+        <locationY>2363</locationY>
+        <defaultConnector>
+            <targetReference>Update_Widow_with_Suffix_Component</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Widow Constituent Update</defaultConnectorLabel>
+        <rules>
+            <name>Parent_Step_Parent_Guardian_Constituent_Update</name>
+            <conditionLogic>or</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.ucinn_ascendv2__Related_Contact_Role__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Parent</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.ucinn_ascendv2__Related_Contact_Role__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Step-Parent</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.ucinn_ascendv2__Related_Contact_Role__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Guardian</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_Parent_Step_Parent_or_Guardian_with_Suffix_Component</targetReference>
+            </connector>
+            <label>Parent, Step-Parent, Guardian Constituent Update</label>
+        </rules>
+        <rules>
+            <name>Grandparent_Constituent_Update</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.ucinn_ascendv2__Related_Contact_Role__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Grandparent</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_Grandparent_with_Suffix_Component</targetReference>
+            </connector>
+            <label>Grandparent Constituent Update</label>
+        </rules>
+    </decisions>
+    <description>Flow that updates the relevant suffix component field on the Constituent object (HAM_Parent_Suffix__c, 	HAM_GP_Suffix__c, 	HAM_Surv_Spouse_Suffix__c), which is used in the construction of the Institutional Suffix. Only executes if the Relationship record has a Related Constituent Role of within the set of roles that are relevant to the Institutional Suffix (&apos;Parent&apos;, &apos;Step-Parent&apos;, &apos;Guardian&apos;, &apos;Grandparent&apos;, &apos;Widow&apos;) and the &apos;Constituent&apos; lookup Constituent has a Constituent Type of &apos;Student&apos;, &apos;Hamilton Alumni&apos;, or &apos;Kirkland Alumnae&apos;.</description>
+    <environments>Default</environments>
+    <formulas>
+        <description>Formula that cleanses the current reunion year in the loop over reunion years where this formula is used.</description>
+        <name>CleansedReunionYear</name>
+        <dataType>String</dataType>
+        <expression>&quot;&apos;&quot;+RIGHT(TEXT({!Loop_Over_Max_Reunion_Years}),2)</expression>
+    </formulas>
+    <formulas>
+        <description>Formula that evaluates the first character(s) of the suffix component that will be updated in this execution of the flow, as either &apos;P&apos;, &apos;GP&apos;, or &apos;W&apos; will precede the reunion years depending on what type of Relationship triggered the flow (Parent, Step-Parent, Guardian, Grandparent, or Widow).</description>
+        <name>SuffixComponentStart</name>
+        <dataType>String</dataType>
+        <expression>IF( OR( ISPICKVAL({!$Record.ucinn_ascendv2__Related_Contact_Role__c},&apos;Parent&apos;), 
+ISPICKVAL({!$Record.ucinn_ascendv2__Related_Contact_Role__c},&apos;Step-Parent&apos;),
+ISPICKVAL({!$Record.ucinn_ascendv2__Related_Contact_Role__c},&apos;Guardian&apos;)), &apos;P&apos;,
+IF( ISPICKVAL({!$Record.ucinn_ascendv2__Related_Contact_Role__c},&apos;Grandparent&apos;),&apos;GP&apos;,&apos;W&apos;))</expression>
+    </formulas>
+    <interviewLabel>Update Suffix Component Based Off Of Relationship {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Update Suffix Component Based Off Of Relationship</label>
+    <loops>
+        <description>Loop over the max reunion years to cleanse each and add to the full institutional suffix component for the Parent/Grandparent/Widow</description>
+        <name>Loop_Over_Max_Reunion_Years</name>
+        <label>Loop Over Max Reunion Years</label>
+        <locationX>314</locationX>
+        <locationY>1763</locationY>
+        <collectionReference>MaxReunionYears</collectionReference>
+        <iterationOrder>Asc</iterationOrder>
+        <nextValueConnector>
+            <targetReference>Add_Cleansed_Reunion_Year_to_Suffix_Component_and_Increment_Loop_Counter</targetReference>
+        </nextValueConnector>
+        <noMoreValuesConnector>
+            <targetReference>Check_Which_Suffix_Component_to_Update</targetReference>
+        </noMoreValuesConnector>
+    </loops>
+    <loops>
+        <description>Loop that is used to retrieve the record ID of every Constituent related to the Parent/Step-parent/Ward/Grandparent/Widow with the corresponding role from the Relationship records returned in the prior get,</description>
+        <name>Loop_Over_Related_Constituents</name>
+        <label>Loop Over Related Constituents</label>
+        <locationX>314</locationX>
+        <locationY>947</locationY>
+        <collectionReference>RelevantRelationships</collectionReference>
+        <iterationOrder>Asc</iterationOrder>
+        <nextValueConnector>
+            <targetReference>Get_Hamilton_or_Kirkland_Degree_with_Max_Reunion_Year_for_Current_Related_Consti</targetReference>
+        </nextValueConnector>
+        <noMoreValuesConnector>
+            <targetReference>Capture_Size_of_Reunion_Year_List_and_Initialize_Suffix_Component</targetReference>
+        </noMoreValuesConnector>
+    </loops>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordLookups>
+        <description>Retrieve AccountId of Hamilton College for usage later.</description>
+        <name>Get_AccountId_of_Hamilton_College</name>
+        <label>Get AccountId of Hamilton College</label>
+        <locationX>314</locationX>
+        <locationY>323</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Get_AccountId_of_Kirkland_College</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>ucinn_ascendv2__External_System_ID__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>0920265</stringValue>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Account</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <description>Retrieve AccountId of Kirkland College for usage later.</description>
+        <name>Get_AccountId_of_Kirkland_College</name>
+        <label>Get AccountId of Kirkland College</label>
+        <locationX>314</locationX>
+        <locationY>431</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Get_RecordTypeId_for_Hamilton_and_Kirkland_Degrees</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>ucinn_ascendv2__External_System_ID__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>2381635</stringValue>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Account</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <description>Retrieve all Relationship records for the Grandparent or Widow where they have that same role.</description>
+        <name>Get_All_Relevant_Related_Constituents_to_Grandparent_or_Widow</name>
+        <label>Get All Relevant Related Constituents to Grandparent or Widow</label>
+        <locationX>446</locationX>
+        <locationY>755</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Loop_Over_Related_Constituents</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>ucinn_ascendv2__Related_Contact__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.ucinn_ascendv2__Related_Contact__c</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>ucinn_ascendv2__Related_Contact_Role__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.ucinn_ascendv2__Related_Contact_Role__c</elementReference>
+            </value>
+        </filters>
+        <object>ucinn_ascendv2__Relationship__c</object>
+        <outputReference>RelevantRelationships</outputReference>
+        <queriedFields>Id</queriedFields>
+        <queriedFields>ucinn_ascendv2__Contact__c</queriedFields>
+    </recordLookups>
+    <recordLookups>
+        <description>Retrieve all Relationship records for the Parent, Step-Parent, or Guardian where they have one of those three roles.</description>
+        <name>Get_All_Relevant_Related_Constituents_to_Parent_Step_Parent_or_Guardian</name>
+        <label>Get All Relevant Related Constituents to Parent, Step-Parent, or Guardian</label>
+        <locationX>182</locationX>
+        <locationY>755</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Loop_Over_Related_Constituents</targetReference>
+        </connector>
+        <filterLogic>1 AND (2 OR 3 OR 4)</filterLogic>
+        <filters>
+            <field>ucinn_ascendv2__Related_Contact__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.ucinn_ascendv2__Related_Contact__c</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>ucinn_ascendv2__Related_Contact_Role__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Parent</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>ucinn_ascendv2__Related_Contact_Role__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Step-Parent</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>ucinn_ascendv2__Related_Contact_Role__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Guardian</stringValue>
+            </value>
+        </filters>
+        <object>ucinn_ascendv2__Relationship__c</object>
+        <outputReference>RelevantRelationships</outputReference>
+        <queriedFields>Id</queriedFields>
+        <queriedFields>ucinn_ascendv2__Contact__c</queriedFields>
+    </recordLookups>
+    <recordLookups>
+        <description>Retrieve the Hamilton/Kirkland Degree Information record for the related constituent in question with the max HAM_Reunion_Integer_Date_Formula__c value. Get only retrieves records where the reunion year formula does not return 0, as that indicates a blank reunion year that shouldn&apos;t be added to a suffix.</description>
+        <name>Get_Hamilton_or_Kirkland_Degree_with_Max_Reunion_Year_for_Current_Related_Consti</name>
+        <label>Get Hamilton or Kirkland Degree with Max Reunion Year for Current Related Constituent</label>
+        <locationX>490</locationX>
+        <locationY>1055</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Check_Whether_Child_Had_Hamilton_Kirkland_Degree</targetReference>
+        </connector>
+        <filterLogic>1 AND 2 AND (3 OR 4) AND 5</filterLogic>
+        <filters>
+            <field>ucinn_ascendv2__Contact__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>Loop_Over_Related_Constituents.ucinn_ascendv2__Contact__c</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>RecordTypeId</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>Get_RecordTypeId_for_Hamilton_and_Kirkland_Degrees.Id</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>ucinn_ascendv2__Degree_Institution__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>Get_AccountId_of_Hamilton_College.Id</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>ucinn_ascendv2__Degree_Institution__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>Get_AccountId_of_Kirkland_College.Id</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>HAM_Reunion_Integer_Date_Formula__c</field>
+            <operator>NotEqualTo</operator>
+            <value>
+                <numberValue>0.0</numberValue>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>ucinn_ascendv2__Degree_Information__c</object>
+        <sortField>HAM_Reunion_Integer_Date_Formula__c</sortField>
+        <sortOrder>Desc</sortOrder>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <description>Retrieve RecordTypeId of Hamilton/Kirkland Degree Information records for usage later.</description>
+        <name>Get_RecordTypeId_for_Hamilton_and_Kirkland_Degrees</name>
+        <label>Get RecordTypeId for Hamilton and Kirkland Degrees</label>
+        <locationX>314</locationX>
+        <locationY>539</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Check_Whether_Triggering_Record_is_of_Parent_Type</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>DeveloperName</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>School_Degree_Information</stringValue>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>RecordType</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordUpdates>
+        <description>Update the HAM_GP_Suffix__c field with the suffix component on the grandparent that triggered this flow execution now that the suffix component has been constructed.</description>
+        <name>Update_Grandparent_with_Suffix_Component</name>
+        <label>Update Grandparent with Suffix Component</label>
+        <locationX>314</locationX>
+        <locationY>2471</locationY>
+        <inputAssignments>
+            <field>HAM_GP_Suffix__c</field>
+            <value>
+                <elementReference>SuffixComponent</elementReference>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record.ucinn_ascendv2__Related_Contact__r</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <description>Update the HAM_Parent_Suffix__c field with the suffix component on the parent, step-parent, or guardian that triggered this flow execution now that the suffix component has been constructed.</description>
+        <name>Update_Parent_Step_Parent_or_Guardian_with_Suffix_Component</name>
+        <label>Update Parent, Step-Parent, or Guardian with Suffix Component</label>
+        <locationX>50</locationX>
+        <locationY>2471</locationY>
+        <inputAssignments>
+            <field>HAM_Parent_Suffix__c</field>
+            <value>
+                <elementReference>SuffixComponent</elementReference>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record.ucinn_ascendv2__Related_Contact__r</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <description>Update the HAM_Surv_Spouse_Suffix__c field with the suffix component on the Widow that triggered this flow execution now that the suffix component has been constructed.</description>
+        <name>Update_Widow_with_Suffix_Component</name>
+        <label>Update Widow with Suffix Component</label>
+        <locationX>578</locationX>
+        <locationY>2471</locationY>
+        <inputAssignments>
+            <field>HAM_Surv_Spouse_Suffix__c</field>
+            <value>
+                <elementReference>SuffixComponent</elementReference>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record.ucinn_ascendv2__Related_Contact__r</inputReference>
+    </recordUpdates>
+    <start>
+        <locationX>188</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Get_AccountId_of_Hamilton_College</targetReference>
+        </connector>
+        <filterFormula>AND( OR( ISPICKVAL({!$Record.ucinn_ascendv2__Related_Contact_Role__c}, &apos;Parent&apos;),
+ISPICKVAL({!$Record.ucinn_ascendv2__Related_Contact_Role__c}, &apos;Step-Parent&apos;),
+ISPICKVAL({!$Record.ucinn_ascendv2__Related_Contact_Role__c}, &apos;Guardian&apos;),
+ISPICKVAL({!$Record.ucinn_ascendv2__Related_Contact_Role__c}, &apos;Grandparent&apos;),
+ISPICKVAL({!$Record.ucinn_ascendv2__Related_Contact_Role__c}, &apos;Widow&apos;)),
+OR( INCLUDES({!$Record.ucinn_ascendv2__Contact__r.ucinn_ascendv2__Contact_Type__c}, &apos;Student&apos;), 
+INCLUDES({!$Record.ucinn_ascendv2__Contact__r.ucinn_ascendv2__Contact_Type__c}, &apos;Hamilton Alumni&apos;), 
+INCLUDES({!$Record.ucinn_ascendv2__Contact__r.ucinn_ascendv2__Contact_Type__c}, &apos;Kirkland Alumnae&apos;)))</filterFormula>
+        <object>ucinn_ascendv2__Relationship__c</object>
+        <recordTriggerType>CreateAndUpdate</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Active</status>
+    <variables>
+        <description>Integer variable used to keep track of position in loop so that an extra comma isn&apos;t added to the suffix component.</description>
+        <name>MaxReunionYearLoopCounter</name>
+        <dataType>Number</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>true</isOutput>
+        <scale>2</scale>
+        <value>
+            <numberValue>0.0</numberValue>
+        </value>
+    </variables>
+    <variables>
+        <description>List of the max reunion years for each of the related constituents that have degrees relevant to the institutional suffix of the constituent on the triggering Relationship record.</description>
+        <name>MaxReunionYears</name>
+        <dataType>Number</dataType>
+        <isCollection>true</isCollection>
+        <isInput>true</isInput>
+        <isOutput>true</isOutput>
+        <scale>2</scale>
+    </variables>
+    <variables>
+        <description>Variable to store the size of the list of max reunion years, used for keeping track of the position within the flow that loops through this list.</description>
+        <name>MaxReunionYearsSize</name>
+        <dataType>Number</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>true</isOutput>
+        <scale>2</scale>
+        <value>
+            <numberValue>0.0</numberValue>
+        </value>
+    </variables>
+    <variables>
+        <description>Collection of Relationship records returned by either Relationship get, depending on whether the triggering Relationship role will result in an update to the parent suffix component</description>
+        <name>RelevantRelationships</name>
+        <dataType>SObject</dataType>
+        <isCollection>true</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>ucinn_ascendv2__Relationship__c</objectType>
+    </variables>
+    <variables>
+        <description>Stores the final suffix component to be written to the relevant suffix component field.</description>
+        <name>SuffixComponent</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>true</isOutput>
+    </variables>
+</Flow>

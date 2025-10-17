@@ -1,0 +1,2411 @@
+{
+  "version" : "61.0",
+  "nodes" : {
+    "FILTER0" : {
+      "action" : "filter",
+      "sources" : [ "LOAD_DATASET1" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "ucinn_ascendv2__Primary_Contact_Type__c",
+          "operator" : "EQUAL",
+          "operands" : [ "Hamilton Alumni", "Kirkland Alumnae" ]
+        }, {
+          "type" : "TEXT",
+          "field" : "ucinn_ascendv2__Is_Deceased__c",
+          "operator" : "NOT",
+          "operands" : [ "true" ]
+        } ]
+      }
+    },
+    "LOAD_DATASET1" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "ucinn_ascendv2__External_System_ID__c", "Id", "LastName", "FirstName", "MiddleName", "Name", "ucinn_ascendv2__Is_Deceased__c", "ucinn_ascendv2__Primary_Contact_Type__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "Contact",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "Contact"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "LOAD_DATASET2" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "HAM_Primary_Employer__c", "ucinn_ascendv2__Contact__c", "ucinn_ascendv2__Account__c", "ucinn_ascendv2__Employee_Status__c", "ucinn_ascendv2__End_Date__c", "ucinn_ascendv2__Job_Title__c", "ucinn_ascendv2__Start_Date__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "ucinn_ascendv2__Affiliation__c",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "ucinn_ascendv2__Affiliation__c"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN0" : {
+      "action" : "join",
+      "sources" : [ "LOAD_DATASET2", "LOAD_DATASET5" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "ucinn_ascendv2__Account__c", "ucinn_asce.Id" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "ucinn_ascendv2__Account__c" ],
+        "rightQualifier" : "ucinn_asce",
+        "rightKeys" : [ "Id" ]
+      }
+    },
+    "LOAD_DATASET5" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Id", "Name" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "Account",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "Account"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "FORMULA0" : {
+      "action" : "formula",
+      "sources" : [ "JOIN0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "DATETIME",
+          "name" : "Refill_End_Date",
+          "label" : "Refill End Date",
+          "formulaExpression" : "case \r\nwhen HAM_Primary_Employer__c='true' \r\nthen\r\ncoalesce(ucinn_ascendv2__End_Date__c, current_date()+ INTERVAL 10 Year)\r\nelse\r\ncoalesce(ucinn_ascendv2__End_Date__c, current_date()+ INTERVAL 5 Year)\r\nend",
+          "format" : "yyyy-MM-dd",
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA3" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA0" ],
+      "parameters" : {
+        "partitionBy" : [ "ucinn_ascendv2__Contact__c" ],
+        "orderBy" : [ {
+          "fieldName" : "Refill_End_Date",
+          "direction" : "DESC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Row_Number",
+          "label" : "Row Number",
+          "formulaExpression" : "row_number()",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FILTER1" : {
+      "action" : "filter",
+      "sources" : [ "FORMULA3" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "NUMBER",
+          "field" : "Row_Number",
+          "operator" : "EQUAL",
+          "operands" : [ "1" ]
+        } ]
+      }
+    },
+    "FILTER2" : {
+      "action" : "filter",
+      "sources" : [ "FORMULA3" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "NUMBER",
+          "field" : "Row_Number",
+          "operator" : "EQUAL",
+          "operands" : [ "2" ]
+        } ]
+      }
+    },
+    "FILTER3" : {
+      "action" : "filter",
+      "sources" : [ "FORMULA3" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "NUMBER",
+          "field" : "Row_Number",
+          "operator" : "EQUAL",
+          "operands" : [ "3" ]
+        } ]
+      }
+    },
+    "DROP_FIELDS0" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES14" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "SELECT",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Employment_1", "Title_1", "ucinn_ascendv2__Contact__c" ]
+        }
+      }
+    },
+    "EDIT_ATTRIBUTES13" : {
+      "action" : "schema",
+      "sources" : [ "FILTER1" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "ucinn_asce.Name",
+          "newProperties" : {
+            "label" : "Employment_1",
+            "name" : "Employment_1"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES14" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES13" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "ucinn_ascendv2__Job_Title__c",
+          "newProperties" : {
+            "label" : "Title_1",
+            "name" : "Title_1"
+          }
+        } ]
+      }
+    },
+    "JOIN1" : {
+      "action" : "join",
+      "sources" : [ "FILTER0", "DROP_FIELDS0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "EnrichFiel.Refill_End_Date", "EnrichFiel.ucinn_asce.Name", "EnrichFiel.ucinn_ascendv2__Contact__c", "EnrichFiel.ucinn_ascendv2__Job_Title__c" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Id" ],
+        "rightQualifier" : "EnrichFiel",
+        "rightKeys" : [ "ucinn_ascendv2__Contact__c" ]
+      }
+    },
+    "DROP_FIELDS1" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES16" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "SELECT",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Employment_2", "Title_2", "ucinn_ascendv2__Contact__c" ]
+        }
+      }
+    },
+    "EDIT_ATTRIBUTES15" : {
+      "action" : "schema",
+      "sources" : [ "FILTER2" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "ucinn_asce.Name",
+          "newProperties" : {
+            "label" : "Employment_2",
+            "name" : "Employment_2"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES16" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES15" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "ucinn_ascendv2__Job_Title__c",
+          "newProperties" : {
+            "label" : "Title_2",
+            "name" : "Title_2"
+          }
+        } ]
+      }
+    },
+    "JOIN2" : {
+      "action" : "join",
+      "sources" : [ "JOIN1", "DROP_FIELDS1" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "EnrichFiel1.ucinn_ascendv2__Contact__c" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Id" ],
+        "rightQualifier" : "EnrichFiel1",
+        "rightKeys" : [ "ucinn_ascendv2__Contact__c" ]
+      }
+    },
+    "DROP_FIELDS2" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES18" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "SELECT",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Employment_3", "Title_3", "ucinn_ascendv2__Contact__c" ]
+        }
+      }
+    },
+    "EDIT_ATTRIBUTES17" : {
+      "action" : "schema",
+      "sources" : [ "FILTER3" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "ucinn_asce.Name",
+          "newProperties" : {
+            "label" : "Employment_3",
+            "name" : "Employment_3"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES18" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES17" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "ucinn_ascendv2__Job_Title__c",
+          "newProperties" : {
+            "label" : "Title_3",
+            "name" : "Title_3"
+          }
+        } ]
+      }
+    },
+    "JOIN3" : {
+      "action" : "join",
+      "sources" : [ "JOIN2", "DROP_FIELDS2" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "EnrichFiel2.ucinn_ascendv2__Contact__c" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Id" ],
+        "rightQualifier" : "EnrichFiel2",
+        "rightKeys" : [ "ucinn_ascendv2__Contact__c" ]
+      }
+    },
+    "OUTPUT0" : {
+      "action" : "save",
+      "sources" : [ "FORMULA22" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Live Alumni",
+          "name" : "Live_Alumni"
+        },
+        "dateConfigurationName" : "July_Fiscal_Year",
+        "measuresToCurrencies" : [ ]
+      }
+    },
+    "LOAD_DATASET6" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "ucinn_ascendv2__Contact__c", "ucinn_ascendv2__Degree_Code__c", "ucinn_ascendv2__Degree_Institution__c", "ucinn_ascendv2__Degree_Year_Number_Formula__c", "ucinn_ascendv2__Major_Formula__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "ucinn_ascendv2__Degree_Information__c",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "ucinn_ascendv2__Degree_Information__c"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "LOAD_DATASET7" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Id", "ucinn_ascendv2__Description__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "ucinn_ascendv2__Degree_Code__c",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "ucinn_ascendv2__Degree_Code__c"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN4" : {
+      "action" : "join",
+      "sources" : [ "LOAD_DATASET6", "EDIT_ATTRIBUTES0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "ucinn_ascendv2__Degree_Code__c", "ucinn_asce.Id" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "ucinn_ascendv2__Degree_Code__c" ],
+        "rightQualifier" : "ucinn_asce",
+        "rightKeys" : [ "Id" ]
+      }
+    },
+    "EDIT_ATTRIBUTES0" : {
+      "action" : "schema",
+      "sources" : [ "LOAD_DATASET7" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "ucinn_ascendv2__Description__c",
+          "newProperties" : {
+            "label" : "Degree",
+            "name" : "ucinn_ascendv2__Description__c"
+          }
+        } ]
+      }
+    },
+    "JOIN5" : {
+      "action" : "join",
+      "sources" : [ "FILTER17", "LOAD_DATASET5" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "ucinn_ascendv2__Degree_Institution__c", "Account.Id" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "ucinn_ascendv2__Degree_Institution__c" ],
+        "rightQualifier" : "Account",
+        "rightKeys" : [ "Id" ]
+      }
+    },
+    "FILTER5" : {
+      "action" : "filter",
+      "sources" : [ "JOIN5" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "Account.Name",
+          "operator" : "EQUAL",
+          "operands" : [ "Hamilton College", "Kirkland College" ]
+        } ]
+      }
+    },
+    "FORMULA10" : {
+      "action" : "computeRelative",
+      "sources" : [ "FILTER5" ],
+      "parameters" : {
+        "partitionBy" : [ "ucinn_ascendv2__Contact__c" ],
+        "orderBy" : [ {
+          "fieldName" : "ucinn_ascendv2__Degree_Year_Number_Formula__c",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Earliest_Degree_Year_in_Hamilton",
+          "label" : "Earliest Degree Year in Hamilton",
+          "formulaExpression" : "first_value(ucinn_ascendv2__Degree_Year_Number_Formula__c)",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "DROP_FIELDS3" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA10" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "SELECT",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Earliest_Degree_Year_in_Hamilton", "ucinn_ascendv2__Contact__c" ]
+        }
+      }
+    },
+    "JOIN7" : {
+      "action" : "join",
+      "sources" : [ "JOIN5", "DROP_FIELDS3" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "EarliestDe.ucinn_ascendv2__Contact__c" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "ucinn_ascendv2__Contact__c" ],
+        "rightQualifier" : "EarliestDe",
+        "rightKeys" : [ "ucinn_ascendv2__Contact__c" ]
+      }
+    },
+    "FORMULA11" : {
+      "action" : "formula",
+      "sources" : [ "JOIN7" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Refill_Degree_Year",
+          "label" : "Refill Degree Year",
+          "formulaExpression" : "case when \"EarliestDe.Earliest_Degree_Year_in_Hamilton\"=0 or \"EarliestDe.Earliest_Degree_Year_in_Hamilton\" is null then 9999 \r\nelse \"EarliestDe.Earliest_Degree_Year_in_Hamilton\"\r\nend",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA12" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA11" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Filter_Degree_Year",
+          "label" : "Filter Degree Year",
+          "formulaExpression" : "case when ucinn_ascendv2__Degree_Year_Number_Formula__c>= Refill_Degree_Year then 'Keep'\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "DROP_FIELDS4" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA12" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Refill_Degree_Year", "EarliestDe.Earliest_Degree_Year_in_Hamilton", "RecordType.Name" ]
+        }
+      }
+    },
+    "FILTER6" : {
+      "action" : "filter",
+      "sources" : [ "DROP_FIELDS4" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "Filter_Degree_Year",
+          "operator" : "EQUAL",
+          "operands" : [ "Keep" ]
+        } ]
+      }
+    },
+    "FORMULA18" : {
+      "action" : "formula",
+      "sources" : [ "FILTER6" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Degree_Year_for_Order",
+          "label" : "Degree Year for Order",
+          "formulaExpression" : "case when \"Account.Name\"='Hamilton College' or \"Account.Name\"='Kirkland College' then ucinn_ascendv2__Degree_Year_Number_Formula__c-1\r\nelse ucinn_ascendv2__Degree_Year_Number_Formula__c\r\nend",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA19" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA18" ],
+      "parameters" : {
+        "partitionBy" : [ "ucinn_ascendv2__Contact__c" ],
+        "orderBy" : [ {
+          "fieldName" : "Degree_Year_for_Order",
+          "direction" : "ASC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Row_Number",
+          "label" : "Row Number",
+          "formulaExpression" : "row_number()",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FILTER7" : {
+      "action" : "filter",
+      "sources" : [ "FORMULA19" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "NUMBER",
+          "field" : "Row_Number",
+          "operator" : "EQUAL",
+          "operands" : [ "1" ]
+        } ]
+      }
+    },
+    "FILTER8" : {
+      "action" : "filter",
+      "sources" : [ "FORMULA19" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "NUMBER",
+          "field" : "Row_Number",
+          "operator" : "EQUAL",
+          "operands" : [ "2" ]
+        } ]
+      }
+    },
+    "FILTER9" : {
+      "action" : "filter",
+      "sources" : [ "FORMULA19" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "NUMBER",
+          "field" : "Row_Number",
+          "operator" : "EQUAL",
+          "operands" : [ "3" ]
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES1" : {
+      "action" : "schema",
+      "sources" : [ "FILTER7" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Account.Name",
+          "newProperties" : {
+            "label" : "University_Name_1",
+            "name" : "University_Name_1"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES3" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES33" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "ucinn_asce.ucinn_ascendv2__Description__c",
+          "newProperties" : {
+            "label" : "Degree_1",
+            "name" : "Degree_1"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES4" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES3" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "ucinn_ascendv2__Major_Formula__c",
+          "newProperties" : {
+            "label" : "Major_1",
+            "name" : "Major_1"
+          }
+        } ]
+      }
+    },
+    "DROP_FIELDS5" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES4" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Filter_Degree_Year", "Row_Number", "Degree_Year_for_Order" ]
+        }
+      }
+    },
+    "EDIT_ATTRIBUTES33" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES1" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "ucinn_ascendv2__Degree_Year_Number_Formula__c",
+          "newProperties" : {
+            "label" : "Grad_Year_1_with_0",
+            "name" : "Grad_Year_1_with_0"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES5" : {
+      "action" : "schema",
+      "sources" : [ "FILTER8" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Account.Name",
+          "newProperties" : {
+            "label" : "University_Name_2",
+            "name" : "University_Name_2"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES7" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES5" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "ucinn_asce.ucinn_ascendv2__Description__c",
+          "newProperties" : {
+            "label" : "Degree_2",
+            "name" : "Degree_2"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES8" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES34" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "ucinn_ascendv2__Major_Formula__c",
+          "newProperties" : {
+            "label" : "Major_2",
+            "name" : "Major_2"
+          }
+        } ]
+      }
+    },
+    "DROP_FIELDS6" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES8" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Row_Number", "Filter_Degree_Year", "Degree_Year_for_Order" ]
+        }
+      }
+    },
+    "EDIT_ATTRIBUTES34" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES7" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "ucinn_ascendv2__Degree_Year_Number_Formula__c",
+          "newProperties" : {
+            "label" : "Grad_Year_2_with_0",
+            "name" : "Grad_Year_2_with_0"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES9" : {
+      "action" : "schema",
+      "sources" : [ "FILTER9" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Account.Name",
+          "newProperties" : {
+            "label" : "University_Name_3",
+            "name" : "University_Name_3"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES11" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES9" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "ucinn_asce.ucinn_ascendv2__Description__c",
+          "newProperties" : {
+            "label" : "Degree_3",
+            "name" : "Degree_3"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES12" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES35" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "ucinn_ascendv2__Major_Formula__c",
+          "newProperties" : {
+            "label" : "Major_3",
+            "name" : "Major_3"
+          }
+        } ]
+      }
+    },
+    "DROP_FIELDS7" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES12" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Row_Number", "Filter_Degree_Year", "Degree_Year_for_Order" ]
+        }
+      }
+    },
+    "EDIT_ATTRIBUTES35" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES11" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "ucinn_ascendv2__Degree_Year_Number_Formula__c",
+          "newProperties" : {
+            "label" : "Grad_Year_3_with_0",
+            "name" : "Grad_Year_3_with_0"
+          }
+        } ]
+      }
+    },
+    "JOIN8" : {
+      "action" : "join",
+      "sources" : [ "JOIN3", "DROP_FIELDS5" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Rename.ucinn_ascendv2__Contact__c" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Id" ],
+        "rightQualifier" : "Rename",
+        "rightKeys" : [ "ucinn_ascendv2__Contact__c" ]
+      }
+    },
+    "JOIN9" : {
+      "action" : "join",
+      "sources" : [ "JOIN8", "DROP_FIELDS6" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Rename1.ucinn_ascendv2__Contact__c" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Id" ],
+        "rightQualifier" : "Rename1",
+        "rightKeys" : [ "ucinn_ascendv2__Contact__c" ]
+      }
+    },
+    "JOIN10" : {
+      "action" : "join",
+      "sources" : [ "JOIN9", "DROP_FIELDS7" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Rename2.ucinn_ascendv2__Contact__c" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Id" ],
+        "rightQualifier" : "Rename2",
+        "rightKeys" : [ "ucinn_ascendv2__Contact__c" ]
+      }
+    },
+    "LOAD_DATASET9" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "ucinn_ascendv2__Contact__c", "ucinn_ascendv2__Email_Address__c", "ucinn_ascendv2__Is_Preferred__c", "ucinn_ascendv2__Type__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "ucinn_ascendv2__Email__c",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "ucinn_ascendv2__Email__c"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "FILTER10" : {
+      "action" : "filter",
+      "sources" : [ "LOAD_DATASET9" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "ucinn_ascendv2__Type__c",
+          "operator" : "EQUAL",
+          "operands" : [ "Business" ]
+        } ]
+      }
+    },
+    "FILTER11" : {
+      "action" : "filter",
+      "sources" : [ "LOAD_DATASET9" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "ucinn_ascendv2__Type__c",
+          "operator" : "EQUAL",
+          "operands" : [ "Personal" ]
+        } ]
+      }
+    },
+    "FORMULA14" : {
+      "action" : "computeRelative",
+      "sources" : [ "FILTER10" ],
+      "parameters" : {
+        "partitionBy" : [ "ucinn_ascendv2__Contact__c" ],
+        "orderBy" : [ {
+          "fieldName" : "ucinn_ascendv2__Is_Preferred__c",
+          "direction" : "DESC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Business_Email",
+          "label" : "Business_Email",
+          "formulaExpression" : "first_value(ucinn_ascendv2__Email_Address__c)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "DROP_FIELDS13" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA14" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "SELECT",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Business_Email", "ucinn_ascendv2__Contact__c" ]
+        }
+      }
+    },
+    "FORMULA15" : {
+      "action" : "computeRelative",
+      "sources" : [ "FILTER11" ],
+      "parameters" : {
+        "partitionBy" : [ "ucinn_ascendv2__Contact__c" ],
+        "orderBy" : [ {
+          "fieldName" : "ucinn_ascendv2__Is_Preferred__c",
+          "direction" : "DESC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Row_Number",
+          "label" : "Row Number",
+          "formulaExpression" : "row_number()",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FILTER12" : {
+      "action" : "filter",
+      "sources" : [ "FORMULA15" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "NUMBER",
+          "field" : "Row_Number",
+          "operator" : "EQUAL",
+          "operands" : [ "1" ]
+        } ]
+      }
+    },
+    "FILTER13" : {
+      "action" : "filter",
+      "sources" : [ "FORMULA15" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "NUMBER",
+          "field" : "Row_Number",
+          "operator" : "EQUAL",
+          "operands" : [ "2" ]
+        } ]
+      }
+    },
+    "FILTER14" : {
+      "action" : "filter",
+      "sources" : [ "FORMULA15" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "NUMBER",
+          "field" : "Row_Number",
+          "operator" : "EQUAL",
+          "operands" : [ "3" ]
+        } ]
+      }
+    },
+    "FILTER15" : {
+      "action" : "filter",
+      "sources" : [ "FORMULA15" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "NUMBER",
+          "field" : "Row_Number",
+          "operator" : "EQUAL",
+          "operands" : [ "4" ]
+        } ]
+      }
+    },
+    "FILTER16" : {
+      "action" : "filter",
+      "sources" : [ "FORMULA15" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "NUMBER",
+          "field" : "Row_Number",
+          "operator" : "EQUAL",
+          "operands" : [ "5" ]
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES19" : {
+      "action" : "schema",
+      "sources" : [ "FILTER12" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "ucinn_ascendv2__Email_Address__c",
+          "newProperties" : {
+            "label" : "Personal_Email_1",
+            "name" : "Personal_Email_1"
+          }
+        } ]
+      }
+    },
+    "DROP_FIELDS8" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES19" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "ucinn_ascendv2__Is_Preferred__c", "ucinn_ascendv2__Type__c", "Row_Number" ]
+        }
+      }
+    },
+    "EDIT_ATTRIBUTES20" : {
+      "action" : "schema",
+      "sources" : [ "FILTER13" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "ucinn_ascendv2__Email_Address__c",
+          "newProperties" : {
+            "label" : "Personal_Email_2",
+            "name" : "Personal_Email_2"
+          }
+        } ]
+      }
+    },
+    "DROP_FIELDS10" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES20" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "ucinn_ascendv2__Type__c", "Row_Number", "ucinn_ascendv2__Is_Preferred__c" ]
+        }
+      }
+    },
+    "EDIT_ATTRIBUTES21" : {
+      "action" : "schema",
+      "sources" : [ "FILTER14" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "ucinn_ascendv2__Email_Address__c",
+          "newProperties" : {
+            "label" : "Personal_Email_3",
+            "name" : "Personal_Email_3"
+          }
+        } ]
+      }
+    },
+    "DROP_FIELDS9" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES21" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "ucinn_ascendv2__Is_Preferred__c", "ucinn_ascendv2__Type__c", "Row_Number" ]
+        }
+      }
+    },
+    "EDIT_ATTRIBUTES22" : {
+      "action" : "schema",
+      "sources" : [ "FILTER15" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "ucinn_ascendv2__Email_Address__c",
+          "newProperties" : {
+            "label" : "Personal_Email_4",
+            "name" : "Personal_Email_4"
+          }
+        } ]
+      }
+    },
+    "DROP_FIELDS11" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES22" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Row_Number", "ucinn_ascendv2__Type__c", "ucinn_ascendv2__Is_Preferred__c" ]
+        }
+      }
+    },
+    "EDIT_ATTRIBUTES23" : {
+      "action" : "schema",
+      "sources" : [ "FILTER16" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "ucinn_ascendv2__Email_Address__c",
+          "newProperties" : {
+            "label" : "Personal_Email_5",
+            "name" : "Personal_Email_5"
+          }
+        } ]
+      }
+    },
+    "DROP_FIELDS12" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES23" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "ucinn_ascendv2__Type__c", "Row_Number", "ucinn_ascendv2__Is_Preferred__c" ]
+        }
+      }
+    },
+    "JOIN11" : {
+      "action" : "join",
+      "sources" : [ "JOIN10", "DROP_FIELDS13" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "EnrichBusi.ucinn_ascendv2__Contact__c" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Id" ],
+        "rightQualifier" : "EnrichBusi",
+        "rightKeys" : [ "ucinn_ascendv2__Contact__c" ]
+      }
+    },
+    "JOIN12" : {
+      "action" : "join",
+      "sources" : [ "JOIN11", "DROP_FIELDS8" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Rename3.ucinn_ascendv2__Contact__c" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Id" ],
+        "rightQualifier" : "Rename3",
+        "rightKeys" : [ "ucinn_ascendv2__Contact__c" ]
+      }
+    },
+    "JOIN13" : {
+      "action" : "join",
+      "sources" : [ "JOIN12", "DROP_FIELDS10" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Rename4.ucinn_ascendv2__Contact__c" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Id" ],
+        "rightQualifier" : "Rename4",
+        "rightKeys" : [ "ucinn_ascendv2__Contact__c" ]
+      }
+    },
+    "JOIN14" : {
+      "action" : "join",
+      "sources" : [ "JOIN13", "DROP_FIELDS9" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Rename5.ucinn_ascendv2__Contact__c" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Id" ],
+        "rightQualifier" : "Rename5",
+        "rightKeys" : [ "ucinn_ascendv2__Contact__c" ]
+      }
+    },
+    "JOIN15" : {
+      "action" : "join",
+      "sources" : [ "JOIN14", "DROP_FIELDS11" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Rename6.ucinn_ascendv2__Contact__c" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Id" ],
+        "rightQualifier" : "Rename6",
+        "rightKeys" : [ "ucinn_ascendv2__Contact__c" ]
+      }
+    },
+    "JOIN16" : {
+      "action" : "join",
+      "sources" : [ "JOIN15", "DROP_FIELDS12" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Rename7.ucinn_ascendv2__Contact__c" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Id" ],
+        "rightQualifier" : "Rename7",
+        "rightKeys" : [ "ucinn_ascendv2__Contact__c" ]
+      }
+    },
+    "EDIT_ATTRIBUTES25" : {
+      "action" : "schema",
+      "sources" : [ "JOIN16" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "FirstName",
+          "newProperties" : {
+            "label" : "First_Name",
+            "name" : "First_Name"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES26" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES29" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "MiddleName",
+          "newProperties" : {
+            "label" : "Middle_Name",
+            "name" : "Middle_Name"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES27" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES26" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "LastName",
+          "newProperties" : {
+            "label" : "Last_Name",
+            "name" : "Last_Name"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES28" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES27" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Name",
+          "newProperties" : {
+            "label" : "Full_Name",
+            "name" : "Full_Name"
+          }
+        } ]
+      }
+    },
+    "EDIT_ATTRIBUTES29" : {
+      "action" : "schema",
+      "sources" : [ "EDIT_ATTRIBUTES25" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "ucinn_ascendv2__External_System_ID__c",
+          "newProperties" : {
+            "label" : "Constituent_ID",
+            "name" : "Constituent_ID"
+          }
+        } ]
+      }
+    },
+    "FORMULA16" : {
+      "action" : "formula",
+      "sources" : [ "EDIT_ATTRIBUTES28" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Nick_Name",
+          "label" : "Nick_Name",
+          "formulaExpression" : "''",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA17" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA16" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "LinkedIn_URL",
+          "label" : "LinkedIn_URL",
+          "formulaExpression" : "''",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA20" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA17" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Grad_Year_1",
+          "label" : "Grad_Year_1",
+          "formulaExpression" : "case when \"Rename.Grad_Year_1_with_0\"=0 then Null else \"Rename.Grad_Year_1_with_0\" end",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA21" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA20" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Grad_Year_2",
+          "label" : "Grad_Year_2",
+          "formulaExpression" : "case when \"Rename1.Grad_Year_2_with_0\"=0 then Null else \"Rename1.Grad_Year_2_with_0\" end",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA22" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA21" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Grad_Year_3",
+          "label" : "Grad_Year_3",
+          "formulaExpression" : "case when \"Rename2.Grad_Year_3_with_0\"=0 then Null else \"Rename2.Grad_Year_3_with_0\" end",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FILTER17" : {
+      "action" : "filter",
+      "sources" : [ "JOIN4" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "NUMBER",
+          "field" : "ucinn_ascendv2__Degree_Year_Number_Formula__c",
+          "operator" : "GREATER_OR_EQUAL",
+          "operands" : [ "1924" ]
+        } ]
+      }
+    }
+  },
+  "ui" : {
+    "nodes" : {
+      "FILTER0" : {
+        "label" : "Filter Living Alumni",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 250.2,
+        "left" : 252
+      },
+      "LOAD_DATASET1" : {
+        "label" : "Contact",
+        "type" : "LOAD_DATASET",
+        "top" : 250.2,
+        "left" : 112,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "LOAD_DATASET2" : {
+        "label" : "ucinn_ascendv2__Affiliation__c",
+        "type" : "LOAD_DATASET",
+        "top" : 670.2,
+        "left" : 112,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN0" : {
+        "label" : "Lookup Organization to Affiliation",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 670.2,
+        "left" : 252
+      },
+      "LOAD_DATASET5" : {
+        "label" : "Account",
+        "type" : "LOAD_DATASET",
+        "top" : 810.2,
+        "left" : 252,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "TRANSFORM0" : {
+        "label" : "Enrich Fields",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 670.2,
+        "left" : 392,
+        "graph" : {
+          "FORMULA0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Refill End Date"
+          },
+          "FORMULA3" : {
+            "label" : "Row Number"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA0",
+          "target" : "FORMULA3"
+        } ]
+      },
+      "FILTER1" : {
+        "label" : "Filter 1",
+        "type" : "FILTER",
+        "top" : 530.2,
+        "left" : 392
+      },
+      "FILTER2" : {
+        "label" : "Filter 2",
+        "type" : "FILTER",
+        "top" : 530.2,
+        "left" : 532
+      },
+      "FILTER3" : {
+        "label" : "Filter 3",
+        "type" : "FILTER",
+        "top" : 530.2,
+        "left" : 672
+      },
+      "TRANSFORM1" : {
+        "label" : "Enrich Fields",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 390.2,
+        "left" : 392,
+        "graph" : {
+          "DROP_FIELDS0" : {
+            "label" : "Keep Columns"
+          },
+          "EDIT_ATTRIBUTES13" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES14" : {
+            "label" : "Edit Attributes"
+          }
+        },
+        "connectors" : [ {
+          "source" : "EDIT_ATTRIBUTES14",
+          "target" : "DROP_FIELDS0"
+        }, {
+          "source" : "EDIT_ATTRIBUTES13",
+          "target" : "EDIT_ATTRIBUTES14"
+        } ]
+      },
+      "JOIN1" : {
+        "label" : "Lookup Employment 1 to Contact",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 250.2,
+        "left" : 392
+      },
+      "TRANSFORM2" : {
+        "label" : "Enrich Fields",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 390.2,
+        "left" : 532,
+        "graph" : {
+          "DROP_FIELDS1" : {
+            "label" : "Keep Columns"
+          },
+          "EDIT_ATTRIBUTES15" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES16" : {
+            "label" : "Edit Attributes"
+          }
+        },
+        "connectors" : [ {
+          "source" : "EDIT_ATTRIBUTES16",
+          "target" : "DROP_FIELDS1"
+        }, {
+          "source" : "EDIT_ATTRIBUTES15",
+          "target" : "EDIT_ATTRIBUTES16"
+        } ]
+      },
+      "JOIN2" : {
+        "label" : "Lookup Employment 2 to Contact",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 250.2,
+        "left" : 532
+      },
+      "TRANSFORM3" : {
+        "label" : "Enrich Fields",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 390.2,
+        "left" : 672,
+        "graph" : {
+          "DROP_FIELDS2" : {
+            "label" : "Keep Columns"
+          },
+          "EDIT_ATTRIBUTES17" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES18" : {
+            "label" : "Edit Attributes"
+          }
+        },
+        "connectors" : [ {
+          "source" : "EDIT_ATTRIBUTES18",
+          "target" : "DROP_FIELDS2"
+        }, {
+          "source" : "EDIT_ATTRIBUTES17",
+          "target" : "EDIT_ATTRIBUTES18"
+        } ]
+      },
+      "JOIN3" : {
+        "label" : "Lookup Employment 3 to Contact",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 250.2,
+        "left" : 672
+      },
+      "OUTPUT0" : {
+        "label" : "Output 0",
+        "type" : "OUTPUT",
+        "top" : 251.89999999999998,
+        "left" : 2352.1
+      },
+      "LOAD_DATASET6" : {
+        "label" : "ucinn_ascendv2__Degree_Information__c",
+        "type" : "LOAD_DATASET",
+        "top" : 952.1,
+        "left" : 252,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "LOAD_DATASET7" : {
+        "label" : "ucinn_ascendv2__Degree_Code__c",
+        "type" : "LOAD_DATASET",
+        "top" : 1092,
+        "left" : 252,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN4" : {
+        "label" : "Lookup Degree Code to Degree",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 952.1,
+        "left" : 392
+      },
+      "TRANSFORM4" : {
+        "label" : "Rename",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 1092.1,
+        "left" : 392,
+        "graph" : {
+          "EDIT_ATTRIBUTES0" : {
+            "label" : "Edit Attributes"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "JOIN5" : {
+        "label" : "Lookup Institution to Degree",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 951.9,
+        "left" : 672
+      },
+      "FILTER5" : {
+        "label" : "Filter Hamilton Degree",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 1091.6,
+        "left" : 672
+      },
+      "TRANSFORM5" : {
+        "label" : "Earliest Degree Year in Hamilton",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 1091.2,
+        "left" : 812,
+        "graph" : {
+          "FORMULA10" : {
+            "label" : "Earliest Degree Year in Hamilton"
+          },
+          "DROP_FIELDS3" : {
+            "label" : "Keep Columns"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA10",
+          "target" : "DROP_FIELDS3"
+        } ]
+      },
+      "JOIN7" : {
+        "label" : "Lookup Earliest Degree Year in Hamilton",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 951.9,
+        "left" : 812
+      },
+      "TRANSFORM6" : {
+        "label" : "Add Filter Column",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 951.9,
+        "left" : 952,
+        "graph" : {
+          "FORMULA11" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Refill Degree Year"
+          },
+          "FORMULA12" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Filter Degree Year"
+          },
+          "DROP_FIELDS4" : {
+            "label" : "Drop Columns"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA11",
+          "target" : "FORMULA12"
+        }, {
+          "source" : "FORMULA12",
+          "target" : "DROP_FIELDS4"
+        } ]
+      },
+      "FILTER6" : {
+        "label" : "Filter Degree After Hamilton",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 812,
+        "left" : 952
+      },
+      "TRANSFORM7" : {
+        "label" : "Row Number",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 672,
+        "left" : 952.1,
+        "graph" : {
+          "FORMULA18" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Degree Year for Order"
+          },
+          "FORMULA19" : {
+            "label" : "Row Number"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA18",
+          "target" : "FORMULA19"
+        } ]
+      },
+      "FILTER7" : {
+        "label" : "Filter 1",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 532,
+        "left" : 952.1
+      },
+      "FILTER8" : {
+        "label" : "Filter 2",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 532,
+        "left" : 1092.1
+      },
+      "FILTER9" : {
+        "label" : "Filter 3",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 532,
+        "left" : 1232.1
+      },
+      "TRANSFORM8" : {
+        "label" : "Rename",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 392,
+        "left" : 952.1,
+        "graph" : {
+          "EDIT_ATTRIBUTES1" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES3" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES4" : {
+            "label" : "Edit Attributes"
+          },
+          "DROP_FIELDS5" : {
+            "label" : "Drop Columns"
+          },
+          "EDIT_ATTRIBUTES33" : {
+            "label" : "Edit Attributes"
+          }
+        },
+        "connectors" : [ {
+          "source" : "EDIT_ATTRIBUTES3",
+          "target" : "EDIT_ATTRIBUTES4"
+        }, {
+          "source" : "EDIT_ATTRIBUTES4",
+          "target" : "DROP_FIELDS5"
+        }, {
+          "source" : "EDIT_ATTRIBUTES33",
+          "target" : "EDIT_ATTRIBUTES3"
+        }, {
+          "source" : "EDIT_ATTRIBUTES1",
+          "target" : "EDIT_ATTRIBUTES33"
+        } ]
+      },
+      "TRANSFORM9" : {
+        "label" : "Rename",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 392,
+        "left" : 1092.1,
+        "graph" : {
+          "EDIT_ATTRIBUTES5" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES7" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES8" : {
+            "label" : "Edit Attributes"
+          },
+          "DROP_FIELDS6" : {
+            "label" : "Drop Columns"
+          },
+          "EDIT_ATTRIBUTES34" : {
+            "label" : "Edit Attributes"
+          }
+        },
+        "connectors" : [ {
+          "source" : "EDIT_ATTRIBUTES8",
+          "target" : "DROP_FIELDS6"
+        }, {
+          "source" : "EDIT_ATTRIBUTES5",
+          "target" : "EDIT_ATTRIBUTES7"
+        }, {
+          "source" : "EDIT_ATTRIBUTES34",
+          "target" : "EDIT_ATTRIBUTES8"
+        }, {
+          "source" : "EDIT_ATTRIBUTES7",
+          "target" : "EDIT_ATTRIBUTES34"
+        } ]
+      },
+      "TRANSFORM10" : {
+        "label" : "Rename",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 392,
+        "left" : 1232.1,
+        "graph" : {
+          "EDIT_ATTRIBUTES9" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES11" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES12" : {
+            "label" : "Edit Attributes"
+          },
+          "DROP_FIELDS7" : {
+            "label" : "Drop Columns"
+          },
+          "EDIT_ATTRIBUTES35" : {
+            "label" : "Edit Attributes"
+          }
+        },
+        "connectors" : [ {
+          "source" : "EDIT_ATTRIBUTES12",
+          "target" : "DROP_FIELDS7"
+        }, {
+          "source" : "EDIT_ATTRIBUTES9",
+          "target" : "EDIT_ATTRIBUTES11"
+        }, {
+          "source" : "EDIT_ATTRIBUTES35",
+          "target" : "EDIT_ATTRIBUTES12"
+        }, {
+          "source" : "EDIT_ATTRIBUTES11",
+          "target" : "EDIT_ATTRIBUTES35"
+        } ]
+      },
+      "JOIN8" : {
+        "label" : "Lookup University Name 1 to Contact",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 252,
+        "left" : 952.1
+      },
+      "JOIN9" : {
+        "label" : "Lookup University Name 2 to Contact",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 252,
+        "left" : 1092.1
+      },
+      "JOIN10" : {
+        "label" : "Lookup University Name 3 to Contact",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 252,
+        "left" : 1232.1
+      },
+      "LOAD_DATASET9" : {
+        "label" : "ucinn_ascendv2__Email__c",
+        "type" : "LOAD_DATASET",
+        "top" : 952.1,
+        "left" : 1372.1,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "FILTER10" : {
+        "label" : "Filter Business Email",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 811.9,
+        "left" : 1372.1
+      },
+      "FILTER11" : {
+        "label" : "Filter Personal",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 811.9,
+        "left" : 1512.1
+      },
+      "TRANSFORM11" : {
+        "label" : "Enrich Business Email",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 391.9,
+        "left" : 1372.1,
+        "graph" : {
+          "FORMULA14" : {
+            "label" : "Business_Email"
+          },
+          "DROP_FIELDS13" : {
+            "label" : "Keep Columns"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA14",
+          "target" : "DROP_FIELDS13"
+        } ]
+      },
+      "TRANSFORM12" : {
+        "label" : "Enrich Personal Email",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 671.9,
+        "left" : 1512.1,
+        "graph" : {
+          "FORMULA15" : {
+            "label" : "Row Number"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "FILTER12" : {
+        "label" : "Filter 1",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 531.9,
+        "left" : 1512.1
+      },
+      "FILTER13" : {
+        "label" : "Filter 2",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 531.9,
+        "left" : 1652.1
+      },
+      "FILTER14" : {
+        "label" : "Filter 3",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 531.9,
+        "left" : 1792.1
+      },
+      "FILTER15" : {
+        "label" : "Filter 4",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 531.9,
+        "left" : 1932.1
+      },
+      "FILTER16" : {
+        "label" : "Filter 5",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 531.9,
+        "left" : 2072.1
+      },
+      "TRANSFORM13" : {
+        "label" : "Rename",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 391.9,
+        "left" : 1512.1,
+        "graph" : {
+          "EDIT_ATTRIBUTES19" : {
+            "label" : "Edit Attributes"
+          },
+          "DROP_FIELDS8" : {
+            "label" : "Drop Columns"
+          }
+        },
+        "connectors" : [ {
+          "source" : "EDIT_ATTRIBUTES19",
+          "target" : "DROP_FIELDS8"
+        } ]
+      },
+      "TRANSFORM14" : {
+        "label" : "Rename",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 391.9,
+        "left" : 1652.1,
+        "graph" : {
+          "EDIT_ATTRIBUTES20" : {
+            "label" : "Edit Attributes"
+          },
+          "DROP_FIELDS10" : {
+            "label" : "Drop Columns"
+          }
+        },
+        "connectors" : [ {
+          "source" : "EDIT_ATTRIBUTES20",
+          "target" : "DROP_FIELDS10"
+        } ]
+      },
+      "TRANSFORM15" : {
+        "label" : "Rename",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 391.9,
+        "left" : 1792.1,
+        "graph" : {
+          "EDIT_ATTRIBUTES21" : {
+            "label" : "Edit Attributes"
+          },
+          "DROP_FIELDS9" : {
+            "label" : "Drop Columns"
+          }
+        },
+        "connectors" : [ {
+          "source" : "EDIT_ATTRIBUTES21",
+          "target" : "DROP_FIELDS9"
+        } ]
+      },
+      "TRANSFORM16" : {
+        "label" : "Rename",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 391.9,
+        "left" : 1932.1,
+        "graph" : {
+          "EDIT_ATTRIBUTES22" : {
+            "label" : "Edit Attributes"
+          },
+          "DROP_FIELDS11" : {
+            "label" : "Drop Columns"
+          }
+        },
+        "connectors" : [ {
+          "source" : "EDIT_ATTRIBUTES22",
+          "target" : "DROP_FIELDS11"
+        } ]
+      },
+      "TRANSFORM17" : {
+        "label" : "Rename",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 391.9,
+        "left" : 2072.1,
+        "graph" : {
+          "EDIT_ATTRIBUTES23" : {
+            "label" : "Edit Attributes"
+          },
+          "DROP_FIELDS12" : {
+            "label" : "Drop Columns"
+          }
+        },
+        "connectors" : [ {
+          "source" : "EDIT_ATTRIBUTES23",
+          "target" : "DROP_FIELDS12"
+        } ]
+      },
+      "JOIN11" : {
+        "label" : "Lookup Business Email to Contact",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 251.89999999999998,
+        "left" : 1372.1
+      },
+      "JOIN12" : {
+        "label" : "Lookup Personal Email 1 to Contact",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 251.89999999999998,
+        "left" : 1512.1
+      },
+      "JOIN13" : {
+        "label" : "Lookup Personal Email 2 to Contact",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 251.89999999999998,
+        "left" : 1652.1
+      },
+      "JOIN14" : {
+        "label" : "Lookup Personal Email 3 to Contact",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 251.89999999999998,
+        "left" : 1792.1
+      },
+      "JOIN15" : {
+        "label" : "Lookup Personal Email 4 to Contact",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 251.89999999999998,
+        "left" : 1932.1
+      },
+      "JOIN16" : {
+        "label" : "Lookup Personal Email 5 to Contact",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 251.89999999999998,
+        "left" : 2072.1
+      },
+      "TRANSFORM18" : {
+        "label" : "Rename",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 251.89999999999998,
+        "left" : 2212.1,
+        "graph" : {
+          "EDIT_ATTRIBUTES25" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES26" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES27" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES28" : {
+            "label" : "Edit Attributes"
+          },
+          "EDIT_ATTRIBUTES29" : {
+            "label" : "Edit Attributes"
+          },
+          "FORMULA16" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Nick_Name"
+          },
+          "FORMULA17" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "LinkedIn_URL"
+          },
+          "FORMULA20" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Grad_Year_1"
+          },
+          "FORMULA21" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Grad_Year_2"
+          },
+          "FORMULA22" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Grad_Year_3"
+          }
+        },
+        "connectors" : [ {
+          "source" : "EDIT_ATTRIBUTES26",
+          "target" : "EDIT_ATTRIBUTES27"
+        }, {
+          "source" : "EDIT_ATTRIBUTES27",
+          "target" : "EDIT_ATTRIBUTES28"
+        }, {
+          "source" : "EDIT_ATTRIBUTES29",
+          "target" : "EDIT_ATTRIBUTES26"
+        }, {
+          "source" : "EDIT_ATTRIBUTES25",
+          "target" : "EDIT_ATTRIBUTES29"
+        }, {
+          "source" : "EDIT_ATTRIBUTES28",
+          "target" : "FORMULA16"
+        }, {
+          "source" : "FORMULA16",
+          "target" : "FORMULA17"
+        }, {
+          "source" : "FORMULA17",
+          "target" : "FORMULA20"
+        }, {
+          "source" : "FORMULA20",
+          "target" : "FORMULA21"
+        }, {
+          "source" : "FORMULA21",
+          "target" : "FORMULA22"
+        } ]
+      },
+      "FILTER17" : {
+        "label" : "Filter Degree Year after 1924",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 951.9,
+        "left" : 532
+      }
+    },
+    "connectors" : [ {
+      "source" : "FILTER17",
+      "target" : "JOIN5"
+    }, {
+      "source" : "JOIN5",
+      "target" : "JOIN7"
+    }, {
+      "source" : "LOAD_DATASET1",
+      "target" : "FILTER0"
+    }, {
+      "source" : "LOAD_DATASET2",
+      "target" : "JOIN0"
+    }, {
+      "source" : "LOAD_DATASET5",
+      "target" : "JOIN0"
+    }, {
+      "source" : "JOIN0",
+      "target" : "TRANSFORM0"
+    }, {
+      "source" : "TRANSFORM0",
+      "target" : "FILTER1"
+    }, {
+      "source" : "TRANSFORM0",
+      "target" : "FILTER2"
+    }, {
+      "source" : "TRANSFORM0",
+      "target" : "FILTER3"
+    }, {
+      "source" : "FILTER1",
+      "target" : "TRANSFORM1"
+    }, {
+      "source" : "FILTER0",
+      "target" : "JOIN1"
+    }, {
+      "source" : "TRANSFORM1",
+      "target" : "JOIN1"
+    }, {
+      "source" : "FILTER2",
+      "target" : "TRANSFORM2"
+    }, {
+      "source" : "JOIN1",
+      "target" : "JOIN2"
+    }, {
+      "source" : "TRANSFORM2",
+      "target" : "JOIN2"
+    }, {
+      "source" : "FILTER3",
+      "target" : "TRANSFORM3"
+    }, {
+      "source" : "JOIN2",
+      "target" : "JOIN3"
+    }, {
+      "source" : "TRANSFORM3",
+      "target" : "JOIN3"
+    }, {
+      "source" : "TRANSFORM18",
+      "target" : "OUTPUT0"
+    }, {
+      "source" : "LOAD_DATASET6",
+      "target" : "JOIN4"
+    }, {
+      "source" : "TRANSFORM4",
+      "target" : "JOIN4"
+    }, {
+      "source" : "LOAD_DATASET7",
+      "target" : "TRANSFORM4"
+    }, {
+      "source" : "LOAD_DATASET5",
+      "target" : "JOIN5"
+    }, {
+      "source" : "FILTER5",
+      "target" : "TRANSFORM5"
+    }, {
+      "source" : "TRANSFORM5",
+      "target" : "JOIN7"
+    }, {
+      "source" : "JOIN7",
+      "target" : "TRANSFORM6"
+    }, {
+      "source" : "TRANSFORM6",
+      "target" : "FILTER6"
+    }, {
+      "source" : "FILTER6",
+      "target" : "TRANSFORM7"
+    }, {
+      "source" : "TRANSFORM7",
+      "target" : "FILTER7"
+    }, {
+      "source" : "TRANSFORM7",
+      "target" : "FILTER8"
+    }, {
+      "source" : "TRANSFORM7",
+      "target" : "FILTER9"
+    }, {
+      "source" : "FILTER7",
+      "target" : "TRANSFORM8"
+    }, {
+      "source" : "FILTER8",
+      "target" : "TRANSFORM9"
+    }, {
+      "source" : "FILTER9",
+      "target" : "TRANSFORM10"
+    }, {
+      "source" : "JOIN3",
+      "target" : "JOIN8"
+    }, {
+      "source" : "TRANSFORM8",
+      "target" : "JOIN8"
+    }, {
+      "source" : "JOIN8",
+      "target" : "JOIN9"
+    }, {
+      "source" : "TRANSFORM9",
+      "target" : "JOIN9"
+    }, {
+      "source" : "JOIN9",
+      "target" : "JOIN10"
+    }, {
+      "source" : "TRANSFORM10",
+      "target" : "JOIN10"
+    }, {
+      "source" : "LOAD_DATASET9",
+      "target" : "FILTER10"
+    }, {
+      "source" : "LOAD_DATASET9",
+      "target" : "FILTER11"
+    }, {
+      "source" : "FILTER10",
+      "target" : "TRANSFORM11"
+    }, {
+      "source" : "FILTER11",
+      "target" : "TRANSFORM12"
+    }, {
+      "source" : "TRANSFORM12",
+      "target" : "FILTER12"
+    }, {
+      "source" : "TRANSFORM12",
+      "target" : "FILTER13"
+    }, {
+      "source" : "TRANSFORM12",
+      "target" : "FILTER14"
+    }, {
+      "source" : "TRANSFORM12",
+      "target" : "FILTER15"
+    }, {
+      "source" : "TRANSFORM12",
+      "target" : "FILTER16"
+    }, {
+      "source" : "FILTER12",
+      "target" : "TRANSFORM13"
+    }, {
+      "source" : "FILTER13",
+      "target" : "TRANSFORM14"
+    }, {
+      "source" : "FILTER14",
+      "target" : "TRANSFORM15"
+    }, {
+      "source" : "FILTER15",
+      "target" : "TRANSFORM16"
+    }, {
+      "source" : "FILTER16",
+      "target" : "TRANSFORM17"
+    }, {
+      "source" : "JOIN10",
+      "target" : "JOIN11"
+    }, {
+      "source" : "TRANSFORM11",
+      "target" : "JOIN11"
+    }, {
+      "source" : "JOIN11",
+      "target" : "JOIN12"
+    }, {
+      "source" : "TRANSFORM13",
+      "target" : "JOIN12"
+    }, {
+      "source" : "JOIN12",
+      "target" : "JOIN13"
+    }, {
+      "source" : "TRANSFORM14",
+      "target" : "JOIN13"
+    }, {
+      "source" : "JOIN13",
+      "target" : "JOIN14"
+    }, {
+      "source" : "TRANSFORM15",
+      "target" : "JOIN14"
+    }, {
+      "source" : "JOIN14",
+      "target" : "JOIN15"
+    }, {
+      "source" : "TRANSFORM16",
+      "target" : "JOIN15"
+    }, {
+      "source" : "JOIN15",
+      "target" : "JOIN16"
+    }, {
+      "source" : "TRANSFORM17",
+      "target" : "JOIN16"
+    }, {
+      "source" : "JOIN16",
+      "target" : "TRANSFORM18"
+    }, {
+      "source" : "JOIN5",
+      "target" : "FILTER5"
+    }, {
+      "source" : "JOIN4",
+      "target" : "FILTER17"
+    } ],
+    "hiddenColumns" : [ ]
+  },
+  "runMode" : "full"
+}

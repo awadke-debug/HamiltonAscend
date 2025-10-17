@@ -1,0 +1,73 @@
+<template>
+    <div class="slds-m-around_medium">
+
+        <div class="ad-top-section">
+
+            <h1 class="slds-ad-heading">{label.buildalumnicommunity}</h1>
+            <template if:true={isGridView}>
+                <div class="toggle-view" >
+                    <button class="toggle-btn grid-view selected" title={label.gridview} onclick={handleViewToggle}>
+                    <span><img src={images.gridSelectedImage} alt="" width="20px" height="20px"></img></span>
+                    </button>
+                    <button class="toggle-btn list-view" title={label.listview} onclick={handleViewToggle}>
+                    <span><img src={images.listImage} alt="" width="20px" height="20px"></img></span>
+                    </button>
+                </div>
+            </template>
+            <template if:false={isGridView}>
+                <div class="toggle-view" >
+                    <button class="toggle-btn grid-view" title={label.gridview} onclick={handleViewToggle}>
+                    <span><img src={images.gridImage} alt="" width="20px" height="20px"></img></span>
+                    </button>
+                    <button class="toggle-btn list-view selected" title={label.listview} onclick={handleViewToggle}>
+                    <span><img src={images.listSelectedImage} alt="" width="20px" height="20px"></img></span>
+                    </button>
+                </div>
+            </template>
+
+        </div>
+
+        <div class="search-filter slds-m-top_large">
+            <c-ham_alumni-search-filter-cmp label={label} main-resource={mainResource} onsearch={handleSearch} onbookmark={handleBookmark} user-contact-id={userContactId}></c-ham_alumni-search-filter-cmp>
+        </div>
+
+        <template if:true={isLoading}>
+            <div class="slds-is-relative slds-align_absolute-center" style="height: 15rem">
+                <lightning-spinner alternative-text="Loading" size="medium" variant="brand"></lightning-spinner>
+            </div>
+        </template>
+
+        <template if:false={isLoading}>
+            <template if:true={isGridView}>
+                <c-ham_alumni-grid-display-cmp alumni-list={visibleRecords} onselect={handleProfileSelect}></c-ham_alumni-grid-display-cmp>
+            </template>
+            <template if:false={isGridView}>
+                <c-ham_alumni-list-display-cmp alumni-list={visibleRecords} onselect={handleProfileSelect}></c-ham_alumni-list-display-cmp>
+            </template>
+            <template if:true={isProfileOverViewOpen}>
+                <c-ham_alumni-profile-overview-cmp main-resource={mainResource} onclose={handleProfileClose} contact-id={selectedContactId}></c-ham_alumni-profile-overview-cmp>
+            </template>
+        </template>        
+
+        <template if:false={isLoading}> 
+            <div class="bottom-bar" if:true={showPageNation}>
+                <span class="results-info">{label.result}: {startCount} - {endCount} of {totalRecords}</span>
+                <div class="pagination">
+                    <button class={firstPageClass} onclick={goToPreviousPage} disabled={isFirstPage}>←</button>
+                    <template for:each={pages} for:item="page">
+                        <template if:true={page.isEllipsis}>
+                            <span key={page.number}>...</span>
+                        </template>
+                        <template if:false={page.isEllipsis}>
+                            <button key={page.number} data-page={page.number} onclick={handlePageChange}
+                                class={page.class}>
+                                {page.number}
+                            </button>
+                        </template>
+                    </template>
+                    <button class={lastPageClass} onclick={goToNextPage} disabled={isLastPage}>→</button>
+                </div>
+            </div>
+        </template>
+    </div>
+</template>

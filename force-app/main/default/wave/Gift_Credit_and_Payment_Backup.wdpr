@@ -1,0 +1,62 @@
+{
+  "version" : "59.0",
+  "nodes" : {
+    "LOAD_DATASET0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Is_Reunion_Year", "Designation.HAM_Campaign_Priority__c", "Designation.ucinn_ascendv2__Areas_of_Giving_CASE_Type__c", "Designation.ucinn_ascendv2__Opportunity__c", "Secondary_Relationship_Manager.Assigned_User", "Designation.ucinn_ascendv2__CASE_Type__c", "Opportunity.RecordType.Name", "Amount_Band", "Maximum_Date.Is_Constituent_Maximum_Total_Date", "Account.ucinn_ascendv2__External_System_ID__c", "Opportunity.StageName", "Reunion_Year_Flag", "Designation.ucinn_ascendv2__Campaign__c", "Appeal.Name", "Wealth_Rating.ucinn_ascendv2__Wealth_Rating__c", "Designation.ucinn_ascendv2__Designation_Name__c", "Opportunity.HAM_MOU_Received__c", "ucinn_ascendv2__Credit_Date_Formula__c", "Designation.ucinn_ascendv2__Fund_Purpose__c", "Opportunity_Team.Opportunity_Team_List", "Account.Record_Type.Name", "Primary_Relationship_Manager.Assigned_User", "Designation.Name", "Object", "Id", "Rollup_Degree.Major_Degree_List", "Contact.ucinn_ascendv2__Preferred_Class_Year__c", "Retained_Contact.ucinn_ascendv2__Contact__c", "Amount_Band_Sort", "Contact.ucinn_ascendv2__Primary_Contact_Type__c", "Designation.ucinn_ascendv2__Fund_Type__c", "Formatted_External_Id", "Is_In_Period", "Constituent_Fiscal_Year_Key", "Organization_or_Constituent_Account_Id", "Opportunity.Type", "Account.Id", "Campaign_Priority.HAM_Fiscal_Year__c", "Opportunity_Team.OpportunityId", "Contact.ucinn_ascendv2__External_System_ID__c", "Constituent_Date_Key", "Opportunity.HAM_Copy_of_Will_Received__c", "Contact_Retention_Id", "HAM_Constituent_Type__c", "Campaign_Priority.Name", "Constituent_or_Account_Id", "Rollup_Degree.ucinn_ascendv2__Major_Degree_Formula__c", "Designation.ucinn_ascendv2__CASE_Purpose_v1__c", "Appeal.HAM_Fiscal_Year__c", "ucinn_ascendv2__Designation_Detail__c", "Contact.Name", "ucinn_ascendv2__Contact__c", "Contact.ucinn_ascendv2__Date_of_Most_Recent_Gift__c", "ucinn_ascendv2__External_System_ID__c", "ucinn_ascendv2__Gift_Type_Formula__c", "Designation.Id", "Organization_or_Contact_External_Id", "Account.Name", "Fiscal_Year", "ISB.Is_ISB_Particpant", "Opportunity.HAM_CFY_Ask__c", "Opportunity.HAM_Vice_President_Override__c", "Opportunity_Team.Opportunity_Team_Multivalue", "GVAC.HAM_Attend__c", "Opportunity.ExpectedRevenue", "Contact.ucinn_ascendv2__Current_FY_Giving__c", "Contact.ucinn_ascendv2__Number_of_Consecutive_Giving__c", "Contact.ucinn_ascendv2__Preferred_Class_Year_Integer_Formula__c", "Collected_Amount", "ucinn_ascendv2__Credit_Amount__c", "GVAC.HAM_Give__c", "Contact.ucinn_ascendv2__Last_FY_Giving__c", "GVAC.HAM_Volunteer__c", "Payment_Aggregate.Sum.Opportunity_Collected_Amount", "GVAC.HAM_Connect__c", "Committed_Amount", "Number_of_Payments.Count.Fiscal_Years_Given", "Opportunity.ucinn_ascendv2__Submitted_Amount__c", "Outstanding_Committed_Amount" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Gift Credit and Payment",
+          "name" : "Gift_Credit_and_Payment"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "OUTPUT0" : {
+      "action" : "save",
+      "sources" : [ "LOAD_DATASET0" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Gift Credit and Payment Backup",
+          "name" : "Gift_Credit_and_Payment_Backup",
+          "folderName" : "SharedApp"
+        },
+        "dateConfigurationName" : "July_Fiscal_Year",
+        "measuresToCurrencies" : [ ]
+      }
+    }
+  },
+  "ui" : {
+    "nodes" : {
+      "LOAD_DATASET0" : {
+        "label" : "Gift Credit and Payment",
+        "type" : "LOAD_DATASET",
+        "top" : 112,
+        "left" : 112,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "OUTPUT0" : {
+        "label" : "Output a Backup for Gift Credit and Payment",
+        "description" : "",
+        "type" : "OUTPUT",
+        "top" : 112,
+        "left" : 252
+      }
+    },
+    "connectors" : [ {
+      "source" : "LOAD_DATASET0",
+      "target" : "OUTPUT0"
+    } ],
+    "hiddenColumns" : [ ]
+  },
+  "runMode" : "full"
+}

@@ -1,0 +1,1500 @@
+{
+  "version" : "62.0",
+  "nodes" : {
+    "LOAD_DATASET41_copy0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Opportunity.Type", "Object", "Fiscal_Year", "ucinn_ascendv2__Credit_Date_Formula__c", "Constituent_or_Account_Id", "Cash_Amount" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Gift Credit and Payment",
+          "name" : "Gift_Credit_and_Payment"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "FILTER35_copy0" : {
+      "action" : "filter",
+      "sources" : [ "LOAD_DATASET41_copy0" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "Object",
+          "operator" : "EQUAL",
+          "operands" : [ "Hard and Soft Credit" ]
+        }, {
+          "type" : "TEXT",
+          "field" : "Opportunity.Type",
+          "operator" : "NOT",
+          "operands" : [ "Event Fee", "Round Up" ]
+        } ]
+      }
+    },
+    "FORMULA204_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FILTER59" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Key_of_Id_and_Date",
+          "label" : "Key of Id and Date",
+          "formulaExpression" : "concat(Constituent_or_Account_Id,'-',substr(ucinn_ascendv2__Credit_Date_Formula__c,1,10))",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA207_copy0" : {
+      "action" : "formula",
+      "sources" : [ "AGGREGATE37" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Id",
+          "label" : "Id",
+          "formulaExpression" : "substr(Key_of_Id_and_Date,1,18)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA208_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA207_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Date",
+          "label" : "Date",
+          "formulaExpression" : " substr(Key_of_Id_and_Date,20,10)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA209_copy0" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA208_copy0" ],
+      "parameters" : {
+        "partitionBy" : [ "Id" ],
+        "orderBy" : [ {
+          "fieldName" : "SUM_Cash_Amount",
+          "direction" : "DESC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Largest_Cash_Amount_2021_CYE",
+          "label" : "Largest Cash Amount 2021 CYE",
+          "formulaExpression" : "first_value(SUM_Cash_Amount)",
+          "precision" : 10,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA210_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA209_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Difference_Between_Daily_Amount_and_Largest_Amount",
+          "label" : "Difference Between Daily Amount and Largest Amount",
+          "formulaExpression" : "Largest_Cash_Amount_2021_CYE-SUM_Cash_Amount",
+          "precision" : 10,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FILTER54_copy0" : {
+      "action" : "filter",
+      "sources" : [ "FORMULA210_copy0" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "NUMBER",
+          "field" : "Difference_Between_Daily_Amount_and_Largest_Amount",
+          "operator" : "EQUAL",
+          "operands" : [ "0" ]
+        } ]
+      }
+    },
+    "FORMULA211_copy0" : {
+      "action" : "computeRelative",
+      "sources" : [ "FILTER54_copy0" ],
+      "parameters" : {
+        "partitionBy" : [ "Id" ],
+        "orderBy" : [ {
+          "fieldName" : "Date",
+          "direction" : "DESC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Largest_Cash_Date_2021_CYE",
+          "label" : "Largest Cash Date 2021 CYE",
+          "formulaExpression" : "first_value(Date)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "DROP_FIELDS45_copy0" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA211_copy0" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "SELECT",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Id", "Largest_Cash_Amount_2021_CYE", "Largest_Cash_Date_2021_CYE" ]
+        }
+      }
+    },
+    "LOAD_DATASET42" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Primary_Relationship_Manager.Assigned_User_Name", "Is_Contactable", "ucinn_ascendv2__Is_Deceased__c", "Is_Contactable_By_Email", "Account_or_Contact_Id", "Name", "Is_Contactable_By_Phone", "HAM_Privacy_Flag__c", "Preferred_Phone.ucinn_ascendv2__Phone_Number__c", "HAM_Reunion_Year__c", "ucinn_ascendv2__Primary_Contact_Type__c", "HAM_Institutional_Suffix__c", "Preferred_Email.ucinn_ascendv2__Email_Address__c" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Account and Contact Dataset",
+          "name" : "Account_and_Contact_Dataset"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "FILTER59" : {
+      "action" : "filter",
+      "sources" : [ "FILTER35_copy0" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "DATETIME",
+          "field" : "ucinn_ascendv2__Credit_Date_Formula__c",
+          "operator" : "IN_RANGE",
+          "operands" : [ "1633046400000", "1640908800000" ]
+        }, {
+          "type" : "NUMBER",
+          "field" : "Cash_Amount",
+          "operator" : "GREATER_THAN",
+          "operands" : [ "0" ]
+        } ]
+      }
+    },
+    "EXTRACT17" : {
+      "action" : "extractGrains",
+      "sources" : [ "FILTER59" ],
+      "parameters" : {
+        "grainExtractions" : [ ]
+      }
+    },
+    "AGGREGATE35" : {
+      "action" : "aggregate",
+      "sources" : [ "EXTRACT17" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "SUM_Cash_Amount",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        } ]
+      },
+      "parameters" : {
+        "aggregations" : [ {
+          "action" : "SUM",
+          "source" : "Cash_Amount",
+          "name" : "SUM_Cash_Amount",
+          "label" : "Total Cash Amount 2021 CYE"
+        } ],
+        "groupings" : [ "Constituent_or_Account_Id" ],
+        "pivots" : [ ],
+        "nodeType" : "STANDARD"
+      }
+    },
+    "EXTRACT18" : {
+      "action" : "extractGrains",
+      "sources" : [ "FORMULA204_copy0" ],
+      "parameters" : {
+        "grainExtractions" : [ ]
+      }
+    },
+    "AGGREGATE37" : {
+      "action" : "aggregate",
+      "sources" : [ "EXTRACT18" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "SUM_Cash_Amount",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        } ]
+      },
+      "parameters" : {
+        "aggregations" : [ {
+          "action" : "SUM",
+          "source" : "Cash_Amount",
+          "name" : "SUM_Cash_Amount",
+          "label" : "Daily Cash Amount"
+        } ],
+        "groupings" : [ "Key_of_Id_and_Date" ],
+        "pivots" : [ ],
+        "nodeType" : "STANDARD"
+      }
+    },
+    "JOIN94" : {
+      "action" : "join",
+      "sources" : [ "LOAD_DATASET42", "AGGREGATE35" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "CYE2021.Constituent_or_Account_Id" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Account_or_Contact_Id" ],
+        "rightQualifier" : "CYE2021",
+        "rightKeys" : [ "Constituent_or_Account_Id" ]
+      }
+    },
+    "JOIN95" : {
+      "action" : "join",
+      "sources" : [ "JOIN94", "DROP_FIELDS45_copy0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "CYE2021Larg.Id" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Account_or_Contact_Id" ],
+        "rightQualifier" : "CYE2021Larg",
+        "rightKeys" : [ "Id" ]
+      }
+    },
+    "FORMULA204_copy0_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FILTER59_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Key_of_Id_and_Date",
+          "label" : "Key of Id and Date",
+          "formulaExpression" : "concat(Constituent_or_Account_Id,'-',substr(ucinn_ascendv2__Credit_Date_Formula__c,1,10))",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA207_copy0_copy0" : {
+      "action" : "formula",
+      "sources" : [ "AGGREGATE37_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Id",
+          "label" : "Id",
+          "formulaExpression" : "substr(Key_of_Id_and_Date,1,18)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA208_copy0_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA207_copy0_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Date",
+          "label" : "Date",
+          "formulaExpression" : " substr(Key_of_Id_and_Date,20,10)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA209_copy0_copy0" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA208_copy0_copy0" ],
+      "parameters" : {
+        "partitionBy" : [ "Id" ],
+        "orderBy" : [ {
+          "fieldName" : "SUM_Cash_Amount",
+          "direction" : "DESC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Largest_Cash_Amount_2022_CYE",
+          "label" : "Largest Cash Amount 2022 CYE",
+          "formulaExpression" : "first_value(SUM_Cash_Amount)",
+          "precision" : 10,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA210_copy0_copy0" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA209_copy0_copy0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Difference_Between_Daily_Amount_and_Largest_Amount",
+          "label" : "Difference Between Daily Amount and Largest Amount",
+          "formulaExpression" : "Largest_Cash_Amount_2022_CYE-SUM_Cash_Amount",
+          "precision" : 10,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FILTER54_copy0_copy0" : {
+      "action" : "filter",
+      "sources" : [ "FORMULA210_copy0_copy0" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "NUMBER",
+          "field" : "Difference_Between_Daily_Amount_and_Largest_Amount",
+          "operator" : "EQUAL",
+          "operands" : [ "0" ]
+        } ]
+      }
+    },
+    "FORMULA211_copy0_copy0" : {
+      "action" : "computeRelative",
+      "sources" : [ "FILTER54_copy0_copy0" ],
+      "parameters" : {
+        "partitionBy" : [ "Id" ],
+        "orderBy" : [ {
+          "fieldName" : "Date",
+          "direction" : "DESC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Largest_Cash_Date_2022_CYE",
+          "label" : "Largest Cash Date 2022 CYE",
+          "formulaExpression" : "first_value(Date)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "DROP_FIELDS45_copy0_copy0" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA211_copy0_copy0" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "SELECT",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Id", "Largest_Cash_Amount_2022_CYE", "Largest_Cash_Date_2022_CYE" ]
+        }
+      }
+    },
+    "FILTER59_copy0" : {
+      "action" : "filter",
+      "sources" : [ "FILTER35_copy0" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "DATETIME",
+          "field" : "ucinn_ascendv2__Credit_Date_Formula__c",
+          "operator" : "IN_RANGE",
+          "operands" : [ "1664582400000", "1672444800000" ]
+        }, {
+          "type" : "NUMBER",
+          "field" : "Cash_Amount",
+          "operator" : "GREATER_THAN",
+          "operands" : [ "0" ]
+        } ]
+      }
+    },
+    "EXTRACT17_copy0" : {
+      "action" : "extractGrains",
+      "sources" : [ "FILTER59_copy0" ],
+      "parameters" : {
+        "grainExtractions" : [ ]
+      }
+    },
+    "AGGREGATE35_copy0" : {
+      "action" : "aggregate",
+      "sources" : [ "EXTRACT17_copy0" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "SUM_Cash_Amount",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        } ]
+      },
+      "parameters" : {
+        "aggregations" : [ {
+          "action" : "SUM",
+          "source" : "Cash_Amount",
+          "name" : "SUM_Cash_Amount",
+          "label" : "Total Cash Amount 2022 CYE"
+        } ],
+        "groupings" : [ "Constituent_or_Account_Id" ],
+        "pivots" : [ ],
+        "nodeType" : "STANDARD"
+      }
+    },
+    "EXTRACT18_copy0" : {
+      "action" : "extractGrains",
+      "sources" : [ "FORMULA204_copy0_copy0" ],
+      "parameters" : {
+        "grainExtractions" : [ ]
+      }
+    },
+    "AGGREGATE37_copy0" : {
+      "action" : "aggregate",
+      "sources" : [ "EXTRACT18_copy0" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "SUM_Cash_Amount",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        } ]
+      },
+      "parameters" : {
+        "aggregations" : [ {
+          "action" : "SUM",
+          "source" : "Cash_Amount",
+          "name" : "SUM_Cash_Amount",
+          "label" : "Daily Cash Amount"
+        } ],
+        "groupings" : [ "Key_of_Id_and_Date" ],
+        "pivots" : [ ],
+        "nodeType" : "STANDARD"
+      }
+    },
+    "JOIN95_copy0" : {
+      "action" : "join",
+      "sources" : [ "JOIN96", "DROP_FIELDS45_copy0_copy0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "CYE2022Larg.Id" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Account_or_Contact_Id" ],
+        "rightQualifier" : "CYE2022Larg",
+        "rightKeys" : [ "Id" ]
+      }
+    },
+    "FORMULA204_copy0_copy1" : {
+      "action" : "formula",
+      "sources" : [ "FILTER59_copy1" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Key_of_Id_and_Date",
+          "label" : "Key of Id and Date",
+          "formulaExpression" : "concat(Constituent_or_Account_Id,'-',substr(ucinn_ascendv2__Credit_Date_Formula__c,1,10))",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA207_copy0_copy1" : {
+      "action" : "formula",
+      "sources" : [ "AGGREGATE37_copy1" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Id",
+          "label" : "Id",
+          "formulaExpression" : "substr(Key_of_Id_and_Date,1,18)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA208_copy0_copy1" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA207_copy0_copy1" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Date",
+          "label" : "Date",
+          "formulaExpression" : " substr(Key_of_Id_and_Date,20,10)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA209_copy0_copy1" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA208_copy0_copy1" ],
+      "parameters" : {
+        "partitionBy" : [ "Id" ],
+        "orderBy" : [ {
+          "fieldName" : "SUM_Cash_Amount",
+          "direction" : "DESC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Largest_Cash_Amount_2023_CYE",
+          "label" : "Largest Cash Amount 2023 CYE",
+          "formulaExpression" : "first_value(SUM_Cash_Amount)",
+          "precision" : 10,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA210_copy0_copy1" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA209_copy0_copy1" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Difference_Between_Daily_Amount_and_Largest_Amount",
+          "label" : "Difference Between Daily Amount and Largest Amount",
+          "formulaExpression" : "Largest_Cash_Amount_2023_CYE-SUM_Cash_Amount",
+          "precision" : 10,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FILTER54_copy0_copy1" : {
+      "action" : "filter",
+      "sources" : [ "FORMULA210_copy0_copy1" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "NUMBER",
+          "field" : "Difference_Between_Daily_Amount_and_Largest_Amount",
+          "operator" : "EQUAL",
+          "operands" : [ "0" ]
+        } ]
+      }
+    },
+    "FORMULA211_copy0_copy1" : {
+      "action" : "computeRelative",
+      "sources" : [ "FILTER54_copy0_copy1" ],
+      "parameters" : {
+        "partitionBy" : [ "Id" ],
+        "orderBy" : [ {
+          "fieldName" : "Date",
+          "direction" : "DESC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Largest_Cash_Date_2023_CYE",
+          "label" : "Largest Cash Date 2023 CYE",
+          "formulaExpression" : "first_value(Date)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "DROP_FIELDS45_copy0_copy1" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA211_copy0_copy1" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "SELECT",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Id", "Largest_Cash_Amount_2023_CYE", "Largest_Cash_Date_2023_CYE" ]
+        }
+      }
+    },
+    "FILTER59_copy1" : {
+      "action" : "filter",
+      "sources" : [ "FILTER35_copy0" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "DATETIME",
+          "field" : "ucinn_ascendv2__Credit_Date_Formula__c",
+          "operator" : "IN_RANGE",
+          "operands" : [ "1696118400000", "1703980800000" ]
+        }, {
+          "type" : "NUMBER",
+          "field" : "Cash_Amount",
+          "operator" : "GREATER_THAN",
+          "operands" : [ "0" ]
+        } ]
+      }
+    },
+    "EXTRACT17_copy1" : {
+      "action" : "extractGrains",
+      "sources" : [ "FILTER59_copy1" ],
+      "parameters" : {
+        "grainExtractions" : [ ]
+      }
+    },
+    "AGGREGATE35_copy1" : {
+      "action" : "aggregate",
+      "sources" : [ "EXTRACT17_copy1" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "SUM_Cash_Amount",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        } ]
+      },
+      "parameters" : {
+        "aggregations" : [ {
+          "action" : "SUM",
+          "source" : "Cash_Amount",
+          "name" : "SUM_Cash_Amount",
+          "label" : "Total Cash Amount 2023 CYE"
+        } ],
+        "groupings" : [ "Constituent_or_Account_Id" ],
+        "pivots" : [ ],
+        "nodeType" : "STANDARD"
+      }
+    },
+    "EXTRACT18_copy1" : {
+      "action" : "extractGrains",
+      "sources" : [ "FORMULA204_copy0_copy1" ],
+      "parameters" : {
+        "grainExtractions" : [ ]
+      }
+    },
+    "AGGREGATE37_copy1" : {
+      "action" : "aggregate",
+      "sources" : [ "EXTRACT18_copy1" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "SUM_Cash_Amount",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        } ]
+      },
+      "parameters" : {
+        "aggregations" : [ {
+          "action" : "SUM",
+          "source" : "Cash_Amount",
+          "name" : "SUM_Cash_Amount",
+          "label" : "Daily Cash Amount"
+        } ],
+        "groupings" : [ "Key_of_Id_and_Date" ],
+        "pivots" : [ ],
+        "nodeType" : "STANDARD"
+      }
+    },
+    "JOIN94_copy1" : {
+      "action" : "join",
+      "sources" : [ "JOIN95_copy0", "AGGREGATE35_copy1" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "CYE2023.Constituent_or_Account_Id" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Account_or_Contact_Id" ],
+        "rightQualifier" : "CYE2023",
+        "rightKeys" : [ "Constituent_or_Account_Id" ]
+      }
+    },
+    "JOIN95_copy1" : {
+      "action" : "join",
+      "sources" : [ "JOIN94_copy1", "DROP_FIELDS45_copy0_copy1" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "CYE2023Larg.Id" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Account_or_Contact_Id" ],
+        "rightQualifier" : "CYE2023Larg",
+        "rightKeys" : [ "Id" ]
+      }
+    },
+    "JOIN96" : {
+      "action" : "join",
+      "sources" : [ "JOIN95", "AGGREGATE35_copy0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "CYE2022.Constituent_or_Account_Id" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Account_or_Contact_Id" ],
+        "rightQualifier" : "CYE2022",
+        "rightKeys" : [ "Constituent_or_Account_Id" ]
+      }
+    },
+    "FILTER59_copy1_copy0" : {
+      "action" : "filter",
+      "sources" : [ "FILTER35_copy0" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "DATETIME",
+          "field" : "ucinn_ascendv2__Credit_Date_Formula__c",
+          "operator" : "GREATER_OR_EQUAL",
+          "operands" : [ "1719792000000" ]
+        }, {
+          "type" : "NUMBER",
+          "field" : "Cash_Amount",
+          "operator" : "GREATER_THAN",
+          "operands" : [ "0" ]
+        } ]
+      }
+    },
+    "EXTRACT17_copy1_copy0" : {
+      "action" : "extractGrains",
+      "sources" : [ "FILTER59_copy1_copy0" ],
+      "parameters" : {
+        "grainExtractions" : [ ]
+      }
+    },
+    "AGGREGATE35_copy1_copy0" : {
+      "action" : "aggregate",
+      "sources" : [ "EXTRACT17_copy1_copy0" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "SUM_Cash_Amount",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        } ]
+      },
+      "parameters" : {
+        "aggregations" : [ {
+          "action" : "SUM",
+          "source" : "Cash_Amount",
+          "name" : "SUM_Cash_Amount",
+          "label" : "Total Cash Amount FY25"
+        } ],
+        "groupings" : [ "Constituent_or_Account_Id" ],
+        "pivots" : [ ],
+        "nodeType" : "STANDARD"
+      }
+    },
+    "JOIN94_copy1_copy0" : {
+      "action" : "join",
+      "sources" : [ "JOIN95_copy1", "AGGREGATE35_copy1_copy0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "FY25.Constituent_or_Account_Id" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Account_or_Contact_Id" ],
+        "rightQualifier" : "FY25",
+        "rightKeys" : [ "Constituent_or_Account_Id" ]
+      }
+    },
+    "OUTPUT0" : {
+      "action" : "save",
+      "sources" : [ "FILTER61" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Calendar Year End Giving Dataset",
+          "name" : "Calendar_Year_End_Giving_Dataset",
+          "folderName" : "SharedApp"
+        },
+        "dateConfigurationName" : "July_Fiscal_Year",
+        "measuresToCurrencies" : [ ]
+      }
+    },
+    "FILTER61" : {
+      "action" : "filter",
+      "sources" : [ "JOIN94_copy1_copy0" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "NUMBER",
+          "field" : "CYE2021.SUM_Cash_Amount",
+          "operator" : "GREATER_THAN",
+          "operands" : [ "0" ]
+        }, {
+          "type" : "NUMBER",
+          "field" : "CYE2022.SUM_Cash_Amount",
+          "operator" : "GREATER_THAN",
+          "operands" : [ "0" ]
+        }, {
+          "type" : "NUMBER",
+          "field" : "CYE2023.SUM_Cash_Amount",
+          "operator" : "GREATER_THAN",
+          "operands" : [ "0" ]
+        }, {
+          "type" : "TEXT",
+          "field" : "ucinn_ascendv2__Is_Deceased__c",
+          "operator" : "EQUAL",
+          "operands" : [ "false" ]
+        } ],
+        "filterBooleanLogic" : "(1 OR 2 OR 3) AND 4"
+      }
+    }
+  },
+  "ui" : {
+    "nodes" : {
+      "LOAD_DATASET41_copy0" : {
+        "label" : "Gift Credit and Payment",
+        "type" : "LOAD_DATASET",
+        "top" : 1091.6,
+        "left" : 392,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "FILTER35_copy0" : {
+        "label" : "Filter Hard and Soft Credit",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 951.6,
+        "left" : 392
+      },
+      "TRANSFORM64_copy0" : {
+        "label" : "Key Id+Date",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 811.6,
+        "left" : 532,
+        "graph" : {
+          "FORMULA204_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Key of Id and Date"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "TRANSFORM65_copy0" : {
+        "label" : "Enrich Fields",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 532.2,
+        "left" : 532.1,
+        "graph" : {
+          "FORMULA207_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Id"
+          },
+          "FORMULA208_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Date"
+          },
+          "FORMULA209_copy0" : {
+            "label" : "Largest Cash Amount 2021 CYE"
+          },
+          "FORMULA210_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Difference Between Daily Amount and Largest Amount"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA207_copy0",
+          "target" : "FORMULA208_copy0"
+        }, {
+          "source" : "FORMULA208_copy0",
+          "target" : "FORMULA209_copy0"
+        }, {
+          "source" : "FORMULA209_copy0",
+          "target" : "FORMULA210_copy0"
+        } ]
+      },
+      "FILTER54_copy0" : {
+        "label" : "Filter Largest Cash Days",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 392.2,
+        "left" : 532.3
+      },
+      "TRANSFORM66_copy0" : {
+        "label" : "Find Largest Cash Date",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 252.2,
+        "left" : 532.1,
+        "graph" : {
+          "FORMULA211_copy0" : {
+            "label" : "Largest Cash Date 2021 CYE"
+          },
+          "DROP_FIELDS45_copy0" : {
+            "label" : "Keep Columns"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA211_copy0",
+          "target" : "DROP_FIELDS45_copy0"
+        } ]
+      },
+      "LOAD_DATASET42" : {
+        "label" : "Account and Contact Dataset",
+        "type" : "LOAD_DATASET",
+        "top" : 112.30000000000001,
+        "left" : 252,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "FILTER59" : {
+        "label" : "Filter 10/1-12/31 2021",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 811.6,
+        "left" : 392
+      },
+      "AGGREGATE34" : {
+        "label" : "Aggregate by Id",
+        "description" : "",
+        "type" : "AGGREGATE",
+        "top" : 671.6,
+        "left" : 392,
+        "graph" : {
+          "EXTRACT17" : null,
+          "AGGREGATE35" : null
+        },
+        "connectors" : [ {
+          "source" : "EXTRACT17",
+          "target" : "AGGREGATE35"
+        } ]
+      },
+      "AGGREGATE36" : {
+        "label" : "Aggregate by Id+Date",
+        "description" : "",
+        "type" : "AGGREGATE",
+        "top" : 671.6,
+        "left" : 532,
+        "graph" : {
+          "EXTRACT18" : null,
+          "AGGREGATE37" : null
+        },
+        "connectors" : [ {
+          "source" : "EXTRACT18",
+          "target" : "AGGREGATE37"
+        } ]
+      },
+      "JOIN94" : {
+        "label" : "Lookup Total Cash 2021 CYE to Contact",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 112.1,
+        "left" : 391.6
+      },
+      "JOIN95" : {
+        "label" : "Lookup Largest Cash and Date 2021 CYE to Contact",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 112,
+        "left" : 532.1
+      },
+      "TRANSFORM64_copy0_copy0" : {
+        "label" : "Key Id+Date",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 812.4,
+        "left" : 812,
+        "graph" : {
+          "FORMULA204_copy0_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Key of Id and Date"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "TRANSFORM65_copy0_copy0" : {
+        "label" : "Enrich Fields",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 532,
+        "left" : 811.8,
+        "graph" : {
+          "FORMULA207_copy0_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Id"
+          },
+          "FORMULA208_copy0_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Date"
+          },
+          "FORMULA209_copy0_copy0" : {
+            "label" : "Largest Cash Amount 2022 CYE"
+          },
+          "FORMULA210_copy0_copy0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Difference Between Daily Amount and Largest Amount"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA207_copy0_copy0",
+          "target" : "FORMULA208_copy0_copy0"
+        }, {
+          "source" : "FORMULA208_copy0_copy0",
+          "target" : "FORMULA209_copy0_copy0"
+        }, {
+          "source" : "FORMULA209_copy0_copy0",
+          "target" : "FORMULA210_copy0_copy0"
+        } ]
+      },
+      "FILTER54_copy0_copy0" : {
+        "label" : "Filter Largest Cash Days",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 392,
+        "left" : 812
+      },
+      "TRANSFORM66_copy0_copy0" : {
+        "label" : "Find Largest Cash Date",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 252.10000000000002,
+        "left" : 812,
+        "graph" : {
+          "FORMULA211_copy0_copy0" : {
+            "label" : "Largest Cash Date 2022 CYE"
+          },
+          "DROP_FIELDS45_copy0_copy0" : {
+            "label" : "Keep Columns"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA211_copy0_copy0",
+          "target" : "DROP_FIELDS45_copy0_copy0"
+        } ]
+      },
+      "FILTER59_copy0" : {
+        "label" : "Filter 10/1-12/31 2022",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 812,
+        "left" : 672
+      },
+      "AGGREGATE34_copy0" : {
+        "label" : "Aggregate by Id",
+        "description" : "",
+        "type" : "AGGREGATE",
+        "top" : 672,
+        "left" : 672,
+        "graph" : {
+          "EXTRACT17_copy0" : null,
+          "AGGREGATE35_copy0" : null
+        },
+        "connectors" : [ {
+          "source" : "EXTRACT17_copy0",
+          "target" : "AGGREGATE35_copy0"
+        } ]
+      },
+      "AGGREGATE36_copy0" : {
+        "label" : "Aggregate by Id+Date",
+        "description" : "",
+        "type" : "AGGREGATE",
+        "top" : 672,
+        "left" : 812.1,
+        "graph" : {
+          "EXTRACT18_copy0" : null,
+          "AGGREGATE37_copy0" : null
+        },
+        "connectors" : [ {
+          "source" : "EXTRACT18_copy0",
+          "target" : "AGGREGATE37_copy0"
+        } ]
+      },
+      "JOIN95_copy0" : {
+        "label" : "Lookup Largest Cash and Date 2022 CYE to Contact",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 112,
+        "left" : 812
+      },
+      "TRANSFORM64_copy0_copy1" : {
+        "label" : "Key Id+Date",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 812,
+        "left" : 1092,
+        "graph" : {
+          "FORMULA204_copy0_copy1" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Key of Id and Date"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "TRANSFORM65_copy0_copy1" : {
+        "label" : "Enrich Fields",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 532,
+        "left" : 1092,
+        "graph" : {
+          "FORMULA207_copy0_copy1" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Id"
+          },
+          "FORMULA208_copy0_copy1" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Date"
+          },
+          "FORMULA209_copy0_copy1" : {
+            "label" : "Largest Cash Amount 2023 CYE"
+          },
+          "FORMULA210_copy0_copy1" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Difference Between Daily Amount and Largest Amount"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA207_copy0_copy1",
+          "target" : "FORMULA208_copy0_copy1"
+        }, {
+          "source" : "FORMULA208_copy0_copy1",
+          "target" : "FORMULA209_copy0_copy1"
+        }, {
+          "source" : "FORMULA209_copy0_copy1",
+          "target" : "FORMULA210_copy0_copy1"
+        } ]
+      },
+      "FILTER54_copy0_copy1" : {
+        "label" : "Filter Largest Cash Days",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 392,
+        "left" : 1092.3
+      },
+      "TRANSFORM66_copy0_copy1" : {
+        "label" : "Find Largest Cash Date",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 252,
+        "left" : 1092,
+        "graph" : {
+          "FORMULA211_copy0_copy1" : {
+            "label" : "Largest Cash Date 2023 CYE"
+          },
+          "DROP_FIELDS45_copy0_copy1" : {
+            "label" : "Keep Columns"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA211_copy0_copy1",
+          "target" : "DROP_FIELDS45_copy0_copy1"
+        } ]
+      },
+      "FILTER59_copy1" : {
+        "label" : "Filter 10/1-12/31 2023",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 812,
+        "left" : 952
+      },
+      "AGGREGATE34_copy1" : {
+        "label" : "Aggregate by Id",
+        "description" : "",
+        "type" : "AGGREGATE",
+        "top" : 672,
+        "left" : 952,
+        "graph" : {
+          "EXTRACT17_copy1" : null,
+          "AGGREGATE35_copy1" : null
+        },
+        "connectors" : [ {
+          "source" : "EXTRACT17_copy1",
+          "target" : "AGGREGATE35_copy1"
+        } ]
+      },
+      "AGGREGATE36_copy1" : {
+        "label" : "Aggregate by Id+Date",
+        "description" : "",
+        "type" : "AGGREGATE",
+        "top" : 672,
+        "left" : 1092,
+        "graph" : {
+          "EXTRACT18_copy1" : null,
+          "AGGREGATE37_copy1" : null
+        },
+        "connectors" : [ {
+          "source" : "EXTRACT18_copy1",
+          "target" : "AGGREGATE37_copy1"
+        } ]
+      },
+      "JOIN94_copy1" : {
+        "label" : "Lookup Total Cash 2023 CYE to Contact",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 112.5,
+        "left" : 952.1
+      },
+      "JOIN95_copy1" : {
+        "label" : "Lookup Largest Cash and Date 2023 CYE to Contact",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 112,
+        "left" : 1092
+      },
+      "JOIN96" : {
+        "label" : "Lookup Total Cash 2022 CYE to Contact",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 112,
+        "left" : 672
+      },
+      "FILTER59_copy1_copy0" : {
+        "label" : "Filter 7/1-present 2024",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 812,
+        "left" : 1232
+      },
+      "AGGREGATE34_copy1_copy0" : {
+        "label" : "Aggregate by Id",
+        "description" : "",
+        "type" : "AGGREGATE",
+        "top" : 672,
+        "left" : 1232,
+        "graph" : {
+          "EXTRACT17_copy1_copy0" : null,
+          "AGGREGATE35_copy1_copy0" : null
+        },
+        "connectors" : [ {
+          "source" : "EXTRACT17_copy1_copy0",
+          "target" : "AGGREGATE35_copy1_copy0"
+        } ]
+      },
+      "JOIN94_copy1_copy0" : {
+        "label" : "Lookup Total Cash FY25 to Contact",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 112.4,
+        "left" : 1232
+      },
+      "OUTPUT0" : {
+        "label" : "Output 0",
+        "type" : "OUTPUT",
+        "top" : 112.30000000000001,
+        "left" : 1512.5
+      },
+      "FILTER61" : {
+        "label" : "Filter Cash>0 and Living",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 112,
+        "left" : 1372
+      }
+    },
+    "connectors" : [ {
+      "source" : "LOAD_DATASET42",
+      "target" : "JOIN94"
+    }, {
+      "source" : "JOIN95_copy1",
+      "target" : "JOIN94_copy1_copy0"
+    }, {
+      "source" : "JOIN95_copy0",
+      "target" : "JOIN94_copy1"
+    }, {
+      "source" : "JOIN96",
+      "target" : "JOIN95_copy0"
+    }, {
+      "source" : "LOAD_DATASET41_copy0",
+      "target" : "FILTER35_copy0"
+    }, {
+      "source" : "TRANSFORM65_copy0",
+      "target" : "FILTER54_copy0"
+    }, {
+      "source" : "FILTER54_copy0",
+      "target" : "TRANSFORM66_copy0"
+    }, {
+      "source" : "FILTER35_copy0",
+      "target" : "FILTER59"
+    }, {
+      "source" : "FILTER59",
+      "target" : "AGGREGATE34"
+    }, {
+      "source" : "AGGREGATE34",
+      "target" : "JOIN94"
+    }, {
+      "source" : "FILTER59",
+      "target" : "TRANSFORM64_copy0"
+    }, {
+      "source" : "TRANSFORM64_copy0",
+      "target" : "AGGREGATE36"
+    }, {
+      "source" : "AGGREGATE36",
+      "target" : "TRANSFORM65_copy0"
+    }, {
+      "source" : "JOIN94",
+      "target" : "JOIN95"
+    }, {
+      "source" : "TRANSFORM66_copy0",
+      "target" : "JOIN95"
+    }, {
+      "source" : "TRANSFORM65_copy0_copy0",
+      "target" : "FILTER54_copy0_copy0"
+    }, {
+      "source" : "FILTER54_copy0_copy0",
+      "target" : "TRANSFORM66_copy0_copy0"
+    }, {
+      "source" : "FILTER59_copy0",
+      "target" : "AGGREGATE34_copy0"
+    }, {
+      "source" : "FILTER59_copy0",
+      "target" : "TRANSFORM64_copy0_copy0"
+    }, {
+      "source" : "TRANSFORM64_copy0_copy0",
+      "target" : "AGGREGATE36_copy0"
+    }, {
+      "source" : "AGGREGATE36_copy0",
+      "target" : "TRANSFORM65_copy0_copy0"
+    }, {
+      "source" : "TRANSFORM66_copy0_copy0",
+      "target" : "JOIN95_copy0"
+    }, {
+      "source" : "TRANSFORM65_copy0_copy1",
+      "target" : "FILTER54_copy0_copy1"
+    }, {
+      "source" : "FILTER54_copy0_copy1",
+      "target" : "TRANSFORM66_copy0_copy1"
+    }, {
+      "source" : "FILTER59_copy1",
+      "target" : "AGGREGATE34_copy1"
+    }, {
+      "source" : "AGGREGATE34_copy1",
+      "target" : "JOIN94_copy1"
+    }, {
+      "source" : "FILTER59_copy1",
+      "target" : "TRANSFORM64_copy0_copy1"
+    }, {
+      "source" : "TRANSFORM64_copy0_copy1",
+      "target" : "AGGREGATE36_copy1"
+    }, {
+      "source" : "AGGREGATE36_copy1",
+      "target" : "TRANSFORM65_copy0_copy1"
+    }, {
+      "source" : "JOIN94_copy1",
+      "target" : "JOIN95_copy1"
+    }, {
+      "source" : "TRANSFORM66_copy0_copy1",
+      "target" : "JOIN95_copy1"
+    }, {
+      "source" : "FILTER35_copy0",
+      "target" : "FILTER59_copy0"
+    }, {
+      "source" : "JOIN95",
+      "target" : "JOIN96"
+    }, {
+      "source" : "AGGREGATE34_copy0",
+      "target" : "JOIN96"
+    }, {
+      "source" : "FILTER35_copy0",
+      "target" : "FILTER59_copy1"
+    }, {
+      "source" : "FILTER59_copy1_copy0",
+      "target" : "AGGREGATE34_copy1_copy0"
+    }, {
+      "source" : "AGGREGATE34_copy1_copy0",
+      "target" : "JOIN94_copy1_copy0"
+    }, {
+      "source" : "FILTER35_copy0",
+      "target" : "FILTER59_copy1_copy0"
+    }, {
+      "source" : "FILTER61",
+      "target" : "OUTPUT0"
+    }, {
+      "source" : "JOIN94_copy1_copy0",
+      "target" : "FILTER61"
+    } ],
+    "hiddenColumns" : [ ]
+  },
+  "runMode" : "full"
+}

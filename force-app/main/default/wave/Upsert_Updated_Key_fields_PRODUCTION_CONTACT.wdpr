@@ -1,0 +1,714 @@
+{
+  "version" : "65.0",
+  "nodes" : {
+    "LOAD_DATASET0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Enrich1812.Is_1812_CYR_with_Full_CB", "Is_Contactable", "Is_Contactable_By_Text", "Is_Active", "Is_Past_Parent_Inactive", "Is_Couper_Guild", "CYR_designations.All_FY00_designations", "Largest_Pledge.Largest_Pledge_Date", "Is_Contactable_By_Email", "EnrichHami.Max_HF_Cash_Date_1YR", "Substantive_meeting.Last_Substantive_Meeting_Date", "Hamilton_Fund_CYR_Solicitable_Status", "All_Children", "Is_Founders_Circle", "Is_Magazine_Eligible", "Largest_Cash.Largest_Cash.Daily_Designation", "Is_Ten_to_the_Fifth", "Id", "Is_Solicitable_By_Email", "Largest_Pledge.Largest_Pledge.Daily_Designation", "Is_Solicitable", "Largest_HFCash.Largest_HF_Cash.Daily_Designation", "ActiveCB.Is_Active_Chapel_Bell", "TransformTC.Tiered_1812_CYR", "Is_Solicitable_By_Phone", "Is_JBA_non_expired", "Largest_HFCash.Largest_HF_Cash_Date", "Largest_HFPledge.Largest_HF_Pledge_Date", "Largest_Cash.Largest_Cash_Date", "Largest_HFPledge.Largest_HFPledge.Daily_Designation", "Is_Contactable_By_Phone", "u_1812_1yr_Upsert_Use", "Is_Solicitable_By_Mail", "Is_Glade_and_Glen_Eligible", "Pure_Donor.Status_Date", "Is_Solicitable_By_Text", "Is_Contactable_By_Mail", "Aggregate.SUM_FY00_Collected_Amount_HF", "Number_of_Solicitable_Channels", "Largest_Pledge.Largest_Pledge_Amount", "Pure_Donor.Count_Unique.Fiscal_Years", "HAM_CYR_Committed_Ex_BQI_Amt_Restricted__c", "Aggregate.SUM_FY00_Committed_Amount_HF", "Aggregate_02.Sum.Is_Consecutive_Year", "Aggregate.SUM_Calendar_Year_Total_Hard_Credit_Cash_1YR", "Aggregate.SUM_FY01_Collected_Amount_HF", "ML_cash.Last_Cash_Amount", "Aggregate.SUM_Committed_Excluding_BQI", "HAM_CYR_Collect_Amt_Restricted__c", "Outstanding_Balance_Excluding_Bequest_Intentions", "Pure_Donor_Status", "Hamilton_Fund_Donor_Status", "Largest_HFPledge.Largest_HF_Pledge_Amount", "Number_of_Contactable_Channels", "Largest_HFCash.Largest_HF_Cash_Amount", "Aggregate.Sum.FY00_Collected_Amount", "Aggregate.SUM_Current_Calendar_Year_Total_Hard_Credit_Cash", "Philanthropic_Donor_Status", "Aggregate.Sum.FY01_Collected_Amount", "Aggregate.SUM_Bequest_Intention", "Largest_Cash.Largest_Cash_Amount", "Aggregate.SUM_FY00_Committed_Excluding_BQI" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Account and Contact Dataset",
+          "name" : "Account_and_Contact_Dataset"
+        },
+        "sampleDetails" : {
+          "type" : "Custom",
+          "filters" : {
+            "filterExpressions" : [ {
+              "type" : "TEXT",
+              "field" : "Id",
+              "operator" : "IS_NOT_NULL",
+              "operands" : [ ]
+            } ]
+          },
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "LOAD_DATASET1" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "HAM_CYR_1812_Projected__c", "Id", "ucinn_ascendv2__Current_FY_Giving__c", "ucinn_ascendv2__Last_FY_Giving__c", "HAM_CYR_Solicitable__c", "HAM_Lifetime_Bequest_Intention__c", "HAM_1812__c", "HAM_Consecutive_Years_of_Giving__c", "HAM_HF_Donor_Status__c", "HAM_JBA__c", "HAM_Philanthropic_Donor_Status__c", "HAM_Pure_Donor_Status__c", "HAM_Is_Active__c", "HAM_Contactable_by_Mail__c", "HAM_Contactable_by_Email__c", "HAM_Contactable_by_Text__c", "HAM_Contactable_by_Phone__c", "HAM_Number_of_Channels_Contactable__c", "HAM_Is_Contactable__c", "HAM_Solicitable_by_Mail__c", "HAM_Solicitable_by_Email__c", "HAM_Solicitable_by_Text__c", "HAM_Solicitable_by_Phone__c", "HAM_Number_of_Channels_Solicitable__c", "HAM_Is_Solicitable__c", "HAM_Total_Years_of_Giving__c", "HAM_Current_Year_Hamilton_Fund_Collected__c", "HAM_Current_Yr_Hamilton_Fund_Fundraising__c", "HAM_Last_Year_Hamilton_Fund_Collected__c", "HAM_Last_Year_Hamilton_Fund_Fundraising__c", "HAM_Founders_Circle__c", "HAM_Ten_to_Fifth__c", "HAM_Outstanding_Balance__c", "HAM_Past_Parent_Inactive__c", "HAM_Last_Meeting_Date__c", "HAM_Last_Gift_Date__c", "HAM_Chapel_Bell__c", "HAM_Children__c", "HAM_HF_Anniversary_Date_1YR__c", "HAM_Lifetime_Committed__c", "HAM_Is_Magazine_Eligible__c", "HAM_is_Glade_and_Glen_Eligible__c", "HAM_Couper_Guild__c", "HAM_Largest_AF_Pledge_Amount__c", "HAM_Largest_AF_Pledge_Date__c", "HAM_Hard_Credit_Current_Calendar_Year__c", "HAM_Hard_Credit_Last_Calendar_Year__c", "HAM_Largest_AF_Pledge_Purpose__c", "HAM_Largest_AF_gift_Amount__c", "HAM_Largest_AF_gift_Date__c", "HAM_Largest_AF_gift_Purpose__c", "HAM_Largest_Pledge_Amount__c", "HAM_Largest_Pledge_Date__c", "HAM_Largest_Pledge_Purpose__c", "HAM_Largest_gift_Amount__c", "HAM_Largest_gift_Date__c", "HAM_Largest_gift_purpose__c", "HAM_Last_Gift_Amount__c", "HAM_1YR_1812__c", "HAM_FY00_Committed_Ex_BQI_Amt_Restricted__c", "HAM_FY00_Collect_Amt_Restricted__c", "HAM_All_FY00_Purpose__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "Contact",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "Contact"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN0" : {
+      "action" : "join",
+      "sources" : [ "TO_DATE4", "LOAD_DATASET1" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Contact.Id" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Id" ],
+        "rightQualifier" : "Contact",
+        "rightKeys" : [ "Id" ]
+      }
+    },
+    "FILTER0" : {
+      "action" : "sqlFilter",
+      "sources" : [ "FORMULA5" ],
+      "parameters" : {
+        "sqlFilterExpression" : "(\r\n    Pure_Donor_Status != \"Contact.HAM_Pure_Donor_Status__c\"\r\nor\r\n    Philanthropic_Donor_Status != \"Contact.HAM_Philanthropic_Donor_Status__c\"\r\nor\r\n    Hamilton_Fund_Donor_Status != \"Contact.HAM_HF_Donor_Status__c\"\r\nor\r\n    Is_Active != \"Contact.HAM_Is_Active__c\"\r\nor\r\n    Is_Contactable != \"Contact.HAM_Is_Contactable__c\"\r\nor\r\n    Is_Contactable_By_Email != \"Contact.HAM_Contactable_by_Email__c\"\r\nor\r\n    Is_Contactable_By_Phone != \"Contact.HAM_Contactable_by_Phone__c\"\r\nor\r\n    Is_Contactable_By_Text != \"Contact.HAM_Contactable_by_Text__c\"\r\nor\r\n    Is_Contactable_By_Mail != \"Contact.HAM_Contactable_by_Mail__c\"\r\n\r\nor \r\n    Number_of_Contactable_Channels != \"Contact.HAM_Number_of_Channels_Contactable__c\"\r\nor\r\n    Is_Solicitable != \"Contact.HAM_Is_Solicitable__c\"\r\nor\r\n    Is_Solicitable_By_Email != \"Contact.HAM_Solicitable_by_Email__c\"\r\nor\r\n    Is_Solicitable_By_Phone != \"Contact.HAM_Solicitable_by_Phone__c\"\r\nor\r\n    Is_Solicitable_By_Text != \"Contact.HAM_Solicitable_by_Text__c\"\r\nor\r\n    Is_Solicitable_By_Mail != \"Contact.HAM_Solicitable_by_Mail__c\"\r\nor\r\n    Number_of_Solicitable_Channels != \"Contact.HAM_Number_of_Channels_Solicitable__c\"\r\nor\r\n    Hamilton_Fund_CYR_Solicitable_Status != \"Contact.HAM_CYR_Solicitable__c\"\r\nor\r\n    \"Pure_Donor.Count_Unique.Fiscal_Years\" != \"Contact.HAM_Total_Years_of_Giving__c\"\r\n\r\nor \"Contact.HAM_Current_Year_Hamilton_Fund_Collected__c\" != \"Aggregate.SUM_FY00_Collected_Amount_HF\"\r\n\r\nor \"Contact.HAM_Current_Yr_Hamilton_Fund_Fundraising__c\" != \"Aggregate.SUM_FY00_Committed_Amount_HF\"\r\n\r\nor \"Contact.HAM_Last_Year_Hamilton_Fund_Collected__c\" != \"Aggregate.SUM_FY01_Collected_Amount_HF\"\r\nor \"Contact.HAM_Last_Year_Hamilton_Fund_Fundraising__c\"\r\n!=\"Aggregate.SUM_FY01_Collected_Amount_HF\"\r\nor \"Contact.HAM_Lifetime_Bequest_Intention__c\"!=\"Aggregate.SUM_Bequest_Intention\"\r\nor \r\n\"Contact.HAM_Consecutive_Years_of_Giving__c\"!=\"Aggregate_02.Sum.Is_Consecutive_Year\"\r\nor \r\n\"Contact.HAM_HF_Anniversary_Date_1YR__c\"\r\n!= \r\n\"EnrichHami.Max_HF_Cash_Date_1YR_to_date\"\r\nor\t(\"Contact.HAM_HF_Anniversary_Date_1YR__c\"\r\n is null and \"EnrichHami.Max_HF_Cash_Date_1YR_to_date\"\r\n is not null)\r\n\r\n\r\n\r\n\r\nor \"Contact.HAM_Outstanding_Balance__c\"!=Outstanding_Balance_Excluding_Bequest_Intentions\r\nor \"Contact.HAM_Ten_to_Fifth__c\"!=Is_Ten_to_the_Fifth\r\nor \"Contact.HAM_Founders_Circle__c\"!=Is_Founders_Circle\r\nor \"Contact.HAM_Last_Meeting_Date__c\"!=\"Substantive_meeting.Last_Substantive_Meeting_Date\"\r\nor Is_Substantive_meeting_for_upsert='true'\r\nor \"Contact.HAM_Past_Parent_Inactive__c\"!=Is_Past_Parent_Inactive\r\nor  Is_children_for_upsert='true'\r\nor\r\n\"Contact.HAM_Chapel_Bell__c\"!=is_active_chapel_bell_recode\r\nor \r\n\"Contact.HAM_1812__c\"!=\r\nIs_1812_CYR\r\n\r\n\r\nor \r\n\"Contact.HAM_Last_Gift_Date__c\"\r\n!= \r\n\"Pure_Donor.Status_Date\"\r\n\r\nor\t(\"Contact.HAM_Last_Gift_Date__c\"\r\n is null and \"Pure_Donor.Status_Date\"\r\n is not null)\r\n\r\n  \r\nor \"Contact.ucinn_ascendv2__Current_FY_Giving__c\" != \"Aggregate.Sum.FY00_Collected_Amount\" \r\n\r\n\r\nor \r\n\"Contact.ucinn_ascendv2__Last_FY_Giving__c\" !=\r\n\"Aggregate.Sum.FY01_Collected_Amount\"\r\n\r\nor \"Contact.HAM_Past_Parent_Inactive__c\" !=\r\nIs_Past_Parent_Inactive\r\n\r\nor \"Contact.HAM_Lifetime_Committed__c\" !=\"Aggregate.SUM_Committed_Excluding_BQI\"\r\n\r\nor \"Contact.HAM_Is_Magazine_Eligible__c\" !=Is_Magazine_Eligible\r\n\r\nor \"Contact.HAM_is_Glade_and_Glen_Eligible__c\"!=Is_Glade_and_Glen_Eligible \r\nOR \"Contact.HAM_JBA__c\"!=Is_JBA_non_expired\r\n\r\nOR \"Contact.HAM_Couper_Guild__c\"!=Is_Couper_Guild\r\n\r\nOR \"Contact.HAM_Hard_Credit_Last_Calendar_Year__c\"!=\"Aggregate.SUM_Calendar_Year_Total_Hard_Credit_Cash_1YR\"\r\n\r\nor \"Contact.HAM_Hard_Credit_Current_Calendar_Year__c\"!=\"Aggregate.SUM_Current_Calendar_Year_Total_Hard_Credit_Cash\"\r\n\r\nor \"Contact.HAM_Last_Gift_Amount__c\"!=\"ML_cash.Last_Cash_Amount\"\r\n\r\nor \"Contact.HAM_Largest_AF_gift_Amount__c\"!=\"Largest_HFCash.Largest_HF_Cash_Amount\"\r\nor \"Contact.HAM_Largest_AF_gift_Purpose__c\"!=\"Largest_HFCash.Largest_HF_Cash.Daily_Designation\"\r\nor \"Contact.HAM_Largest_AF_Pledge_Amount__c\"!=\"Largest_HFPledge.Largest_HF_Pledge_Amount\"\r\nor \"Contact.HAM_Largest_AF_Pledge_Purpose__c\"!=\"Largest_HFPledge.Largest_HFPledge.Daily_Designation\"\r\nor \"Contact.HAM_Largest_gift_Amount__c\"!=\"Largest_Cash.Largest_Cash_Amount\"\r\nor \"Contact.HAM_Largest_gift_purpose__c\"!=\"Largest_Cash.Largest_Cash.Daily_Designation\"\r\nor \"Contact.HAM_Largest_Pledge_Amount__c\"!=\"Largest_Pledge.Largest_Pledge_Amount\"\r\nor \"Contact.HAM_Largest_Pledge_Purpose__c\"!=\"Largest_Pledge.Largest_Pledge.Daily_Designation\"\r\n\r\n\r\n\r\nor \"Contact.HAM_Largest_AF_gift_Date__c\"!=\"Largest_HFCash.Largest_HF_Cash_Date\"\r\nor ( \"Contact.HAM_Largest_AF_gift_Date__c\" is null and \"Largest_HFCash.Largest_HF_Cash_Date\"  is not null)\r\n\r\nor \"Contact.HAM_Largest_AF_Pledge_Date__c\"!=\"Largest_HFPledge.Largest_HF_Pledge_Date\"\r\nor (\"Contact.HAM_Largest_AF_Pledge_Date__c\" is null and \"Largest_HFPledge.Largest_HF_Pledge_Date\" is not null)\r\n\r\nor \"Contact.HAM_Largest_gift_Date__c\"!=\"Largest_Cash.Largest_Cash_Date\"\r\nor (\"Contact.HAM_Largest_gift_Date__c\" is null and \"Largest_Cash.Largest_Cash_Date\" is not null)\r\n\r\n\r\nor \"Contact.HAM_Largest_Pledge_Date__c\"!=\"Largest_Pledge.Largest_Pledge_Date\"\r\nor (\"Contact.HAM_Largest_Pledge_Date__c\" is null and \"Largest_Pledge.Largest_Pledge_Date\" is not null)\r\n\r\nor u_1812_1yr_Upsert_Use!=\"Contact.HAM_1YR_1812__c\"\r\nor (u_1812_1yr_Upsert_Use is not null and \"Contact.HAM_1YR_1812__c\" is null)\r\n\r\nor \"Contact.HAM_FY00_Collect_Amt_Restricted__c\"!=HAM_CYR_Collect_Amt_Restricted__c\r\n\r\nor \"Contact.HAM_FY00_Collect_Amt_Restricted__c\" is null\r\n\r\nor \"Contact.HAM_FY00_Committed_Ex_BQI_Amt_Restricted__c\"!=HAM_CYR_Committed_Ex_BQI_Amt_Restricted__c\r\nor \"Contact.HAM_FY00_Committed_Ex_BQI_Amt_Restricted__c\"  is null\r\n\r\nor \"Contact.HAM_All_FY00_Purpose__c\"!=\"CYR_designations.All_FY00_designations\" or (\"Contact.HAM_All_FY00_Purpose__c\" is null and \"CYR_designations.All_FY00_designations\" is not null)\r\n\r\nor \"Contact.HAM_CYR_1812_Projected__c\"!=Is_1812_CYR_Projected\r\nor (\"Contact.HAM_CYR_1812_Projected__c\" is null and\r\nIs_1812_CYR_Projected is not null)\r\n\r\n)\r\nand\r\n    Id is not null"
+      }
+    },
+    "DROP_FIELDS0" : {
+      "action" : "schema",
+      "sources" : [ "FILTER0" ],
+      "parameters" : {
+        "slice" : {
+          "mode" : "SELECT",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Id", "Philanthropic_Donor_Status", "Pure_Donor_Status", "Hamilton_Fund_Donor_Status", "Is_Active", "Is_Contactable", "Is_Contactable_By_Text", "Is_Contactable_By_Phone", "Is_Contactable_By_Email", "Is_Contactable_By_Mail", "Number_of_Contactable_Channels", "Is_Solicitable", "Is_Solicitable_By_Mail", "Is_Solicitable_By_Email", "Is_Solicitable_By_Text", "Is_Solicitable_By_Phone", "Number_of_Solicitable_Channels", "Hamilton_Fund_CYR_Solicitable_Status", "Pure_Donor.Count_Unique.Fiscal_Years", "Aggregate.SUM_FY01_Collected_Amount_HF", "Aggregate.SUM_FY00_Collected_Amount_HF", "Aggregate.SUM_FY00_Committed_Amount_HF", "Aggregate.SUM_Bequest_Intention", "Aggregate_02.Sum.Is_Consecutive_Year", "EnrichHami.Max_HF_Cash_Date_1YR_to_date", "Outstanding_Balance_Excluding_Bequest_Intentions", "Is_Founders_Circle", "Is_Ten_to_the_Fifth", "Substantive_meeting.Last_Substantive_Meeting_Date", "Is_Past_Parent_Inactive", "is_active_chapel_bell_recode", "Is_1812_CYR", "Pure_Donor.Status_Date", "Aggregate.Sum.FY00_Collected_Amount", "Aggregate.Sum.FY01_Collected_Amount", "All_Children", "Aggregate.SUM_Committed_Excluding_BQI", "Is_Magazine_Eligible", "Is_Glade_and_Glen_Eligible", "Is_JBA_non_expired", "Is_Couper_Guild", "Aggregate.SUM_Current_Calendar_Year_Total_Hard_Credit_Cash", "Aggregate.SUM_Calendar_Year_Total_Hard_Credit_Cash_1YR", "Largest_Pledge.Largest_Pledge_Date", "Largest_Pledge.Largest_Pledge.Daily_Designation", "Largest_Pledge.Largest_Pledge_Amount", "Largest_HFPledge.Largest_HF_Pledge_Date", "Largest_HFPledge.Largest_HFPledge.Daily_Designation", "Largest_HFPledge.Largest_HF_Pledge_Amount", "Largest_HFCash.Largest_HF_Cash.Daily_Designation", "Largest_HFCash.Largest_HF_Cash_Date", "Largest_HFCash.Largest_HF_Cash_Amount", "Largest_Cash.Largest_Cash.Daily_Designation", "Largest_Cash.Largest_Cash_Date", "Largest_Cash.Largest_Cash_Amount", "ML_cash.Last_Cash_Amount", "u_1812_1yr_Upsert_Use", "HAM_CYR_Committed_Ex_BQI_Amt_Restricted__c", "HAM_CYR_Collect_Amt_Restricted__c", "CYR_designations.All_FY00_designations", "Is_1812_CYR_Projected" ]
+        }
+      }
+    },
+    "FORMULA0" : {
+      "action" : "formula",
+      "sources" : [ "DROP_FIELDS0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "FY01_Fundraising_Amount_HF",
+          "label" : "1YR Fundraising Amount (HF)",
+          "formulaExpression" : "\"Aggregate.SUM_FY01_Collected_Amount_HF\"",
+          "precision" : 10,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "OUTPUT0" : {
+      "action" : "outputExternal",
+      "sources" : [ "FORMULA0" ],
+      "parameters" : {
+        "connectionName" : "SFDCconnectorHAM",
+        "object" : "Contact",
+        "operation" : "upsert",
+        "externalIdFieldName" : "Id",
+        "hyperFileName" : "",
+        "namedCredential" : null,
+        "fieldsMapping" : [ {
+          "sourceField" : "Is_Contactable",
+          "targetField" : "HAM_Is_Contactable__c"
+        }, {
+          "sourceField" : "Is_Contactable_By_Text",
+          "targetField" : "HAM_Contactable_by_Text__c"
+        }, {
+          "sourceField" : "Is_Active",
+          "targetField" : "HAM_Is_Active__c"
+        }, {
+          "sourceField" : "Is_Past_Parent_Inactive",
+          "targetField" : "HAM_Past_Parent_Inactive__c"
+        }, {
+          "sourceField" : "Is_Couper_Guild",
+          "targetField" : "HAM_Couper_Guild__c"
+        }, {
+          "sourceField" : "CYR_designations.All_FY00_designations",
+          "targetField" : "HAM_All_FY00_Purpose__c"
+        }, {
+          "sourceField" : "Is_Contactable_By_Email",
+          "targetField" : "HAM_Contactable_by_Email__c"
+        }, {
+          "sourceField" : "Substantive_meeting.Last_Substantive_Meeting_Date",
+          "targetField" : "HAM_Last_Meeting_Date__c"
+        }, {
+          "sourceField" : "Hamilton_Fund_CYR_Solicitable_Status",
+          "targetField" : "HAM_CYR_Solicitable__c"
+        }, {
+          "sourceField" : "All_Children",
+          "targetField" : "HAM_Children__c"
+        }, {
+          "sourceField" : "Is_Founders_Circle",
+          "targetField" : "HAM_Founders_Circle__c"
+        }, {
+          "sourceField" : "Is_Magazine_Eligible",
+          "targetField" : "HAM_Is_Magazine_Eligible__c"
+        }, {
+          "sourceField" : "Largest_Cash.Largest_Cash.Daily_Designation",
+          "targetField" : "HAM_Largest_gift_purpose__c"
+        }, {
+          "sourceField" : "Is_Ten_to_the_Fifth",
+          "targetField" : "HAM_Ten_to_Fifth__c"
+        }, {
+          "sourceField" : "Id",
+          "targetField" : "Id"
+        }, {
+          "sourceField" : "Is_Solicitable_By_Email",
+          "targetField" : "HAM_Solicitable_by_Email__c"
+        }, {
+          "sourceField" : "Largest_Pledge.Largest_Pledge.Daily_Designation",
+          "targetField" : "HAM_Largest_Pledge_Purpose__c"
+        }, {
+          "sourceField" : "Is_Solicitable",
+          "targetField" : "HAM_Is_Solicitable__c"
+        }, {
+          "sourceField" : "Largest_HFCash.Largest_HF_Cash.Daily_Designation",
+          "targetField" : "HAM_Largest_AF_gift_Purpose__c"
+        }, {
+          "sourceField" : "Is_Solicitable_By_Phone",
+          "targetField" : "HAM_Solicitable_by_Phone__c"
+        }, {
+          "sourceField" : "Is_JBA_non_expired",
+          "targetField" : "HAM_JBA__c"
+        }, {
+          "sourceField" : "Largest_HFPledge.Largest_HFPledge.Daily_Designation",
+          "targetField" : "HAM_Largest_AF_Pledge_Purpose__c"
+        }, {
+          "sourceField" : "Is_Contactable_By_Phone",
+          "targetField" : "HAM_Contactable_by_Phone__c"
+        }, {
+          "sourceField" : "u_1812_1yr_Upsert_Use",
+          "targetField" : "HAM_1YR_1812__c"
+        }, {
+          "sourceField" : "Is_Solicitable_By_Mail",
+          "targetField" : "HAM_Solicitable_by_Mail__c"
+        }, {
+          "sourceField" : "Is_Glade_and_Glen_Eligible",
+          "targetField" : "HAM_is_Glade_and_Glen_Eligible__c"
+        }, {
+          "sourceField" : "Pure_Donor.Status_Date",
+          "targetField" : "HAM_Last_Gift_Date__c"
+        }, {
+          "sourceField" : "Is_Solicitable_By_Text",
+          "targetField" : "HAM_Solicitable_by_Text__c"
+        }, {
+          "sourceField" : "Is_Contactable_By_Mail",
+          "targetField" : "HAM_Contactable_by_Mail__c"
+        }, {
+          "sourceField" : "Aggregate.SUM_FY00_Collected_Amount_HF",
+          "targetField" : "HAM_Current_Year_Hamilton_Fund_Collected__c"
+        }, {
+          "sourceField" : "Number_of_Solicitable_Channels",
+          "targetField" : "HAM_Number_of_Channels_Solicitable__c"
+        }, {
+          "sourceField" : "Largest_Pledge.Largest_Pledge_Amount",
+          "targetField" : "HAM_Largest_Pledge_Amount__c"
+        }, {
+          "sourceField" : "Pure_Donor.Count_Unique.Fiscal_Years",
+          "targetField" : "HAM_Total_Years_of_Giving__c"
+        }, {
+          "sourceField" : "HAM_CYR_Committed_Ex_BQI_Amt_Restricted__c",
+          "targetField" : "HAM_FY00_Committed_Ex_BQI_Amt_Restricted__c"
+        }, {
+          "sourceField" : "Aggregate.SUM_FY00_Committed_Amount_HF",
+          "targetField" : "HAM_Current_Yr_Hamilton_Fund_Fundraising__c"
+        }, {
+          "sourceField" : "Aggregate_02.Sum.Is_Consecutive_Year",
+          "targetField" : "HAM_Consecutive_Years_of_Giving__c"
+        }, {
+          "sourceField" : "Aggregate.SUM_Calendar_Year_Total_Hard_Credit_Cash_1YR",
+          "targetField" : "HAM_Hard_Credit_Last_Calendar_Year__c"
+        }, {
+          "sourceField" : "Aggregate.SUM_FY01_Collected_Amount_HF",
+          "targetField" : "HAM_Last_Year_Hamilton_Fund_Collected__c"
+        }, {
+          "sourceField" : "ML_cash.Last_Cash_Amount",
+          "targetField" : "HAM_Last_Gift_Amount__c"
+        }, {
+          "sourceField" : "Aggregate.SUM_Committed_Excluding_BQI",
+          "targetField" : "HAM_Lifetime_Committed__c"
+        }, {
+          "sourceField" : "HAM_CYR_Collect_Amt_Restricted__c",
+          "targetField" : "HAM_FY00_Collect_Amt_Restricted__c"
+        }, {
+          "sourceField" : "Outstanding_Balance_Excluding_Bequest_Intentions",
+          "targetField" : "HAM_Outstanding_Balance__c"
+        }, {
+          "sourceField" : "Pure_Donor_Status",
+          "targetField" : "HAM_Pure_Donor_Status__c"
+        }, {
+          "sourceField" : "Hamilton_Fund_Donor_Status",
+          "targetField" : "HAM_HF_Donor_Status__c"
+        }, {
+          "sourceField" : "Largest_HFPledge.Largest_HF_Pledge_Amount",
+          "targetField" : "HAM_Largest_AF_Pledge_Amount__c"
+        }, {
+          "sourceField" : "Number_of_Contactable_Channels",
+          "targetField" : "HAM_Number_of_Channels_Contactable__c"
+        }, {
+          "sourceField" : "Largest_HFCash.Largest_HF_Cash_Amount",
+          "targetField" : "HAM_Largest_AF_gift_Amount__c"
+        }, {
+          "sourceField" : "Aggregate.Sum.FY00_Collected_Amount",
+          "targetField" : "ucinn_ascendv2__Current_FY_Giving__c"
+        }, {
+          "sourceField" : "Aggregate.SUM_Current_Calendar_Year_Total_Hard_Credit_Cash",
+          "targetField" : "HAM_Hard_Credit_Current_Calendar_Year__c"
+        }, {
+          "sourceField" : "Philanthropic_Donor_Status",
+          "targetField" : "HAM_Philanthropic_Donor_Status__c"
+        }, {
+          "sourceField" : "Aggregate.Sum.FY01_Collected_Amount",
+          "targetField" : "ucinn_ascendv2__Last_FY_Giving__c"
+        }, {
+          "sourceField" : "Aggregate.SUM_Bequest_Intention",
+          "targetField" : "HAM_Lifetime_Bequest_Intention__c"
+        }, {
+          "sourceField" : "Largest_Cash.Largest_Cash_Amount",
+          "targetField" : "HAM_Largest_gift_Amount__c"
+        }, {
+          "sourceField" : "EnrichHami.Max_HF_Cash_Date_1YR_to_date",
+          "targetField" : "HAM_HF_Anniversary_Date_1YR__c"
+        }, {
+          "sourceField" : "Largest_Pledge.Largest_Pledge_Date",
+          "targetField" : "HAM_Largest_Pledge_Date__c"
+        }, {
+          "sourceField" : "Largest_Cash.Largest_Cash_Date",
+          "targetField" : "HAM_Largest_gift_Date__c"
+        }, {
+          "sourceField" : "Largest_HFPledge.Largest_HF_Pledge_Date",
+          "targetField" : "HAM_Largest_AF_Pledge_Date__c"
+        }, {
+          "sourceField" : "Largest_HFCash.Largest_HF_Cash_Date",
+          "targetField" : "HAM_Largest_AF_gift_Date__c"
+        }, {
+          "sourceField" : "is_active_chapel_bell_recode",
+          "targetField" : "HAM_Chapel_Bell__c"
+        }, {
+          "sourceField" : "Is_1812_CYR",
+          "targetField" : "HAM_1812__c"
+        }, {
+          "sourceField" : "Is_1812_CYR_Projected",
+          "targetField" : "HAM_CYR_1812_Projected__c"
+        }, {
+          "sourceField" : "FY01_Fundraising_Amount_HF",
+          "targetField" : "HAM_Last_Year_Hamilton_Fund_Fundraising__c"
+        } ],
+        "connectorType" : "SALESFORCE_OUTPUT"
+      }
+    },
+    "OUTPUT1" : {
+      "action" : "save",
+      "sources" : [ "FORMULA0" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Most Recent Constituent Updates",
+          "name" : "Most_Recent_Constituent_Updates",
+          "folderName" : "SharedApp"
+        },
+        "dateConfigurationName" : "July_Fiscal_Year",
+        "measuresToCurrencies" : [ ]
+      }
+    },
+    "TO_DATE0" : {
+      "action" : "typeCast",
+      "sources" : [ "LOAD_DATASET0" ],
+      "parameters" : {
+        "fields" : [ {
+          "name" : "EnrichHami.Max_HF_Cash_Date_1YR",
+          "newProperties" : {
+            "label" : "Max HF Cash Date 1YR To Date",
+            "name" : "EnrichHami.Max_HF_Cash_Date_1YR_to_date",
+            "typeProperties" : {
+              "type" : "DATETIME",
+              "format" : "yyyy-MM-dd"
+            }
+          }
+        } ]
+      }
+    },
+    "TO_DATE1" : {
+      "action" : "typeCast",
+      "sources" : [ "TO_DATE0" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "Largest_Pledge.Largest_Pledge_Date_to_date",
+          "newProperties" : {
+            "name" : "Largest_Pledge.Largest_Pledge_Date"
+          }
+        } ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Largest_Pledge.Largest_Pledge_Date" ]
+        }
+      },
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Largest_Pledge.Largest_Pledge_Date",
+          "newProperties" : {
+            "label" : "Largest Pledge Date",
+            "name" : "Largest_Pledge.Largest_Pledge_Date_to_date",
+            "typeProperties" : {
+              "type" : "DATETIME",
+              "format" : "yyyy-MM-dd"
+            }
+          }
+        } ]
+      }
+    },
+    "TO_DATE2" : {
+      "action" : "typeCast",
+      "sources" : [ "TO_DATE1" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "Largest_Cash.Largest_Cash_Date_to_date",
+          "newProperties" : {
+            "name" : "Largest_Cash.Largest_Cash_Date"
+          }
+        } ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Largest_Cash.Largest_Cash_Date" ]
+        }
+      },
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Largest_Cash.Largest_Cash_Date",
+          "newProperties" : {
+            "label" : "Largest Cash Date",
+            "name" : "Largest_Cash.Largest_Cash_Date_to_date",
+            "typeProperties" : {
+              "type" : "DATETIME",
+              "format" : "yyyy-MM-dd"
+            }
+          }
+        } ]
+      }
+    },
+    "TO_DATE3" : {
+      "action" : "typeCast",
+      "sources" : [ "TO_DATE2" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "Largest_HFPledge.Largest_HF_Pledge_Date_to_date",
+          "newProperties" : {
+            "name" : "Largest_HFPledge.Largest_HF_Pledge_Date"
+          }
+        } ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Largest_HFPledge.Largest_HF_Pledge_Date" ]
+        }
+      },
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Largest_HFPledge.Largest_HF_Pledge_Date",
+          "newProperties" : {
+            "label" : "Largest HF Pledge Date",
+            "name" : "Largest_HFPledge.Largest_HF_Pledge_Date_to_date",
+            "typeProperties" : {
+              "type" : "DATETIME",
+              "format" : "yyyy-MM-dd"
+            }
+          }
+        } ]
+      }
+    },
+    "TO_DATE4" : {
+      "action" : "typeCast",
+      "sources" : [ "TO_DATE3" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "Largest_HFCash.Largest_HF_Cash_Date_to_date",
+          "newProperties" : {
+            "name" : "Largest_HFCash.Largest_HF_Cash_Date"
+          }
+        } ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Largest_HFCash.Largest_HF_Cash_Date" ]
+        }
+      },
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Largest_HFCash.Largest_HF_Cash_Date",
+          "newProperties" : {
+            "label" : "Largest HF Cash Date",
+            "name" : "Largest_HFCash.Largest_HF_Cash_Date_to_date",
+            "typeProperties" : {
+              "type" : "DATETIME",
+              "format" : "yyyy-MM-dd"
+            }
+          }
+        } ]
+      }
+    },
+    "FORMULA1" : {
+      "action" : "formula",
+      "sources" : [ "JOIN0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Is_Substantive_meeting_for_upsert",
+          "label" : "Is Substantive meeting for upsert",
+          "formulaExpression" : "case \r\n\twhen \"Contact.HAM_Last_Meeting_Date__c\"!=\"Substantive_meeting.Last_Substantive_Meeting_Date\"\r\n\tthen 'true'\r\n\twhen \r\n\t\"Contact.HAM_Last_Meeting_Date__c\" is null and \"Substantive_meeting.Last_Substantive_Meeting_Date\"is not null\r\n\tthen 'true'\r\n\telse\r\n\t'false'\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA2" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA1" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Is_children_for_upsert",
+          "label" : "Is children for upsert",
+          "formulaExpression" : "case \r\n\twhen \"Contact.HAM_Children__c\"!=All_Children\r\n\tthen 'true'\r\n\twhen \r\n\t\"Contact.HAM_Children__c\" is null and All_Children is not null\r\n\tthen 'true'\r\n\telse 'false' end",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA3" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA2" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "is_active_chapel_bell_recode",
+          "label" : "is active chapel bell recode",
+          "formulaExpression" : "case \r\n\twhen \r\n\t\"ActiveCB.Is_Active_Chapel_Bell\" is null \r\n\tthen 'false'\r\n\telse \"ActiveCB.Is_Active_Chapel_Bell\" end",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA4" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA3" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Is_1812_CYR",
+          "label" : "Is 1812 CYR",
+          "formulaExpression" : "case \r\n\twhen \r\n\t\"TransformTC.Tiered_1812_CYR\" is null \r\n\tthen 'false'\r\n\telse \"TransformTC.Tiered_1812_CYR\" end",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA5" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA4" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Is_1812_CYR_Projected",
+          "label" : "Is 1812 CYR Projected",
+          "formulaExpression" : "case \r\n\twhen \r\n\t\"Enrich1812.Is_1812_CYR_with_Full_CB\" is null \r\n\tthen 'false'\r\n\telse \"Enrich1812.Is_1812_CYR_with_Full_CB\"end",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    }
+  },
+  "ui" : {
+    "nodes" : {
+      "LOAD_DATASET0" : {
+        "label" : "Account and Contact Dataset",
+        "description" : "",
+        "type" : "LOAD_DATASET",
+        "top" : 252.3,
+        "left" : 391.7,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "LOAD_DATASET1" : {
+        "label" : "Contact",
+        "description" : "",
+        "type" : "LOAD_DATASET",
+        "top" : 392.2,
+        "left" : 672,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN0" : {
+        "label" : "Lookup Current values from contact",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 252,
+        "left" : 672
+      },
+      "FILTER0" : {
+        "label" : "Filter Contacts With Changed Donor Status",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 252,
+        "left" : 1094
+      },
+      "TRANSFORM0" : {
+        "label" : "Keep account and contact fields",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 252,
+        "left" : 1234,
+        "graph" : {
+          "DROP_FIELDS0" : {
+            "label" : "Keep Current Donor Status"
+          },
+          "FORMULA0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "1YR Fundraising Amount (HF)"
+          }
+        },
+        "connectors" : [ {
+          "source" : "DROP_FIELDS0",
+          "target" : "FORMULA0"
+        } ]
+      },
+      "OUTPUT0" : {
+        "label" : "Upsert Updated Constituent Records",
+        "description" : "",
+        "type" : "OUTPUT",
+        "top" : 252,
+        "left" : 1374
+      },
+      "OUTPUT1" : {
+        "label" : "Output Most Recent Constituent Updates",
+        "description" : "",
+        "type" : "OUTPUT",
+        "top" : 392.4,
+        "left" : 1232.2
+      },
+      "TRANSFORM1" : {
+        "label" : "Convert Max Date to Date type",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 252,
+        "left" : 532,
+        "graph" : {
+          "TO_DATE0" : {
+            "label" : "To Date"
+          },
+          "TO_DATE1" : {
+            "label" : "To Date"
+          },
+          "TO_DATE2" : {
+            "label" : "To Date"
+          },
+          "TO_DATE3" : {
+            "label" : "To Date"
+          },
+          "TO_DATE4" : {
+            "label" : "To Date"
+          }
+        },
+        "connectors" : [ {
+          "source" : "TO_DATE0",
+          "target" : "TO_DATE1"
+        }, {
+          "source" : "TO_DATE1",
+          "target" : "TO_DATE2"
+        }, {
+          "source" : "TO_DATE2",
+          "target" : "TO_DATE3"
+        }, {
+          "source" : "TO_DATE3",
+          "target" : "TO_DATE4"
+        } ]
+      },
+      "TRANSFORM2" : {
+        "label" : "Transform 2",
+        "type" : "TRANSFORM",
+        "top" : 252,
+        "left" : 812,
+        "graph" : {
+          "FORMULA1" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Is Substantive meeting for upsert"
+          },
+          "FORMULA2" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Is children for upsert"
+          },
+          "FORMULA3" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "is active chapel bell recode"
+          },
+          "FORMULA4" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Is 1812 CYR"
+          },
+          "FORMULA5" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Is 1812 CYR Projected"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA1",
+          "target" : "FORMULA2"
+        }, {
+          "source" : "FORMULA2",
+          "target" : "FORMULA3"
+        }, {
+          "source" : "FORMULA3",
+          "target" : "FORMULA4"
+        }, {
+          "source" : "FORMULA4",
+          "target" : "FORMULA5"
+        } ]
+      }
+    },
+    "connectors" : [ {
+      "source" : "TRANSFORM1",
+      "target" : "JOIN0"
+    }, {
+      "source" : "LOAD_DATASET1",
+      "target" : "JOIN0"
+    }, {
+      "source" : "FILTER0",
+      "target" : "TRANSFORM0"
+    }, {
+      "source" : "TRANSFORM0",
+      "target" : "OUTPUT0"
+    }, {
+      "source" : "TRANSFORM0",
+      "target" : "OUTPUT1"
+    }, {
+      "source" : "LOAD_DATASET0",
+      "target" : "TRANSFORM1"
+    }, {
+      "source" : "JOIN0",
+      "target" : "TRANSFORM2"
+    }, {
+      "source" : "TRANSFORM2",
+      "target" : "FILTER0"
+    } ],
+    "hiddenColumns" : [ ]
+  },
+  "runMode" : "full"
+}

@@ -1,0 +1,153 @@
+{
+  "version" : "65.0",
+  "nodes" : {
+    "LOAD_DATASET0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Aggregate.SUM_Cash_Post_Graduation_Years_1_5", "Aggregate.SUM_Cash_Post_Graduation", "Aggregate.UNIQUE_Post_Graduation_Years_1_5_Fiscal_Years_Given", "Aggregate.UNIQUE_Post_Graduation_Fiscal_Years_Given", "Aggregate.SUM_Cash_Post_Graduation_Years_6_10", "Aggregate.UNIQUE_Post_Graduation_Years_6_10_Fiscal_Years_Given", "Account_or_Contact_External_Id", "Constituent_Type_String", "HAM_Reunion_Year__c", "Preferred_Address.ucinn_ascendv2__Address_State_Formula__c", "ucinn_ascendv2__Preferred_Address_Country__c", "ucinn_ascendv2__Is_Deceased__c", "Account_or_Contact_Id", "Name", "Pure_Donor.Count_Unique.Fiscal_Years", "Aggregate.Sum.Lifetime_Collected_Amount" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Account and Contact Dataset",
+          "name" : "Account_and_Contact_Dataset"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "FORMULA0" : {
+      "action" : "formula",
+      "sources" : [ "LOAD_DATASET0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Is_Hamilton_Alumni",
+          "label" : "Is Hamilton Alumni",
+          "formulaExpression" : "case  \r\n    when contains(Constituent_Type_String, 'Hamilton Alumni')\r\n    then 'true'\r\n    else\r\n    'false'\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FILTER0" : {
+      "action" : "filter",
+      "sources" : [ "FORMULA0" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "ucinn_ascendv2__Is_Deceased__c",
+          "operator" : "EQUAL",
+          "operands" : [ "false" ]
+        }, {
+          "type" : "TEXT",
+          "field" : "Is_Hamilton_Alumni",
+          "operator" : "EQUAL",
+          "operands" : [ "true" ]
+        }, {
+          "type" : "TEXT",
+          "field" : "HAM_Reunion_Year__c",
+          "operator" : "EQUAL",
+          "operands" : [ "2000", "2001", "2002", "2003", "2004", "2005", "2006", "2007", "2008", "2009", "2010", "2011", "2012", "2013", "2014", "2015", "2016", "2017", "2018", "2019", "2020", "2021", "2022", "2023", "2024", "2025" ]
+        } ]
+      }
+    },
+    "DROP_FIELDS0" : {
+      "action" : "schema",
+      "sources" : [ "FILTER0" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Is_Hamilton_Alumni", "ucinn_ascendv2__Is_Deceased__c", "Constituent_Type_String" ]
+        }
+      }
+    },
+    "OUTPUT0" : {
+      "action" : "save",
+      "sources" : [ "DROP_FIELDS0" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "living alumni 2000-25",
+          "name" : "living_alumni_2000_25"
+        },
+        "measuresToCurrencies" : [ ]
+      }
+    }
+  },
+  "ui" : {
+    "nodes" : {
+      "LOAD_DATASET0" : {
+        "label" : "Account and Contact Dataset",
+        "type" : "LOAD_DATASET",
+        "top" : 112,
+        "left" : 112,
+        "parameters" : {
+          "sampleSize" : 10000
+        }
+      },
+      "TRANSFORM0" : {
+        "label" : "Is Hamilton Alumni",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 112,
+        "left" : 252,
+        "graph" : {
+          "FORMULA0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Is Hamilton Alumni"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "FILTER0" : {
+        "label" : "living alumni classes of 2000-25",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 112,
+        "left" : 392
+      },
+      "TRANSFORM1" : {
+        "label" : "Drop and rename columns",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 112,
+        "left" : 532,
+        "graph" : {
+          "DROP_FIELDS0" : {
+            "label" : "Drop Columns"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "OUTPUT0" : {
+        "label" : "Output 0",
+        "type" : "OUTPUT",
+        "top" : 112,
+        "left" : 672
+      }
+    },
+    "connectors" : [ {
+      "source" : "LOAD_DATASET0",
+      "target" : "TRANSFORM0"
+    }, {
+      "source" : "TRANSFORM0",
+      "target" : "FILTER0"
+    }, {
+      "source" : "FILTER0",
+      "target" : "TRANSFORM1"
+    }, {
+      "source" : "TRANSFORM1",
+      "target" : "OUTPUT0"
+    } ],
+    "hiddenColumns" : [ ]
+  },
+  "runMode" : "full"
+}

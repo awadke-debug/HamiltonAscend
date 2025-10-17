@@ -1,0 +1,496 @@
+{
+  "version" : "60.0",
+  "nodes" : {
+    "LOAD_DATASET0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "ID", "Text_Id", "TNEF2024_DV_Predictions", "Probability_Class_1", "Probability_Class_0" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "propmodel_2024_catboost_bag_predictions_probabilities",
+          "name" : "propmodel_2024_catboost_bag_predictions_probabilities"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "LOAD_DATASET1" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Id", "Account_or_Contact_External_Id", "Account.Id", "Is_ISB.Is_ISB_Campaign_Member", "HAM_Reunion_Year__c", "Philanthropic_Donor_Status", "Aggregate.SUM_FY00_Collected_Amount_No_Event_Fee_Gifts" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Account and Contact Dataset",
+          "name" : "Account_and_Contact_Dataset"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN0" : {
+      "action" : "join",
+      "sources" : [ "DROP_FIELDS0", "FORMULA0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Accountand.External_Id", "ID" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "ID" ],
+        "rightQualifier" : "Accountand",
+        "rightKeys" : [ "External_Id" ]
+      }
+    },
+    "FORMULA0" : {
+      "action" : "formula",
+      "sources" : [ "LOAD_DATASET1" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "External_Id",
+          "label" : "External Id",
+          "formulaExpression" : "ltrim(Account_or_Contact_External_Id, '0')",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "DROP_FIELDS0" : {
+      "action" : "schema",
+      "sources" : [ "LOAD_DATASET0" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Text_Id" ]
+        }
+      }
+    },
+    "FORMULA1" : {
+      "action" : "formula",
+      "sources" : [ "JOIN0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Give_Flag_CFY",
+          "label" : "Give Flag CFY",
+          "formulaExpression" : "case \r\nwhen \"Accountand.Aggregate.SUM_FY00_Collected_Amount_No_Event_Fee_Gifts\">0\r\nthen 1 \r\nelse 0 \r\nend",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA2" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA7" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Text_Help_Rank",
+          "label" : "Text Help Rank",
+          "formulaExpression" : "'Text Help Rank'",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA3" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA2" ],
+      "parameters" : {
+        "partitionBy" : [ "Text_Help_Rank" ],
+        "orderBy" : [ {
+          "fieldName" : "Probability_Class_1",
+          "direction" : "DESC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Rank_of_Class_1",
+          "label" : "Rank of Class 1",
+          "formulaExpression" : "rank()",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA4" : {
+      "action" : "computeRelative",
+      "sources" : [ "FORMULA3" ],
+      "parameters" : {
+        "partitionBy" : [ "Text_Help_Rank" ],
+        "orderBy" : [ {
+          "fieldName" : "Rank_of_Class_1",
+          "direction" : "DESC"
+        } ],
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Highest_Value_of_Rank",
+          "label" : "Highest Value of Rank",
+          "formulaExpression" : "first_value(Rank_of_Class_1)",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA5" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA4" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Rank_Percentage",
+          "label" : "Rank Percentage",
+          "formulaExpression" : "Rank_of_Class_1/Highest_Value_of_Rank",
+          "precision" : 10,
+          "scale" : 8,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA6" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA5" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Decile",
+          "label" : "Decile",
+          "formulaExpression" : "case \r\n    when Rank_Percentage <0.1 \r\n    then ' 1'\r\n\r\n    when Rank_Percentage <0.2 \r\n        and Rank_Percentage>=0.1 \r\n    then ' 2'\r\n\r\n    when Rank_Percentage <0.3 \r\n        and Rank_Percentage>=0.2 \r\n    then ' 3'\r\n\r\n    when Rank_Percentage <0.4 \r\n        and Rank_Percentage>=0.3 \r\n    then ' 4'\r\n\r\n    when Rank_Percentage <0.5 \r\n        and Rank_Percentage>=0.4 \r\n    then ' 5'\r\n\r\n    when Rank_Percentage <0.6 \r\n        and Rank_Percentage>=0.5 \r\n    then ' 6'\r\n\r\n    when Rank_Percentage <0.7 \r\n        and Rank_Percentage>=0.6 \r\n    then ' 7'\r\n\r\n    when Rank_Percentage <0.8 \r\n        and Rank_Percentage>=0.7 \r\n    then ' 8'\r\n\r\n    when Rank_Percentage <0.9 \r\n        and Rank_Percentage>=0.8 \r\n    then ' 9'\r\n\r\n    when Rank_Percentage >=0.9\r\n    then '10'\r\n    \r\nend\r\n\r\n",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "DROP_FIELDS1" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA8" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Rank_Percentage", "Highest_Value_of_Rank", "Rank_of_Class_1", "Text_Help_Rank", "Probability_Class_0" ]
+        }
+      }
+    },
+    "FORMULA7" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA1" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Is_Gold_Alumni",
+          "label" : "Is Gold Alumni",
+          "formulaExpression" : "case \r\nwhen \"Accountand.HAM_Reunion_Year__c\"<=2023 and \"Accountand.HAM_Reunion_Year__c\">=2014\r\nthen 'Yes'\r\nelse 'No'\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA8" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA6" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Decile_Numeric",
+          "label" : "Decile Numeric",
+          "formulaExpression" : "case \r\n    when Rank_Percentage <0.1 \r\n    then  1\r\n\r\n    when Rank_Percentage <0.2 \r\n        and Rank_Percentage>=0.1 \r\n    then  2\r\n\r\n    when Rank_Percentage <0.3 \r\n        and Rank_Percentage>=0.2 \r\n    then  3\r\n\r\n    when Rank_Percentage <0.4 \r\n        and Rank_Percentage>=0.3 \r\n    then  4\r\n\r\n    when Rank_Percentage <0.5 \r\n        and Rank_Percentage>=0.4 \r\n    then  5\r\n\r\n    when Rank_Percentage <0.6 \r\n        and Rank_Percentage>=0.5 \r\n    then  6\r\n\r\n    when Rank_Percentage <0.7 \r\n        and Rank_Percentage>=0.6 \r\n    then  7\r\n\r\n    when Rank_Percentage <0.8 \r\n        and Rank_Percentage>=0.7 \r\n    then  8\r\n\r\n    when Rank_Percentage <0.9 \r\n        and Rank_Percentage>=0.8 \r\n    then  9\r\n\r\n    when Rank_Percentage >=0.9\r\n    then 10\r\n    \r\nend\r\n\r\n",
+          "precision" : 10,
+          "scale" : 0,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "OUTPUT0" : {
+      "action" : "save",
+      "sources" : [ "DROP_FIELDS1" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Propensity Model Result Dataset",
+          "name" : "Propensity_Model_Result_Dataset",
+          "folderName" : "SharedApp"
+        },
+        "dateConfigurationName" : "July_Fiscal_Year",
+        "measuresToCurrencies" : [ ]
+      }
+    },
+    "EXTRACT0" : {
+      "action" : "extractGrains",
+      "sources" : [ "DROP_FIELDS1" ],
+      "parameters" : {
+        "grainExtractions" : [ ]
+      }
+    },
+    "AGGREGATE1" : {
+      "action" : "aggregate",
+      "sources" : [ "EXTRACT0" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "MAX_Probability_Class_1",
+          "newProperties" : {
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 2,
+              "precision" : 18
+            }
+          }
+        } ]
+      },
+      "parameters" : {
+        "aggregations" : [ {
+          "action" : "MAX",
+          "source" : "Probability_Class_1",
+          "name" : "MAX_Probability_Class_1",
+          "label" : "Maximum Probability_Class_1"
+        }, {
+          "action" : "MIN",
+          "source" : "Decile_Numeric",
+          "name" : "MIN_Decile_Numeric",
+          "label" : "Minimum Decile Numeric"
+        }, {
+          "action" : "UNIQUE",
+          "source" : "Accountand.Account_or_Contact_External_Id",
+          "name" : "UNIQUE_Accountand.Account_or_Contact_External_Id",
+          "label" : "Unique Account or Contact External Id"
+        }, {
+          "action" : "MAX",
+          "source" : "Give_Flag_CFY",
+          "name" : "MAX_Give_Flag_CFY",
+          "label" : "Maximum Give Flag CFY"
+        } ],
+        "groupings" : [ "Accountand.Account.Id" ],
+        "nodeType" : "STANDARD"
+      }
+    },
+    "OUTPUT1" : {
+      "action" : "save",
+      "sources" : [ "AGGREGATE1" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Propensity Model Account Level",
+          "name" : "Propensity_Model_Account_Level",
+          "folderName" : "SharedApp"
+        }
+      }
+    }
+  },
+  "ui" : {
+    "nodes" : {
+      "LOAD_DATASET0" : {
+        "label" : "propmodel_2024_catboost_bag_predictions_probabilities",
+        "type" : "LOAD_DATASET",
+        "top" : 112,
+        "left" : 112,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "LOAD_DATASET1" : {
+        "label" : "Account and Contact Dataset",
+        "type" : "LOAD_DATASET",
+        "top" : 252,
+        "left" : 112,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN0" : {
+        "label" : "Lookup Contact Info to Propmodel",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 112,
+        "left" : 392
+      },
+      "TRANSFORM0" : {
+        "label" : "Trim 0 Before Id",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 252,
+        "left" : 252,
+        "graph" : {
+          "FORMULA0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Id"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "TRANSFORM1" : {
+        "label" : "Drop Column",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 112,
+        "left" : 252,
+        "graph" : {
+          "DROP_FIELDS0" : {
+            "label" : "Drop Columns"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "TRANSFORM2" : {
+        "label" : "Enrich Fields",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 112.1,
+        "left" : 672.5,
+        "graph" : {
+          "FORMULA1" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Give Flag CFY"
+          },
+          "FORMULA2" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Text Help Rank"
+          },
+          "FORMULA3" : {
+            "label" : "Rank of Class 1"
+          },
+          "FORMULA4" : {
+            "label" : "Highest Value of Rank"
+          },
+          "FORMULA5" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Rank Percentage"
+          },
+          "FORMULA6" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Decile"
+          },
+          "DROP_FIELDS1" : {
+            "label" : "Drop Columns"
+          },
+          "FORMULA7" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Is Gold Alumni"
+          },
+          "FORMULA8" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Decile Numeric"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA2",
+          "target" : "FORMULA3"
+        }, {
+          "source" : "FORMULA3",
+          "target" : "FORMULA4"
+        }, {
+          "source" : "FORMULA4",
+          "target" : "FORMULA5"
+        }, {
+          "source" : "FORMULA5",
+          "target" : "FORMULA6"
+        }, {
+          "source" : "FORMULA7",
+          "target" : "FORMULA2"
+        }, {
+          "source" : "FORMULA1",
+          "target" : "FORMULA7"
+        }, {
+          "source" : "FORMULA8",
+          "target" : "DROP_FIELDS1"
+        }, {
+          "source" : "FORMULA6",
+          "target" : "FORMULA8"
+        } ]
+      },
+      "OUTPUT0" : {
+        "label" : "Output 0",
+        "type" : "OUTPUT",
+        "top" : 112.19999999999999,
+        "left" : 812
+      },
+      "AGGREGATE0" : {
+        "label" : "Aggregate by account",
+        "description" : "",
+        "type" : "AGGREGATE",
+        "top" : 252.2,
+        "left" : 671.8,
+        "graph" : {
+          "EXTRACT0" : null,
+          "AGGREGATE1" : null
+        },
+        "connectors" : [ {
+          "source" : "EXTRACT0",
+          "target" : "AGGREGATE1"
+        } ]
+      },
+      "OUTPUT1" : {
+        "label" : "Output 1",
+        "type" : "OUTPUT",
+        "top" : 252,
+        "left" : 812
+      }
+    },
+    "connectors" : [ {
+      "source" : "TRANSFORM1",
+      "target" : "JOIN0"
+    }, {
+      "source" : "TRANSFORM0",
+      "target" : "JOIN0"
+    }, {
+      "source" : "LOAD_DATASET1",
+      "target" : "TRANSFORM0"
+    }, {
+      "source" : "LOAD_DATASET0",
+      "target" : "TRANSFORM1"
+    }, {
+      "source" : "JOIN0",
+      "target" : "TRANSFORM2"
+    }, {
+      "source" : "TRANSFORM2",
+      "target" : "OUTPUT0"
+    }, {
+      "source" : "TRANSFORM2",
+      "target" : "AGGREGATE0"
+    }, {
+      "source" : "AGGREGATE0",
+      "target" : "OUTPUT1"
+    } ],
+    "hiddenColumns" : [ ]
+  },
+  "runMode" : "full"
+}

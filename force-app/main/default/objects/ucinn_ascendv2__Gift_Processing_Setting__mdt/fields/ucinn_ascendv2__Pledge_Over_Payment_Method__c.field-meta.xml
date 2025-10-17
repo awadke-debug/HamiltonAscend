@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>ucinn_ascendv2__Pledge_Over_Payment_Method__c</fullName>
+    <deprecated>false</deprecated>
+    <description>None - Will look at the existing Convert Pledge Overpayments to Gifts checkbox
+Legacy - Will look at the existing Convert Pledge Overpayments to Gifts checkbox
+Always over-pay pledge - Treated same as Convert Pledge Overpayments to Gifts false
+Always convert over-payment into Outright Gift UI - Treated same as Convert Pledge Overpayments to Gifts true
+Always convert over-payment into Outright Gift RTv2 -  Treated same as Convert Pledge Overpayments to Gifts true and instead of redirecting to gift UI it will automatically create it via RTv2
+Always ask the user - Modal to choose how you want to overpay</description>
+    <fieldManageability>SubscriberControlled</fieldManageability>
+    <inlineHelpText>None - Will look at the existing Convert Pledge Overpayments to Gifts checkbox
+Legacy - Will look at the existing Convert Pledge Overpayments to Gifts checkbox
+Always over-pay pledge - Treated same as Convert Pledge Overpayments to Gifts false
+Always convert over-payment into Outright Gift UI/RTv2 - Treated same as Convert Pledge Overpayments to Gifts true (redirect/automatically create via rtv2)
+Always ask the user - Modal to choose how you want to overpay</inlineHelpText>
+    <label>Pledge Over Payment Method</label>
+    <required>false</required>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Legacy</fullName>
+                <default>true</default>
+                <label>Legacy</label>
+            </value>
+            <value>
+                <fullName>Always over-pay pledge</fullName>
+                <default>false</default>
+                <label>Always over-pay pledge</label>
+            </value>
+            <value>
+                <fullName>Always convert over-payment into Outright Gift UI</fullName>
+                <default>false</default>
+                <label>Always convert over-payment into Outright Gift UI</label>
+            </value>
+            <value>
+                <fullName>Always convert over-payment into Outright Gift RTv2</fullName>
+                <default>false</default>
+                <label>Always convert over-payment into Outright Gift RTv2</label>
+            </value>
+            <value>
+                <fullName>Always ask the user</fullName>
+                <default>false</default>
+                <label>Always ask the user</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

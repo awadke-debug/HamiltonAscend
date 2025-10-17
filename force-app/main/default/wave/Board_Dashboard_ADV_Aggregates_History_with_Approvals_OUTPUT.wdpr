@@ -1,0 +1,92 @@
+{
+  "version" : "63.0",
+  "nodes" : {
+    "LOAD_DATASET0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "HAM_Comments__c", "HAM_SLT_Approved__c", "Fiscal_Year", "Approved_Date", "Name", "SUM_HF_Received", "Committed_Including_Bequest_Intention", "Received", "Received_FYTD", "HF_Received_FYTD", "Committed_Including_Bequest_Intention_FYTD" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Board Dashboard ADV Aggregates History with Approvals",
+          "name" : "Board_Dashboard_ADV_Aggregates_History_with_Approvals"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "OUTPUT0" : {
+      "action" : "outputExternal",
+      "sources" : [ "LOAD_DATASET0" ],
+      "parameters" : {
+        "connectionName" : "ascend_Production_Data_Lake_OUTBOUND",
+        "object" : "BOARD_DASHBOARD_ADV_AGGREGATES_HISTORY_WITH_APPROVALS",
+        "operation" : "",
+        "externalIdFieldName" : "",
+        "hyperFileName" : "",
+        "fieldsMapping" : [ {
+          "sourceField" : "HAM_Comments__c",
+          "targetField" : "COMMENTS"
+        }, {
+          "sourceField" : "HAM_SLT_Approved__c",
+          "targetField" : "SLT_APPROVED"
+        }, {
+          "sourceField" : "Fiscal_Year",
+          "targetField" : "FISCAL_YEAR"
+        }, {
+          "sourceField" : "Approved_Date",
+          "targetField" : "APPROVED_DATE"
+        }, {
+          "sourceField" : "Name",
+          "targetField" : "BOARD_DASHBOARD_DATA_NAME"
+        }, {
+          "sourceField" : "SUM_HF_Received",
+          "targetField" : "HF_RECEIVED"
+        }, {
+          "sourceField" : "Committed_Including_Bequest_Intention",
+          "targetField" : "COMMITTED_INCLUDING_BEQUEST_INTENTION"
+        }, {
+          "sourceField" : "Received",
+          "targetField" : "RECEIVED"
+        }, {
+          "sourceField" : "Received_FYTD",
+          "targetField" : "RECEIVED_FTYD"
+        }, {
+          "sourceField" : "HF_Received_FYTD",
+          "targetField" : "HF_RECEIVED_FYTD"
+        }, {
+          "sourceField" : "Committed_Including_Bequest_Intention_FYTD",
+          "targetField" : "COMMITTED_INCLUDING_BEQUEST_INTENTION_FYTD"
+        } ],
+        "connectorType" : "SNOWFLAKE_OUTPUT"
+      }
+    }
+  },
+  "ui" : {
+    "nodes" : {
+      "LOAD_DATASET0" : {
+        "label" : "Board Dashboard ADV Aggregates History with Approvals",
+        "type" : "LOAD_DATASET",
+        "top" : 112,
+        "left" : 112,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "OUTPUT0" : {
+        "label" : "Output 0",
+        "type" : "OUTPUT",
+        "top" : 112,
+        "left" : 252
+      }
+    },
+    "connectors" : [ {
+      "source" : "LOAD_DATASET0",
+      "target" : "OUTPUT0"
+    } ],
+    "hiddenColumns" : [ ]
+  },
+  "runMode" : "full"
+}

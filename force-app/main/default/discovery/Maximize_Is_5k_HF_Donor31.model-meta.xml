@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<DiscoveryAIModel xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <content xsi:nil="true"/>
+    <algorithmType>Xgboost</algorithmType>
+    <classificationThreshold>0.87139032868778</classificationThreshold>
+    <label>Maximize Is .5k HF Donor</label>
+    <modelFields>
+        <isDisparateImpact>false</isDisparateImpact>
+        <isSensitive>false</isSensitive>
+        <label>3YR Paid (HF) Bucket</label>
+        <name>Aggregate.SUM_FY03_Collected_Amount_HF_bucket</name>
+        <type>Text</type>
+        <values>0</values>
+        <values>100-399</values>
+        <values>10-99</values>
+        <values>5</values>
+        <values>1000+</values>
+        <values>500-999</values>
+        <values>400-499</values>
+        <values>1-4</values>
+        <values>Other</values>
+    </modelFields>
+    <modelFields>
+        <isDisparateImpact>false</isDisparateImpact>
+        <isSensitive>false</isSensitive>
+        <label>Lifetime Cash Collected PFYR</label>
+        <name>Lifetime_Cash_Collected_as_of_2YR</name>
+        <type>Number</type>
+        <values>0.0___3278.0</values>
+        <values>3278.0___4922.0</values>
+        <values>4922.0___5735.0</values>
+        <values>5735.0___7585.0</values>
+        <values>7585.0___9887.0</values>
+        <values>9887.0___12743.0</values>
+        <values>12743.0___15750.0</values>
+        <values>15750.0___20116.0</values>
+        <values>20116.0___28987.0</values>
+        <values>28987.0___44298.0</values>
+        <values>44298.0___80091.0</values>
+        <values>80091.0___2.861863E7</values>
+    </modelFields>
+    <modelFields>
+        <isDisparateImpact>false</isDisparateImpact>
+        <isSensitive>false</isSensitive>
+        <label>Reunion Proximity</label>
+        <name>Years_since_graduation_bucket</name>
+        <type>Text</type>
+        <values>Other Years</values>
+        <values>Reunion+1</values>
+        <values>Reunion-1</values>
+        <values>Reunion</values>
+    </modelFields>
+    <modelFields>
+        <isDisparateImpact>false</isDisparateImpact>
+        <isSensitive>false</isSensitive>
+        <label>Age Edited</label>
+        <name>Age_Edited_1YR</name>
+        <type>Number</type>
+        <values>0.0___26.0</values>
+        <values>26.0___30.0</values>
+        <values>30.0___34.0</values>
+        <values>34.0___39.0</values>
+        <values>39.0___43.0</values>
+        <values>43.0___48.0</values>
+        <values>48.0___55.0</values>
+        <values>55.0___63.0</values>
+        <values>63.0___72.0</values>
+        <values>72.0___101.0</values>
+    </modelFields>
+    <modelFields>
+        <isDisparateImpact>false</isDisparateImpact>
+        <isSensitive>false</isSensitive>
+        <label>Region</label>
+        <name>Preferred_Address.ucinn_ascendv2__Address_State_Formula__c_bucket</name>
+        <type>Text</type>
+        <values>Northeast</values>
+        <values>South</values>
+        <values>West</values>
+        <values>International/Missing</values>
+        <values>Midwest</values>
+        <values>Other</values>
+    </modelFields>
+    <modelFields>
+        <isDisparateImpact>false</isDisparateImpact>
+        <isSensitive>false</isSensitive>
+        <label>Wealth Rating Number Bucket</label>
+        <name>Wealth_Rating.HAM_Wealth_Rating_Number__c_bucket</name>
+        <type>Text</type>
+        <values>999</values>
+        <values>13</values>
+        <values>12</values>
+        <values>11</values>
+        <values>9-10</values>
+        <values>1-8</values>
+    </modelFields>
+    <modelFields>
+        <isDisparateImpact>false</isDisparateImpact>
+        <isSensitive>false</isSensitive>
+        <label>2YR Paid (HF) Bucket</label>
+        <name>Aggregate.SUM_FY02_Collected_Amount_HF_bucket</name>
+        <type>Text</type>
+        <values>0</values>
+        <values>100-399</values>
+        <values>10-99</values>
+        <values>5</values>
+        <values>500-999</values>
+        <values>2500+</values>
+        <values>1000-2499</values>
+        <values>400-499</values>
+        <values>Other</values>
+    </modelFields>
+    <modelFields>
+        <isDisparateImpact>false</isDisparateImpact>
+        <isSensitive>false</isSensitive>
+        <label>NCAA||PSI||SCI</label>
+        <name>NCAA_PSI_SCI</name>
+        <type>Text</type>
+        <values>FFT</values>
+        <values>FFF</values>
+        <values>TFT</values>
+        <values>TTF</values>
+        <values>FTF</values>
+        <values>TFF</values>
+        <values>FTT</values>
+        <values>TTT</values>
+    </modelFields>
+    <modelFields>
+        <isDisparateImpact>false</isDisparateImpact>
+        <isSensitive>false</isSensitive>
+        <label>Is .5k HF Donor</label>
+        <name>Is_500_HF_DONOR</name>
+        <type>Text</type>
+        <values>true</values>
+        <values>false</values>
+    </modelFields>
+    <modelRuntimeType>H2O</modelRuntimeType>
+    <predictedField>Is_500_HF_DONOR</predictedField>
+    <predictionType>Classification</predictionType>
+    <sourceType>Discovery</sourceType>
+    <status>Enabled</status>
+    <trainingMetrics>{&quot;r2&quot;:0.9189398017095227,&quot;nobs&quot;:18911,&quot;confusionMatrices&quot;:{&quot;thresholds&quot;:[0.87139032868778],&quot;tns&quot;:[17642],&quot;tps&quot;:[964],&quot;totalPositives&quot;:1137,&quot;totalNegatives&quot;:17774},&quot;rmse&quot;:0.14235093010384398,&quot;type&quot;:&quot;Binomial&quot;,&quot;gini&quot;:0.9909887919431464,&quot;meanPerClassError&quot;:0.020188304983703144,&quot;mse&quot;:0.02026378730142947,&quot;logloss&quot;:0.0836028144877921,&quot;auc&quot;:0.9954943959715732}</trainingMetrics>
+</DiscoveryAIModel>

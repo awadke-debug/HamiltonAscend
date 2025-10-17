@@ -1,0 +1,303 @@
+{
+  "version" : "61.0",
+  "nodes" : {
+    "LOAD_DATASET0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Account and Contact Dataset",
+          "name" : "Account_and_Contact_Dataset"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "LOAD_DATASET1" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Role", "Alumni_Council", "ID", "Class_Year", "Name" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "ASC-4726 Inauguration alumni council",
+          "name" : "ASC_4726_Inauguration_alumni_council"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN0" : {
+      "action" : "join",
+      "sources" : [ "TO_MEASURE1", "TO_MEASURE0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Account_or_Contact_External_Id" ],
+        "rightQualifier" : "ASC4726Ina",
+        "rightKeys" : [ "ID" ]
+      }
+    },
+    "OUTPUT0" : {
+      "action" : "save",
+      "sources" : [ "JOIN0" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "ASC-4726 Inauguration",
+          "name" : "ASC_4726_Inauguration",
+          "folderName" : "Ad_Hoc"
+        },
+        "dateConfigurationName" : "July_Fiscal_Year",
+        "measuresToCurrencies" : [ ]
+      }
+    },
+    "TO_MEASURE0" : {
+      "action" : "typeCast",
+      "sources" : [ "LOAD_DATASET1" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "ID_to_measure",
+          "newProperties" : {
+            "name" : "ID"
+          }
+        } ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "ID" ]
+        }
+      },
+      "parameters" : {
+        "fields" : [ {
+          "name" : "ID",
+          "newProperties" : {
+            "label" : "ID",
+            "name" : "ID_to_measure",
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 0,
+              "precision" : 18
+            }
+          }
+        } ]
+      }
+    },
+    "TO_MEASURE1" : {
+      "action" : "typeCast",
+      "sources" : [ "LOAD_DATASET0" ],
+      "schema" : {
+        "fields" : [ {
+          "name" : "Account_or_Contact_External_Id_to_measure",
+          "newProperties" : {
+            "name" : "Account_or_Contact_External_Id"
+          }
+        } ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Account_or_Contact_External_Id" ]
+        }
+      },
+      "parameters" : {
+        "fields" : [ {
+          "name" : "Account_or_Contact_External_Id",
+          "newProperties" : {
+            "label" : "Account or Contact External Id",
+            "name" : "Account_or_Contact_External_Id_to_measure",
+            "typeProperties" : {
+              "type" : "NUMBER",
+              "scale" : 0,
+              "precision" : 18
+            }
+          }
+        } ]
+      }
+    },
+    "JOIN1" : {
+      "action" : "join",
+      "sources" : [ "TO_MEASURE0", "DROP_FIELDS0" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "ID" ],
+        "rightQualifier" : "Transform1",
+        "rightKeys" : [ "Account_or_Contact_External_Id" ]
+      }
+    },
+    "OUTPUT1" : {
+      "action" : "save",
+      "sources" : [ "JOIN1" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "ASC_4726_Alumni_Council",
+          "name" : "ASC_4726_Alumni_Council",
+          "folderName" : "Ad_Hoc"
+        },
+        "dateConfigurationName" : "July_Fiscal_Year",
+        "measuresToCurrencies" : [ ]
+      }
+    },
+    "DROP_FIELDS0" : {
+      "action" : "schema",
+      "sources" : [ "TO_MEASURE1" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "SELECT",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Account_or_Contact_External_Id", "ucinn_ascendv2__Full_Name_Formula__c" ]
+        }
+      }
+    }
+  },
+  "ui" : {
+    "nodes" : {
+      "LOAD_DATASET0" : {
+        "label" : "Account and Contact Dataset",
+        "type" : "LOAD_DATASET",
+        "top" : 112,
+        "left" : 112,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "LOAD_DATASET1" : {
+        "label" : "ASC-4726 Inauguration alumni council",
+        "type" : "LOAD_DATASET",
+        "top" : 252,
+        "left" : 112,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN0" : {
+        "label" : "Lookup up alumni council",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 111.9,
+        "left" : 954.2
+      },
+      "OUTPUT0" : {
+        "label" : "Output 0",
+        "type" : "OUTPUT",
+        "top" : 112.6,
+        "left" : 1230.1
+      },
+      "TRANSFORM0" : {
+        "label" : "Transform 0",
+        "type" : "TRANSFORM",
+        "top" : 251.89999999999998,
+        "left" : 673.1,
+        "graph" : {
+          "TO_MEASURE0" : {
+            "label" : "To Number"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "TRANSFORM1" : {
+        "label" : "Transform 1",
+        "type" : "TRANSFORM",
+        "top" : 112.1,
+        "left" : 812,
+        "graph" : {
+          "TO_MEASURE1" : {
+            "label" : "To Number"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "TRANSFORM2" : {
+        "label" : "Transform 2",
+        "type" : "TRANSFORM",
+        "top" : 392,
+        "left" : 672.1,
+        "graph" : { },
+        "connectors" : [ ]
+      },
+      "JOIN1" : {
+        "label" : "Lookup up A&C to Alumni Council",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 531.9,
+        "left" : 810.9
+      },
+      "OUTPUT1" : {
+        "label" : "Output 1",
+        "type" : "OUTPUT",
+        "top" : 531.8,
+        "left" : 1233
+      },
+      "TRANSFORM3" : {
+        "label" : "Keep ID and name",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 392,
+        "left" : 812.1,
+        "graph" : {
+          "DROP_FIELDS0" : {
+            "label" : "Drop Columns"
+          }
+        },
+        "connectors" : [ ]
+      }
+    },
+    "connectors" : [ {
+      "source" : "TRANSFORM1",
+      "target" : "JOIN0"
+    }, {
+      "source" : "TRANSFORM0",
+      "target" : "JOIN0"
+    }, {
+      "source" : "JOIN0",
+      "target" : "OUTPUT0"
+    }, {
+      "source" : "LOAD_DATASET0",
+      "target" : "TRANSFORM1"
+    }, {
+      "source" : "LOAD_DATASET1",
+      "target" : "TRANSFORM0"
+    }, {
+      "source" : "TRANSFORM0",
+      "target" : "TRANSFORM2"
+    }, {
+      "source" : "TRANSFORM2",
+      "target" : "JOIN1"
+    }, {
+      "source" : "TRANSFORM3",
+      "target" : "JOIN1"
+    }, {
+      "source" : "JOIN1",
+      "target" : "OUTPUT1"
+    }, {
+      "source" : "TRANSFORM1",
+      "target" : "TRANSFORM3"
+    } ],
+    "hiddenColumns" : [ ]
+  },
+  "runMode" : "full"
+}

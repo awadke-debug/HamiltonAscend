@@ -1,0 +1,486 @@
+{
+  "version" : "61.0",
+  "nodes" : {
+    "LOAD_DATASET0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Column1" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Lori Tepper List 2 - Sheet1",
+          "name" : "Lori_Tepper_List_2_Sheet1"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "LOAD_DATASET1" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "ucinn_ascendv2__Lifetime_Cash__c", "ucinn_ascendv2__Lifetime_Fundraising__c", "Wealth_Rating.HAM_Wealth_Rating_Number__c", "Account_or_Contact_Id", "Name", "Account_or_Contact_Donor_Id", "LastName", "Account_or_Contact_External_Id", "Primary_Relationship_Manager.Assigned_User_Name", "Aggregate.SUM_FY05_Collected_Amount", "Aggregate.Sum.FY03_Committed_Amount", "Aggregate.Sum.FY02_Committed_Amount", "Aggregate.Sum.FY03_Collected_Amount", "Aggregate.Sum.FY04_Collected_Amount", "Aggregate.Sum.FY01_Collected_Amount", "Aggregate.Sum.FY04_Committed_Amount", "Aggregate.Sum.FY01_Committed_Amount", "Aggregate.Sum.FY02_Collected_Amount" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Account and Contact Dataset",
+          "name" : "Account_and_Contact_Dataset"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN0" : {
+      "action" : "join",
+      "sources" : [ "DROP_FIELDS0", "LOAD_DATASET1" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Accountand.Account_or_Contact_Donor_Id" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Donor_Id" ],
+        "rightQualifier" : "Accountand",
+        "rightKeys" : [ "Account_or_Contact_Donor_Id" ]
+      }
+    },
+    "FORMULA0" : {
+      "action" : "formula",
+      "sources" : [ "LOAD_DATASET0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Filling_Zero",
+          "label" : "Filling Zero",
+          "formulaExpression" : "concat('00000000',Column1)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA1" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Donor_Id",
+          "label" : "Donor Id",
+          "formulaExpression" : "substr(Filling_Zero,-8)",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "DROP_FIELDS0" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA1" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Column1", "Filling_Zero" ]
+        }
+      }
+    },
+    "LOAD_DATASET2" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "ucinn_ascendv2__Contact__c", "ucinn_ascendv2__Wealth_Rating__c" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "ucinn_ascendv2__Wealth_Rating__c",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "ucinn_ascendv2__Wealth_Rating__c"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN1" : {
+      "action" : "join",
+      "sources" : [ "JOIN0", "LOAD_DATASET2" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "ucinn_asce.ucinn_ascendv2__Contact__c" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Accountand.Account_or_Contact_Id" ],
+        "rightQualifier" : "ucinn_asce",
+        "rightKeys" : [ "ucinn_ascendv2__Contact__c" ]
+      }
+    },
+    "LOAD_DATASET3" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "HAM_Because_Hamilton__c", "Id" ],
+        "dataset" : {
+          "type" : "connectedDataset",
+          "label" : "Contact",
+          "connectionName" : "SFDC_LOCAL",
+          "sourceObjectName" : "Contact"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN2" : {
+      "action" : "join",
+      "sources" : [ "JOIN1", "LOAD_DATASET3" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Contact.Id" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Accountand.Account_or_Contact_Id" ],
+        "rightQualifier" : "Contact",
+        "rightKeys" : [ "Id" ]
+      }
+    },
+    "LOAD_DATASET4" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ "Constituent_or_Account_Id", "Bequest_Intention" ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Gift Credit and Payment",
+          "name" : "Gift_Credit_and_Payment"
+        },
+        "sampleDetails" : {
+          "type" : "TopN",
+          "sortBy" : [ ]
+        }
+      }
+    },
+    "JOIN3" : {
+      "action" : "join",
+      "sources" : [ "JOIN2", "LOAD_DATASET4" ],
+      "schema" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "GiftCredit.Constituent_or_Account_Id" ]
+        }
+      },
+      "parameters" : {
+        "joinType" : "LOOKUP",
+        "leftKeys" : [ "Accountand.Account_or_Contact_Id" ],
+        "rightQualifier" : "GiftCredit",
+        "rightKeys" : [ "Constituent_or_Account_Id" ]
+      }
+    },
+    "FORMULA2" : {
+      "action" : "formula",
+      "sources" : [ "JOIN3" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Last_5_Years_Cash",
+          "label" : "Last 5 Years Cash",
+          "formulaExpression" : "\"Accountand.Aggregate.Sum.FY01_Collected_Amount\"+\"Accountand.Aggregate.Sum.FY02_Collected_Amount\"+\"Accountand.Aggregate.Sum.FY03_Collected_Amount\"+\"Accountand.Aggregate.Sum.FY04_Collected_Amount\"+\"Accountand.Aggregate.SUM_FY05_Collected_Amount\"",
+          "precision" : 10,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "FORMULA3" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA2" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Last_5_Years_Fundraising",
+          "label" : "Last 5 Years Fundraising",
+          "formulaExpression" : "\"Accountand.Aggregate.Sum.FY01_Committed_Amount\"+\"Accountand.Aggregate.Sum.FY02_Committed_Amount\"+\"Accountand.Aggregate.Sum.FY03_Committed_Amount\"+\"Accountand.Aggregate.Sum.FY04_Committed_Amount\"",
+          "precision" : 10,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "DROP_FIELDS1" : {
+      "action" : "schema",
+      "sources" : [ "FORMULA4" ],
+      "parameters" : {
+        "fields" : [ ],
+        "slice" : {
+          "mode" : "DROP",
+          "ignoreMissingFields" : true,
+          "fields" : [ "Accountand.Aggregate.Sum.FY01_Collected_Amount", "Accountand.Aggregate.Sum.FY02_Collected_Amount", "Accountand.Aggregate.Sum.FY03_Collected_Amount", "Accountand.Aggregate.Sum.FY04_Collected_Amount", "Accountand.Aggregate.SUM_FY05_Collected_Amount", "Accountand.Aggregate.Sum.FY01_Committed_Amount", "Accountand.Aggregate.Sum.FY02_Committed_Amount", "Accountand.Aggregate.Sum.FY03_Committed_Amount", "Accountand.Aggregate.Sum.FY04_Committed_Amount", "Accountand.ucinn_ascendv2__Lifetime_Fundraising__c" ]
+        }
+      }
+    },
+    "SPLIT0" : {
+      "action" : "split",
+      "sources" : [ "DROP_FIELDS1" ],
+      "parameters" : {
+        "sourceField" : "ucinn_asce.ucinn_ascendv2__Wealth_Rating__c",
+        "delimiter" : "-",
+        "targetFields" : [ {
+          "name" : "Lower_Bound_Philanthropic_Capacity",
+          "label" : "Lower Bound Philanthropic Capacity"
+        }, {
+          "name" : "Upper_Bound_Philanthropic_Capacity",
+          "label" : "Upper Bound Philanthropic Capacity"
+        } ]
+      }
+    },
+    "FORMULA4" : {
+      "action" : "formula",
+      "sources" : [ "FORMULA3" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "NUMBER",
+          "name" : "Overall_Outstanding_Balance",
+          "label" : "Overall Outstanding Balance",
+          "formulaExpression" : "\"Accountand.ucinn_ascendv2__Lifetime_Fundraising__c\"-\"Accountand.ucinn_ascendv2__Lifetime_Cash__c\"",
+          "precision" : 10,
+          "scale" : 2,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "OUTPUT0" : {
+      "action" : "save",
+      "sources" : [ "SPLIT0" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "ASC-4833",
+          "name" : "ASC_4833"
+        },
+        "dateConfigurationName" : "July_Fiscal_Year",
+        "measuresToCurrencies" : [ ]
+      }
+    }
+  },
+  "ui" : {
+    "nodes" : {
+      "LOAD_DATASET0" : {
+        "label" : "Lori Tepper List 2 - Sheet1",
+        "type" : "LOAD_DATASET",
+        "top" : 250.2,
+        "left" : 112,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "LOAD_DATASET1" : {
+        "label" : "Account and Contact Dataset",
+        "type" : "LOAD_DATASET",
+        "top" : 392,
+        "left" : 392,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN0" : {
+        "label" : "Lookup Contact to List",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 252.3,
+        "left" : 392
+      },
+      "TRANSFORM0" : {
+        "label" : "Adjust Donor Id",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 250.2,
+        "left" : 252,
+        "graph" : {
+          "FORMULA0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Filling Zero"
+          },
+          "FORMULA1" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Donor Id"
+          },
+          "DROP_FIELDS0" : {
+            "label" : "Drop Columns"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA0",
+          "target" : "FORMULA1"
+        }, {
+          "source" : "FORMULA1",
+          "target" : "DROP_FIELDS0"
+        } ]
+      },
+      "LOAD_DATASET2" : {
+        "label" : "ucinn_ascendv2__Wealth_Rating__c",
+        "type" : "LOAD_DATASET",
+        "top" : 390.2,
+        "left" : 532,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN1" : {
+        "label" : "Lookup Wealth Rating to List",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 250.2,
+        "left" : 532
+      },
+      "LOAD_DATASET3" : {
+        "label" : "Contact",
+        "type" : "LOAD_DATASET",
+        "top" : 390.3,
+        "left" : 672,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN2" : {
+        "label" : "Lookup Contact to List",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 250.3,
+        "left" : 672
+      },
+      "LOAD_DATASET4" : {
+        "label" : "Gift Credit and Payment",
+        "type" : "LOAD_DATASET",
+        "top" : 390.2,
+        "left" : 812,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "JOIN3" : {
+        "label" : "Lookup Credit to List",
+        "description" : "",
+        "type" : "JOIN",
+        "top" : 250.2,
+        "left" : 812
+      },
+      "TRANSFORM1" : {
+        "label" : "Enrich Fields",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 252.5,
+        "left" : 952,
+        "graph" : {
+          "FORMULA2" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Last 5 Years Cash"
+          },
+          "FORMULA3" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Last 5 Years Fundraising"
+          },
+          "DROP_FIELDS1" : {
+            "label" : "Drop Columns"
+          },
+          "SPLIT0" : {
+            "label" : "Split"
+          },
+          "FORMULA4" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Overall Outstanding Balance"
+          }
+        },
+        "connectors" : [ {
+          "source" : "FORMULA2",
+          "target" : "FORMULA3"
+        }, {
+          "source" : "DROP_FIELDS1",
+          "target" : "SPLIT0"
+        }, {
+          "source" : "FORMULA4",
+          "target" : "DROP_FIELDS1"
+        }, {
+          "source" : "FORMULA3",
+          "target" : "FORMULA4"
+        } ]
+      },
+      "OUTPUT0" : {
+        "label" : "Output 0",
+        "type" : "OUTPUT",
+        "top" : 252,
+        "left" : 1092
+      }
+    },
+    "connectors" : [ {
+      "source" : "TRANSFORM0",
+      "target" : "JOIN0"
+    }, {
+      "source" : "LOAD_DATASET0",
+      "target" : "TRANSFORM0"
+    }, {
+      "source" : "JOIN0",
+      "target" : "JOIN1"
+    }, {
+      "source" : "LOAD_DATASET2",
+      "target" : "JOIN1"
+    }, {
+      "source" : "JOIN1",
+      "target" : "JOIN2"
+    }, {
+      "source" : "LOAD_DATASET3",
+      "target" : "JOIN2"
+    }, {
+      "source" : "JOIN2",
+      "target" : "JOIN3"
+    }, {
+      "source" : "LOAD_DATASET4",
+      "target" : "JOIN3"
+    }, {
+      "source" : "LOAD_DATASET1",
+      "target" : "JOIN0"
+    }, {
+      "source" : "JOIN3",
+      "target" : "TRANSFORM1"
+    }, {
+      "source" : "TRANSFORM1",
+      "target" : "OUTPUT0"
+    } ],
+    "hiddenColumns" : [ ]
+  },
+  "runMode" : "full"
+}

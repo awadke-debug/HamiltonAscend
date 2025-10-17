@@ -1,0 +1,141 @@
+<apex:page renderAs="pdf" controller="DigitalBriefingPdfController" showHeader="false" standardStylesheets="false" applyHtmlTag="false" applyBodyTag="false">
+    <head>
+        <style>
+            body {
+                font-family:sans-serif;
+                font-size: small;
+            }
+
+            .missing-info {
+                font-style: italic; 
+                color: #b3b3b3;
+                font-size: x-small
+            }
+
+            .bold-label {
+                font-weight: bold;
+            }
+
+            .contact-info {
+                color: #1C84D6;
+            }
+            table, th, td {
+                border: 1px solid black;
+                border-collapse: collapse;
+            }
+
+            th, td {
+                padding: 10px;
+            }
+        </style>
+    </head>
+
+    <body>
+
+        <p style="color: red;font-weight:bold;">CONFIDENTIAL</p>
+
+        <apex:outputText styleClass="bold-label" value="Meeting with President Tepper & ">
+        </apex:outputText>
+
+        <apex:outputText value="{0} - {1}" styleClass="bold-label" rendered="{!AND(NOT(ISBLANK(giftOfficer)), NOT(ISBLANK(meetingSchedule)))}">
+            <apex:param value="{!giftOfficer}"/>
+            <apex:param value="{!meetingSchedule}"/>
+        </apex:outputText>
+
+        <apex:outputText value="{0}" styleClass="missing-info" rendered="{!OR(ISBLANK(giftOfficer), ISBLANK(meetingSchedule))}">
+            <apex:param value="No meeting info"/>
+        </apex:outputText>
+
+        <br></br><br></br><br></br>
+
+        <section>
+            <article>
+                <div style="float: left; padding-right: 1em;">
+                    <apex:image value="{!$Resource.profile_pic}" alt="{!constituent.ucinn_ascendv2__Expanded_Name_Formula__c}" height="100px" rendered="{!ISBLANK(constituent.HAM_Profile_Picture_URL__c)}"/>
+                     <apex:image url="{!constituent.HAM_Profile_Picture_URL__c}" alt="{!constituent.Name}" height="100px" rendered="{!NOT(ISBLANK(constituent.HAM_Profile_Picture_URL__c))}"/>
+                </div>
+            </article>
+        </section>
+    
+        <br></br><br></br>
+
+
+            <apex:outputText value="{!constituent.ucinn_ascendv2__Expanded_Name_Formula__c}" style="font-size:large;"/>&nbsp;
+    
+            <apex:outputText value="{!constituent.HAM_Institutional_Suffix__c}" rendered="{!NOT(ISBLANK(constituent.HAM_Institutional_Suffix__c))}" style="font-size:large;"/>
+            <apex:outputText value="No preferred class" rendered="{!ISBLANK(constituent.HAM_Institutional_Suffix__c)}" styleClass="missing-info"/><br></br>
+        
+    
+            <apex:outputText value="{!constituent.HAM_PreferredEmail__c}" styleClass="contact-info" rendered="{!NOT(ISBLANK(constituent.HAM_PreferredEmail__c))}"/>
+            <apex:outputText value="No email" styleClass="missing-info" rendered="{!ISBLANK(constituent.HAM_PreferredEmail__c)}"/>
+            
+            &nbsp;|&nbsp;
+            
+            <apex:outputText value="{!constituent.HAM_Phone_and_Type__c}" styleClass="contact-info" rendered="{!NOT(ISBLANK(constituent.HAM_Phone_and_Type__c))}"/>
+            <apex:outputText value="No phone" styleClass="missing-info" rendered="{!ISBLANK(constituent.HAM_Phone_and_Type__c)}"/>
+            <br></br>
+        
+            <apex:outputText styleClass="bold-label" value="Gift Capacity:" />
+            <apex:outputText value="{!constituent.ucinn_ascendv2__Wealth_Rating__c}" />
+            <br></br>
+        
+            <apex:outputText styleClass="bold-label" value="Lifetime Committed: "/>
+            <apex:outputText value="{0,number, $000,000.00}" >
+                <apex:param value="{!constituent.HAM_Lifetime_Committed__c}"/>
+            </apex:outputText>
+            <apex:outputText styleClass="bold-label" value=" Lifetime Paid: "/>
+            <apex:outputText value="{0,number, $000,000.00}" >
+                <apex:param value="{!constituent.HAM_Lifetime_Paid__c}"/>
+            </apex:outputText><br></br>
+         
+            <apex:outputText styleClass="bold-label" value="Recent Giving: "/>
+            <apex:outputText value="{!recentGivingBriefing.HAM_Briefing_Details__c}" rendered="{!NOT(ISBLANK(recentGivingBriefing.HAM_Briefing_Details__c))}">
+            </apex:outputText>
+
+            <apex:outputPanel rendered="{!AND(NOT(ISBLANK(constituent.HAM_Lifetime_Bequest_Intention__c)), constituent.HAM_Lifetime_Bequest_Intention__c > 0)}" >
+                <br></br>
+            </apex:outputPanel>
+            
+            <apex:outputText styleClass="bold-label" value="Lifetime Bequest Intention: " rendered="{!AND(NOT(ISBLANK(constituent.HAM_Lifetime_Bequest_Intention__c)), constituent.HAM_Lifetime_Bequest_Intention__c > 0)}"></apex:outputText>
+            <apex:outputText value="{0,number, $000,000.00}" rendered="{!AND(NOT(ISBLANK(constituent.HAM_Lifetime_Bequest_Intention__c)), constituent.HAM_Lifetime_Bequest_Intention__c > 0)}">
+                <apex:param value="{!constituent.HAM_Lifetime_Bequest_Intention__c}"/>
+            </apex:outputText>
+
+        <br></br><br></br><br></br>
+    
+        <apex:repeat var="briefing" value="{!briefings}">
+            <div style="padding-buttom: 1rem;">
+                <apex:outputText value="{!briefing.HAM_Briefing_Details__c}" escape="false" rendered="{!NOT(ISBLANK(briefing.HAM_Briefing_Details__c))}"></apex:outputText>
+            </div>
+        </apex:repeat>
+    
+        <table>
+            <tr>
+                <th style="width: 40%;">Endowed Fund Name</th>
+                <th>Book&nbsp;Value</th>
+                <th>Market&nbsp;Value</th>
+                <th>
+                    {!endowedFundYearHeader}
+                </th>
+            </tr>
+            <apex:repeat var="endowedFund" value="{!endowedFunds}">
+                <tr>
+                    <td>{!endowedFund.fundName}</td>
+                    <td>
+                        <apex:outputText value="{0, number, $000,000.00}" >
+                            <apex:param value="{!endowedFund.bookValue}"/>
+                        </apex:outputText>
+                    </td>
+                    <td>
+                        <apex:outputText value="{0, number, $000,000.00}" >
+                            <apex:param value="{!endowedFund.marketValue}"/>
+                        </apex:outputText>
+                    </td>
+                    <td>
+                        <apex:outputText value="{!endowedFund.recipientsCount}" rendered="{!endowedFund.recipientsCount > 0}"></apex:outputText>
+                    </td>
+                </tr>
+            </apex:repeat>
+        </table>
+    </body>
+</apex:page>

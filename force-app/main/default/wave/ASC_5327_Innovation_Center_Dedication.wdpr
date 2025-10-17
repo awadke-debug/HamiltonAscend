@@ -1,0 +1,119 @@
+{
+  "version" : "61.0",
+  "nodes" : {
+    "LOAD_DATASET0" : {
+      "action" : "load",
+      "sources" : [ ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "Gift Credit and Payment",
+          "name" : "Gift_Credit_and_Payment"
+        },
+        "sampleDetails" : {
+          "type" : "TopN"
+        }
+      }
+    },
+    "FILTER0" : {
+      "action" : "filter",
+      "sources" : [ "FORMULA0" ],
+      "parameters" : {
+        "filterExpressions" : [ {
+          "type" : "TEXT",
+          "field" : "Object",
+          "operator" : "EQUAL",
+          "operands" : [ "Hard and Soft Credit" ]
+        }, {
+          "type" : "TEXT",
+          "field" : "Is_Digital_Designation",
+          "operator" : "EQUAL",
+          "operands" : [ "true" ]
+        } ]
+      }
+    },
+    "FORMULA0" : {
+      "action" : "formula",
+      "sources" : [ "LOAD_DATASET0" ],
+      "parameters" : {
+        "expressionType" : "SQL",
+        "fields" : [ {
+          "type" : "TEXT",
+          "name" : "Is_Digital_Designation",
+          "label" : "Is Digital Designation",
+          "formulaExpression" : "case \r\n    when \r\n    \r\n\"Designation.Name\"=\t'CE-TRUESDALE' OR\r\n\"Designation.Name\"=\t'DI-AD' OR\r\n\"Designation.Name\"=\t'FND-DHI-C' OR\r\n\"Designation.Name\"=\t'FND-TRUESDALE' OR\r\n\"Designation.Name\"=\t'GRT-ALDEN' OR\r\n\"Designation.Name\"=\t'GRT-FAIRCHILD-E' OR\r\n\"Designation.Name\"=\t'INT-KEOGH' OR\r\n\"Designation.Name\"=\t'PLT-CET' OR\r\n\"Designation.Name\"=\t'PLT-DIGITAL' OR\r\n\"Designation.Name\"=\t'PRF-DELANEY' OR\r\n\"Designation.Name\"=\t'PRF-SACERDOTE' OR\r\n\"Designation.Name\"=\t'PRG-DHI-1' OR\r\n\"Designation.Name\"=\t'PRG-DHICLASS' OR\r\n\"Designation.Name\"=\t'PRG-ILIADS' OR\r\n\"Designation.Name\"=\t'PRG-NEVIS' OR\r\n\"Designation.Name\"=\t'PRG-NOVEL'  \r\n\r\n\r\n    then 'true'\r\n    else\r\n    'false'\r\nend",
+          "precision" : 255,
+          "defaultValue" : ""
+        } ]
+      }
+    },
+    "OUTPUT0" : {
+      "action" : "save",
+      "sources" : [ "FILTER0" ],
+      "parameters" : {
+        "fields" : [ ],
+        "dataset" : {
+          "type" : "analyticsDataset",
+          "label" : "ASC-5327 Innovation Center Dedication",
+          "name" : "ASC_5327_Innovation_Center_Dedication",
+          "folderName" : "AIS_Ad_Hoc"
+        }
+      }
+    }
+  },
+  "ui" : {
+    "nodes" : {
+      "LOAD_DATASET0" : {
+        "label" : "Gift Credit and Payment",
+        "type" : "LOAD_DATASET",
+        "top" : 112,
+        "left" : 112,
+        "parameters" : {
+          "sampleSize" : 2000
+        }
+      },
+      "FILTER0" : {
+        "label" : "Filter Credit object and Digital Desigs",
+        "description" : "",
+        "type" : "FILTER",
+        "top" : 112.6,
+        "left" : 392.6
+      },
+      "TRANSFORM0" : {
+        "label" : "Is Digital Designation",
+        "description" : "",
+        "type" : "TRANSFORM",
+        "top" : 112.30000000000001,
+        "left" : 252.3,
+        "graph" : {
+          "FORMULA0" : {
+            "parameters" : {
+              "type" : "BASE_FORMULA_UI"
+            },
+            "label" : "Is Digital Designation"
+          }
+        },
+        "connectors" : [ ]
+      },
+      "OUTPUT0" : {
+        "label" : "Output 0",
+        "type" : "OUTPUT",
+        "top" : 112,
+        "left" : 532
+      }
+    },
+    "connectors" : [ {
+      "source" : "LOAD_DATASET0",
+      "target" : "TRANSFORM0"
+    }, {
+      "source" : "TRANSFORM0",
+      "target" : "FILTER0"
+    }, {
+      "source" : "FILTER0",
+      "target" : "OUTPUT0"
+    } ],
+    "hiddenColumns" : [ ]
+  },
+  "runMode" : "full"
+}
