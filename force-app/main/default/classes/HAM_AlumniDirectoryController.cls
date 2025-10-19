@@ -160,7 +160,7 @@ public without sharing class HAM_AlumniDirectoryController {
             fieldApiNames.add('HAM_Profile_Picture_URL__c');
             
             String queryFields = String.join(new List<String>(fieldApiNames), ', ');
-            String degreeSubquery = '(SELECT Id, ucinn_ascendv2__Major_Degree_Formula__c FROM ucinn_ascendv2__Degree_Information_Contact__r where RecordType.DeveloperName = \'School_Degree_Information\')';
+            String degreeSubquery = '(SELECT Id, ucinn_ascendv2__Major_Degree_Formula__c,ucinn_ascendv2__Second_Major_Formula__c,Third_Concentration_Formula__c,ucinn_ascendv2__Minor_Degree_Formula__c,Second_Minor__c,Third_Minor__c FROM ucinn_ascendv2__Degree_Information_Contact__r where RecordType.DeveloperName = \'School_Degree_Information\')';
             String queryString = 'SELECT Id, Name, '+ queryFields +', '+ degreeSubquery + ' FROM Contact ' + whereClause;
             
             // page 1
@@ -223,7 +223,15 @@ public without sharing class HAM_AlumniDirectoryController {
                     if(degree.ucinn_ascendv2__Major_Degree_Formula__c != null){
                         fieldDeg.value = (fieldDeg.value == null) ? degree.ucinn_ascendv2__Major_Degree_Formula__c
                         : fieldDeg.value + '; ' + degree.ucinn_ascendv2__Major_Degree_Formula__c; 
-                    }  
+                    }
+                    if(degree.ucinn_ascendv2__Second_Major_Formula__c != null){
+                        fieldDeg.value = (fieldDeg.value == null) ? degree.ucinn_ascendv2__Second_Major_Formula__c
+                        : fieldDeg.value + '; ' + degree.ucinn_ascendv2__Second_Major_Formula__c; 
+                    } 
+                    if(degree.Third_Concentration_Formula__c != null){
+                        fieldDeg.value = (fieldDeg.value == null) ? degree.Third_Concentration_Formula__c
+                        : fieldDeg.value + '; ' + degree.Third_Concentration_Formula__c; 
+                    } 
                 }
 
                 card.fields.add(fieldDeg);
