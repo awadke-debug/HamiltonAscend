@@ -1,0 +1,90 @@
+<template>
+    <div class="backgroundWhite">
+        <lightning-accordion 
+            allow-multiple-sections-open="true" 
+            active-section-name={activeFileSection} 
+            onsectiontoggle={handleFileSectionToggle}>
+        
+        <lightning-accordion-section name="Files" label="Account Files">
+                
+                <!-- Loading Spinner -->
+                <template if:true={loading}>
+                    <lightning-spinner
+                        alternative-text="Loading..."
+                        size="medium"
+                        variant="brand">
+                    </lightning-spinner>
+                </template>
+
+                <!-- File Upload Section -->
+                <template if:false={loading}>
+                    <div class="slds-p-around_small">
+                        <template if:true={uploadInProgress}>
+                            <lightning-spinner
+                                alternative-text="Uploading..."
+                                size="small"
+                                variant="brand">
+                            </lightning-spinner>
+                        </template>
+                        <template if:false={uploadInProgress}>
+                            <lightning-file-upload
+                                label="Upload File to Account"
+                                accept={acceptedFormats}
+                                record-id={accountId}
+                                onuploadfinished={handleUploadFinished}
+                                disabled={uploadInProgress}>
+                            </lightning-file-upload>
+                        </template>
+                    </div>
+                </template>
+
+                <!-- Files Table -->
+                <template if:true={pageFiles}>
+                    <div class="slds-p-around_small" style="width: 100%;">
+                        <div class="label slds-text-title_caps slds-text-color_brand">
+                            Account Files
+                        </div>
+                        
+                        <template if:true={totalRecords}>
+                            <div style="overflow-x: auto;">
+                                <lightning-datatable
+                                    key-field="fileId" 
+                                    data={pageFiles} 
+                                    columns={filesColumns} 
+                                    hide-checkbox-column 
+                                    sorted-by={sortedBy}
+                                    sorted-direction={sortedDirection}
+                                    onsort={handleFileSort}>
+                                </lightning-datatable>
+                            </div>
+
+                            <!-- Pagination Controls -->
+                            <div class="slds-m-top_small slds-grid slds-grid_align-spread slds-align_absolute-center">
+                                <lightning-button 
+                                    label="Prev" 
+                                    onclick={prevPage} 
+                                    disabled={isFirstPage}>
+                                </lightning-button>
+                                <div class="slds-m-horizontal_small">
+                                    Page {pageNumber} of {totalPages} · {totalRecords} total
+                                </div>
+                                <lightning-button 
+                                    label="Next" 
+                                    onclick={nextPage} 
+                                    disabled={isLastPage}>
+                                </lightning-button>
+                            </div>
+                        </template>
+
+                        <template if:false={totalRecords}>
+                            <div class="slds-p-vertical_small slds-text-align_center">
+                                {noFilesMessage}
+                            </div>
+                        </template>
+                    </div>
+                </template>
+
+            </lightning-accordion-section>
+        </lightning-accordion>
+    </div>
+</template>
