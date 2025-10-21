@@ -20,8 +20,8 @@ export default class HamJEDIEmailActivities extends LightningElement {
     // =========================================
     // Sorting state
     // =========================================
-    @track sortedBy = 'Name';
-    @track sortedDirection = 'asc';
+    @track sortedBy = 'et4ae5__DateOpened__c';
+    @track sortedDirection = 'desc';
 
     // =========================================
     // Pagination (grouped here intentionally)

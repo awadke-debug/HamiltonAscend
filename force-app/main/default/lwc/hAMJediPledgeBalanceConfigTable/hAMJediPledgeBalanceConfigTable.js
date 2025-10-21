@@ -157,6 +157,10 @@ export default class HAMJediPledgeBalanceConfigTable extends LightningElement {
                     }
                 ];
                 
+                //Sorting Table
+                this.sortedBy = 'HAM_Paid__c';
+                this.sortedDirection = 'desc';
+
                 this.finalizeDataSetup();
             })
             .catch(error => {
@@ -297,7 +301,10 @@ export default class HAMJediPledgeBalanceConfigTable extends LightningElement {
                         sortable: true
                     }
                 ];
-                
+                //Sorting Table
+                this.sortedBy = 'HAM_Fiscal_Year__c';
+                this.sortedDirection = 'desc';
+
                 this.finalizeDataSetup();
             })
             .catch(error => {
