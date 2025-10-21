@@ -657,4 +657,57 @@ public class HAMJediTestDataFactory {
         insert reports;
         return reports;
     }
+
+   
+// ============================================
+// ADD THIS TO BOTTOM OF HAMJediTestDataFactory
+// ============================================
+
+    /**
+     * Creates a test Contact with all fields needed for search testing
+     * @param lastName The last name for the contact
+     * @param accountId The ID of the parent Account
+     * @param donorId The donor ID
+     * @param classYear The class/reunion year
+     * @return The inserted Contact record
+     */
+    public static Contact makeSearchContact(String lastName, Id accountId, String donorId, String classYear) {
+        Contact c = new Contact(
+            LastName = lastName,
+            AccountId = accountId,
+            ucinn_ascendv2__Donor_ID__c = donorId,
+            HAM_Reunion_Year__c = classYear,
+            Email = lastName.toLowerCase() + '@test.com',
+            Phone = '5551234567'
+        );
+        insert c;
+        return c;
+    }
+
+    /**
+     * Creates a test Involvement Value record for search options
+     * @param category The HAM_Category value
+     * @param description The involvement description
+     * @return The inserted Involvement Value record
+     */
+    public static ucinn_ascendv2__Involvement_Value__c makeInvolvementValue(String category, String description) {
+        ucinn_ascendv2__Involvement_Value__c invValue = new ucinn_ascendv2__Involvement_Value__c(
+            Name = description,
+            HAM_Category__c = category,
+            ucinn_ascendv2__Involvement_Description__c = description
+        );
+        insert invValue;
+        return invValue;
+    }
+
+    /**
+     * Links a Contact to an Involvement using existing method
+     * @param contactId The ID of the contact
+     * @return The inserted Involvement record
+     */
+    public static ucinn_ascendv2__Involvement__c makeContactInvolvement(Id contactId) {
+        return makeInvolvement(contactId);
+    }
+
+
 }

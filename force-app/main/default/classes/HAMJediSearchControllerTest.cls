@@ -5,58 +5,73 @@ public class HAMJediSearchControllerTest {
     static void setupTestData() {
         Account testAccount = HAMJediTestDataFactory.makeAccount('Search Test Account');
         
-        // Create test contacts with donor IDs
-        HAMJediTestDataFactory.makeContactWithDonorId('Johnson', testAccount.Id, 'D12345');
-        HAMJediTestDataFactory.makeContactWithDonorId('Smith', testAccount.Id, 'D67890');
-        HAMJediTestDataFactory.makeContactWithDonorId('Williams', testAccount.Id, 'D54321');
+        HAMJediTestDataFactory.makeSearchContact('Johnson', testAccount.Id, 'D12345', '2020');
+        HAMJediTestDataFactory.makeSearchContact('Smith', testAccount.Id, 'D67890', '2015');
+        HAMJediTestDataFactory.makeSearchContact('Williams', testAccount.Id, 'D54321', '2018');
     }
     
     @IsTest
-    static void testSearchContactWithBothParams() {
+    static void testSearchContactByName() {
         Test.startTest();
-        List<Contact> results = HAMJediSearchController.searchContact('Johnson', 'D12345');
+        List<Contact> results = HAMJediSearchController.searchContact('Johnson', '', '', '', '');
         Test.stopTest();
         
-        System.assert(results.size() >= 0, 'Search should execute without errors');
+        System.assert(results.size() > 0, 'Should find contact by name');
     }
     
     @IsTest
-    static void testSearchContactWithNameOnly() {
+    static void testSearchContactByDonorId() {
         Test.startTest();
-        List<Contact> results = HAMJediSearchController.searchContact('Smith', '');
+        List<Contact> results = HAMJediSearchController.searchContact('', 'D12345', '', '', '');
         Test.stopTest();
         
-        System.assert(results.size() >= 0, 'Search should execute without errors');
+        System.assert(results.size() > 0, 'Should find contact by donor ID');
+        System.assertEquals('D12345', results[0].ucinn_ascendv2__Donor_ID__c, 'Should return correct donor ID');
     }
     
     @IsTest
-    static void testSearchContactWithDonorIdOnly() {
+    static void testSearchContactByClassYear() {
         Test.startTest();
-        List<Contact> results = HAMJediSearchController.searchContact('', 'D67890');
+        List<Contact> results = HAMJediSearchController.searchContact('', '', '2020', '', '');
         Test.stopTest();
         
-        System.assert(results.size() >= 0, 'Search should execute without errors');
-        if (results.size() > 0) {
-            System.assertEquals('D67890', results[0].ucinn_ascendv2__Donor_ID__c, 'Should have correct donor ID');
-        }
+        System.assert(results.size() > 0, 'Should find contact by class year');
     }
     
     @IsTest
-    static void testSearchContactPartialMatch() {
+    static void testSearchContactCombinedNameAndDonorId() {
         Test.startTest();
-        List<Contact> results = HAMJediSearchController.searchContact('Test', '');
+        List<Contact> results = HAMJediSearchController.searchContact('Johnson', 'D12345', '', '', '');
         Test.stopTest();
         
-        System.assert(results.size() >= 0, 'Search should execute without errors');
+        System.assert(results.size() > 0, 'Should find contact with multiple filters');
     }
     
     @IsTest
-    static void testSearchContactNoResults() {
+    static void testSearchContactNoMatches() {
         Test.startTest();
-        List<Contact> results = HAMJediSearchController.searchContact('NonExistent', '');
+        List<Contact> results = HAMJediSearchController.searchContact('NonExistent', '', '', '', '');
         Test.stopTest();
         
-        System.assertEquals(0, results.size(), 'Should return no results for non-existent search');
+        System.assertEquals(0, results.size(), 'Should return empty list when no matches');
+    }
+    
+    @IsTest
+    static void testSearchContactNoParams() {
+        Test.startTest();
+        List<Contact> results = HAMJediSearchController.searchContact('', '', '', '', '');
+        Test.stopTest();
+        
+        System.assertEquals(0, results.size(), 'Should return empty list with no parameters');
+    }
+    
+    @IsTest
+    static void testSearchContactPartialNameMatch() {
+        Test.startTest();
+        List<Contact> results = HAMJediSearchController.searchContact('Smit', '', '', '', '');
+        Test.stopTest();
+        
+        System.assert(results.size() > 0, 'Should find partial name matches');
     }
     
     @IsTest
@@ -65,25 +80,37 @@ public class HAMJediSearchControllerTest {
         List<Contact> results = HAMJediSearchController.searchRecentRecords();
         Test.stopTest();
         
-        System.assert(results.size() >= 0, 'Should execute without errors');
+        System.assert(results != null, 'Should return a list');
         System.assert(results.size() <= 10, 'Should return maximum 10 records');
     }
     
     @IsTest
-    static void testSearchContactEmptyParams() {
+    static void testGetClassYearOptions() {
         Test.startTest();
-        List<Contact> results = HAMJediSearchController.searchContact('', '');
+        List<String> classYears = HAMJediSearchController.getClassYearOptions();
         Test.stopTest();
         
-        System.assert(results.size() >= 0, 'Search should handle empty parameters');
+        System.assert(classYears != null, 'Should return list');
+        System.assert(classYears.size() >= 3, 'Should have at least 3 class years from setup');
     }
     
     @IsTest
-    static void testSearchContactNullParams() {
+    static void testGetSportsAssociationOptions() {
         Test.startTest();
-        List<Contact> results = HAMJediSearchController.searchContact(null, null);
+        List<String> sportsAssociations = HAMJediSearchController.getSportsAssociationOptions();
         Test.stopTest();
         
-        System.assert(results.size() >= 0, 'Search should handle null parameters');
+        System.assert(sportsAssociations != null, 'Should return list');
+        System.assert(sportsAssociations.size() >= 0, 'Should return valid list');
+    }
+    
+    @IsTest
+    static void testGetStudentOrganizationsOptions() {
+        Test.startTest();
+        List<String> studentOrgs = HAMJediSearchController.getStudentOrganizationsOptions();
+        Test.stopTest();
+        
+        System.assert(studentOrgs != null, 'Should return list');
+        System.assert(studentOrgs.size() >= 0, 'Should return valid list');
     }
 }
