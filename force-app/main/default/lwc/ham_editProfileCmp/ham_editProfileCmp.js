@@ -3,7 +3,6 @@ import { LightningElement,wire,api,track } from 'lwc';
 // Importing Apex methods
 import getMyPersonalInformation from '@salesforce/apex/HAM_EditProfileController.getMyPersonalInformation'; 
 import saveMyPersonalInformation from '@salesforce/apex/HAM_EditProfileController.saveMyPersonalInformation'; 
-import uploadProfilePic from '@salesforce/apex/HAM_EditProfileController.uploadProfilePic'; 
 import deleteProfilePic from '@salesforce/apex/HAM_EditProfileController.deleteProfilePic'; 
 
 // Importing LWC framework modules
@@ -24,7 +23,6 @@ import addressDetails from '@salesforce/label/c.ham_AddressDetails';
 import street from '@salesforce/label/c.ham_EditProfStreet';
 import city from '@salesforce/label/c.ham_EditProfCity';
 import state from '@salesforce/label/c.ham_EditProfState';
-import county from '@salesforce/label/c.ham_EditProfCounty';
 import country from '@salesforce/label/c.ham_EditProfCountry';
 import postalCode from '@salesforce/label/c.ham_EditProfPostalCode';
 import cancel from '@salesforce/label/c.ham_Cancel';
@@ -67,7 +65,6 @@ export default class Ham_editProfileCmp extends LightningElement {
         street: street,
         city: city,
         state: state,
-        county: county,
         country: country,
         postalcode: postalCode,
         cancel: cancel,
@@ -228,44 +225,42 @@ export default class Ham_editProfileCmp extends LightningElement {
        this.isEditingImage = true;
     }
 
-    /**
-     * @description Handles the file selection for profile picture upload.
-     * It reads the file, uploads it to Salesforce.
-     * @param {Event} event The file input change event.
+     /**
+     * @description Handles the completion of the file upload event from <lightning-file-upload>.
+     * The file is uploaded to Salesforce as a ContentDocument/ContentVersion
+     * and linked to the Contact record.
+     * @param {Event} event The uploadfinished event containing details of uploaded files.
      */
-    handleFileChange(event) {
-        if (event.target.files.length > 0) {
-            this.isLoading = true;
-            this.fileToUpload = event.target.files[0];
-            if(this.updatedContentDocId != null) {
-                this.deleteProfPic(); // Call method to delete existing content doc
-            }
-            const reader = new FileReader();
-            reader.onload = () => {
-                
-                this.isLoading = true;
-                const base64 = reader.result.split(',')[1];
-                uploadProfilePic({
-                    fileName: this.fileToUpload.name,
-                    base64Data: base64
-                })
-                .then(contentDocId => {
-                    this.updatedContentDocId = contentDocId;
-                    this.isEditingImage = false; // Hide file input after upload
-                    this.isLoading = false;
-                })
-                .catch(error => {
-                    console.error('<<uploadProfileImage Error>>',error);
-                });
-            };
-            reader.readAsDataURL(this.fileToUpload);
-            this.isEditingImage = false; // Hide file input after upload
-            this.isLoading = false;
-            this.uploadedFileName = this.fileToUpload.name;
+    handleUploadFinished(event) {
+        this.isLoading = true;
+        const uploadedFiles = event.detail.files;
+
+        // Check if an existing ContentDocument needs to be deleted (cleaning up previous attempts)
+        if (this.updatedContentDocId) {
+            this.deleteProfPic(); // Delete the previously staged file
         }
-        else {
-            this.fileToUpload = null; // Reset if no file is selected
+
+        if (uploadedFiles.length > 0) {
+            // The file is uploaded, we just need to grab the ContentDocumentId 
+            // of the newly created file.
+            const newContentDocId = uploadedFiles[0].documentId;
+
+            // Store the new ContentDocumentId so it can be associated with the Contact on Save
+            this.updatedContentDocId = newContentDocId;
+            this.uploadedFileName = uploadedFiles[0].name;
+
+            this.dispatchEvent(
+                new ShowToastEvent({
+                    title: 'Success',
+                    message: 'New profile picture is ready to save.',
+                    variant: 'success',
+                }),
+            );
         }
+
+        // Hide the file uploader interface
+        this.isEditingImage = false;
+        this.isLoading = false;
     }
 
     /**

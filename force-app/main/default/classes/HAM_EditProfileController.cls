@@ -11,7 +11,9 @@
  * Ver | Date | Author | Modification
  *==============================================================================
  * 1.0 | August 28, 2025 |  Sachin | Initial Version
- * 1.1 | Sept 04, 2025 |  Sachin |  Done as part of Optimization
+ * 1.1 | Sept 04, 2025 | Sachin |  Done as part of Optimization
+ * 1.2 | Oct 07,2025 | Immanuel | Implemented the duplicate phone number detection
+ * 1.3 | Oct 10,2025 | Sachin | Removed county field from UI and Backend
  */
 public without sharing class HAM_EditProfileController {
 
@@ -33,7 +35,7 @@ public without sharing class HAM_EditProfileController {
         Id currentAddressId = (con != null && !con.ucinn_ascendv2__Address_Relations_Contact__r.isEmpty()) ? con.ucinn_ascendv2__Address_Relations_Contact__r[0].ucinn_ascendv2__Address__c : null;
         
         // Query the Address record using the retrieved ID.
-        ucinn_ascendv2__Address__c currentConstituentAddress = (currentAddressId != null) ? [SELECT Id,ucinn_ascendv2__Address_Line_1__c,ucinn_ascendv2__City__c,ucinn_ascendv2__State__c,ucinn_ascendv2__Country__c,ucinn_ascendv2__County__c,ucinn_ascendv2__Postal_Code__c FROM ucinn_ascendv2__Address__c WHERE Id = :currentAddressId LIMIT 1] : null;
+        ucinn_ascendv2__Address__c currentConstituentAddress = (currentAddressId != null) ? [SELECT Id,ucinn_ascendv2__Address_Line_1__c,ucinn_ascendv2__City__c,ucinn_ascendv2__State__c,ucinn_ascendv2__Country__c,ucinn_ascendv2__Postal_Code__c FROM ucinn_ascendv2__Address__c WHERE Id = :currentAddressId LIMIT 1] : null;
         
         // Instantiate the wrapper object and populate its fields.
         PersonalInfoWrapper personalInfoWrap = new PersonalInfoWrapper();
@@ -53,7 +55,6 @@ public without sharing class HAM_EditProfileController {
             personalInfoWrap.addressInfo.street = (currentConstituentAddress.ucinn_ascendv2__Address_Line_1__c != null) ? currentConstituentAddress.ucinn_ascendv2__Address_Line_1__c : '';
             personalInfoWrap.addressInfo.city = (currentConstituentAddress.ucinn_ascendv2__City__c != null) ? currentConstituentAddress.ucinn_ascendv2__City__c : '';
             personalInfoWrap.addressInfo.state = (currentConstituentAddress.ucinn_ascendv2__State__c != null) ? currentConstituentAddress.ucinn_ascendv2__State__c : '';
-            personalInfoWrap.addressInfo.county = (currentConstituentAddress.ucinn_ascendv2__County__c != null) ? currentConstituentAddress.ucinn_ascendv2__County__c : '';
             personalInfoWrap.addressInfo.country = (currentConstituentAddress.ucinn_ascendv2__Country__c != null) ? currentConstituentAddress.ucinn_ascendv2__Country__c : '';
             personalInfoWrap.addressInfo.postalCode = (currentConstituentAddress.ucinn_ascendv2__Postal_Code__c != null) ? currentConstituentAddress.ucinn_ascendv2__Postal_Code__c : '';
         }else{
@@ -62,7 +63,6 @@ public without sharing class HAM_EditProfileController {
             personalInfoWrap.addressInfo.street = '';
             personalInfoWrap.addressInfo.city = '';
             personalInfoWrap.addressInfo.state = '';
-            personalInfoWrap.addressInfo.county = '';
             personalInfoWrap.addressInfo.country = '';
             personalInfoWrap.addressInfo.postalCode = '';
         }
@@ -135,10 +135,27 @@ public without sharing class HAM_EditProfileController {
             }
             
             // Handle Phone updates
-            if (personalInfoUpdated.phoneNo != null && personalInfoUpdated.phoneNo != con.HAM_Formatted_Phone__c && hasPhoneAccess) {                
-                // Find or create the new phone record
-                List<ucinn_ascendv2__Phone__c> existingPhones = [SELECT Id FROM ucinn_ascendv2__Phone__c WHERE ucinn_ascendv2__Contact__c = :con.Id AND ucinn_ascendv2__Phone_Number__c = :personalInfoUpdated.phoneNo];
-                if (existingPhones.isEmpty()) {
+            //Remove white spaces and special characters from the existing and updated phones
+            String existingPhone = (con.HAM_Formatted_Phone__c != null) ? con.HAM_Formatted_Phone__c.replaceAll('[^0-9]', '') : null;
+            String updatedPhone = (personalInfoUpdated.phoneNo != null) ? personalInfoUpdated.phoneNo.replaceAll('[^0-9]', '') : null;
+
+            if (existingPhone != null && updatedPhone != null && existingPhone != updatedPhone && hasPhoneAccess) {
+                // Get existing phones for the respective contact and Remove white spaces and special characters from all of them
+                ucinn_ascendv2__Phone__c existingPhoneRec;
+                for(ucinn_ascendv2__Phone__c existingPhNo: [SELECT Id,ucinn_ascendv2__Phone_Number__c,ucinn_ascendv2__Is_Preferred__c  FROM ucinn_ascendv2__Phone__c WHERE ucinn_ascendv2__Contact__c = :con.Id Order By CreatedDate DESC]){
+                    String formattedPhone = (existingPhNo.ucinn_ascendv2__Phone_Number__c != null) ? existingPhNo.ucinn_ascendv2__Phone_Number__c.replaceAll('[^0-9]', '') : null;
+                    if(formattedPhone != null && formattedPhone == updatedPhone){    
+                        existingPhoneRec = new ucinn_ascendv2__Phone__c();
+                        existingPhoneRec = existingPhNo;
+                        break;
+                    }
+                }
+
+                //Check if the phone number is a new one, or en existing. If new create a new ucinn_ascendv2__Phone__c record, else just make it preferred
+                if(existingPhoneRec != null){
+                    existingPhoneRec.ucinn_ascendv2__Is_Preferred__c = true;
+                    recordsToUpsert.add(existingPhoneRec);
+                }else{
                     recordsToUpsert.add(new ucinn_ascendv2__Phone__c(
                         ucinn_ascendv2__Phone_Number__c = personalInfoUpdated.phoneNo,
                         ucinn_ascendv2__Contact__c = con.Id,
@@ -147,9 +164,6 @@ public without sharing class HAM_EditProfileController {
                         ucinn_ascendv2__Type__c = HAM_ConstantsUtil.CELL,
                         ucinn_ascendv2__Start_Date__c = Date.today()
                     ));
-                } else {
-                    existingPhones[0].ucinn_ascendv2__Is_Preferred__c = true;
-                    recordsToUpsert.add(existingPhones[0]);
                 }
             }
 
@@ -191,7 +205,7 @@ public without sharing class HAM_EditProfileController {
 
             // Handle Address updates
             if (personalInfoUpdated.addressInfo != null) {
-                ucinn_ascendv2__Address__c oldAddressRelation = (currentAddressId != null) ? [SELECT Id,ucinn_ascendv2__Address_Line_1__c,ucinn_ascendv2__City__c,ucinn_ascendv2__State__c,ucinn_ascendv2__Country__c,ucinn_ascendv2__County__c,ucinn_ascendv2__Postal_Code__c FROM ucinn_ascendv2__Address__c WHERE Id = :currentAddressId LIMIT 1] : null;      
+                ucinn_ascendv2__Address__c oldAddressRelation = (currentAddressId != null) ? [SELECT Id,ucinn_ascendv2__Address_Line_1__c,ucinn_ascendv2__City__c,ucinn_ascendv2__State__c,ucinn_ascendv2__Country__c,ucinn_ascendv2__Postal_Code__c FROM ucinn_ascendv2__Address__c WHERE Id = :currentAddressId LIMIT 1] : null;      
                 
                 boolean isAddressChanged = false;
 
@@ -200,28 +214,26 @@ public without sharing class HAM_EditProfileController {
                                     areStringsDifferent(personalInfoUpdated.addressInfo.city, oldAddressRelation.ucinn_ascendv2__City__c) ||
                                     areStringsDifferent(personalInfoUpdated.addressInfo.state, oldAddressRelation.ucinn_ascendv2__State__c) ||
                                     areStringsDifferent(personalInfoUpdated.addressInfo.country, oldAddressRelation.ucinn_ascendv2__Country__c) ||
-                                    areStringsDifferent(personalInfoUpdated.addressInfo.county, oldAddressRelation.ucinn_ascendv2__County__c) ||
+                                    
                                     areStringsDifferent(personalInfoUpdated.addressInfo.postalCode, oldAddressRelation.ucinn_ascendv2__Postal_Code__c);
                 } else {
                     isAddressChanged = (personalInfoUpdated.addressInfo.street != null ||
                                     personalInfoUpdated.addressInfo.city != null ||
                                     personalInfoUpdated.addressInfo.state != null ||
                                     personalInfoUpdated.addressInfo.country != null ||
-                                    personalInfoUpdated.addressInfo.county != null ||
                                     personalInfoUpdated.addressInfo.postalCode != null);
                 }
                
                 if (isAddressChanged && hasAddressAccess && hasAddressRelationAccess) {                    
                     
                     // check if the user updated address has an existing ucinn_ascendv2__Address__c record
-                    List<ucinn_ascendv2__Address__c> existingAddRecList = [SELECT Id, ucinn_ascendv2__Address_Line_1__c, ucinn_ascendv2__City__c, ucinn_ascendv2__State__c, ucinn_ascendv2__Country__c, ucinn_ascendv2__County__c,ucinn_ascendv2__Postal_Code__c,
+                    List<ucinn_ascendv2__Address__c> existingAddRecList = [SELECT Id, ucinn_ascendv2__Address_Line_1__c, ucinn_ascendv2__City__c, ucinn_ascendv2__State__c, ucinn_ascendv2__Country__c,ucinn_ascendv2__Postal_Code__c,
                                                                     (SELECT ID, ucinn_ascendv2__Account__c, ucinn_ascendv2__Contact__c,ucinn_ascendv2__Is_Preferred__c FROM ucinn_ascendv2__Address_Relations_Address__r)
                                                                     FROM ucinn_ascendv2__Address__c 
                                                                     WHERE ucinn_ascendv2__Address_Line_1__c =: (personalInfoUpdated.addressInfo.street != null) ? personalInfoUpdated.addressInfo.street : oldAddressRelation.ucinn_ascendv2__Address_Line_1__c
                                                                     AND ucinn_ascendv2__City__c =: (personalInfoUpdated.addressInfo.city != null) ? personalInfoUpdated.addressInfo.city : oldAddressRelation.ucinn_ascendv2__City__c
                                                                     AND ucinn_ascendv2__State__c =: (personalInfoUpdated.addressInfo.state != null) ? personalInfoUpdated.addressInfo.state : oldAddressRelation.ucinn_ascendv2__State__c
                                                                     AND ucinn_ascendv2__Country__c =: (personalInfoUpdated.addressInfo.country != null) ? personalInfoUpdated.addressInfo.country : oldAddressRelation.ucinn_ascendv2__Country__c
-                                                                    AND ucinn_ascendv2__County__c =: (personalInfoUpdated.addressInfo.county != null) ? personalInfoUpdated.addressInfo.county : oldAddressRelation.ucinn_ascendv2__County__c
                                                                     AND ucinn_ascendv2__Postal_Code__c=: (personalInfoUpdated.addressInfo.postalCode != null) ? personalInfoUpdated.addressInfo.postalCode : oldAddressRelation.ucinn_ascendv2__Postal_Code__c
                                                                 ];
                     System.debug('<existingAddRecList>'+ existingAddRecList);          
@@ -246,7 +258,6 @@ public without sharing class HAM_EditProfileController {
                             newAddress.ucinn_ascendv2__City__c = oldAddressRelation.ucinn_ascendv2__City__c;
                             newAddress.ucinn_ascendv2__State__c = oldAddressRelation.ucinn_ascendv2__State__c;
                             newAddress.ucinn_ascendv2__Country__c = oldAddressRelation.ucinn_ascendv2__Country__c;
-                            newAddress.ucinn_ascendv2__County__c = oldAddressRelation.ucinn_ascendv2__County__c;
                             newAddress.ucinn_ascendv2__Postal_Code__c = oldAddressRelation.ucinn_ascendv2__Postal_Code__c;
                         }
                         
@@ -262,9 +273,6 @@ public without sharing class HAM_EditProfileController {
                         }
                         if (personalInfoUpdated.addressInfo.country != null) {
                             newAddress.ucinn_ascendv2__Country__c = personalInfoUpdated.addressInfo.country;
-                        }
-                        if (personalInfoUpdated.addressInfo.county != null) {
-                            newAddress.ucinn_ascendv2__County__c = personalInfoUpdated.addressInfo.county;
                         }
                         if (personalInfoUpdated.addressInfo.postalCode != null) {
                             newAddress.ucinn_ascendv2__Postal_Code__c = personalInfoUpdated.addressInfo.postalCode;
@@ -368,38 +376,8 @@ public without sharing class HAM_EditProfileController {
         @AuraEnabled public String street;
         @AuraEnabled public String city;
         @AuraEnabled public String state;
-        @AuraEnabled public String county;
         @AuraEnabled public String country;
         @AuraEnabled public String postalCode;
-    }
-
-    /**
-     * @description Uploads a profile picture to Salesforce as a ContentVersion record.
-     * The method takes a base64 encoded string and a file name, then creates a new
-     * ContentVersion record and returns the associated ContentDocumentId.
-     *
-     * @param fileName The name of the file to be uploaded.
-     * @param base64Data The base64 encoded string of the file content.
-     * @return The ContentDocumentId of the newly created file.
-     */
-    @AuraEnabled(cacheable=false)
-    public static String uploadProfilePic(String fileName, String base64Data) {
-        
-        
-            ContentVersion cv = new ContentVersion();
-            cv.Title = fileName;
-            cv.PathOnClient = fileName;
-            cv.VersionData = EncodingUtil.base64Decode(base64Data);
-            if(ContentVersion.sObjectType.getDescribe().isAccessible() && ContentVersion.sObjectType.getDescribe().isCreateable()){
-                insert cv;
-            }
-            
-            system.debug('<<cv>>'+cv.Id);
-            // Link to the record
-            Id contentDocId = [SELECT ContentDocumentId FROM ContentVersion WHERE Id = :cv.Id].ContentDocumentId;
-
-            return contentDocId;
-        
     }
 
     /**
