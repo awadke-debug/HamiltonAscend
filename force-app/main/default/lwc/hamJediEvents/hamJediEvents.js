@@ -20,8 +20,8 @@ export default class HamJediEvents extends LightningElement {
     // =========================================
     // Sorting state
     // =========================================
-    @track sortedBy = 'Name';
-    @track sortedDirection = 'asc';
+    @track sortedBy = 'conference360__Event_End_Date_Time__c';
+    @track sortedDirection = 'desc';
 
     // =========================================
     // Pagination (grouped here intentionally)
