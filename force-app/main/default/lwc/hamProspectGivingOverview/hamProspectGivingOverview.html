@@ -148,11 +148,13 @@
                             <lightning-formatted-number value={contactDetails.HAM_Last_Gift_Amount__c} minimum-fraction-digits="2" format-style="currency" currency-code="USD"></lightning-formatted-number>
                             <div class="label slds-m-top_x-small">Date</div>
                             <lightning-formatted-date-time value={contactDetails.HAM_Last_Gift_Date__c} time-zone="UTC"></lightning-formatted-date-time>
-                        </div>
+                        </div>     
                         <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3">
                             <div class="slds-text-title_caps slds-text-color_brand slds-m-bottom_x-small slds-p-top_small">Current FY</div>
                             <div class="label">Paid</div>
                             <lightning-formatted-number value={contactDetails.HAM_Current_FY_Paid__c} minimum-fraction-digits="2" format-style="currency" currency-code="USD"></lightning-formatted-number>
+                            <div class="label slds-m-top_x-small">Wealth Rating</div>
+                            <lightning-formatted-text value={contactDetails.ucinn_ascendv2__Wealth_Rating__c}></lightning-formatted-text>
                         </div>
                     </div>
 
