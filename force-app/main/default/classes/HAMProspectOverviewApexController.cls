@@ -11,7 +11,7 @@ public with sharing class HAMProspectOverviewApexController {
         Contact objProspect = [SELECT ID, Name,HAM_Consecutive_Years_of_Giving__c, HAM_Total_Years_of_Giving__c, HAM_Lifetime_Committed__c, HAM_Lifetime_Paid__c,HAM_Current_Yr_Hamilton_Fund_Fundraising__c, HAM_Current_Year_Hamilton_Fund_Collected__c,
         HAM_1812__c, HAM_Founders_Circle__c,HAM_Ten_to_Fifth__c,HAM_Chapel_Bell__c,HAM_Couper_Guild__c,HAM_JBA__c,HAM_JBA_Anonymous__c, HAM_Lifetime_Committed_w_BQI__c, HAM_Lifetime_Bequest_Intention__c,
         HAM_Largest_gift_Amount__c,HAM_Largest_gift_Date__c,HAM_Largest_gift_purpose__c,HAM_Largest_Pledge_Amount__c,HAM_Largest_Pledge_Date__c,HAM_Largest_Pledge_Purpose__c,
-        HAM_Largest_AF_gift_Amount__c,HAM_Largest_AF_gift_Date__c,HAM_Largest_AF_gift_Purpose__c,HAM_Largest_AF_Pledge_Amount__c,HAM_Largest_AF_Pledge_Date__c,HAM_Largest_AF_Pledge_Purpose__c,HAM_Last_Gift_Amount__c,HAM_Last_Gift_Date__c, HAM_Current_FY_Paid__c   
+        HAM_Largest_AF_gift_Amount__c,HAM_Largest_AF_gift_Date__c,HAM_Largest_AF_gift_Purpose__c,HAM_Largest_AF_Pledge_Amount__c,HAM_Largest_AF_Pledge_Date__c,HAM_Largest_AF_Pledge_Purpose__c,HAM_Last_Gift_Amount__c,HAM_Last_Gift_Date__c, ucinn_ascendv2__Wealth_Rating__c  
         FROM Contact WHERE Id =:contactId];
         system.debug('recentlyViewedRecords-----'+objProspect);
         String designationRecordTypeID = Schema.SObjectType.ucinn_ascendv2__Designation__c.getRecordTypeInfosByName().get('Fund').getRecordTypeId();
