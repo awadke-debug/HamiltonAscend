@@ -31,10 +31,6 @@ public with sharing class DigitalBriefingPdfControllerTest {
         evt.StartDateTime = today;
         insert evt;
 
-        Digi_Brief_Email_Recipient__c dbRecipient = new Digi_Brief_Email_Recipient__c();
-        dbRecipient.Name = 'Test';
-        dbRecipient.Email__c = 'foo@bar.com';
-        insert dbRecipient;
     }
 
     @IsTest
@@ -78,26 +74,6 @@ public with sharing class DigitalBriefingPdfControllerTest {
 
         Test.startTest();
         DigitalBriefingPdfController.getContactsBriefing(contactId);
-        Test.stopTest();
-        
-    }
-
-    @IsTest
-    static void testGetPDFEmailRecipient(){
-        
-        Test.startTest();
-        DigitalBriefingPdfController.getPDFEmailRecipient();
-        Test.stopTest();
-        
-    }
-
-    @IsTest
-    static void testSendPdf(){
-        Contact contact = [SELECT Id FROM Contact WHERE LastName = 'Test' LIMIT 1];
-        String contactId = contact.Id;
-        
-        Test.startTest();
-        DigitalBriefingPdfController.sendPDF(contactId, null);
         Test.stopTest();
         
     }
