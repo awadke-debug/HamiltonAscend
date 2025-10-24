@@ -152,6 +152,7 @@ public with sharing class DigitalBriefingPdfController {
         this.endowedFunds = designationMap.values();
     }
 
+    /* Commenting out now for implementing later via Attach to Donor record button
     private static String createContentDocument(String contactId, String fileName, Blob content) {
         ContentVersion cv = new ContentVersion();
         cv.ContentLocation = 'S';
@@ -174,6 +175,7 @@ public with sharing class DigitalBriefingPdfController {
 
         return contentDocId;
     }
+    */
 
 
     @AuraEnabled(cacheable=true)
