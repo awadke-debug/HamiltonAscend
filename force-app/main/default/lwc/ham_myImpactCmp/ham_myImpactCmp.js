@@ -248,12 +248,13 @@ export default class Ham_myImpactCmp extends LightningElement {
         }
 
         if (data.degree && Array.isArray(data.degree)) {
-            const majors = [];
-            const minors = [];
-            data.degree.forEach(degreeItem => {
-                if (degreeItem.major) majors.push(degreeItem.major);
-                if (degreeItem.minor) minors.push(degreeItem.minor);
-            });
+
+           const majorsArray = data.degree[0].majors;
+           const minorsArray = data.degree[0].minors;
+
+           let majors = majorsArray.filter(major => major !== null && major !== undefined && major.trim() != '');
+           let minors = minorsArray.filter(minor => minor !== null && minor !== undefined && minor.trim() != '');
+            
             this.majorMinor = {
                 majors: majors.join('; '),
                 minors: minors.join('; ')

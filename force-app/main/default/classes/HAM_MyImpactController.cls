@@ -10,6 +10,7 @@
 *==============================================================================
 * 1.0 | July 9, 2025 |  Sachin | Initial Version
 * 1.1 | Sept 04, 2025 |  Sachin |  Done as part of Optimization
+* 1.2 | Oct 09,2025 | Immanuel | Added logic to accomodate 2nd,3rd degree concentartions
 **/
 
 public with sharing class HAM_MyImpactController {
@@ -43,8 +44,8 @@ public with sharing class HAM_MyImpactController {
 
 	// Wrapper class for Degree Information
 	public class DegreeInfo {
-		@AuraEnabled public String major;
-		@AuraEnabled public String minor;
+		@AuraEnabled public List<String> majors;
+		@AuraEnabled public List<String> minors;
 	}
 
     //Wrapper class for Campus Contact
@@ -464,7 +465,7 @@ public with sharing class HAM_MyImpactController {
 
 
 		// This subquery is used to fetch Degree Information.
-        String degreeSubquery = '(SELECT Id, ucinn_ascendv2__Major_Degree_Formula__c, ucinn_ascendv2__Minor_Degree_Formula__c FROM ucinn_ascendv2__Degree_Information_Contact__r where RecordType.DeveloperName = \'School_Degree_Information\')';
+        String degreeSubquery = '(SELECT Id, ucinn_ascendv2__Major_Degree_Formula__c,ucinn_ascendv2__Second_Major_Formula__c,Third_Concentration_Formula__c,ucinn_ascendv2__Minor_Degree_Formula__c,Second_Minor__c,Third_Minor__c FROM ucinn_ascendv2__Degree_Information_Contact__r where RecordType.DeveloperName = \'School_Degree_Information\')';
 		
         // This subquery is used to fetch my campus contact email and phone
         String campusContact = 'HAM_PRM_Email__c,HAM_PRM_Phone__c,ucinn_ascendv2__PRM__r.Id,ucinn_ascendv2__PRM__r.Name';
@@ -502,16 +503,26 @@ public with sharing class HAM_MyImpactController {
                 response.contact.linkedIn = constituentSObject.get('HAM_LiveAlumni_LinkedIn_URL__c') != null ? (String)constituentSObject.get('HAM_LiveAlumni_LinkedIn_URL__c') : '';
 
                 // Populate related ucinn_ascendv2__Degree_Information__c
-                response.degree = new List<DegreeInfo>(); 
+                response.degree = new List<DegreeInfo>();
+                List<String> majors = new List<String>();
+                List<String> minors = new List<String>();
                 List<ucinn_ascendv2__Degree_Information__c> rawDegrees = (List<ucinn_ascendv2__Degree_Information__c>)constituentSObject.getSobjects('ucinn_ascendv2__Degree_Information_Contact__r');
     
                 if (rawDegrees != null && !rawDegrees.isEmpty()) {
                     for (ucinn_ascendv2__Degree_Information__c degreeRecord : rawDegrees) {
-                        DegreeInfo singleDegree = new DegreeInfo();
-                        singleDegree.major = degreeRecord.get('ucinn_ascendv2__Major_Degree_Formula__c') != null ? (String)degreeRecord.get('ucinn_ascendv2__Major_Degree_Formula__c') : '';
-                        singleDegree.minor = degreeRecord.get('ucinn_ascendv2__Minor_Degree_Formula__c') != null ? (String)degreeRecord.get('ucinn_ascendv2__Minor_Degree_Formula__c') : '';
-                        response.degree.add(singleDegree);
+                        
+                        majors.add(fetchDegreeValue(degreeRecord,'ucinn_ascendv2__Major_Degree_Formula__c'));
+                        majors.add(fetchDegreeValue(degreeRecord,'ucinn_ascendv2__Second_Major_Formula__c'));
+                        majors.add(fetchDegreeValue(degreeRecord,'Third_Concentration_Formula__c'));
+                        minors.add(fetchDegreeValue(degreeRecord,'ucinn_ascendv2__Minor_Degree_Formula__c'));
+                        minors.add(fetchDegreeValue(degreeRecord,'Second_Minor__c'));
+                        minors.add(fetchDegreeValue(degreeRecord,'Third_Minor__c'));
                     }
+                    
+                    DegreeInfo singleDegree = new DegreeInfo();
+                    singleDegree.majors = majors;
+                    singleDegree.minors = minors;
+                    response.degree.add(singleDegree);
                 }
                 
                 response.otherInfo = new OtherInfo();
@@ -605,4 +616,7 @@ public with sharing class HAM_MyImpactController {
         return response;
     }
 
+    private static String fetchDegreeValue(ucinn_ascendv2__Degree_Information__c degreeRec, String degreeField) {
+        return degreeRec.get(degreeField) != null ? (String) degreeRec.get(degreeField) : '';
+    }
 }
