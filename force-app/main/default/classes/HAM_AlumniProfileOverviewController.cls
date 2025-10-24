@@ -70,7 +70,7 @@ public without sharing class HAM_AlumniProfileOverviewController {
         String queryFields = String.join(new List<String>(fieldApiNames), ', ');
 
         // Define the subquery for related Degree Information records.
-        String degreeSubquery = '(SELECT Id, ucinn_ascendv2__Major_Degree_Formula__c, ucinn_ascendv2__Minor_Degree_Formula__c, RecordType.DeveloperName FROM ucinn_ascendv2__Degree_Information_Contact__r)';
+        String degreeSubquery = '(SELECT Id, ucinn_ascendv2__Major_Degree_Formula__c, ucinn_ascendv2__Second_Major_Formula__c,Third_Concentration_Formula__c,ucinn_ascendv2__Minor_Degree_Formula__c,Second_Minor__c,Third_Minor__c, RecordType.DeveloperName FROM ucinn_ascendv2__Degree_Information_Contact__r)';
 
         // Define the subquery for related Involvement records.
         String involvmentSubquery = '(SELECT Id, HAM_Category__c, ucinn_ascendv2__Involvement_Code_Description_Formula__c FROM ucinn_ascendv2__Involvements_Contact__r)';
@@ -150,12 +150,28 @@ public without sharing class HAM_AlumniProfileOverviewController {
         if (degreeCheckSet.contains(fieldApiName) && con.ucinn_ascendv2__Degree_Information_Contact__r != null) {
             for (ucinn_ascendv2__Degree_Information__c degree : con.ucinn_ascendv2__Degree_Information_Contact__r) {
                 // Handle 'Undergraduate_Degree' by collecting Major Degree values from 'School_Degree_Information' records.
-                if (fieldApiName == HAM_ConstantsUtil.UNDERGRADUATE_DEGREE && degree.RecordType.DeveloperName == HAM_ConstantsUtil.SCHOOL_DEGREE_INFORMATION && degree.ucinn_ascendv2__Major_Degree_Formula__c != null) {
-                    resultList.add(degree.ucinn_ascendv2__Major_Degree_Formula__c);
+                if (fieldApiName == HAM_ConstantsUtil.UNDERGRADUATE_DEGREE && degree.RecordType.DeveloperName == HAM_ConstantsUtil.SCHOOL_DEGREE_INFORMATION) {
+                    if(degree.ucinn_ascendv2__Major_Degree_Formula__c != null){
+                        resultList.add(degree.ucinn_ascendv2__Major_Degree_Formula__c);
+                    }
+                    if(degree.ucinn_ascendv2__Second_Major_Formula__c != null){
+                        resultList.add(degree.ucinn_ascendv2__Second_Major_Formula__c);
+                    }
+                    if(degree.Third_Concentration_Formula__c != null){
+                        resultList.add(degree.Third_Concentration_Formula__c);
+                    }
                 }
                 // Handle 'Undergraduate_Minor' by collecting Minor Degree values from 'School_Degree_Information' records.
-                else if (fieldApiName == HAM_ConstantsUtil.UNDERGRADUATE_MINOR && degree.RecordType.DeveloperName == HAM_ConstantsUtil.SCHOOL_DEGREE_INFORMATION && degree.ucinn_ascendv2__Minor_Degree_Formula__c != null) {
-                    resultList.add(degree.ucinn_ascendv2__Minor_Degree_Formula__c);
+                else if (fieldApiName == HAM_ConstantsUtil.UNDERGRADUATE_MINOR && degree.RecordType.DeveloperName == HAM_ConstantsUtil.SCHOOL_DEGREE_INFORMATION) {
+                    if(degree.ucinn_ascendv2__Minor_Degree_Formula__c != null){
+                        resultList.add(degree.ucinn_ascendv2__Minor_Degree_Formula__c);
+                    }
+                    if(degree.Second_Minor__c != null){
+                        resultList.add(degree.Second_Minor__c);
+                    }
+                    if(degree.Third_Minor__c != null){
+                        resultList.add(degree.Third_Minor__c);
+                    }
                 }
                 // Handle 'Post_Graduate_Degree' by collecting Major Degree values from 'Non_School_Degree_Information' records.
                 else if(fieldApiName == HAM_ConstantsUtil.POST_GRADUATE_DEGREE && degree.RecordType.DeveloperName == HAM_ConstantsUtil.NON_SCHOOL_DEGREE_INFORMATION && degree.ucinn_ascendv2__Major_Degree_Formula__c != null) {
@@ -172,7 +188,7 @@ public without sharing class HAM_AlumniProfileOverviewController {
                 if ((
                         (fieldApiName == HAM_ConstantsUtil.UNDERGRADUATE_ATHLETICS && involvement.HAM_Category__c == HAM_ConstantsUtil.STUDENT_NCAA_ATHLETICS) ||
                         (fieldApiName == HAM_ConstantsUtil.RESIDENCE_HALLS && involvement.HAM_Category__c == HAM_ConstantsUtil.STUDENT_HOUSING) ||
-                        (fieldApiName == HAM_ConstantsUtil.STUDENT_ORGANIZATIONS && involvement.HAM_Category__c == HAM_ConstantsUtil.STUDENT_CLUBS)
+                        (fieldApiName == HAM_ConstantsUtil.STUDENT_ORGANIZATIONS && (involvement.HAM_Category__c == HAM_ConstantsUtil.STUDENT_CLUBS || involvement.HAM_Category__c == HAM_ConstantsUtil.STUDENT_PRIVATE_SOCIETIES))
                     )
                     && involvement.ucinn_ascendv2__Involvement_Code_Description_Formula__c != null) {
                     resultList.add(involvement.ucinn_ascendv2__Involvement_Code_Description_Formula__c);

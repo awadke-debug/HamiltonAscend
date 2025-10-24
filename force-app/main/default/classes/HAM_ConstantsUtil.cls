@@ -24,6 +24,7 @@ public with sharing class HAM_ConstantsUtil {
     public static final String STUDENT_NCAA_ATHLETICS = 'Student NCAA Athletics';
     public static final String STUDENT_HOUSING = 'Student Housing';
     public static final String STUDENT_CLUBS = 'Student Clubs';
+    public static final String STUDENT_PRIVATE_SOCIETIES = 'Student Private Societies';
     public static final String PICKLIST = 'Picklist';
     public static final String CUSTOM = 'Custom';
     public static final String CURRENT = 'Current';
