@@ -1,6 +1,7 @@
 import { LightningElement, track, wire } from 'lwc';
 import { NavigationMixin } from 'lightning/navigation';
 
+
 // Importing custom labels
 import myImpact from '@salesforce/label/c.ham_MyImpact';
 import alumniDirectory from '@salesforce/label/c.ham_AlumniDirectory';
@@ -247,6 +248,63 @@ export default class Ham_MainCmp extends NavigationMixin(LightningElement) {
     }
 
     /**
+     * @description Helper function to build a URL with query parameters.
+     * @param {string} baseUrl The base URL without query parameters.
+     * @param {Object} params An object of key/value pairs for the query string.
+     * @returns {string} The complete URL with encoded query parameters.
+     */
+    buildUrlWithParams(baseUrl, params) {
+        if (!params || Object.keys(params).length === 0) {
+            return baseUrl;
+        }
+        let query = Object.keys(params)
+            .map(k => encodeURIComponent(k) + '=' + encodeURIComponent(params[k]))
+            .join('&');
+        return baseUrl + (query ? '?' + query : '');
+    }
+
+    /**
+     * @description Navigates to an external URL using NavigationMixin.
+     * @param {string} url The URL to navigate to.
+     * @param {string} target The target for the navigation ('_blank' for new tab, '_self' for current).
+     */
+    navigateToExternalLink(url, target) {
+        this[NavigationMixin.Navigate]({
+            type: 'standard__webPage',
+            attributes: {
+                url: url
+            }
+        },
+        target === '_self' ? true : false 
+        );
+    }
+
+    /**
+     * @description Handles the Manage Subscription click event, adding parameters to the URL.
+     */
+    handleManageSubscriptionClick() {
+        if (!this.label.managesubscriptionlink) {
+            console.error('Manage Subscription Link custom label is missing.');
+            return;
+        }
+
+        // Define the parameters to pass.
+        const urlParams = {
+            // Parameter name on the external system: Value from LWC
+            lkup_subKey: this.currentUserContactId
+        };
+
+        // Construct the full URL with parameters
+        const subscriptionCenterUrl = this.buildUrlWithParams(
+            this.label.managesubscriptionlink, 
+            urlParams
+        );
+
+        // Use NavigationMixin to open the external link in a new tab
+        this.navigateToExternalLink(subscriptionCenterUrl, '_blank');
+    }
+
+    /**
      * @description Handles clicks on items within the settings dropdown menu.
      * It redirects the user or opens the edit profile modal based on the clicked item.
      * @param {Event} event The click event on a menu item.
@@ -256,7 +314,7 @@ export default class Ham_MainCmp extends NavigationMixin(LightningElement) {
         this.isSettingsOpen = false;
         // Conditionally do the redirection using Nav Mixin
         if(eventFrom == 'managesub') {
-            window.open(this.label.managesubscriptionlink, '_blank');
+            this.handleManageSubscriptionClick();
         }
         else if(eventFrom == 'editprof') {
             // Render ham_editProfileCmp component
@@ -301,7 +359,7 @@ export default class Ham_MainCmp extends NavigationMixin(LightningElement) {
         } else if (clickedItemName === this.label.logout) {
             window.open(this.label.logoutlink, '_self');
         } else if (clickedItemName === this.label.managesubscription) {
-            window.open(this.label.managesubscriptionlink, '_blank');
+            this.handleManageSubscriptionClick();
         } else {
             const myLinkItem = this.myLinks.find(link => link.value === clickedItemName);
             if (myLinkItem && myLinkItem.value) {
