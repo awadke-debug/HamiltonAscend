@@ -1,8 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionCalls>
+        <description>Call Invocable Apex to run DML in a future (async) context to get around CPU timeout limits.</description>
+        <name>Establish_Chapter_String</name>
+        <label>Establish Chapter String</label>
+        <locationX>176</locationX>
+        <locationY>323</locationY>
+        <actionName>ContactCurrentChaptersUtility</actionName>
+        <actionType>apex</actionType>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>addressRelations</name>
+            <value>
+                <elementReference>$Record</elementReference>
+            </value>
+        </inputParameters>
+        <nameSegment>ContactCurrentChaptersUtility</nameSegment>
+        <offset>0</offset>
+    </actionCalls>
     <apiVersion>63.0</apiVersion>
     <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
-    <description>Triggered on new Address Relations that are Status = &apos;Current&apos; and if Status changes on update. This flow builds the Current Chapters string on the parent Contact.</description>
+    <description>Updated entry trigger</description>
     <environments>Default</environments>
     <interviewLabel>HAM Chapter Constituent Curren {!$Flow.CurrentDateTime}</interviewLabel>
     <label>HAM Chapter Constituent Current</label>
@@ -28,14 +46,24 @@
     <start>
         <locationX>50</locationX>
         <locationY>0</locationY>
-        <filterFormula>(ISNEW() &amp;&amp; NOT(ISNULL({!$Record.HAM_Chapter__c})) &amp;&amp; TEXT({!$Record.ucinn_ascendv2__Status__c}) = &quot;Current&quot;)
+        <connector>
+            <targetReference>Establish_Chapter_String</targetReference>
+        </connector>
+        <filterFormula>((  NOT(ISNULL({!$Record.HAM_Chapter__c})) &amp;&amp;
+    TEXT({!$Record.ucinn_ascendv2__Status__c}) = &quot;Current&quot; )   
 ||
-(ISCHANGED({!$Record.ucinn_ascendv2__Status__c}) &amp;&amp; (TEXT({!$Record.ucinn_ascendv2__Status__c}) = &quot;Current&quot; || TEXT({!$Record.ucinn_ascendv2__Status__c}) = &quot;Former&quot;))</filterFormula>
+  (  ISCHANGED({!$Record.ucinn_ascendv2__Status__c}) &amp;&amp;
+    (TEXT({!$Record.ucinn_ascendv2__Status__c}) = &quot;Current&quot; || TEXT({!$Record.ucinn_ascendv2__Status__c}) = &quot;Former&quot;)  )
+||
+  ISCHANGED({!$Record.HAM_Chapter__c})
+||
+  ISNEW()
+)</filterFormula>
         <object>ucinn_ascendv2__Address_Relation__c</object>
         <recordTriggerType>CreateAndUpdate</recordTriggerType>
         <triggerType>RecordAfterSave</triggerType>
     </start>
-    <status>InvalidDraft</status>
+    <status>Active</status>
     <variables>
         <name>updateContact</name>
         <dataType>SObject</dataType>

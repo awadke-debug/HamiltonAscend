@@ -29,7 +29,7 @@
             <connector>
                 <targetReference>Assign_Contact_Preferred_Chapter</targetReference>
             </connector>
-            <label>Yes, Preferred</label>
+            <label>Preferred/Current</label>
         </rules>
         <rules>
             <name>No_Longer_Preferred</name>
@@ -51,9 +51,10 @@
             <connector>
                 <targetReference>Remove_Contact_Preferred_Chapter</targetReference>
             </connector>
-            <label>Not, Preferred</label>
+            <label>No Longer Preferred</label>
         </rules>
     </decisions>
+    <description>Entry criteria updated.</description>
     <environments>Default</environments>
     <interviewLabel>HAM Chapter Constituent Preferred {!$Flow.CurrentDateTime}</interviewLabel>
     <label>HAM Chapter Constituent Preferred</label>
@@ -108,14 +109,24 @@
         <connector>
             <targetReference>Address_Relation_is_Preferred</targetReference>
         </connector>
-        <filterFormula>(
-ISNEW() &amp;&amp; 
-NOT(ISNULL({!$Record.HAM_Chapter__c})) &amp;&amp; 
-({!$Record.ucinn_ascendv2__Is_Preferred__c} = TRUE) &amp;&amp; 
-TEXT({!$Record.ucinn_ascendv2__Status__c}) = &quot;Current&quot;
-)
+        <filterFormula>(  (
+    NOT(ISNULL({!$Record.HAM_Chapter__c})) &amp;&amp;
+   {!$Record.ucinn_ascendv2__Is_Preferred__c} = TRUE &amp;&amp;
+    TEXT({!$Record.ucinn_ascendv2__Status__c}) = &quot;Current&quot;
+  )
 ||
-ISCHANGED({!$Record.ucinn_ascendv2__Is_Preferred__c})</filterFormula>
+  (
+    ISCHANGED({!$Record.ucinn_ascendv2__Is_Preferred__c}) &amp;&amp;
+    PRIORVALUE({!$Record.ucinn_ascendv2__Is_Preferred__c}) = TRUE
+  )
+)
+&amp;&amp;
+(
+  ISNEW() ||
+  ISCHANGED({!$Record.HAM_Chapter__c}) ||
+  ISCHANGED({!$Record.ucinn_ascendv2__Is_Preferred__c}) ||
+  ISCHANGED({!$Record.ucinn_ascendv2__Status__c})
+)</filterFormula>
         <object>ucinn_ascendv2__Address_Relation__c</object>
         <recordTriggerType>CreateAndUpdate</recordTriggerType>
         <triggerType>RecordAfterSave</triggerType>
