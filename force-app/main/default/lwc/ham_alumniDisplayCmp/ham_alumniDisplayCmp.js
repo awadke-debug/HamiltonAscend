@@ -10,6 +10,7 @@ import listView from '@salesforce/label/c.ham_ListView';
 import result from '@salesforce/label/c.ham_Results';
 import search from '@salesforce/label/c.ham_Search';
 import save from '@salesforce/label/c.ham_Save';
+import resetFilters from '@salesforce/label/c.ham_Reset_Filters';
 
 /**
  * @description This component displays a searchable and filterable list of alumni profiles.
@@ -60,7 +61,8 @@ export default class Ham_alumniDisplayCmp extends LightningElement {
         listview: listView,
         result: result,
         search: search,
-        save: save
+        save: save,
+        resetFilters: resetFilters
     };
 
     isLoading = false;
