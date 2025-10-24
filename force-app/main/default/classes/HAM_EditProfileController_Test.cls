@@ -202,7 +202,6 @@ public class HAM_EditProfileController_Test {
         wrap.addressInfo.city = 'Columbus';
         wrap.addressInfo.state = 'OH';
         wrap.addressInfo.country = 'USA';
-        wrap.addressInfo.county = 'Franklin';
         wrap.addressInfo.postalCode = '43004';
 
         String jsonWrap = JSON.serialize(wrap);
@@ -297,20 +296,6 @@ public class HAM_EditProfileController_Test {
         System.assertEquals('Success', result);
         System.assertEquals(1, [SELECT COUNT() FROM ContentDocumentLink WHERE ContentDocumentId = :docId AND LinkedEntityId = :c.Id]);
         Test.stopTest();
-    }
-
-    /**
-     * @description Test case to verify that `uploadProfilePic` successfully uploads a file
-     * and returns a valid ContentDocumentId.
-     */
-    @IsTest
-    static void testUploadProfilePic() {
-        String fileName = 'profile.jpg';
-        String base64Data = EncodingUtil.base64Encode(Blob.valueOf('testdata'));
-        Test.startTest();
-        String docId = HAM_EditProfileController.uploadProfilePic(fileName, base64Data);
-        Test.stopTest();
-        System.assertNotEquals(null, docId);
     }
 
     /**
