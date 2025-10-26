@@ -19,32 +19,6 @@
               </lightning-input-rich-text>
   
               <div style="display:flex; margin-left: auto; padding-bottom: 0.25rem;">
-                <div lwc:if={enableEmailSending} style="display: flex; align-items: baseline; gap: 1rem; margin-right: 1rem;">
-                  <div style="margin-left: auto;">
-                    <lightning-input type="checkbox" label="Send to default email?" checked={isDefaultEmail}
-                      onchange={handleDefaultEmailChange}></lightning-input>
-                    <template lwc:if={hasDefaultEmail}>
-                      <p style="font-size: x-small;"><i>Default email is {wiredPDFEmailRecipient.data.Email__c}.</i></p>
-                    </template>
-                    <template lwc:else>
-                      <div style="display: flex; align-items: end; gap: 0.25rem;">
-                        <lightning-icon icon-name="utility:warning" alternative-text="Warning:No default email"
-                          size="xx-small"></lightning-icon>
-                        <p style="font-size: x-small; color: #b3b3b3;"><i>Missing default email.</i></p>
-                      </div>
-                    </template>
-                  </div>
-  
-                  <template lwc:if={displayEmailInput}>
-                    <lightning-input type="text" placeholder="Enter alternate email/s" variant="label-hidden"
-                      onchange={handleAlternateEmailChange} required></lightning-input>
-                  </template>
-                  <lightning-button icon-name="utility:email" icon-position="left" label="Send PDF"
-                    onclick={handleEmailSend} style="padding-left: 0.25rem;"
-                    disabled={disableEmailBtn}></lightning-button>
-  
-                </div>
-  
                 <lightning-button label="Save Changes" onclick={handleGeneratePdf}
                   disabled={disableGeneratePdf}></lightning-button>
               </div>

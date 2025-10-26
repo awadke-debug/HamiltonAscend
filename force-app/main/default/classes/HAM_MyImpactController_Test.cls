@@ -20,11 +20,10 @@ private class HAM_MyImpactController_Test {
      */
     @TestSetup
     static void setupTestData() {
-        // Create an Account
+        // ---- Step 1: Create Non-Setup Data ----
         Account acc = new Account(Name = 'Test Account');
         insert acc;
-
-        // Create a Contact
+    
         Contact contact = new Contact(
             LastName = 'TestUser',
             AccountId = acc.Id,
@@ -33,73 +32,110 @@ private class HAM_MyImpactController_Test {
             HAM_1812__c = true
         );
         insert contact;
-        
-        // Find a valid community or portal profile to associate with the contact
-        Profile p = [SELECT Id FROM Profile WHERE Name LIKE 'Partner Community Login User' LIMIT 1];
-                
-        // Create a user linked to the contact for testing
-        User u = new User(
-            Alias = 'testuser',
-            Email = 'testuser' + System.currentTimeMillis() + '@test.com',
-            EmailEncodingKey = 'UTF-8',
-            LastName = 'Testing',
-            LanguageLocaleKey = 'en_US',
-            LocaleSidKey = 'en_US',
-            ProfileId = p.Id,
-            TimeZoneSidKey = 'America/Los_Angeles',
-            UserName = 'testuser' + System.currentTimeMillis() + '@test.com',
-            ContactId = contact.Id
-        );
-        insert u;
-        
-        // Create a standard user to act as the relationship manager
-        Profile sysAdminProfile = [SELECT Id FROM Profile WHERE Name = 'System Administrator' LIMIT 1];
-        User relMgrUser = new User(
-            Alias = 'relmgr',
-            Email = 'relmgr' + System.currentTimeMillis() + '@test.com',
-            EmailEncodingKey = 'UTF-8',
-            LastName = 'Relationship Manager',
-            LanguageLocaleKey = 'en_US',
-            LocaleSidKey = 'en_US',
-            ProfileId = sysAdminProfile.Id,
-            TimeZoneSidKey = 'America/Los_Angeles',
-            UserName = 'relmgr' + System.currentTimeMillis() + '@test.com'
-        );
-        insert relMgrUser;
-
-        // Create the Designation record
+    
         ucinn_ascendv2__Designation__c designation = new ucinn_ascendv2__Designation__c(
             Name = 'Test Designation',
             ucinn_ascendv2__Fund_Name__c = 'Test Fund'
         );
         insert designation;
-
-        // Create related records
-        ucinn_ascendv2__Designation_Stewardship__c purposeRecord = new ucinn_ascendv2__Designation_Stewardship__c(
+    
+        insert new ucinn_ascendv2__Designation_Stewardship__c(
             ucinn_ascendv2__Contact_Stewardee__c = contact.Id,
             ucinn_ascendv2__Designation__c = designation.Id
         );
-        insert purposeRecord;
-
-        ucinn_ascendv2__Degree_Information__c degreeRecord = new ucinn_ascendv2__Degree_Information__c(
+    
+        insert new ucinn_ascendv2__Degree_Information__c(
             ucinn_ascendv2__Contact__c = contact.Id
         );
-        insert degreeRecord;
-        
-        ucinn_ascendv2__Social_Media__c socialMedia = new ucinn_ascendv2__Social_Media__c(
+    
+        insert new ucinn_ascendv2__Social_Media__c(
             ucinn_ascendv2__Contact__c = contact.Id,
             ucinn_ascendv2__Platform__c = 'Facebook',
             ucinn_ascendv2__URL__c = 'http://facebook.com/testuser'
         );
-        insert socialMedia;
-
-        // Create the Assignment record and link it to the new relationship manager user
-        ucinn_ascendv2__Assignment__c classAssignment = new ucinn_ascendv2__Assignment__c(
-            ucinn_ascendv2__Contact__c = contact.Id,
-            ucinn_ascendv2__Assignment_Type__c = 'Class Manager',
-            ucinn_ascendv2__Assigned_Relationship_Manager_User__c = relMgrUser.Id
-         );
-        insert classAssignment;
+    
+        // ---- Step 2: Create Users in Isolated Context ----
+        Profile sysAdmin = [SELECT Id FROM Profile WHERE Name = 'System Administrator' LIMIT 1];
+        Profile portalProfile = [SELECT Id FROM Profile WHERE Name LIKE '%Community%' LIMIT 1];
+        Id roleId;
+        try {
+            roleId = [SELECT Id FROM UserRole WHERE DeveloperName = 'Portal_User' LIMIT 1].Id;
+        } catch (Exception e) {
+            // fallback if not found
+            UserRole role = new UserRole(Name = 'Portal_User_Role');
+            insert role;
+            roleId = role.Id;
+        }
+    
+        // Create a temporary system context user to own the next runAs
+        User tempSysUser = new User(
+            Alias = 'tempsys',
+            Email = 'tempsys' + System.currentTimeMillis() + '@test.com',
+            EmailEncodingKey = 'UTF-8',
+            LastName = 'TempSys',
+            LanguageLocaleKey = 'en_US',
+            LocaleSidKey = 'en_US',
+            ProfileId = sysAdmin.Id,
+            TimeZoneSidKey = 'America/Los_Angeles',
+            UserName = 'tempsys' + System.currentTimeMillis() + '@test.com'
+        );
+        insert tempSysUser;
+    
+        System.runAs(tempSysUser) {
+            // Account Owner
+            User acctOwner = new User(
+                Alias = 'acctown',
+                Email = 'acctown' + System.currentTimeMillis() + '@test.com',
+                EmailEncodingKey = 'UTF-8',
+                LastName = 'AcctOwner',
+                LanguageLocaleKey = 'en_US',
+                LocaleSidKey = 'en_US',
+                ProfileId = sysAdmin.Id,
+                TimeZoneSidKey = 'America/Los_Angeles',
+                UserRoleId = roleId,
+                UserName = 'acctown' + System.currentTimeMillis() + '@test.com'
+            );
+            insert acctOwner;
+    
+            // Relationship Manager
+            User relMgrUser = new User(
+                Alias = 'relmgr',
+                Email = 'relmgr' + System.currentTimeMillis() + '@test.com',
+                EmailEncodingKey = 'UTF-8',
+                LastName = 'Relationship Manager',
+                LanguageLocaleKey = 'en_US',
+                LocaleSidKey = 'en_US',
+                ProfileId = sysAdmin.Id,
+                TimeZoneSidKey = 'America/Los_Angeles',
+                UserName = 'relmgr' + System.currentTimeMillis() + '@test.com'
+            );
+            insert relMgrUser;
+    
+            // Portal user (linked to Contact)
+            User portalUser = new User(
+                Alias = 'testuser',
+                Email = 'testuser' + System.currentTimeMillis() + '@test.com',
+                EmailEncodingKey = 'UTF-8',
+                LastName = 'Testing',
+                LanguageLocaleKey = 'en_US',
+                LocaleSidKey = 'en_US',
+                ProfileId = portalProfile.Id,
+                TimeZoneSidKey = 'America/Los_Angeles',
+                UserName = 'testuser' + System.currentTimeMillis() + '@test.com',
+                ContactId = contact.Id
+            );
+            insert portalUser;
+    
+            // ---- Step 3: Safely Update Non-Setup Records After runAs ----
+            acc.OwnerId = acctOwner.Id;
+            update acc;
+    
+            insert new ucinn_ascendv2__Assignment__c(
+                ucinn_ascendv2__Contact__c = contact.Id,
+                ucinn_ascendv2__Assignment_Type__c = 'Class Manager',
+                ucinn_ascendv2__Assigned_Relationship_Manager_User__c = relMgrUser.Id
+            );
+        }
     }
     
     /**

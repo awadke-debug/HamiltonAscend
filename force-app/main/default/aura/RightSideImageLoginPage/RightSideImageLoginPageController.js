@@ -7,7 +7,7 @@
 
         if (useStatic === true) {
             // Get the Static Resource path
-            bgUrl = $A.get('$Resource.LoginBuildingImage');
+            bgUrl = $A.get('$Resource.Ham_LoginPageImage');
         } else if (urlAttr) {
             bgUrl = urlAttr;
         }

@@ -29,7 +29,8 @@ export default class Ham_alumniSearchFilterCmp extends LightningElement {
      */
     connectedCallback() {
         this.images = {
-            searchImage: this.mainResource + '/search.png'
+            searchImage: this.mainResource + '/search.png',
+            resetFilterImg: this.mainResource + '/resetFilter.png'
         };
         this.fetchFilterMetadata();
     }

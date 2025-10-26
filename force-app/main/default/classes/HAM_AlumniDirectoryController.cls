@@ -172,15 +172,12 @@ public without sharing class HAM_AlumniDirectoryController {
             else {
                 String query = 'SELECT Id, Name from Contact ' + whereClause + ' ORDER BY Name ASC LIMIT :recordsToSkip';
                 List<Contact> lstContact = Database.query(query);
-                system.debug('lstContact: '+ lstContact);
                 lastRecordName = (lstContact != null && !lstContact.isEmpty()) ? lstContact[recordsToSkip-1].Name : null;
                 queryString = (lastRecordName != null) ? (queryString  + ' AND Name > :lastRecordName ORDER BY Name ASC LIMIT :pageSize') : queryString;
             }
-            system.debug('<<queryString>>'+queryString);
             List<Contact> alumniContacts = new List<Contact>();
             try {
                 alumniContacts = Database.query(queryString);
-                system.debug('alumniContacts: '+alumniContacts.size());
             } catch (System.QueryException e) {  
                 System.debug('Query Error: ' + e.getMessage());
                 return new List<AlumniCardData>();

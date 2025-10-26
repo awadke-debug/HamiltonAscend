@@ -2,29 +2,27 @@ public with sharing class HAMJediSearchController {
    @AuraEnabled(cacheable=false)
     public static List<Contact> searchContact(string searchStr, string donorId, string classYear, string sportsAssociation, string studentOrganization) {
 
-        String searchName = '\'%' + searchStr + '%\'';
-        String queryString = 'SELECT ID, Name,HAM_Name_w_Suffix__c,HAM_Institutional_Suffix__c,ucinn_ascendv2__Primary_Contact_Type__c, ucinn_ascendv2__Donor_ID__c, HAM_PreferredEmail__c, HAM_Formatted_Phone__c FROM Contact WHERE ';
-        
         List<String> whereConditions = new List<String>();
 
         // Add name search condition
         if(String.isNotBlank(searchStr)){
-            whereConditions.add('HAM_Name_w_Suffix__c LIKE '+searchName);
+            whereConditions.add('HAM_Name_w_Suffix__c LIKE \'%' + String.escapeSingleQuotes(searchStr) + '%\'');
         }
 
         // Add donor ID condition
         if(String.isNotBlank(donorId)){
-            whereConditions.add('ucinn_ascendv2__Donor_ID__c= '+'\''+donorId+'\'');
+            whereConditions.add('ucinn_ascendv2__Donor_ID__c = \'' + String.escapeSingleQuotes(donorId) + '\'');
         }
 
         // Add Class Year condition
         if(String.isNotBlank(classYear)){
-            whereConditions.add('HAM_Reunion_Year__c = '+'\''+classYear+'\'');
+            whereConditions.add('HAM_Reunion_Year__c = \'' + String.escapeSingleQuotes(classYear) + '\'');
         }
 
-        // Add Sports Association and Student Organization conditions (need to join with Involvement records)
-        // Build the query differently if we need involvement filters
-        Boolean hasInvolvementFilters = String.isNotBlank(sportsAssociation) || String.isNotBlank(studentOrganization);
+        // Check if we have involvement filters
+        Boolean hasSportsAssociation = String.isNotBlank(sportsAssociation);
+        Boolean hasStudentOrganization = String.isNotBlank(studentOrganization);
+        Boolean hasInvolvementFilters = hasSportsAssociation || hasStudentOrganization;
 
         if(whereConditions.isEmpty() && !hasInvolvementFilters) {
             // No search criteria provided
@@ -33,54 +31,90 @@ public with sharing class HAMJediSearchController {
 
         if(!hasInvolvementFilters) {
             // Simple query without involvement join
+            String queryString = 'SELECT ID, Name, HAM_Name_w_Suffix__c, HAM_Institutional_Suffix__c, ucinn_ascendv2__Primary_Contact_Type__c, ucinn_ascendv2__Donor_ID__c, HAM_PreferredEmail__c, HAM_Formatted_Phone__c FROM Contact WHERE ';
             queryString += String.join(whereConditions, ' AND ');
-            queryString+= ' ORDER BY HAM_Name_w_Suffix__c ASC';
+            queryString += ' ORDER BY HAM_Name_w_Suffix__c ASC';
+            
+            system.debug('=== SIMPLE QUERY (NO INVOLVEMENT FILTERS) ===');
             system.debug('Query Str -----'+queryString);
             List<Contact> constitiuents = Database.query(queryString);
-            system.debug('Query Results -----'+constitiuents);
+            system.debug('Query Results Count -----'+constitiuents.size());
             return constitiuents;
-        } else {
-            // Need to join with Involvement records
-            Set<Id> contactIds = new Set<Id>();
+        } 
+        
+        // INVOLVEMENT FILTERS LOGIC
+        Set<Id> sportsContactIds = new Set<Id>();
+        Set<Id> organizationContactIds = new Set<Id>();
+        Set<Id> finalContactIds = new Set<Id>();
 
-            String involvementQuery = 'SELECT ucinn_ascendv2__Contact__c FROM ucinn_ascendv2__Involvement__c WHERE ';
-            List<String> involvementConditions = new List<String>();
-
-            if(String.isNotBlank(sportsAssociation)) {
-                involvementConditions.add('ucinn_ascendv2__Involvement_Value__r.ucinn_ascendv2__Involvement_Description__c = '+'\''+sportsAssociation+'\'');
-            }
-
-            if(String.isNotBlank(studentOrganization)) {
-                involvementConditions.add('ucinn_ascendv2__Involvement_Value__r.ucinn_ascendv2__Involvement_Description__c = '+'\''+studentOrganization+'\'');
-            }
-
-            if(!involvementConditions.isEmpty()) {
-                involvementQuery += String.join(involvementConditions, ' OR ');
-
-                List<ucinn_ascendv2__Involvement__c> involvements = Database.query(involvementQuery);
-                
-                for(ucinn_ascendv2__Involvement__c inv : involvements) {
-                    if(inv.ucinn_ascendv2__Contact__c != null) {
-                        contactIds.add(inv.ucinn_ascendv2__Contact__c);
-                    }
+        // Query for Sports Association
+        if(hasSportsAssociation) {
+            String sportsQuery = 'SELECT ucinn_ascendv2__Contact__c FROM ucinn_ascendv2__Involvement__c WHERE ucinn_ascendv2__Involvement_Code_Description_Formula__c = \'' + String.escapeSingleQuotes(sportsAssociation) + '\'';
+            
+            system.debug('Sports Query: ' + sportsQuery);
+            List<ucinn_ascendv2__Involvement__c> sportsInvolvements = Database.query(sportsQuery);
+            
+            for(ucinn_ascendv2__Involvement__c inv : sportsInvolvements) {
+                if(inv.ucinn_ascendv2__Contact__c != null) {
+                    sportsContactIds.add(inv.ucinn_ascendv2__Contact__c);
                 }
             }
-
-            // If no contacts found from involvement query, return empty list
-            if(contactIds.isEmpty()) {
-                return new List<Contact>();
-            }
-
-            // Add contact ID condition
-            whereConditions.add('ID IN ' + '(\'' + String.join(new List<Id>(contactIds), '\',\'') + '\')');
-
-            queryString += String.join(whereConditions, ' AND ');
-            queryString+= ' ORDER BY HAM_Name_w_Suffix__c ASC';
-            system.debug('Query Str -----'+queryString);
-            List<Contact> constitiuents = Database.query(queryString);
-            system.debug('Query Results -----'+constitiuents);
-            return constitiuents;
+            system.debug('Sports Contact Ids Count: ' + sportsContactIds.size());
+            system.debug('Sports Contact Ids: ' + sportsContactIds);
         }
+
+        // Query for Student Organization
+        if(hasStudentOrganization) {
+            String orgQuery = 'SELECT ucinn_ascendv2__Contact__c FROM ucinn_ascendv2__Involvement__c WHERE ucinn_ascendv2__Involvement_Code_Description_Formula__c = \'' + String.escapeSingleQuotes(studentOrganization) + '\'';
+            
+            system.debug('Organization Query: ' + orgQuery);
+            List<ucinn_ascendv2__Involvement__c> orgInvolvements = Database.query(orgQuery);
+            
+            for(ucinn_ascendv2__Involvement__c inv : orgInvolvements) {
+                if(inv.ucinn_ascendv2__Contact__c != null) {
+                    organizationContactIds.add(inv.ucinn_ascendv2__Contact__c);
+                }
+            }
+            system.debug('Organization Contact Ids Count: ' + organizationContactIds.size());
+            system.debug('Organization Contact Ids: ' + organizationContactIds);
+        }
+
+        // Combine results using OR logic: union of both sets
+        if(hasSportsAssociation && hasStudentOrganization) {
+            finalContactIds = new Set<Id>(sportsContactIds);
+            finalContactIds.addAll(organizationContactIds);  // OR logic - union of both
+            system.debug('Both filters selected - combining with OR logic');
+        } else if(hasSportsAssociation) {
+            finalContactIds = sportsContactIds;
+            system.debug('Only Sports filter selected');
+        } else if(hasStudentOrganization) {
+            finalContactIds = organizationContactIds;
+            system.debug('Only Organization filter selected');
+        }
+
+        // If no contacts found from involvement query, return empty list
+        if(finalContactIds.isEmpty()) {
+            system.debug('No contacts found - returning empty list');
+            return new List<Contact>();
+        }
+
+        // Add contact ID condition
+        whereConditions.add('ID IN (\'' + String.join(new List<Id>(finalContactIds), '\',\'') + '\')');
+
+        String queryString = 'SELECT ID, Name, HAM_Name_w_Suffix__c, HAM_Institutional_Suffix__c, ucinn_ascendv2__Primary_Contact_Type__c, ucinn_ascendv2__Donor_ID__c, HAM_PreferredEmail__c, HAM_Formatted_Phone__c FROM Contact WHERE ';
+        queryString += String.join(whereConditions, ' AND ');
+        queryString += ' ORDER BY HAM_Name_w_Suffix__c ASC';
+        
+        system.debug('=== FINAL QUERY WITH INVOLVEMENT FILTERS ===');
+        system.debug('Sports Association: ' + sportsAssociation);
+        system.debug('Student Organization: ' + studentOrganization);
+        system.debug('Final Contact IDs Count: ' + finalContactIds.size());
+        system.debug('Final Contact IDs: ' + String.join(new List<Id>(finalContactIds), ', '));
+        system.debug('Final Query: ' + queryString);
+        
+        List<Contact> constitiuents = Database.query(queryString);
+        system.debug('Final Results Count: ' + constitiuents.size());
+        return constitiuents;
     }
 
     @AuraEnabled(cacheable=true)
@@ -89,13 +123,11 @@ public with sharing class HAMJediSearchController {
         return recentlyViewedRecords;
     }
 
-    // NEW METHOD: Fetch unique Class Year values
     @AuraEnabled(cacheable=true)
     public static List<String> getClassYearOptions() {
         List<String> classYears = new List<String>();
         
         try {
-            // Query to get distinct HAM_Reunion_Year__c values
             List<AggregateResult> results = [
                 SELECT HAM_Reunion_Year__c 
                 FROM Contact 
@@ -104,7 +136,6 @@ public with sharing class HAMJediSearchController {
                 ORDER BY HAM_Reunion_Year__c ASC
             ];
             
-            // Convert AggregateResult to String list
             for (AggregateResult ar : results) {
                 String year = (String)ar.get('HAM_Reunion_Year__c');
                 if (String.isNotBlank(year)) {
@@ -121,13 +152,11 @@ public with sharing class HAMJediSearchController {
         return classYears;
     }
 
-    // NEW METHOD: Fetch Sports Association options (Student NCAA Athletics)
     @AuraEnabled(cacheable=true)
     public static List<String> getSportsAssociationOptions() {
         List<String> sportsAssociations = new List<String>();
         
         try {
-            // Query to get Involvement Descriptions for Student NCAA Athletics
             List<ucinn_ascendv2__Involvement_Value__c> results = [
                 SELECT id, Name, HAM_Category__c, ucinn_ascendv2__Involvement_Description__c, ucinn_ascendv2__Type__c 
                 FROM ucinn_ascendv2__Involvement_Value__c 
@@ -135,7 +164,6 @@ public with sharing class HAMJediSearchController {
                 ORDER BY ucinn_ascendv2__Involvement_Description__c ASC
             ];
             
-            // Extract unique Involvement Descriptions
             for (ucinn_ascendv2__Involvement_Value__c record : results) {
                 String description = record.ucinn_ascendv2__Involvement_Description__c;
                 if (String.isNotBlank(description) && !sportsAssociations.contains(description)) {
@@ -152,13 +180,11 @@ public with sharing class HAMJediSearchController {
         return sportsAssociations;
     }
 
-    // NEW METHOD: Fetch Student Organizations options (Student Clubs and Student Private Societies)
     @AuraEnabled(cacheable=true)
     public static List<String> getStudentOrganizationsOptions() {
         List<String> studentOrganizations = new List<String>();
         
         try {
-            // Query to get Involvement Descriptions for Student Clubs and Student Private Societies
             List<ucinn_ascendv2__Involvement_Value__c> results = [
                 SELECT id, Name, HAM_Category__c, ucinn_ascendv2__Involvement_Description__c, ucinn_ascendv2__Type__c 
                 FROM ucinn_ascendv2__Involvement_Value__c 
@@ -166,7 +192,6 @@ public with sharing class HAMJediSearchController {
                 ORDER BY ucinn_ascendv2__Involvement_Description__c ASC
             ];
             
-            // Extract unique Involvement Descriptions
             for (ucinn_ascendv2__Involvement_Value__c record : results) {
                 String description = record.ucinn_ascendv2__Involvement_Description__c;
                 if (String.isNotBlank(description) && !studentOrganizations.contains(description)) {

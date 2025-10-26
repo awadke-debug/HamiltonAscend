@@ -97,6 +97,7 @@
         <template if:true={isMobileMenuOpen}>
             <div class="mobile-menu-overlay">
                 <div class="mobile-menu-content slds-p-around_medium" data-id="menuContent">
+                    <div style="color: #fff;" class="mobile-menu-content-cross-icon" onclick={toggleMobileMenu}>×</div>
                     <a class="mobile-menu-item" onclick={handleMobileMenuItemClick} data-name={label.myimpact}>{label.myimpact}</a>
                     <a class="mobile-menu-item" onclick={handleMobileMenuItemClick} data-name={label.alumnidirectory}>{label.alumnidirectory}</a>
 

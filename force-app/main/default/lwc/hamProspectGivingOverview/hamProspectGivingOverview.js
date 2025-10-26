@@ -38,8 +38,8 @@ export default class HamProspectGivingOverview extends LightningElement {
     @track givingPageSize = 10;
     @track givingPageNumber = 1;
     @track givingTotalRecords = 0;
-    @track givingSortedBy = 'HAM_Designation__c';
-    @track givingSortedDirection = 'asc';
+    @track givingSortedBy = 'HAM_Pledged__c';
+    @track givingSortedDirection = 'desc';
 
     get givingTotalPages() {
         return Math.max(1, Math.ceil(this.givingTotalRecords / this.givingPageSize));
@@ -110,8 +110,8 @@ export default class HamProspectGivingOverview extends LightningElement {
     @track campaignPageSize = 10;
     @track campaignPageNumber = 1;
     @track campaignTotalRecords = 0;
-    @track campaignSortedBy = 'HAM_Designation__c';
-    @track campaignSortedDirection = 'asc';
+    @track campaignSortedBy = 'HAM_Pledged__c';
+    @track campaignSortedDirection = 'desc';
 
     get campaignTotalPages() {
         return Math.max(1, Math.ceil(this.campaignTotalRecords / this.campaignPageSize));

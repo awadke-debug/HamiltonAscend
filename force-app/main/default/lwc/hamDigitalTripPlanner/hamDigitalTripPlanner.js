@@ -1,6 +1,7 @@
 import { LightningElement, track, wire } from 'lwc';
 import { getRecords } from 'lightning/uiRecordApi';
 import { refreshApex } from '@salesforce/apex';
+import { CurrentPageReference } from 'lightning/navigation';
 
 import hamiltonLogo from '@salesforce/resourceUrl/HamiltonInstituteLogo';
 
@@ -34,6 +35,10 @@ export default class HamDigitalTripPlanner extends LightningElement {
     mapResultRows;
     emailSubject;
     emailBody;
+
+    connected;
+    generateUrlOnConnected;
+    currentPageReference;
 
     @track recsObj;
     @track activeTab = '';
@@ -81,19 +86,40 @@ export default class HamDigitalTripPlanner extends LightningElement {
             
         }
     }
+    
+    @wire(CurrentPageReference)
+    setCurrentPageReference(currentPageReference) {
+        this.currentPageReference = currentPageReference;
+
+        if (this.connected) {
+            this.refreshPageOnStateChange();
+        } else {
+            this.generateUrlOnConnected = true;
+        }
+    }
+
+    connectedCallback() {
+        this.connected = true;
+
+        if (this.generateUrlOnConnected) {
+            this.refreshPageOnStateChange();
+        }
+    }
+
+    refreshPageOnStateChange() {
+        const recordIdFromCurrState = this.currentPageReference.state.c__tripId;
+        
+        if (recordIdFromCurrState !== this.tripDetailId) {
+            this.tripDetailId = recordIdFromCurrState;
+        }
+    }
 
     handleCheckRow(event) {
-        try {
-            
-            const { rows } = event.detail;
-            this.selectedRows = rows;
-    
-            this.contactIds = this._extractContactIdsFromMapResult();
-            this.buildRecordObjParam();
-        } catch (error) {
-            console.log(error.message);
-            
-        }
+        const { rows } = event.detail;
+        this.selectedRows = rows;
+
+        this.contactIds = this._extractContactIdsFromMapResult();
+        this.buildRecordObjParam();
     }
 
     handleSelectAll(event){

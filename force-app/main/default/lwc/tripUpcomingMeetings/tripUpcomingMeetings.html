@@ -1,0 +1,18 @@
+<template>
+    <lightning-card icon-name="custom:custom20" variant="base">
+        <div slot="title">
+            Upcoming Meetings
+
+        </div>
+        <div slot="actions">
+            <lightning-button variant="neutral" label="New Trip" onclick={handleClickNewTrip}></lightning-button>
+
+        </div>
+        <div>
+            <p class="slds-var-p-left_medium slds-var-p-bottom_medium slds-text-body_small">Upcoming meeting within the next 30 days.</p>
+            <c-trip-custom-table key-field="id" data={data} columns={columns} hide-checkbox-column="true"
+                onbtnclick={handleClickName}></c-trip-custom-table>
+        </div>
+    </lightning-card>
+
+</template>

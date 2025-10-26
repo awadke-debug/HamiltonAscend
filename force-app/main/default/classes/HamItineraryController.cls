@@ -172,6 +172,60 @@ public with sharing class HamItineraryController {
         return events;
     }
 
+
+    @AuraEnabled(cacheable=true)
+    public static List<EventDetail> getEventsByUser(){
+        String userId = UserInfo.getUserId();
+
+        Datetime now = Datetime.now();
+        Datetime thirtyDaysFromNow = now.addDays(30);
+
+        List<Event> events = [SELECT 
+                    Id, 
+                    Subject, 
+                    Description, 
+                    WhatId,
+                    StartDateTime, 
+                    EndDateTime,
+                    Who.Name, 
+                    RecordType.DeveloperName,
+                    HAM_Meeting_Title__c,
+                    HAM_Meeting_Status__c,
+                    HAM_Start_Date_Time__c, 
+                    HAM_Source_Airport__c, 
+                    HAM_Destination_Airport__c,
+                    HAM_Flight_Train_Number__c,
+                    HAM_Mode__c,
+                    HAM_Stay_Name__c,
+                    HAM_Address__c,
+                    HAM_Trip_Details__c,
+                    HAM_Trip_Details__r.HAM_Title__c,
+                    HAM_Trip_Details__r.HAM_Start_Date_Time__c,
+                    HAM_Trip_Details__r.HAM_End_Date_Time__c
+                FROM Event 
+                WHERE OwnerId = :userId
+                // AND HAM_Trip_Details__r.HAM_Start_Date_Time__c >= :now
+                AND HAM_Trip_Details__r.HAM_Start_Date_Time__c <= :thirtyDaysFromNow
+                AND RecordType.DeveloperName IN ('HAM_Meeting')
+                    ORDER BY StartDateTime];
+
+        List<EventDetail> eventDetails = new List<EventDetail>();
+
+        // evt.StartDateTime.format('MMMM d'), evt.StartDateTime.format('h:mm a')
+        for (Event evt : events) {
+            EventDetail ed = new EventDetail();
+            ed.tripId = evt.WhatId;
+            ed.tripTitle = evt.HAM_Trip_Details__r.HAM_Title__c;
+            ed.tripStartDateTime = evt.HAM_Trip_Details__r.HAM_Start_Date_Time__c.format('MMMM d, YYYY h:mm a');
+            ed.tripEndtDateTime = evt.HAM_Trip_Details__r.HAM_End_Date_Time__c.format('MMMM d, YYYY h:mm a');
+            ed.address = evt.HAM_Address__c;
+            ed.description = evt.Description;
+            eventDetails.add(ed);
+        }
+        
+        return eventDetails; 
+    }
+
     @AuraEnabled
     public static Event saveEvent(EventDetail eventDetail){
         Event event = new Event();
@@ -193,6 +247,7 @@ public with sharing class HamItineraryController {
             event.HAM_Meeting_Status__c = eventDetail.meetingStatus;
             event.WhoId = eventDetail.contactId;
             event.HAM_Address__c = eventDetail.address;
+            event.Description = eventDetail.description;
         }
 
         if (eventDetail.type == 'HAM_Transportation') {
@@ -291,6 +346,21 @@ public with sharing class HamItineraryController {
         return results;
     }
 
+    @AuraEnabled(cacheable=true)
+    public static List<Map<String, String>> getMeetingStatusOptions(){
+        Schema.DescribeFieldResult fieldDetail = Event.HAM_Meeting_Status__c.getDescribe();
+        List<Schema.PicklistEntry> picklistValues = fieldDetail.getPicklistValues();
+        List<Map<String, String>> options = new List<Map<String, String>>();
+        for (Schema.PicklistEntry entry : picklistValues) {
+            // options.put(entry.getValue(), entry.getLabel());
+            options.add(new Map<String, String>{
+                'value' => entry.getValue(),
+                'label' => entry.getLabel()
+            });
+        }
+        return options;
+    }
+
     private static List<String> filterEmails(String commaDelimitedEmails) {
         List<String> emails = HamEmailUtil.trimCommaDelimitedEmails(commaDelimitedEmails);
         HamEmailUtil.removeEmailConstituents(emails);
@@ -320,7 +390,7 @@ public with sharing class HamItineraryController {
         public String name {get; set;}
         public String eventDate {get; set;}
         public String eventTime {get; set;}
-        public String description {get; set;}
+        @AuraEnabled public String description {get; set;}
         @AuraEnabled public String type {get; set;}
         @AuraEnabled public String stayDetailsName {get; set;}
         @AuraEnabled public String address {get; set;}
@@ -334,6 +404,11 @@ public with sharing class HamItineraryController {
         @AuraEnabled public String meetingTitle {get; set;}
         @AuraEnabled public String meetingStatus {get; set;}
         @AuraEnabled public String contactId {get; set;}
+
+        @AuraEnabled public String tripId {get; set;}
+        @AuraEnabled public string tripTitle {get; set;}
+        @AuraEnabled public String tripStartDateTime {get; set;}
+        @AuraEnabled public String tripEndtDateTime {get; set;}
 
         public EventDetail() {}
 

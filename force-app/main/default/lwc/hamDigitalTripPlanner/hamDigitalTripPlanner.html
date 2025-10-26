@@ -5,7 +5,7 @@
                 Trip Details Like Name, Start and End Date
                 <lightning-accordion allow-multiple-sections-open="true" active-section-name="Trip Details">
                     <lightning-accordion-section name="Trip Details" label="Trip Details">
-                        <c-trip-details display-only="false" lwc:ref="tripDetailsForm" ontripdetailchange={handleTripChange}></c-trip-details>
+                        <c-trip-details display-only="false" lwc:ref="tripDetailsForm" trip-detail-id={tripDetailId} ontripdetailchange={handleTripChange}></c-trip-details>
                     </lightning-accordion-section>
                     <lightning-accordion-section name="Stay Details" label="Stay Details">
                         <div class="slds-p-around_medium lgc-bg">

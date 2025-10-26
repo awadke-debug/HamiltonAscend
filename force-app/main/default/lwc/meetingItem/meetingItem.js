@@ -1,5 +1,10 @@
-import { LightningElement, api, track } from 'lwc';
+import { LightningElement, api, track, wire } from 'lwc';
+import { getPicklistValues, getObjectInfo } from 'lightning/uiObjectInfoApi';
+
+// import MEETING_OBJECT from '@salesforce/schema/Event';
+// import HAM_MEETING_STATUS_FIELD from '@salesforce/schema/Event.HAM_Meeting_Status__c';
 import saveEvent from '@salesforce/apex/HamItineraryController.saveEvent';
+import getMeetingStatusOptions from '@salesforce/apex/HamItineraryController.getMeetingStatusOptions';
 
 import meetingItemForm from './meetingItemForm.html';
 import meetingItemDisplay from './meetingItemDisplay.html';
@@ -17,6 +22,33 @@ export default class MeetingItem extends LightningElement {
     }
     set meeting(value) {
         this._meeting = Object.assign({}, value);
+    }
+    statusPicklistValues;
+    /*
+
+    @wire(getObjectInfo, { objectApiName: MEETING_OBJECT })
+    eventObjectInfo;
+
+    @wire(getPicklistValues, { recordTypeId: '$eventObjectInfo.data.defaultRecordTypeId', fieldApiName: HAM_MEETING_STATUS_FIELD })
+    wiredStatusPicklistValues({data, error}) {
+        if (data) {
+            this.statusPicklistValues = data.values;
+            console.log('status options', JSON.stringify(this.statusPicklistValues));
+            
+        } else if (error) {
+            console.error('error', JSON.stringify(error));
+        }
+
+    }*/
+
+    @wire(getMeetingStatusOptions)
+    wiredMeetingStatusOptions({data, error}) {
+        if (data) {
+            this.statusPicklistValues = data;
+        } else if (error) {
+            console.error('error', JSON.stringify(error));
+
+        }
     }
 
     render() {
@@ -45,6 +77,7 @@ export default class MeetingItem extends LightningElement {
                 tripDetailId: this._meeting.tripDetailId || tripDetailId,
                 contactId: this._meeting.contactId,
                 address: this.addressText,
+                description: this._meeting.talkingPoints,
             }
         })
     }
@@ -137,5 +170,9 @@ export default class MeetingItem extends LightningElement {
 
     get province() {
         return this._meeting.State;
+    }
+
+    get talkingPoints() {
+        return this._meeting.talkingPoints;
     }
 }
