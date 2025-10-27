@@ -32,10 +32,14 @@ public with sharing class HAM_AlumniDirectoryController_Test {
         List<Contact> contactsToInsert = new List<Contact>();
         for (Integer i = 0; i < 30; i++) {
             Contact c = new Contact(
-                LastName = 'Test Alumni'+ i,
+                FirstName = 'Test',
+                LastName = 'Alumni '+ i,
                 HAM_Profile_Picture_URL__c = 'https://test.com/pic.jpg',
                 ucinn_ascendv2__Preferred_Class_Year__c = '1979',
-                Constituent_Employer__c = acc.Id 
+                HAM_Reunion_Year__c = '1979',
+                Constituent_Employer__c = acc.Id,
+                HAM_Is_Active__c = true,
+                ucinn_ascendv2__Primary_Contact_Type__c = 'Trustee'
             );
             contactsToInsert.add(c);
         }
@@ -89,7 +93,7 @@ public with sharing class HAM_AlumniDirectoryController_Test {
         List<HAM_AlumniDirectoryController.FilterWrapper> filters = HAM_AlumniDirectoryController.getFilterMetadataAndValues();
         Test.stopTest();
         System.assert(!filters.isEmpty(), 'Filter metadata should not be empty');
-        System.assert(filters[0].placeholder == 'Class Year', 'Class Year Validated');
+        System.assert(filters[0].placeholder == 'Class Year', 'Class Year Not Validated');
     }
 
     /**
@@ -111,14 +115,41 @@ public with sharing class HAM_AlumniDirectoryController_Test {
     /**
      * @description Test case to verify that `getAlumniRecords` returns a list of records
      * when valid search criteria are provided.
-     */
+     */  
     @IsTest
     static void testGetAlumniRecords() {
         List<Map<String, String>> filters = new List<Map<String, String>>();
-        Map<String, String> filter = new Map<String, String>{'placeholder' => 'Industry', 'value' => 'Finance'};
+        Map<String, String> filter = new Map<String, String>{'placeholder' => 'Class Year', 'value' => '1979'};
         filters.add(filter);
 
         Test.startTest();
+        Account acc = new Account(Name = 'Test Account', Industry = 'Finance');
+        insert acc;
+        List<Contact> contactsToInsert = new List<Contact>();
+        for (Integer i = 0; i < 30; i++) {
+            Contact c = new Contact(
+                FirstName = 'Test',
+                LastName = 'Alumni '+ i,
+                HAM_Profile_Picture_URL__c = 'https://test.com/pic.jpg',
+                ucinn_ascendv2__Preferred_Class_Year__c = '1979',
+                HAM_Reunion_Year__c = '1979',
+                Constituent_Employer__c = acc.Id,
+                HAM_Is_Active__c = true,
+                ucinn_ascendv2__Primary_Contact_Type__c = 'Past Parent'
+            );
+            contactsToInsert.add(c);
+        }
+        insert contactsToInsert;
+        
+        List<contact> cons = [Select id,Name,HAM_Reunion_Year__c,HAM_Is_Active__c,ucinn_ascendv2__Primary_Contact_Type__c,ucinn_ascendv2__Expanded_Name_Formula__c from contact];
+        
+        for(Contact con : cons){
+            if(con.ucinn_ascendv2__Primary_Contact_Type__c == 'Friend'){
+                con.ucinn_ascendv2__Primary_Contact_Type__c = 'Trustee';
+            }
+        }
+        update cons;
+        
         List<HAM_AlumniDirectoryController.AlumniCardData> records = HAM_AlumniDirectoryController.getAlumniRecords(10, 0, 'Test', filters);
         System.assert((records != null && !records.isEmpty()), 'Should return a list');
         Test.stopTest();

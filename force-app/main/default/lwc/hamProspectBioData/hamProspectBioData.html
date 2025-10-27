@@ -71,7 +71,9 @@
                         <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
                             <div class="slds-p-around_small">
                                 <div class="label">Address:</div>
-                                <div class="wrapLong">{contactrecord.ucinn_ascendv2__Preferred_Address_Formula__c}</div>
+                                <div class="wrapLong">
+                                    <lightning-formatted-rich-text value={contactrecord.ucinn_ascendv2__Preferred_Address_Formula__c} read-only></lightning-formatted-rich-text>
+                                </div>
                                 <div class="label slds-m-top_small">PRM:</div>
                                 <template if:true={contactrecord.ucinn_ascendv2__PRM__c}>
                                     <a href={prmLink} target="_blank">{contactrecord.ucinn_ascendv2__PRM__r.Name}</a>

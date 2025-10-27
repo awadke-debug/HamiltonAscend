@@ -10,8 +10,6 @@ import CONTACT_OBJECT from '@salesforce/schema/Contact';
 
 import getContactsBriefing from '@salesforce/apex/DigitalBriefingPdfController.getContactsBriefing';
 import saveBriefing from '@salesforce/apex/DigitalBriefingPdfController.saveBriefing';
-import sendPDF from '@salesforce/apex/DigitalBriefingPdfController.sendPDF';
-import getPDFEmailRecipient from '@salesforce/apex/DigitalBriefingPdfController.getPDFEmailRecipient';
 import getBaseUrl from '@salesforce/apex/DigitalBriefingPdfController.getBaseUrl';
 
 export default class DigitalBriefingPdf extends NavigationMixin(LightningElement) {
@@ -34,9 +32,6 @@ export default class DigitalBriefingPdf extends NavigationMixin(LightningElement
 
     @wire(getBaseUrl)
     wiredBasedUrl;
-
-    @wire(getPDFEmailRecipient)
-    wiredPDFEmailRecipient;
 
     connected;
     generateUrlOnConnected;
@@ -128,48 +123,6 @@ export default class DigitalBriefingPdf extends NavigationMixin(LightningElement
         this.isLoading = false;
     }
 
-    handleEmailSend() {
-
-        const allValid = [
-            ...this.template.querySelectorAll('lightning-input'),
-        ].reduce((validSoFar, inputCmp) => {
-            inputCmp.reportValidity();
-            return validSoFar && inputCmp.checkValidity();
-        }, true);
-
-        if (!allValid) {
-            return;
-        }
-
-        this.isLoading = true;
-
-        sendPDF({ contactId: this.recordId, emailAddress: this.alternateEmail })
-            .then(result => {
-                this.isLoading = false;
-
-                console.log(result);
-                const evt = new ShowToastEvent({
-                    title: 'Email sent',
-                    message: 'Email sent',
-                    variant: 'success'
-                });
-                this.dispatchEvent(evt);
-
-                const navigateFinish = new FlowNavigationFinishEvent();
-                this.dispatchEvent(navigateFinish);
-                
-            }).catch(error => {
-                this.isLoading = false;
-                console.log(error);
-                const evt = new ShowToastEvent({
-                    title: 'Email NOT sent',
-                    message: 'Email NOT sent',
-                    variant: 'error'
-                });
-                this.dispatchEvent(evt);
-            });
-    }
-
     handleTypeChange(event) {
         this.briefingId = event.detail.value;
         const selectedBriefing = this.contactsBriefings.find(cb => cb.Id == this.briefingId);
@@ -235,15 +188,4 @@ export default class DigitalBriefingPdf extends NavigationMixin(LightningElement
         return !this.isDefaultEmail;
     }
 
-    get disableEmailBtn() {
-        return !((this.alternateEmail || this.wiredPDFEmailRecipient?.data?.Email__c));
-    }
-
-    get hasDefaultEmail() {
-        return this.wiredPDFEmailRecipient?.data?.Email__c;
-    }
-
-    get displaySpinner() {
-        return !this.wiredContactsBriefingResult || this.isLoading;
-    }
 }

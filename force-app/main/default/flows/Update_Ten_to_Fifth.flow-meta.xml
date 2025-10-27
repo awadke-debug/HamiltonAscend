@@ -2,14 +2,74 @@
 <Flow xmlns="http://soap.sforce.com/2006/04/metadata">
     <apiVersion>62.0</apiVersion>
     <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <assignments>
+        <name>Set_End_Date</name>
+        <label>Set End Date</label>
+        <locationX>343</locationX>
+        <locationY>797</locationY>
+        <assignmentItems>
+            <assignToReference>Get_existing_society_record_Last.ucinn_ascendv2__Expiration_Date__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>LastFYEnd</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Update_Soc_Record</targetReference>
+        </connector>
+    </assignments>
+    <decisions>
+        <name>Check_Current_100K_Giving</name>
+        <label>Check Current $100K Giving</label>
+        <locationX>761</locationX>
+        <locationY>1217</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Current_FY_100K</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.HAM_Current_Year_Hamilton_Fund_Collected__c</leftValueReference>
+                <operator>GreaterThanOrEqualTo</operator>
+                <rightValue>
+                    <numberValue>100000.0</numberValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Check_Ten_to_Fifth_Flag</targetReference>
+            </connector>
+            <label>Current FY &gt;= $100K</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Check_Last_100K_Giving</name>
+        <label>Check Last $100K Giving</label>
+        <locationX>776</locationX>
+        <locationY>587</locationY>
+        <defaultConnector>
+            <targetReference>Check_Current_100K_Giving</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Last_FY_100K</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.HAM_Last_Year_Hamilton_Fund_Collected__c</leftValueReference>
+                <operator>GreaterThanOrEqualTo</operator>
+                <rightValue>
+                    <numberValue>100000.0</numberValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Get_existing_society_record_Last</targetReference>
+            </connector>
+            <label>Last FY &gt;= $100K</label>
+        </rules>
+    </decisions>
     <decisions>
         <name>Check_Ten_to_Fifth_Flag</name>
         <label>Check Ten to Fifth Flag</label>
-        <locationX>446</locationX>
-        <locationY>539</locationY>
-        <defaultConnector>
-            <targetReference>Is_there_an_existing_Society_record</targetReference>
-        </defaultConnector>
+        <locationX>567</locationX>
+        <locationY>1355</locationY>
         <defaultConnectorLabel>Ten to Fifth False</defaultConnectorLabel>
         <rules>
             <name>Founders</name>
@@ -22,59 +82,83 @@
                 </rightValue>
             </conditions>
             <connector>
-                <targetReference>Does_Giving_Society_Already_Exist</targetReference>
+                <targetReference>Get_existing_society_record_Currnet</targetReference>
             </connector>
             <label>Ten to Fifth True</label>
         </rules>
     </decisions>
     <decisions>
-        <name>Does_Giving_Society_Already_Exist</name>
-        <label>Does Giving Society Already Exist</label>
-        <locationX>182</locationX>
-        <locationY>647</locationY>
+        <name>Found_Current_Membership_Record</name>
+        <label>Found Current Membership Record?</label>
+        <locationX>368</locationX>
+        <locationY>1530</locationY>
         <defaultConnector>
-            <targetReference>Create_Giving_Society</targetReference>
+            <targetReference>Create_Giving_Society_Current</targetReference>
         </defaultConnector>
-        <defaultConnectorLabel>No, create society membership</defaultConnectorLabel>
+        <defaultConnectorLabel>mem rec not found, create one</defaultConnectorLabel>
         <rules>
-            <name>Yes_nothing_to_add</name>
+            <name>Current_Mem_Rec_found_do_nothing</name>
             <conditionLogic>and</conditionLogic>
             <conditions>
-                <leftValueReference>Get_existing_society_record</leftValueReference>
+                <leftValueReference>Get_existing_society_record_Currnet</leftValueReference>
                 <operator>IsNull</operator>
                 <rightValue>
                     <booleanValue>false</booleanValue>
                 </rightValue>
             </conditions>
-            <connector>
-                <targetReference>Remove_end_date_to_society_membership</targetReference>
-            </connector>
-            <label>Yes, nothing to add</label>
+            <label>Current Mem Rec found do nothing</label>
         </rules>
     </decisions>
     <decisions>
-        <name>Is_there_an_existing_Society_record</name>
-        <label>Is there an existing Society record</label>
-        <locationX>710</locationX>
-        <locationY>647</locationY>
-        <defaultConnectorLabel>No, nothing to update</defaultConnectorLabel>
+        <name>Found_Last_Membership_Record</name>
+        <label>Found Last Membership Record?</label>
+        <locationX>531</locationX>
+        <locationY>726</locationY>
+        <defaultConnector>
+            <targetReference>Create_Giving_Society_Last</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Society not available</defaultConnectorLabel>
         <rules>
-            <name>Yes_end_date_membership</name>
+            <name>Society_available</name>
             <conditionLogic>and</conditionLogic>
             <conditions>
-                <leftValueReference>Get_existing_society_record</leftValueReference>
+                <leftValueReference>Get_existing_society_record_Last</leftValueReference>
                 <operator>IsNull</operator>
                 <rightValue>
                     <booleanValue>false</booleanValue>
                 </rightValue>
             </conditions>
             <connector>
-                <targetReference>Add_end_date_to_society_membership</targetReference>
+                <targetReference>Set_End_Date</targetReference>
             </connector>
-            <label>Yes, end date membership</label>
+            <label>Society available</label>
         </rules>
     </decisions>
     <environments>Default</environments>
+    <formulas>
+        <description>Current FY End</description>
+        <name>CurrentFYEnd</name>
+        <dataType>Date</dataType>
+        <expression>IF(MONTH(TODAY()) &gt;= 7, DATE(YEAR(TODAY()) + 1, 6, 30), DATE(YEAR(TODAY()), 6, 30))</expression>
+    </formulas>
+    <formulas>
+        <description>Current FY Start</description>
+        <name>CurrentFYStart</name>
+        <dataType>Date</dataType>
+        <expression>IF(MONTH(TODAY()) &gt;= 7, DATE(YEAR(TODAY()), 7, 1), DATE(YEAR(TODAY()) - 1, 7, 1))</expression>
+    </formulas>
+    <formulas>
+        <description>Last FY End</description>
+        <name>LastFYEnd</name>
+        <dataType>Date</dataType>
+        <expression>DATE(YEAR({!CurrentFYEnd}) - 1, 6, 30)</expression>
+    </formulas>
+    <formulas>
+        <description>Last FY Start</description>
+        <name>LastFYStart</name>
+        <dataType>Date</dataType>
+        <expression>DATE(YEAR({!CurrentFYStart}) - 1, 7, 1)</expression>
+    </formulas>
     <interviewLabel>Update Ten to Fifth {!$Flow.CurrentDateTime}</interviewLabel>
     <label>Update Ten to Fifth</label>
     <processMetadataValues>
@@ -86,7 +170,7 @@
     <processMetadataValues>
         <name>CanvasMode</name>
         <value>
-            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+            <stringValue>FREE_FORM_CANVAS</stringValue>
         </value>
     </processMetadataValues>
     <processMetadataValues>
@@ -97,14 +181,23 @@
     </processMetadataValues>
     <processType>AutoLaunchedFlow</processType>
     <recordCreates>
-        <name>Create_Giving_Society</name>
-        <label>Create Giving Society</label>
-        <locationX>314</locationX>
-        <locationY>755</locationY>
+        <name>Create_Giving_Society_Current</name>
+        <label>Create Giving Society Current</label>
+        <locationX>533</locationX>
+        <locationY>1664</locationY>
+        <connector>
+            <targetReference>Update_flag</targetReference>
+        </connector>
         <inputAssignments>
             <field>ucinn_ascendv2__Account__c</field>
             <value>
                 <elementReference>$Record.AccountId</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>ucinn_ascendv2__Anniversary_Date__c</field>
+            <value>
+                <elementReference>CurrentFYStart</elementReference>
             </value>
         </inputAssignments>
         <inputAssignments>
@@ -122,14 +215,118 @@
         <object>ucinn_ascendv2__Society_Membership__c</object>
         <storeOutputAutomatically>true</storeOutputAutomatically>
     </recordCreates>
+    <recordCreates>
+        <name>Create_Giving_Society_Last</name>
+        <label>Create Giving Society Last</label>
+        <locationX>650</locationX>
+        <locationY>872</locationY>
+        <connector>
+            <targetReference>Check_Current_100K_Giving</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>ucinn_ascendv2__Account__c</field>
+            <value>
+                <elementReference>$Record.AccountId</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>ucinn_ascendv2__Anniversary_Date__c</field>
+            <value>
+                <elementReference>LastFYStart</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>ucinn_ascendv2__Contact__c</field>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>ucinn_ascendv2__Expiration_Date__c</field>
+            <value>
+                <elementReference>LastFYEnd</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>ucinn_ascendv2__Giving_Society__c</field>
+            <value>
+                <elementReference>Get_Giving_Society_ID.Id</elementReference>
+            </value>
+        </inputAssignments>
+        <object>ucinn_ascendv2__Society_Membership__c</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordCreates>
     <recordLookups>
         <name>Get_existing_society_record</name>
         <label>Get existing society record</label>
-        <locationX>446</locationX>
-        <locationY>431</locationY>
+        <locationX>1200</locationX>
+        <locationY>529</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
-            <targetReference>Check_Ten_to_Fifth_Flag</targetReference>
+            <targetReference>Check_Last_100K_Giving</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>ucinn_ascendv2__Giving_Society__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>Get_Giving_Society_ID.Id</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>ucinn_ascendv2__Contact__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>ucinn_ascendv2__Society_Membership__c</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <name>Get_existing_society_record_Currnet</name>
+        <label>Get existing society record Currnet</label>
+        <locationX>377</locationX>
+        <locationY>1356</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Found_Current_Membership_Record</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>ucinn_ascendv2__Giving_Society__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>Get_Giving_Society_ID.Id</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>ucinn_ascendv2__Contact__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>ucinn_ascendv2__Membership_Status__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Active</stringValue>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>ucinn_ascendv2__Society_Membership__c</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <name>Get_existing_society_record_Last</name>
+        <label>Get existing society record Last</label>
+        <locationX>537</locationX>
+        <locationY>585</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Found_Last_Membership_Record</targetReference>
         </connector>
         <filterLogic>and</filterLogic>
         <filters>
@@ -153,8 +350,8 @@
     <recordLookups>
         <name>Get_Giving_Society_ID</name>
         <label>Get Giving Society ID</label>
-        <locationX>446</locationX>
-        <locationY>323</locationY>
+        <locationX>785</locationX>
+        <locationY>430</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
             <targetReference>Get_existing_society_record</targetReference>
@@ -172,65 +369,56 @@
         <storeOutputAutomatically>true</storeOutputAutomatically>
     </recordLookups>
     <recordUpdates>
-        <name>Add_end_date_to_society_membership</name>
-        <label>Add end date to society membership</label>
-        <locationX>578</locationX>
-        <locationY>755</locationY>
-        <filterLogic>and</filterLogic>
-        <filters>
-            <field>ucinn_ascendv2__Contact__c</field>
-            <operator>EqualTo</operator>
-            <value>
-                <elementReference>$Record.Id</elementReference>
-            </value>
-        </filters>
-        <filters>
-            <field>ucinn_ascendv2__Giving_Society__c</field>
-            <operator>EqualTo</operator>
-            <value>
-                <elementReference>Get_Giving_Society_ID.Id</elementReference>
-            </value>
-        </filters>
+        <name>Update_flag</name>
+        <label>Update flag</label>
+        <locationX>530</locationX>
+        <locationY>1795</locationY>
         <inputAssignments>
-            <field>ucinn_ascendv2__Expiration_Date__c</field>
+            <field>HAM_Ten_to_Fifth__c</field>
             <value>
-                <elementReference>$Flow.CurrentDate</elementReference>
+                <booleanValue>false</booleanValue>
             </value>
         </inputAssignments>
-        <object>ucinn_ascendv2__Society_Membership__c</object>
+        <inputReference>$Record</inputReference>
     </recordUpdates>
     <recordUpdates>
-        <name>Remove_end_date_to_society_membership</name>
-        <label>Remove end date to society membership</label>
-        <locationX>50</locationX>
-        <locationY>755</locationY>
-        <filterLogic>and</filterLogic>
-        <filters>
-            <field>ucinn_ascendv2__Contact__c</field>
-            <operator>EqualTo</operator>
-            <value>
-                <elementReference>$Record.Id</elementReference>
-            </value>
-        </filters>
-        <filters>
-            <field>ucinn_ascendv2__Giving_Society__c</field>
-            <operator>EqualTo</operator>
-            <value>
-                <elementReference>Get_Giving_Society_ID.Id</elementReference>
-            </value>
-        </filters>
-        <inputAssignments>
-            <field>ucinn_ascendv2__Expiration_Date__c</field>
-        </inputAssignments>
-        <object>ucinn_ascendv2__Society_Membership__c</object>
+        <name>Update_Soc_Record</name>
+        <label>Update Soc Record</label>
+        <locationX>343</locationX>
+        <locationY>931</locationY>
+        <connector>
+            <targetReference>Check_Current_100K_Giving</targetReference>
+        </connector>
+        <inputReference>Get_existing_society_record_Last</inputReference>
     </recordUpdates>
     <start>
-        <locationX>320</locationX>
-        <locationY>0</locationY>
+        <locationX>659</locationX>
+        <locationY>110</locationY>
         <connector>
             <targetReference>Get_Giving_Society_ID</targetReference>
         </connector>
-        <filterFormula>({!$Record__Prior.HAM_Ten_to_Fifth__c}=true &amp;&amp; {!$Record.HAM_Ten_to_Fifth__c}=false) || ({!$Record__Prior.HAM_Ten_to_Fifth__c}=false &amp;&amp; {!$Record.HAM_Ten_to_Fifth__c}=true)</filterFormula>
+        <filterLogic>or</filterLogic>
+        <filters>
+            <field>HAM_Last_Year_Hamilton_Fund_Collected__c</field>
+            <operator>IsChanged</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <filters>
+            <field>HAM_Current_Year_Hamilton_Fund_Collected__c</field>
+            <operator>IsChanged</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <filters>
+            <field>HAM_Ten_to_Fifth__c</field>
+            <operator>IsChanged</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
         <object>Contact</object>
         <recordTriggerType>CreateAndUpdate</recordTriggerType>
         <triggerType>RecordAfterSave</triggerType>

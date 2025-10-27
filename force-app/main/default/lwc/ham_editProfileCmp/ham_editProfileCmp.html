@@ -30,10 +30,15 @@
                                 </template>
                             </template>
                             <template if:true={isEditingImage}>
-                                <input type="file"
-                                    accept="image/*"
-                                    class="file-input"
-                                    onchange={handleFileChange} />
+                                <lightning-file-upload
+                                    label="Upload Profile Picture"
+                                    name="profilePictureUploader"
+                                    accept=".jpg, .jpeg, .png" 
+                                    record-id={contactId} 
+                                    onuploadfinished={handleUploadFinished}
+                                    class="slds-m-top_small"
+                                >
+                                </lightning-file-upload>
                             </template>
                         </div>
                         <div class="column upload-text-container">
@@ -64,7 +69,7 @@
                         </div>
                         <div class="field-row">
                             <label>{label.phone}</label>
-                            <input type="tel" value={personalInfo.phoneNo} data-name="phoneNo" onchange={handleChange} />
+                            <input type="tel" pattern="\(\d{3}\) \d{3}-\d{4}"  value={personalInfo.phoneNo} data-name="phoneNo" onchange={handleChange} />
                         </div>
                         <div class="field-row">
                             <label>{label.email}</label>
@@ -96,10 +101,7 @@
                             <label>{label.state}</label>
                             <input type="text" value={personalInfo.addressInfo.state} data-name="addressInfo.state" onchange={handleChange} />
                         </div>
-                        <div class="field-row">
-                            <label>{label.county}</label>
-                            <input type="text" value={personalInfo.addressInfo.county} data-name="addressInfo.county" onchange={handleChange} />
-                        </div>
+                        
                         <div class="field-row">
                             <label>{label.country}</label>
                             <input type="text" value={personalInfo.addressInfo.country} data-name="addressInfo.country" onchange={handleChange} />

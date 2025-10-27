@@ -19,8 +19,8 @@ export default class HamJediContactReports extends LightningElement {
     // =========================================
     // Sorting state
     // =========================================
-    @track sortedBy = 'Name';
-    @track sortedDirection = 'asc';
+    @track sortedBy = 'ucinn_ascendv2__Date__c';
+    @track sortedDirection = 'desc';
 
     // =========================================
     // Pagination (grouped here intentionally)

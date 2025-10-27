@@ -7,13 +7,13 @@
                 variant="brand">
             </lightning-spinner>
         </template>
-        <lightning-card title="Constitiuent Search" icon-name="utility:search">
+        <lightning-card title="Constituent Search" icon-name="utility:search">
             <div class="slds-m-around_medium">
                 <div class="slds-grid slds-gutters">
                     <div class="slds-col">
                         <lightning-input
                             type="search"
-                            label="Constitiuent name"
+                            label="Constituent name"
                             placeholder="Search First or Last Name..."
                             value={nameSearchString}
                             onchange={handleInputChange}
@@ -31,15 +31,69 @@
                         ></lightning-input>
                     </div>
                 </div>
-                <div class="slds-grid slds-gutters slds-p-around_small">
-                    <div class="slds-col slds-size_2-of-3">
-                        
+                <!--code start-->
+                <div class="slds-grid slds-wrap slds-gutters slds-p-around_small">
+
+                    <!-- Left Section with Picklists -->
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_2-of-3 slds-p-around_small">
+                        <div class="slds-grid slds-wrap slds-gutters">
+
+                            <!-- Picklist 1 - Class Year -->
+                            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3">
+                                <lightning-combobox
+                                    name="Picklist1"
+                                    label="Class Year"
+                                    value={selectedClassYear}
+                                    placeholder="Select Class Year"
+                                    options={classYearOptions}
+                                    onchange={handlePicklistChange}>
+                                </lightning-combobox>
+                            </div>
+
+                            <!-- Picklist 2 - Sports Association -->
+                            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3">
+                                <lightning-combobox
+                                    name="Picklist2"
+                                    label="Sports Association"
+                                    value={selectedSportsAssociation}
+                                    placeholder="Select Sports Association"
+                                    options={sportsAssociationOptions}
+                                    onchange={handlePicklistChange}>
+                                </lightning-combobox>
+                            </div>
+
+                            <!-- Picklist 3 - Student Organizations -->
+                            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3">
+                                <lightning-combobox
+                                    name="Picklist3"
+                                    label="Student Organizations"
+                                    value={selectedStudentOrganization}
+                                    placeholder="Select Student Organization"
+                                    options={studentOrganizationOptions}
+                                    onchange={handlePicklistChange}>
+                                </lightning-combobox>
+                            </div>
+                        </div>
                     </div>
-                    <div class="slds-col slds-size_1-of-3">
-                        <lightning-button label="Clear" title="Clear" onclick={clearData} class="slds-m-left_x-small slds-p-around_x-small"></lightning-button>
-                        <lightning-button variant="brand" label="Search" onclick={searchConstituents}></lightning-button>
+
+                    <!-- Right Section with Buttons -->
+                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3 slds-align_absolute-center slds-p-around_small">
+                        <lightning-button 
+                            label="Clear" 
+                            title="Clear" 
+                            onclick={clearData} 
+                            class="slds-m-right_small">
+                        </lightning-button>
+
+                        <lightning-button 
+                            variant="brand" 
+                            label="Search" 
+                            onclick={searchConstituents}>
+                        </lightning-button>
                     </div>
                 </div>
+                <!--code ends-->
+
                 <!-- Search Results Table -->
                 <div class="slds-p-around_small">
                     <template lwc:if={pageConstituents}>

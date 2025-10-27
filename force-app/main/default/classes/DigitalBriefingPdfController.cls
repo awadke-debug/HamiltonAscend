@@ -152,6 +152,7 @@ public with sharing class DigitalBriefingPdfController {
         this.endowedFunds = designationMap.values();
     }
 
+    /* Commenting out now for implementing later via Attach to Donor record button
     private static String createContentDocument(String contactId, String fileName, Blob content) {
         ContentVersion cv = new ContentVersion();
         cv.ContentLocation = 'S';
@@ -174,6 +175,7 @@ public with sharing class DigitalBriefingPdfController {
 
         return contentDocId;
     }
+    */
 
 
     @AuraEnabled(cacheable=true)
@@ -200,82 +202,6 @@ public with sharing class DigitalBriefingPdfController {
         update briefing;
         // TODO: generate file and attached to Constituent
         return briefing.Id;
-    }
-
-    @AuraEnabled(cacheable=true)
-    public static Digi_Brief_Email_Recipient__c getPDFEmailRecipient(){
-        return Digi_Brief_Email_Recipient__c.getOrgDefaults();
-    }
-
-    @AuraEnabled
-    public static string sendPDF(String contactId, String emailAddress){
-        try {
-            Contact constituent = [SELECT Id, Name FROM Contact WHERE Id = :contactId LIMIT 1];
-            String fileName = 'Presidential Briefing {0} {1}-{2}-{3}.pdf';
-            fileName = String.format(fileName, new List<Object>{constituent.Name, rPadDateElem(Date.today().month()), rPadDateElem(Date.today().day()), Date.today().year()});
-
-            PageReference pdf = Page.digitalBriefingPdf;
-            pdf.getParameters().put('contactId', contactId);
-            pdf.setRedirect(true);
-
-            EmailTemplate et = [SELECT Id, Subject, Body FROM EmailTemplate WHERE DeveloperName = 'Digital_Brief_Email_Template'];
-
-            Messaging.SingleEmailMessage mail = new Messaging.SingleEmailMessage();
-            mail.setTemplateId(et.Id);
-            // mail.setSubject(et.Subject);
-            mail.setFileAttachments(new Messaging.EmailFileAttachment[] { prepareEmailAttachment(fileName, Test.isRunningTest() ? Blob.valueOf('test') : pdf.getContent()) });
-            // we are not using merge field, otherwise, remove setPlainTextBody
-            // mail.setPlainTextBody(et.Body);
-            mail.setTargetObjectId(contactId);
-            mail.setSaveAsActivity(false);
-
-            Digi_Brief_Email_Recipient__c dbRecipient = Digi_Brief_Email_Recipient__c.getOrgDefaults();
-            List<String> trimmedEmails = new List<String>();
-            if(dbRecipient?.Email__c != null && emailAddress == null){
-                trimEmails(dbRecipient.Email__c, trimmedEmails);
-            } else{
-                trimEmails(emailAddress, trimmedEmails);
-            }
-            mail.setToAddresses(trimmedEmails);
-
-            if (mail.getToAddresses() != null && !mail.toaddresses.isEmpty()) {
-                List<OrgWideEmailAddress> owa = [
-                    SELECT Id 
-                    FROM OrgWideEmailAddress 
-                    WHERE Address = 'hamily@hamilton.edu'];
-                if (owa.size() > 0) {
-                    mail.setOrgWideEmailAddressId(owa[0].Id);
-                }
-                if (!Test.isRunningTest()) {
-                    Messaging.sendEmail(new Messaging.SingleEmailMessage[] { mail });
-                }
-            }
-
-            createContentDocument(contactId, fileName, Test.isRunningTest() ? Blob.valueOf('test') : pdf.getContent());
-        } catch (Exception e) {
-            throw new AuraHandledException(e.getMessage());
-        }
-        
-
-        return 'success';
-    }
-
-    private static String rPadDateElem(Integer ele) {
-        return String.valueOf(ele).length() == 1 ? String.valueOf(ele).leftPad(2, '0') : String.valueOf(ele);
-    }
-
-    private static void trimEmails(String rawEmail, List<String> trimmedEmails) {
-        for(String email: rawEmail.split(',')){
-            trimmedEmails.add(email.trim());
-        }
-    }
-
-    private static Messaging.EmailFileAttachment prepareEmailAttachment(String name, Blob content) {
-        Messaging.EmailFileAttachment attachment = new Messaging.EmailFileAttachment();
-        attachment.setFileName(name);
-        attachment.setBody(content);
-        attachment.setContentType('application/pdf'); 
-        return attachment;
     }
 
     public List<ucinn_ascendv2__Briefing__c> getBriefings() {
