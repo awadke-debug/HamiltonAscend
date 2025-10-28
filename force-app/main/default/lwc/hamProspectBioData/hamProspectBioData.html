@@ -97,7 +97,24 @@
                                     </template>
                                 </div>
                                 <div class="label slds-m-top_small">Children:</div>
-                                <div>{contactrecord.HAM_Children__c}</div>
+                                <div>
+                                    <template if:true={childrenLinks}>
+                                        <template for:each={childrenLinks} for:item="child">
+                                            <span key={child.displayName}>
+                                                <template if:true={child.contactId}>
+                                                    <a href="javascript:void(0);" data-child-id={child.contactId} onclick={handleChildClick}>{child.displayName}</a>
+                                                </template>
+                                                <template if:false={child.contactId}>
+                                                    <span>{child.displayName}</span>
+                                                </template>
+                                                <template if:false={child.isLast}>, </template>
+                                            </span>
+                                        </template>
+                                    </template>
+                                    <template if:false={childrenLinks}>
+                                        <div>Not Available</div>
+                                    </template>
+                                </div>
                             </div>
                         </div>
 

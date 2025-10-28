@@ -107,7 +107,7 @@ public with sharing class HAMProspectOverviewApexController {
 
     Public class DegreeWrapper{
         @AuraEnabled
-        public ucinn_ascendv2__Degree_Information__c hamiltonDegree; 
+        public ucinn_ascendv2__Degree_Information__c hamiltonDegree;
         @AuraEnabled
         public String athletics;
         @AuraEnabled
@@ -116,5 +116,78 @@ public with sharing class HAMProspectOverviewApexController {
         public String societies;
         @AuraEnabled
         public List<ucinn_ascendv2__Designation_Beneficiary__c> awards;
+    }
+
+    // Method to parse HAM_Children__c string and create clickable links for children
+    // Matches children by HAM_Name_w_Suffix__c field (includes graduation year)
+    @AuraEnabled(cacheable=true)
+    public static List<ChildContact> getChildrenLinks(String childrenString) {
+        List<ChildContact> childContacts = new List<ChildContact>();
+
+        if (String.isBlank(childrenString)) {
+            return childContacts;
+        }
+
+        // Split by comma
+        List<String> childNames = childrenString.split(',');
+        List<String> cleanNames = new List<String>();
+
+        for (String name : childNames) {
+            String cleanName = name.trim();
+            if (!String.isBlank(cleanName)) {
+                cleanNames.add(cleanName);
+            }
+        }
+
+        if (cleanNames.isEmpty()) {
+            return childContacts;
+        }
+
+        // Query Contacts by HAM_Name_w_Suffix__c which includes graduation year
+        List<Contact> contacts = [
+            SELECT Id, Name, HAM_Name_w_Suffix__c
+            FROM Contact
+            WHERE HAM_Name_w_Suffix__c IN :cleanNames
+            LIMIT 50
+        ];
+
+        // Build response with original display name and Contact ID
+        for (String originalName : childNames) {
+            String cleanName = originalName.trim();
+
+            // Find matching contact by HAM_Name_w_Suffix__c
+            Contact matchedContact = null;
+            for (Contact c : contacts) {
+                if (c.HAM_Name_w_Suffix__c == cleanName) {
+                    matchedContact = c;
+                    break;
+                }
+            }
+
+            if (matchedContact != null) {
+                childContacts.add(new ChildContact(
+                    cleanName,
+                    matchedContact.Id
+                ));
+            } else {
+                // No match found - still add without link
+                childContacts.add(new ChildContact(
+                    cleanName,
+                    null
+                ));
+            }
+        }
+
+        return childContacts;
+    }
+
+    public class ChildContact {
+        @AuraEnabled public String displayName;
+        @AuraEnabled public String contactId;
+
+        public ChildContact(String displayName, String contactId) {
+            this.displayName = displayName;
+            this.contactId = contactId;
+        }
     }
 }
