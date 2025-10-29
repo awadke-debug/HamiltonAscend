@@ -121,44 +121,36 @@ public class HAMProspectOverviewApexControllerTest {
         System.assertEquals('003000000000001', childContact.contactId, 'ChildContact should set contactId');
     }
 
+    // Tests for getChildrenFromRelationships
     @IsTest
-    static void testGetChildrenLinksWithMatches() {
-        // Create contacts with unique names in a single insert to minimize DML
-        Account testAccount = HAMJediTestDataFactory.makeAccount('Children Test Account');
-
-        List<Contact> contacts = new List<Contact>();
-
-        // Child 1
-        Contact child1 = new Contact(
-            FirstName = 'Danielle',
-            LastName = 'ChildTestOne' + System.now().getTime(),
-            AccountId = testAccount.Id,
-            ucinn_ascendv2__Donor_ID__c = 'DChild1' + System.now().getTime(),
-            HAM_Alum_Suffix__c = '\'09',
-            Email = 'childtest1@test.com'
+    static void testGetChildrenFromRelationshipsWithChildren() {
+        // Setup reciprocal relationship custom setting
+        ucinn_ascendv2__Reciprocal_Relationships__c childSetting = new ucinn_ascendv2__Reciprocal_Relationships__c(
+            Name = 'Child',
+            ucinn_ascendv2__Reciprocal__c = 'Child'
         );
-        contacts.add(child1);
+        insert childSetting;
 
-        // Child 2
-        Contact child2 = new Contact(
-            FirstName = 'Hillary',
-            LastName = 'ChildTestTwo' + System.now().getTime(),
-            AccountId = testAccount.Id,
-            ucinn_ascendv2__Donor_ID__c = 'DChild2' + System.now().getTime(),
-            HAM_Alum_Suffix__c = '\'11',
-            Email = 'childtest2@test.com'
+        Account testAccount = HAMJediTestDataFactory.makeAccount('Relationship Test Account');
+        Contact parent = HAMJediTestDataFactory.makeContactWithDonorId('Parent', testAccount.Id);
+        Contact child1 = HAMJediTestDataFactory.makeContactWithDonorId('ChildOne', testAccount.Id);
+        Contact child2 = HAMJediTestDataFactory.makeContactWithDonorId('ChildTwo', testAccount.Id);
+
+        // Create relationship records
+        ucinn_ascendv2__Relationship__c rel1 = new ucinn_ascendv2__Relationship__c(
+            ucinn_ascendv2__Contact__c = parent.Id,
+            ucinn_ascendv2__Related_Contact__c = child1.Id,
+            ucinn_ascendv2__Related_Contact_Role__c = 'Child'
         );
-        contacts.add(child2);
-
-        insert contacts;
-
-        // Re-query to get the calculated formula field values
-        List<Contact> insertedContacts = [SELECT Id, HAM_Name_w_Suffix__c FROM Contact WHERE Id IN :contacts ORDER BY FirstName];
-
-        String childrenString = insertedContacts[0].HAM_Name_w_Suffix__c + ', ' + insertedContacts[1].HAM_Name_w_Suffix__c;
+        ucinn_ascendv2__Relationship__c rel2 = new ucinn_ascendv2__Relationship__c(
+            ucinn_ascendv2__Contact__c = parent.Id,
+            ucinn_ascendv2__Related_Contact__c = child2.Id,
+            ucinn_ascendv2__Related_Contact_Role__c = 'Child'
+        );
+        insert new List<ucinn_ascendv2__Relationship__c>{rel1, rel2};
 
         Test.startTest();
-        List<HAMProspectOverviewApexController.ChildContact> result = HAMProspectOverviewApexController.getChildrenLinks(childrenString);
+        List<HAMProspectOverviewApexController.ChildContact> result = HAMProspectOverviewApexController.getChildrenFromRelationships(parent.Id);
         Test.stopTest();
 
         System.assertNotEquals(null, result, 'Should return a list');
@@ -168,66 +160,84 @@ public class HAMProspectOverviewApexControllerTest {
     }
 
     @IsTest
-    static void testGetChildrenLinksWithoutMatches() {
+    static void testGetChildrenFromRelationshipsWithNoChildren() {
+        Contact testContact = [SELECT Id FROM Contact LIMIT 1];
+
         Test.startTest();
-        List<HAMProspectOverviewApexController.ChildContact> result = HAMProspectOverviewApexController.getChildrenLinks('Unknown Child \'09, Another Child \'10');
+        List<HAMProspectOverviewApexController.ChildContact> result = HAMProspectOverviewApexController.getChildrenFromRelationships(testContact.Id);
         Test.stopTest();
 
         System.assertNotEquals(null, result, 'Should return a list');
-        System.assertEquals(2, result.size(), 'Should return 2 children');
-        System.assertEquals('Unknown Child \'09', result[0].displayName, 'First child display name should match');
-        System.assertEquals(null, result[0].contactId, 'First child should not have contactId');
-        System.assertEquals('Another Child \'10', result[1].displayName, 'Second child display name should match');
-        System.assertEquals(null, result[1].contactId, 'Second child should not have contactId');
+        System.assertEquals(0, result.size(), 'Should return empty list when no children');
     }
 
     @IsTest
-    static void testGetChildrenLinksWithEmptyString() {
+    static void testGetChildrenFromRelationshipsWithBlankId() {
         Test.startTest();
-        List<HAMProspectOverviewApexController.ChildContact> result = HAMProspectOverviewApexController.getChildrenLinks('');
+        List<HAMProspectOverviewApexController.ChildContact> result = HAMProspectOverviewApexController.getChildrenFromRelationships('');
         Test.stopTest();
 
         System.assertNotEquals(null, result, 'Should return a list');
-        System.assertEquals(0, result.size(), 'Should return empty list for empty string');
+        System.assertEquals(0, result.size(), 'Should return empty list for blank ID');
     }
 
+    // Tests for getParentsFromRelationships
     @IsTest
-    static void testGetChildrenLinksWithNullString() {
-        Test.startTest();
-        List<HAMProspectOverviewApexController.ChildContact> result = HAMProspectOverviewApexController.getChildrenLinks(null);
-        Test.stopTest();
-
-        System.assertNotEquals(null, result, 'Should return a list');
-        System.assertEquals(0, result.size(), 'Should return empty list for null string');
-    }
-
-    @IsTest
-    static void testGetChildrenLinksMixedMatches() {
-        // Create test account
-        Account testAccount = HAMJediTestDataFactory.makeAccount('Mixed Children Test');
-
-        // Create one matching child in a single operation
-        Contact child1 = new Contact(
-            FirstName = 'John',
-            LastName = 'MixedTestChild' + System.now().getTime(),
-            AccountId = testAccount.Id,
-            ucinn_ascendv2__Donor_ID__c = 'DMixed1' + System.now().getTime(),
-            HAM_Alum_Suffix__c = '\'15',
-            Email = 'mixedtest@test.com'
+    static void testGetParentsFromRelationshipsWithParents() {
+        // Setup reciprocal relationship custom setting
+        ucinn_ascendv2__Reciprocal_Relationships__c parentSetting = new ucinn_ascendv2__Reciprocal_Relationships__c(
+            Name = 'Parent',
+            ucinn_ascendv2__Reciprocal__c = 'Parent'
         );
-        insert child1;
+        insert parentSetting;
 
-        // Re-query to get the calculated formula field value
-        child1 = [SELECT Id, HAM_Name_w_Suffix__c FROM Contact WHERE Id = :child1.Id];
+        Account testAccount = HAMJediTestDataFactory.makeAccount('Parent Relationship Test');
+        Contact child = HAMJediTestDataFactory.makeContactWithDonorId('ChildContact', testAccount.Id);
+        Contact parent1 = HAMJediTestDataFactory.makeContactWithDonorId('ParentOne', testAccount.Id);
+        Contact parent2 = HAMJediTestDataFactory.makeContactWithDonorId('ParentTwo', testAccount.Id);
+
+        // Create relationship records
+        ucinn_ascendv2__Relationship__c rel1 = new ucinn_ascendv2__Relationship__c(
+            ucinn_ascendv2__Contact__c = child.Id,
+            ucinn_ascendv2__Related_Contact__c = parent1.Id,
+            ucinn_ascendv2__Related_Contact_Role__c = 'Parent'
+        );
+        ucinn_ascendv2__Relationship__c rel2 = new ucinn_ascendv2__Relationship__c(
+            ucinn_ascendv2__Contact__c = child.Id,
+            ucinn_ascendv2__Related_Contact__c = parent2.Id,
+            ucinn_ascendv2__Related_Contact_Role__c = 'Parent'
+        );
+        insert new List<ucinn_ascendv2__Relationship__c>{rel1, rel2};
 
         Test.startTest();
-        List<HAMProspectOverviewApexController.ChildContact> result = HAMProspectOverviewApexController.getChildrenLinks(child1.HAM_Name_w_Suffix__c + ', Unknown Person \'16');
+        List<HAMProspectOverviewApexController.ChildContact> result = HAMProspectOverviewApexController.getParentsFromRelationships(child.Id);
         Test.stopTest();
 
         System.assertNotEquals(null, result, 'Should return a list');
-        System.assertEquals(2, result.size(), 'Should return 2 children');
-        System.assertNotEquals(null, result[0].contactId, 'First child should have contactId');
-        System.assertEquals('Unknown Person \'16', result[1].displayName, 'Second child display name should match');
-        System.assertEquals(null, result[1].contactId, 'Second child should not have contactId');
+        System.assertEquals(2, result.size(), 'Should return 2 parents');
+        System.assertNotEquals(null, result[0].contactId, 'First parent should have contactId');
+        System.assertNotEquals(null, result[1].contactId, 'Second parent should have contactId');
+    }
+
+    @IsTest
+    static void testGetParentsFromRelationshipsWithNoParents() {
+        Contact testContact = [SELECT Id FROM Contact LIMIT 1];
+
+        Test.startTest();
+        List<HAMProspectOverviewApexController.ChildContact> result = HAMProspectOverviewApexController.getParentsFromRelationships(testContact.Id);
+        Test.stopTest();
+
+        System.assertNotEquals(null, result, 'Should return a list');
+        System.assertEquals(0, result.size(), 'Should return empty list when no parents');
+    }
+
+    @IsTest
+    static void testGetParentsFromRelationshipsWithBlankId() {
+        Test.startTest();
+        List<HAMProspectOverviewApexController.ChildContact> result = HAMProspectOverviewApexController.getParentsFromRelationships('');
+        Test.stopTest();
+
+        System.assertNotEquals(null, result, 'Should return a list');
+        System.assertEquals(0, result.size(), 'Should return empty list for blank ID');
     }
 }

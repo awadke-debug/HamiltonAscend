@@ -131,7 +131,21 @@
                         <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
                             <div class="slds-p-around_small">
                                 <div class="label">Parent:</div>
-                                <div>{contactrecord.HAM_Parents__c}</div>
+                                <div>
+                                    <template if:true={parentsLinks.length}>
+                                        <template for:each={parentsLinks} for:item="parent">
+                                            <span key={parent.displayName}>
+                                                <template if:true={parent.contactId}>
+                                                    <a href="javascript:void(0);" data-parent-id={parent.contactId} onclick={handleParentClick}>{parent.displayName}</a>
+                                                </template>
+                                                <template if:false={parent.contactId}>
+                                                    <span>{parent.displayName}</span>
+                                                </template>
+                                                <template if:false={parent.isLast}>, </template>
+                                            </span>
+                                        </template>
+                                    </template>
+                                </div>
                                 <div class="label slds-m-top_small">
                                     <a href={ascendProfileLink} target="_blank" class="slds-text-link">
                                         Ascend Profile
