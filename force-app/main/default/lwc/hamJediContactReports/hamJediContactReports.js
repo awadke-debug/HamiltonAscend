@@ -115,6 +115,12 @@ export default class HamJediContactReports extends LightningElement {
             fieldName: 'HAM_PRM_at_Time_of_Meeting__c',
             type: 'text',
             sortable: true
+        },
+        {
+            label: 'Last Modified By',
+            fieldName: 'LastModifiedByName',
+            type: 'text',
+            sortable: true
         }
     ];
 
@@ -136,10 +142,11 @@ export default class HamJediContactReports extends LightningElement {
             .then(result => {
                 const rows = result || [];
 
-                // Add recordLink for the Name URL column without mutating original rows
+                // Add recordLink for the Name URL column and flatten LastModifiedBy.Name
                 this.allContactReports = rows.map(r => ({
                     ...r,
-                    recordLink: `/lightning/r/${r.Id}/view`
+                    recordLink: `/lightning/r/${r.Id}/view`,
+                    LastModifiedByName: r.LastModifiedBy?.Name || ''
                 }));
 
                 this.totalRecords = this.allContactReports.length;

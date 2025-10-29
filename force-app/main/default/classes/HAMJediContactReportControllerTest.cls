@@ -77,8 +77,10 @@ public class HAMJediContactReportControllerTest {
             String body = report.ucinn_ascendv2__Contact_Report_Body__c;
             Date reportDate = report.ucinn_ascendv2__Date__c;
             String prm = report.HAM_PRM_at_Time_of_Meeting__c;
-            
+            String lastModifiedByName = report.LastModifiedBy?.Name;
+
             System.assertNotEquals(null, report.Id, 'Report should have ID');
+            System.assertNotEquals(null, lastModifiedByName, 'Last Modified By Name should be populated');
         }
     }
     
