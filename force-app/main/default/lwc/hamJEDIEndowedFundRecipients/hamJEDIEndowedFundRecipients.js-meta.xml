@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>65.0</apiVersion>
+    <isExposed>true</isExposed>
+    <targets>
+        <target>lightning__AppPage</target>
+        <target>lightning__RecordPage</target>
+        <target>lightning__HomePage</target>
+    </targets>
+    <targetConfigs>
+        <targetConfig targets="lightning__RecordPage,lightning__AppPage">
+            <property name="recordId" type="String" label="Contact ID" description="Optional: The ID of the Contact record. If not provided, will be read from URL parameter c__recordId" />
+            <property name="designationId" type="String" label="Designation ID (Deprecated)" description="Deprecated: Use recordId instead. This property is kept for backward compatibility only." />
+        </targetConfig>
+    </targetConfigs>
+</LightningComponentBundle>

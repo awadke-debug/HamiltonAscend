@@ -1,0 +1,96 @@
+<template>
+    <div class="component-container">
+        <template if:true={loading}>
+            <lightning-spinner
+                alternative-text="Loading..."
+                size="medium"
+                variant="brand">
+            </lightning-spinner>
+        </template>
+
+        <template if:true={error}>
+            <div class="slds-m-around_medium slds-text-color_error">
+                Error loading data: {error.body.message}
+            </div>
+        </template>
+
+        <lightning-accordion allow-multiple-sections-open="true" active-section-name={mainSection}>
+            <lightning-accordion-section name="endowedFunds" label="Endowed Fund Recipients">
+                <template if:true={hasFunds}>
+                    <div class="funds-wrapper">
+                        <template for:each={funds} for:item="fund">
+                            <div key={fund.stewardshipId} class="fund-box">
+                                <!-- Fund Name Header with Expand/Collapse Icon -->
+                                <div class="slds-grid slds-grid_vertical-align-center slds-m-bottom_small">
+                                    <lightning-button-icon
+                                        icon-name={fund.expandIcon}
+                                        alternative-text="Toggle"
+                                        variant="bare"
+                                        onclick={handleToggleFund}
+                                        data-fund-id={fund.stewardshipId}
+                                        class="slds-m-right_x-small">
+                                    </lightning-button-icon>
+                                    <div class="slds-text-heading_small fund-name">
+                                        {fund.fundName}
+                                    </div>
+                                </div>
+
+                                <template if:true={fund.isExpanded}>
+                                    <template if:true={fund.hasBeneficiaries}>
+                                        <div class="datatable-wrapper">
+                                            <div style="overflow-x: auto;">
+                                                <lightning-datatable
+                                                    key-field="Id"
+                                                    data={fund.paginatedBeneficiaries}
+                                                    columns={columns}
+                                                    hide-checkbox-column
+                                                    sorted-by={fund.sortedBy}
+                                                    sorted-direction={fund.sortedDirection}
+                                                    onsort={handleSort}
+                                                    data-fund-id={fund.stewardshipId}>
+                                                </lightning-datatable>
+                                            </div>
+
+                                            <!-- Pagination -->
+                                            <template if:true={fund.showPagination}>
+                                                <div class="slds-m-top_small slds-grid slds-grid_align-spread slds-align_absolute-center">
+                                                    <lightning-button
+                                                        label="Prev"
+                                                        data-fund-id={fund.stewardshipId}
+                                                        onclick={handlePrevPage}
+                                                        disabled={fund.isFirstPage}>
+                                                    </lightning-button>
+                                                    <div class="slds-m-horizontal_small">
+                                                        Page {fund.pageNumber} of {fund.totalPages} · {fund.totalRecords} total
+                                                    </div>
+                                                    <lightning-button
+                                                        label="Next"
+                                                        data-fund-id={fund.stewardshipId}
+                                                        onclick={handleNextPage}
+                                                        disabled={fund.isLastPage}>
+                                                    </lightning-button>
+                                                </div>
+                                            </template>
+                                        </div>
+                                    </template>
+
+                                    <template if:false={fund.hasBeneficiaries}>
+                                        <div class="slds-m-around_small slds-text-color_weak">
+                                            No beneficiaries found for this fund.
+                                        </div>
+                                    </template>
+                                </template>
+                            </div>
+                        </template>
+                    </div>
+                </template>
+
+                <template if:true={noFunds}>
+                    <div class="slds-m-around_medium slds-text-color_weak">
+                        No endowed fund data found for this contact.
+                    </div>
+                </template>
+            </lightning-accordion-section>
+        </lightning-accordion>
+    </div>
+</template>
