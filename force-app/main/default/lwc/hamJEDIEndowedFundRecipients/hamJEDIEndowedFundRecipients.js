@@ -38,12 +38,6 @@ export default class HamJEDIEndowedFundRecipients extends LightningElement {
             sortable: true
         },
         {
-            label: 'Semester',
-            fieldName: 'HAM_Award_Session__c',
-            type: 'text',
-            sortable: true
-        },
-        {
             label: 'Anonymous to Donor',
             fieldName: 'anonymousLabel',
             type: 'text',
