@@ -1,4 +1,7 @@
-import { LightningElement, api, track } from 'lwc';
+import { LightningElement, api, track,wire } from 'lwc';
+
+//import apex methods
+import getPrimaryContactType from '@salesforce/apex/HAM_MainController.getPrimaryContactType';
 
 /**
  * @description A component that displays a user's personal profile information. 
@@ -14,9 +17,11 @@ export default class Ham_profileSection extends LightningElement {
     @api personalSection = [];
     @api label = {};
     @api mainResource;
+    @api userContactId;
     @track isPopupVisible = false;
     @track screenWidth = window.innerWidth;
     @track images = {};
+    @track isPrimaryConstituentTypeTrustee;
 
     /**
      * @description Lifecycle hook that runs when the component is inserted into the DOM.
@@ -59,6 +64,26 @@ export default class Ham_profileSection extends LightningElement {
             return;
         } else {
             this.isPopupVisible = true;
+        }
+    }
+    
+    /**
+     * @description Wire method to call the Apex method with the contactId.
+     * It reactively calls the method whenever 'userContactId' is updated.
+     * @param {Object} wiredContactData The wired result object containing the Contact record or null.
+     */
+    @wire(getPrimaryContactType, { contactId: '$userContactId' })
+    wiredContactData({ error, data }) {
+        if (data) {
+            if (data.ucinn_ascendv2__Primary_Contact_Type__c) {
+                let primaryContactType = data.ucinn_ascendv2__Primary_Contact_Type__c;
+                this.isPrimaryConstituentTypeTrustee = primaryContactType === 'Trustee';
+            } 
+
+        } else if (error) {
+            // Handle any error from the Apex method call
+            
+            console.error('<<getContactWithPrimaryType Error>>', error);
         }
     }
 
