@@ -97,7 +97,6 @@ export default class Ham_editProfileCmp extends LightningElement {
             this.constId = data.constId; // Setting Contact Id
             this.error = undefined; 
             this.isLoading = false;
-            
         
         } else if (error) {
             console.error('Error fetching contact data:', error);
@@ -139,6 +138,14 @@ export default class Ham_editProfileCmp extends LightningElement {
             this.personalUpdatedInfo = { ...this.personalUpdatedInfo,
                 [currentField]: currentValue
             };
+
+            //Updating the phoneNo and email properties so that the made chage is visible on UI for these two fields
+            if(this.personalUpdatedInfo.phoneNo){
+                this.personalInfo.phoneNo = this.personalUpdatedInfo.phoneNo; 
+            }
+            if(this.personalUpdatedInfo.email){
+                this.personalInfo.email = this.personalUpdatedInfo.email;
+            }
         }
     }
 
@@ -153,7 +160,7 @@ export default class Ham_editProfileCmp extends LightningElement {
                 personalInfoResp: JSON.stringify(this.personalUpdatedInfo),
                 currentUserContactId: this.constId, // Pass Contact Id
                 contentDocId: this.updatedContentDocId // Pass Content Document Id
-            }).then(response => {
+            }).then(response => { 
                     if(response === 'Success') { 
                         this.dispatchEvent(
                             new ShowToastEvent({
@@ -163,7 +170,7 @@ export default class Ham_editProfileCmp extends LightningElement {
                                 mode: 'dismissable'
                             })
                         );
-                        this.dispatchEvent(new CustomEvent('close'));
+                        this.dispatchEvent(new CustomEvent('close'));                        
                         // Refresh the wired data
                         return refreshApex(this.wiredPersonalInfo)
                             .then(() => {
@@ -173,10 +180,19 @@ export default class Ham_editProfileCmp extends LightningElement {
                             });
                     }
                     else {
+                        //Custom error messages for phoneNo and email fields
+                        let errorMessage;  
+                        if(response.includes('ucinn_ascendv2__Phone_Number__c')){
+                            errorMessage = this.personalUpdatedInfo.phoneNo+' is not valid. Please enter 10 to 13 digits number without any special characters  like (),-etc.';
+                        }else if(response.includes('ucinn_ascendv2__Email_Address__c')){
+                            errorMessage = this.personalUpdatedInfo.email+' is not valid. Please enter a valid email address';
+                        }else{
+                            errorMessage = 'An error occurred while saving your information. '+response;
+                        }
                         this.dispatchEvent(
                             new ShowToastEvent({
                                 title: 'Error',
-                                message: 'An error occurred while saving your information. ' + response,
+                                message: errorMessage,
                                 variant: 'error',
                                 mode: 'sticky'
                             })
