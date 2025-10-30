@@ -35,14 +35,14 @@ public with sharing class HAMJediEndowedFundRecipientsController {
                        HAM_Sort_Fiscal_Year__c,
                        HAM_Award_Session__c,
                        ucinn_ascendv2__Contact__c,
-                       ucinn_ascendv2__Contact__r.Name,
+                       ucinn_ascendv2__Contact__r.HAM_Name_w_Suffix__c,
                        ucinn_ascendv2__Type__c,
                        HAM_Anonymous__c
                 FROM ucinn_ascendv2__Designation_Beneficiary__c
                 WHERE ucinn_ascendv2__Designation__c IN :designationIds
                 ORDER BY ucinn_ascendv2__Designation__c,
                          HAM_Sort_Fiscal_Year__c DESC NULLS LAST,
-                         ucinn_ascendv2__Contact__r.Name ASC,
+                         ucinn_ascendv2__Contact__r.HAM_Name_w_Suffix__c ASC,
                          HAM_Award_Session__c ASC NULLS LAST
             ];
 
@@ -110,14 +110,14 @@ public with sharing class HAMJediEndowedFundRecipientsController {
                        HAM_Sort_Fiscal_Year__c,
                        HAM_Award_Session__c,
                        ucinn_ascendv2__Contact__c,
-                       ucinn_ascendv2__Contact__r.Name,
+                       ucinn_ascendv2__Contact__r.HAM_Name_w_Suffix__c,
                        ucinn_ascendv2__Type__c,
                        HAM_Anonymous__c
                 FROM ucinn_ascendv2__Designation_Beneficiary__c
                 WHERE ucinn_ascendv2__Designation__c IN :designationIds
                 ORDER BY ucinn_ascendv2__Designation__c,
                          HAM_Sort_Fiscal_Year__c DESC NULLS LAST,
-                         ucinn_ascendv2__Contact__r.Name ASC,
+                         ucinn_ascendv2__Contact__r.HAM_Name_w_Suffix__c ASC,
                          HAM_Award_Session__c ASC NULLS LAST
             ];
 
@@ -162,7 +162,7 @@ public with sharing class HAMJediEndowedFundRecipientsController {
                     newGroup.Id = ben.Id; // Use first beneficiary ID
                     newGroup.fiscalYear = ben.HAM_Sort_Fiscal_Year__c;
                     newGroup.contactId = ben.ucinn_ascendv2__Contact__c;
-                    newGroup.contactName = ben.ucinn_ascendv2__Contact__r.Name;
+                    newGroup.contactName = ben.ucinn_ascendv2__Contact__r.HAM_Name_w_Suffix__c;
                     newGroup.semesters = new List<String>();
                     if (String.isNotBlank(ben.HAM_Award_Session__c)) {
                         newGroup.semesters.add(ben.HAM_Award_Session__c);
