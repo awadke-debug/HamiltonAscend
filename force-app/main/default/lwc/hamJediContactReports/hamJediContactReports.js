@@ -117,7 +117,7 @@ export default class HamJediContactReports extends LightningElement {
             sortable: true
         },
         {
-            label: 'Last Modified By',
+            label: 'Submitted By',
             fieldName: 'LastModifiedByName',
             type: 'text',
             sortable: true
