@@ -25,13 +25,20 @@
                     <booleanValue>true</booleanValue>
                 </rightValue>
             </conditions>
+            <conditions>
+                <leftValueReference>$Record.WhoId</leftValueReference>
+                <operator>IsBlank</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
             <connector>
                 <targetReference>Update_status</targetReference>
             </connector>
             <label>Mark as completed</label>
         </rules>
     </decisions>
-    <description>Adding record type</description>
+    <description>Adding record type, Added a name check</description>
     <environments>Default</environments>
     <formulas>
         <name>MeetingRecordType</name>
@@ -98,20 +105,13 @@
                 <stringValue>Cancelled</stringValue>
             </value>
         </filters>
-        <filters>
-            <field>WhoId</field>
-            <operator>IsNull</operator>
-            <value>
-                <booleanValue>false</booleanValue>
-            </value>
-        </filters>
         <object>Event</object>
         <schedule>
             <frequency>Daily</frequency>
-            <startDate>2025-10-08</startDate>
+            <startDate>2025-10-02</startDate>
             <startTime>00:30:00.000Z</startTime>
         </schedule>
         <triggerType>Scheduled</triggerType>
     </start>
-    <status>Draft</status>
+    <status>Active</status>
 </Flow>
