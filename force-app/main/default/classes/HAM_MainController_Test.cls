@@ -22,7 +22,7 @@ public class HAM_MainController_Test {
         Profile p2 = [SELECT Id FROM Profile WHERE Name = 'Partner Community Login User' LIMIT 1];
         
         // Create a Contact for the portal user
-        Contact con = new Contact(FirstName = 'Test', LastName = 'Contact');
+        Contact con = new Contact(FirstName = 'Test', LastName = 'Contact', ucinn_ascendv2__Primary_Contact_Type__c = 'Trustee');
         insert con;
         
         // User1 : Base internal user (will simulate ContactId in test)
@@ -152,5 +152,34 @@ public class HAM_MainController_Test {
             
             System.assertEquals(null, contactId, 'Should return null as the hardcoded ContactId fallback is gone.');
         }
+    }
+
+    /**
+     * @description Test case to verify the method successfully returns the Contact 
+     * record with the correct Primary Contact Type for a valid ID.
+     */
+    @IsTest
+    static void testGetPrimaryContactType() {
+        Contact testContact = new Contact(
+            FirstName = 'Test',
+            LastName = 'Trustee',
+            ucinn_ascendv2__Primary_Contact_Type__c = 'Trustee' 
+        );
+        insert testContact;
+        testContact.ucinn_ascendv2__Primary_Contact_Type__c = 'Trustee';
+        update testContact;
+
+        Test.startTest();
+        Contact resultContact = HAM_MainController.getPrimaryContactType(testContact.Id);
+        Test.stopTest();
+
+        //ASSERT: Verify the result
+        System.assertNotEquals(null, resultContact, 'Result should not be null when a valid ID is passed.');
+        System.assertEquals(testContact.Id, resultContact.Id, 'The correct Contact ID should be returned.');
+        System.assertEquals(
+            'Trustee',
+            resultContact.ucinn_ascendv2__Primary_Contact_Type__c,
+            'The Primary Contact Type field should match the expected value.'
+        );
     }
 }
