@@ -79,22 +79,33 @@ export default class Ham_philanthropyCardCmp extends LightningElement {
 
     /**
      * @description A helper method to format field values based on their type.
-     * It currently handles currency formatting.
-     * @param {*} fieldvalue The raw value of the field.
-     * @param {string} fieldType The type of the field (e.g., 'currency', 'text').
+     * It currently handles currency and date formatting.
+     * @param {*} fieldvalue The value to format.
+     * @param {string} fieldType The type of the field (e.g., 'currency', 'date').
      * @returns {*} The formatted value.
      */
     formattedFieldValue(fieldvalue, fieldType) {
         if (fieldvalue === null || fieldvalue === undefined || fieldvalue === '') {
             return '';
         }
-        switch (fieldType.toLowerCase()) { // Use .toLowerCase() for robust matching
+        switch (fieldType.toLowerCase()) {
             case 'currency':
+                // Use the en-US locale for consistent currency formatting
                 return new Intl.NumberFormat('en-US', {
                     style: 'currency',
                     currency: 'USD',
                     maximumFractionDigits: 2
                 }).format(fieldvalue);
+            case 'date':
+            // 1. Split the "yyyy-mm-dd" string into parts
+            const parts = fieldvalue.split('-'); 
+            
+            // 2. Check if the split was successful and has 3 parts
+            if (parts.length === 3) {
+                // parts[0] is yyyy, parts[1] is mm, parts[2] is dd
+                // Reassemble in "mm/dd/yyyy" format
+                return `${parts[1]}/${parts[2]}/${parts[0]}`;
+            }
             case 'text':
                 return fieldvalue;
             default:
