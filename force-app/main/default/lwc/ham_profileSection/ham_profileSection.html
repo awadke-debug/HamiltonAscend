@@ -33,6 +33,13 @@
                     {label.mylinkedinprofile}
                 </a>
             </div>
+            <template if:true={isPrimaryConstituentTypeTrustee}>
+                <div class="linkedin-section info-group">
+                <a href={label.boardOfTruteeLink} class={linkedInClass} target="_blank" rel="noopener noreferrer">
+                    {label.boardOfTruteeLabel}
+                </a>
+            </div>
+            </template>
         </div>
 
         <div class="info-group">

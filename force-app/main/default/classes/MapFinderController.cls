@@ -35,12 +35,12 @@ public with sharing class MapFinderController {
         String sortBy,
         String sortDirection)
     {
-
-        List<SObject> results = MapFinderService.fetchContactsByFilters(mapInstance, filterWrapper.advanceFilterParams, filterWrapper.latitude, filterWrapper.longitude, filterWrapper.radius, offset, pageSize, sortBy, sortDirection);
+        MapFinderContext ctx = new MapFinderContext(mapInstance);
+        List<SObject> results = ctx.fetchContactsByFilters(filterWrapper, offset, pageSize, sortBy, sortDirection);
 
         ConstituentsWrapper result = new ConstituentsWrapper();
         result.constituents = results;
-        result.totalSize = MapFinderService.countContactsByFilters(mapInstance, filterWrapper.advanceFilterParams, filterWrapper.latitude, filterWrapper.longitude, filterWrapper.radius);
+        result.totalSize = ctx.countContactsByFilters(filterWrapper);
         return result;
     }
 
@@ -90,7 +90,11 @@ public with sharing class MapFinderController {
 
         OutputfieldMapMarker fieldSelectClause = new OutputfieldMapMarker();
         fieldSelectClause.validateOutputfields(outFlds);
-        properties.addAll((List<DataTableProperty>)fieldSelectClause.outputFields);
+        try {
+            properties.addAll((List<DataTableProperty>)fieldSelectClause.outputFields);
+        } catch (NullPointerException npe) {
+            System.debug('Empty marker description fields');
+        }
         return properties;
     }
 
@@ -294,7 +298,7 @@ public with sharing class MapFinderController {
         if (String.isBlank(contactId)) {
             return false;
         }
-        
+
         Id recordId = contactId;
         Schema.SObjectType objectType = recordId.getSobjectType();
         String objectName = objectType.getDescribe().getName();

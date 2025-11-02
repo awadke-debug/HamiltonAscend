@@ -19,10 +19,12 @@
               </lightning-input-rich-text>
   
               <div style="display:flex; margin-left: auto; padding-bottom: 0.25rem;">
-                <lightning-button label="Save Changes" onclick={handleGeneratePdf}
-                  disabled={disableGeneratePdf}></lightning-button>
+                <lightning-button label="Generate PDF" onclick={handleGeneratePdf} class="slds-var-m-right_medium" disabled={disableGeneratePdf}
+                ></lightning-button>
+                <lightning-button label="Save Changes" onclick={handleSaveBriefing}
+                  ></lightning-button>
               </div>
-              <template lwc:if={displaySpinner}>
+              <template lwc:if={isLoading}>
                 <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
               </template>
             </div>

@@ -248,6 +248,8 @@ public with sharing class HamItineraryController {
             event.WhoId = eventDetail.contactId;
             event.HAM_Address__c = eventDetail.address;
             event.Description = eventDetail.description;
+            event.HAM_Contact_Report__c = createContactReport(eventDetail.contactId, eventDetail.description, eventDetail.description);
+
         }
 
         if (eventDetail.type == 'HAM_Transportation') {
@@ -262,6 +264,17 @@ public with sharing class HamItineraryController {
         upsert event;
 
         return event;
+    }
+
+    private static Id createContactReport(String contactId, String summary, String keyPoints) {
+        ucinn_ascendv2__Contact_Report__c contactReport = new ucinn_ascendv2__Contact_Report__c();
+        contactReport.ucinn_ascendv2__Date__c = Date.today();
+        contactReport.ucinn_ascendv2__Description__c = summary;
+        contactReport.ucinn_ascendv2__Contact_Report_Body__c = keyPoints;
+        contactReport.ucinn_ascendv2__Contact__c = contactId;
+        contactReport.ucinn_ascendv2__Account__c = [SELECT Id, AccountId FROM Contact WHERE Id = :contactId LIMIT 1].AccountId;
+        insert contactReport;
+        return contactReport.Id;
     }
 
     @AuraEnabled

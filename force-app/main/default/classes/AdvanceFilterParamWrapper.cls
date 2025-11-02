@@ -11,4 +11,6 @@ public with sharing class AdvanceFilterParamWrapper {
         public List<String> addressRelationIds { get; set; }
         @AuraEnabled
         public Boolean isExportAll { get; set; }
+        @AuraEnabled
+        public String filterAugmentation {get; set;}
 }

@@ -152,7 +152,31 @@ public with sharing class DigitalBriefingPdfController {
         this.endowedFunds = designationMap.values();
     }
 
-    /* Commenting out now for implementing later via Attach to Donor record button
+    @AuraEnabled
+    public static string generatePdf(String contactId){
+
+        try {
+            String fileName = 'Presidential Briefing {0} {1}-{2}-{3}.pdf';
+            Contact constituent = [SELECT Id, Name FROM Contact WHERE Id = :contactId LIMIT 1];
+            
+            fileName = String.format(fileName, new List<Object>{constituent.Name, rPadDateElem(Date.today().month()), rPadDateElem(Date.today().day()), Date.today().year()});
+            
+            PageReference pdf = Page.digitalBriefingPdf;
+            pdf.getParameters().put('contactId', contactId);
+            pdf.setRedirect(true);
+            
+            String contentDocId = createContentDocument(contactId, fileName, Test.isRunningTest() ? Blob.valueOf('test') : pdf.getContent());
+            return String.isNotBlank(contentDocId) ? 'success' : 'error';
+        } catch (Exception e) {
+            return 'error';
+        }
+    }
+
+    private static String rPadDateElem(Integer ele) {
+        return String.valueOf(ele).length() == 1 ? String.valueOf(ele).leftPad(2, '0') : String.valueOf(ele);
+    }
+
+
     private static String createContentDocument(String contactId, String fileName, Blob content) {
         ContentVersion cv = new ContentVersion();
         cv.ContentLocation = 'S';
@@ -175,7 +199,6 @@ public with sharing class DigitalBriefingPdfController {
 
         return contentDocId;
     }
-    */
 
 
     @AuraEnabled(cacheable=true)

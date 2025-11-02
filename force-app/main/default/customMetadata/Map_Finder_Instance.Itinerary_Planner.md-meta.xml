@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>Itinerary Planner</label>
+    <protected>false</protected>
+    <values>
+        <field>Base_Filter__c</field>
+        <value xsi:type="xsd:string">ucinn_ascendv2__Contact__c != null AND ucinn_ascendv2__Status__c = &apos;Current&apos;</value>
+    </values>
+    <values>
+        <field>Campaign_Member_Id_Field__c</field>
+        <value xsi:type="xsd:string">ucinn_ascendv2__Contact__c</value>
+    </values>
+    <values>
+        <field>Finder_Class__c</field>
+        <value xsi:type="xsd:string">MapFinderItinerary</value>
+    </values>
+    <values>
+        <field>Geolocation_Field__c</field>
+        <value xsi:type="xsd:string">ucinn_ascendv2__Address__r.ucinn_ascendv2__Location__c</value>
+    </values>
+    <values>
+        <field>Object__c</field>
+        <value xsi:type="xsd:string">ucinn_ascendv2__Address_Relation__c</value>
+    </values>
+    <values>
+        <field>Parent_Objects__c</field>
+        <value xsi:type="xsd:string">ucinn_ascendv2__Contact__c,ucinn_ascendv2__Address__c</value>
+    </values>
+</CustomMetadata>

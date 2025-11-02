@@ -80,11 +80,11 @@
             <br></br>
         
             <apex:outputText styleClass="bold-label" value="Lifetime Committed: "/>
-            <apex:outputText value="{0,number, $000,000.00}" >
+            <apex:outputText value="{0,number, $###,###.00}" >
                 <apex:param value="{!constituent.HAM_Lifetime_Committed__c}"/>
             </apex:outputText>
             <apex:outputText styleClass="bold-label" value=" Lifetime Paid: "/>
-            <apex:outputText value="{0,number, $000,000.00}" >
+            <apex:outputText value="{0,number, $###,###.00}" >
                 <apex:param value="{!constituent.HAM_Lifetime_Paid__c}"/>
             </apex:outputText><br></br>
          
@@ -97,7 +97,7 @@
             </apex:outputPanel>
             
             <apex:outputText styleClass="bold-label" value="Lifetime Bequest Intention: " rendered="{!AND(NOT(ISBLANK(constituent.HAM_Lifetime_Bequest_Intention__c)), constituent.HAM_Lifetime_Bequest_Intention__c > 0)}"></apex:outputText>
-            <apex:outputText value="{0,number, $000,000.00}" rendered="{!AND(NOT(ISBLANK(constituent.HAM_Lifetime_Bequest_Intention__c)), constituent.HAM_Lifetime_Bequest_Intention__c > 0)}">
+            <apex:outputText value="{0,number, $###,###.00}" rendered="{!AND(NOT(ISBLANK(constituent.HAM_Lifetime_Bequest_Intention__c)), constituent.HAM_Lifetime_Bequest_Intention__c > 0)}">
                 <apex:param value="{!constituent.HAM_Lifetime_Bequest_Intention__c}"/>
             </apex:outputText>
 
@@ -122,12 +122,12 @@
                 <tr>
                     <td>{!endowedFund.fundName}</td>
                     <td>
-                        <apex:outputText value="{0, number, $000,000.00}" >
+                        <apex:outputText value="{0, number, $###,###.00}" >
                             <apex:param value="{!endowedFund.bookValue}"/>
                         </apex:outputText>
                     </td>
                     <td>
-                        <apex:outputText value="{0, number, $000,000.00}" >
+                        <apex:outputText value="{0, number, $###,###.00}" >
                             <apex:param value="{!endowedFund.marketValue}"/>
                         </apex:outputText>
                     </td>

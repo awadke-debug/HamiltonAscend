@@ -2,10 +2,33 @@
 <Flow xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <apiVersion>63.0</apiVersion>
     <assignments>
+        <name>Add_record_variables_to_lists</name>
+        <label>Add record variables to lists</label>
+        <locationX>270</locationX>
+        <locationY>2630</locationY>
+        <assignmentItems>
+            <assignToReference>EventRelationList</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>hamEventRelation</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>fundraiserRelations</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>fundraiserContactReportRelation</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Loop_Through_Hamilton_Attendees</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
         <name>Add_to_EventRelation_List</name>
         <label>Add to EventRelation List</label>
         <locationX>270</locationX>
-        <locationY>1898</locationY>
+        <locationY>2114</locationY>
         <assignmentItems>
             <assignToReference>EventRelationList</assignToReference>
             <operator>Add</operator>
@@ -14,14 +37,14 @@
             </value>
         </assignmentItems>
         <connector>
-            <targetReference>Loop_Thorough_Attendees</targetReference>
+            <targetReference>Loop_Thorough_Donor_Attendees</targetReference>
         </connector>
     </assignments>
     <assignments>
         <name>Add_to_Task_List</name>
         <label>Add to Task List</label>
         <locationX>270</locationX>
-        <locationY>2714</locationY>
+        <locationY>3554</locationY>
         <assignmentItems>
             <assignToReference>TaskList</assignToReference>
             <operator>Add</operator>
@@ -53,7 +76,7 @@
         <name>Set_EventRelation_Fields</name>
         <label>Set EventRelation Fields</label>
         <locationX>270</locationX>
-        <locationY>1790</locationY>
+        <locationY>2006</locationY>
         <assignmentItems>
             <assignToReference>EventRelation_Iteration.EventId</assignToReference>
             <operator>Assign</operator>
@@ -72,11 +95,78 @@
             <assignToReference>EventRelation_Iteration.RelationId</assignToReference>
             <operator>Assign</operator>
             <value>
-                <elementReference>Loop_Thorough_Attendees.AttendeeId.recordId</elementReference>
+                <elementReference>Loop_Thorough_Donor_Attendees.AttendeeId.recordId</elementReference>
             </value>
         </assignmentItems>
         <connector>
             <targetReference>Add_to_EventRelation_List</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Set_EventRelation_Fields_HAM</name>
+        <label>Set EventRelation Fields</label>
+        <locationX>270</locationX>
+        <locationY>2414</locationY>
+        <assignmentItems>
+            <assignToReference>hamEventRelation.EventId</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Create_Event_Related_to_Contact_Report</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>hamEventRelation.RelationId</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Loop_Through_Hamilton_Attendees.FundraiserContactReportRelationId.recordId</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>hamEventRelation.Status</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>New</stringValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Set_ucinn_ascendv2_Fundraiser_Contact_Report_Relation_c</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Set_primaryFundraiser</name>
+        <label>Set primaryFundraiser</label>
+        <locationX>182</locationX>
+        <locationY>1574</locationY>
+        <assignmentItems>
+            <assignToReference>primaryFundraiser.ucinn_ascendv2__Fundraiser__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$User.Id</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>primaryFundraiser.ucinn_ascendv2__Contact_Report__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>contactReportIdDynamic</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>primaryFundraiser.ucinn_ascendv2__Fundraiser_Role__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>Primary Fundraiser</stringValue>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>fundraiserRelations</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>primaryFundraiser</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>CreateMeetingScreen</targetReference>
         </connector>
     </assignments>
     <assignments>
@@ -100,7 +190,7 @@
         <name>Set_Task_Fields</name>
         <label>Set Task Fields</label>
         <locationX>270</locationX>
-        <locationY>2606</locationY>
+        <locationY>3446</locationY>
         <assignmentItems>
             <assignToReference>task_iteration.ActivityDate</assignToReference>
             <operator>Assign</operator>
@@ -154,6 +244,36 @@
             <targetReference>Add_to_Task_List</targetReference>
         </connector>
     </assignments>
+    <assignments>
+        <name>Set_ucinn_ascendv2_Fundraiser_Contact_Report_Relation_c</name>
+        <label>Set ucinn_ascendv2__Fundraiser_Contact_Report_Relation__c</label>
+        <locationX>270</locationX>
+        <locationY>2522</locationY>
+        <assignmentItems>
+            <assignToReference>fundraiserContactReportRelation.ucinn_ascendv2__Fundraiser__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Loop_Through_Hamilton_Attendees.FundraiserContactReportRelationId.recordId</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>fundraiserContactReportRelation.ucinn_ascendv2__Fundraiser_Role__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Loop_Through_Hamilton_Attendees.hamContactRole</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>fundraiserContactReportRelation.ucinn_ascendv2__Contact_Report__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>contactReportIdDynamic</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Add_record_variables_to_lists</targetReference>
+        </connector>
+    </assignments>
     <choices>
         <name>Academic_Affairs</name>
         <choiceText>Academic Affairs</choiceText>
@@ -190,6 +310,11 @@
         <value>
             <stringValue>President</stringValue>
         </value>
+    </choices>
+    <choices>
+        <name>secondaryOfficerValue</name>
+        <choiceText>Secondary Officer</choiceText>
+        <dataType>String</dataType>
     </choices>
     <choices>
         <name>VP_Faculty</name>
@@ -251,7 +376,7 @@
         <name>Create_Meeting_True</name>
         <label>Create Meeting True?</label>
         <locationX>314</locationX>
-        <locationY>1358</locationY>
+        <locationY>1466</locationY>
         <defaultConnector>
             <targetReference>Create_Task_is_True</targetReference>
         </defaultConnector>
@@ -267,7 +392,7 @@
                 </rightValue>
             </conditions>
             <connector>
-                <targetReference>CreateMeetingScreen</targetReference>
+                <targetReference>Set_primaryFundraiser</targetReference>
             </connector>
             <label>CreateMeetingTrue</label>
         </rules>
@@ -276,7 +401,7 @@
         <name>Create_Task_is_True</name>
         <label>Create Task is True?</label>
         <locationX>314</locationX>
-        <locationY>2282</locationY>
+        <locationY>3122</locationY>
         <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
         <rules>
             <name>CreateTaskTrue</name>
@@ -325,7 +450,7 @@
         <name>recordId_is_Constituent_or_Organization</name>
         <label>recordId is Constituent or Organization?</label>
         <locationX>314</locationX>
-        <locationY>950</locationY>
+        <locationY>1058</locationY>
         <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
         <rules>
             <name>isConstituent</name>
@@ -359,6 +484,14 @@
         </rules>
     </decisions>
     <description>Custom screen flow that provides a more streamlined method of submitting a Contact Report as well as a solution to issues with the ascend Contact Report form on mobile.</description>
+    <dynamicChoiceSets>
+        <name>fundraiserRole</name>
+        <dataType>Picklist</dataType>
+        <displayField xsi:nil="true"/>
+        <object xsi:nil="true"/>
+        <picklistField>ucinn_ascendv2__Fundraiser_Role__c</picklistField>
+        <picklistObject>ucinn_ascendv2__Fundraiser_Contact_Report_Relation__c</picklistObject>
+    </dynamicChoiceSets>
     <dynamicChoiceSets>
         <name>HAM_Areas_Of_Interest</name>
         <dataType>Multipicklist</dataType>
@@ -416,6 +549,12 @@
         <picklistObject>ucinn_ascendv2__Contact_Report__c</picklistObject>
     </dynamicChoiceSets>
     <environments>Default</environments>
+    <formulas>
+        <description>Either Contact Report related to Contact or Contact Report related to Org</description>
+        <name>contactReportIdDynamic</name>
+        <dataType>String</dataType>
+        <expression>IF(ISNULL({!Create_Contact_Report_Contact}), {!Create_Contact_Report_Account}, {!Create_Contact_Report_Contact})</expression>
+    </formulas>
     <formulas>
         <name>createMeetingTrueFormula</name>
         <dataType>Boolean</dataType>
@@ -479,14 +618,28 @@
     <interviewLabel>Contact Report - Create New Contact Report (Gift Officers) {!$Flow.CurrentDateTime}</interviewLabel>
     <label>HAM Contact Report - Create New Contact Report</label>
     <loops>
-        <name>Loop_Thorough_Attendees</name>
-        <label>Loop Thorough Attendees</label>
+        <name>Loop_Thorough_Donor_Attendees</name>
+        <label>Loop Thorough Donor Attendees</label>
         <locationX>182</locationX>
-        <locationY>1682</locationY>
+        <locationY>1898</locationY>
         <collectionReference>AttendeeRepeater.AllItems</collectionReference>
         <iterationOrder>Asc</iterationOrder>
         <nextValueConnector>
             <targetReference>Set_EventRelation_Fields</targetReference>
+        </nextValueConnector>
+        <noMoreValuesConnector>
+            <targetReference>Loop_Through_Hamilton_Attendees</targetReference>
+        </noMoreValuesConnector>
+    </loops>
+    <loops>
+        <name>Loop_Through_Hamilton_Attendees</name>
+        <label>Loop Through Hamilton Attendees</label>
+        <locationX>182</locationX>
+        <locationY>2306</locationY>
+        <collectionReference>HamiltonRepeater.AllItems</collectionReference>
+        <iterationOrder>Asc</iterationOrder>
+        <nextValueConnector>
+            <targetReference>Set_EventRelation_Fields_HAM</targetReference>
         </nextValueConnector>
         <noMoreValuesConnector>
             <targetReference>Insert_EventRelationList</targetReference>
@@ -497,7 +650,7 @@
         <name>Loop_Through_Tasks</name>
         <label>Loop Through Tasks</label>
         <locationX>182</locationX>
-        <locationY>2498</locationY>
+        <locationY>3338</locationY>
         <collectionReference>TaskRepeater.AllItems</collectionReference>
         <iterationOrder>Asc</iterationOrder>
         <nextValueConnector>
@@ -530,7 +683,7 @@
         <name>Create_Contact_Report_Account</name>
         <label>Create Contact Report Account</label>
         <locationX>314</locationX>
-        <locationY>1058</locationY>
+        <locationY>1166</locationY>
         <connector>
             <targetReference>Create_Contact_Report_Relation_Account</targetReference>
         </connector>
@@ -583,7 +736,7 @@
         <name>Create_Contact_Report_Contact</name>
         <label>Create Contact Report Contact</label>
         <locationX>50</locationX>
-        <locationY>1058</locationY>
+        <locationY>1166</locationY>
         <connector>
             <targetReference>Create_Contact_Report_Relation_Contact</targetReference>
         </connector>
@@ -636,7 +789,7 @@
         <name>Create_Contact_Report_Relation_Account</name>
         <label>Create Contact Report Relation Account</label>
         <locationX>314</locationX>
-        <locationY>1166</locationY>
+        <locationY>1274</locationY>
         <connector>
             <targetReference>Create_Meeting_True</targetReference>
         </connector>
@@ -659,7 +812,7 @@
         <name>Create_Contact_Report_Relation_Contact</name>
         <label>Create Contact Report Relation Contact</label>
         <locationX>50</locationX>
-        <locationY>1166</locationY>
+        <locationY>1274</locationY>
         <connector>
             <targetReference>Create_Meeting_True</targetReference>
         </connector>
@@ -682,9 +835,9 @@
         <name>Create_Event_Related_to_Contact_Report</name>
         <label>Create Event Related to Contact Report</label>
         <locationX>182</locationX>
-        <locationY>1574</locationY>
+        <locationY>1790</locationY>
         <connector>
-            <targetReference>Loop_Thorough_Attendees</targetReference>
+            <targetReference>Loop_Thorough_Donor_Attendees</targetReference>
         </connector>
         <inputAssignments>
             <field>EndDateTime</field>
@@ -747,9 +900,9 @@
         <name>Insert_EventRelationList</name>
         <label>Insert EventRelationList</label>
         <locationX>182</locationX>
-        <locationY>2090</locationY>
+        <locationY>2822</locationY>
         <connector>
-            <targetReference>Create_Task_is_True</targetReference>
+            <targetReference>Insert_ucinn_ascendv2_Fundraiser_Contact_Report_Relation_c</targetReference>
         </connector>
         <inputReference>EventRelationList</inputReference>
     </recordCreates>
@@ -757,8 +910,19 @@
         <name>Insert_TaskList</name>
         <label>Insert TaskList</label>
         <locationX>182</locationX>
-        <locationY>2906</locationY>
+        <locationY>3746</locationY>
         <inputReference>TaskList</inputReference>
+    </recordCreates>
+    <recordCreates>
+        <name>Insert_ucinn_ascendv2_Fundraiser_Contact_Report_Relation_c</name>
+        <label>Insert ucinn_ascendv2__Fundraiser_Contact_Report_Relation__c</label>
+        <locationX>182</locationX>
+        <locationY>2930</locationY>
+        <connector>
+            <targetReference>Create_Task_is_True</targetReference>
+        </connector>
+        <doesUpsert>true</doesUpsert>
+        <inputReference>fundraiserRelations</inputReference>
     </recordCreates>
     <recordLookups>
         <description>Gets Contact to grab fields from recordId</description>
@@ -768,7 +932,7 @@
         <locationY>650</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
-            <targetReference>Create_Contact_Report_Screen</targetReference>
+            <targetReference>Get_Running_User</targetReference>
         </connector>
         <filterLogic>and</filterLogic>
         <filters>
@@ -792,7 +956,7 @@
         <locationY>650</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
-            <targetReference>Create_Contact_Report_Screen</targetReference>
+            <targetReference>Get_Running_User</targetReference>
         </connector>
         <filterLogic>and</filterLogic>
         <filters>
@@ -808,11 +972,34 @@
         <queriedFields>Name</queriedFields>
         <storeOutputAutomatically>true</storeOutputAutomatically>
     </recordLookups>
+    <recordLookups>
+        <name>Get_Running_User</name>
+        <label>Get Running User</label>
+        <locationX>314</locationX>
+        <locationY>842</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Create_Contact_Report_Screen</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$User.Id</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>User</object>
+        <queriedFields>Id</queriedFields>
+        <queriedFields>Name</queriedFields>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
     <screens>
         <name>Create_Contact_Report_Screen</name>
         <label>Create Contact Report Screen</label>
         <locationX>314</locationX>
-        <locationY>842</locationY>
+        <locationY>950</locationY>
         <allowBack>false</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -1055,7 +1242,7 @@
         <name>Create_Task_Screen</name>
         <label>Create Task Screen</label>
         <locationX>182</locationX>
-        <locationY>2390</locationY>
+        <locationY>3230</locationY>
         <allowBack>false</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -1150,7 +1337,7 @@
         <name>CreateMeetingScreen</name>
         <label>Create Meeting Screen</label>
         <locationX>182</locationX>
-        <locationY>1466</locationY>
+        <locationY>1682</locationY>
         <allowBack>false</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -1159,7 +1346,7 @@
         </connector>
         <fields>
             <name>createMeetingHeader</name>
-            <fieldText>&lt;p&gt;&lt;strong style=&quot;color: rgb(68, 68, 68); background-color: rgb(255, 255, 255); font-size: 20px;&quot;&gt;Create a Meeting Related to the Contact Report: &lt;/strong&gt;&lt;/p&gt;</fieldText>
+            <fieldText>&lt;p&gt;&lt;strong style=&quot;font-size: 20px; background-color: rgb(255, 255, 255); color: rgb(68, 68, 68);&quot;&gt;Create a Meeting Related to the Contact Report: &lt;/strong&gt;&lt;/p&gt;</fieldText>
             <fieldType>DisplayText</fieldType>
         </fields>
         <fields>
@@ -1330,6 +1517,11 @@
             <regionContainerType>SectionWithoutHeader</regionContainerType>
         </fields>
         <fields>
+            <name>attendedDonorsText</name>
+            <fieldText>&lt;p&gt;&lt;span style=&quot;font-size: 20px;&quot;&gt;Attended Donors:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+        <fields>
             <name>AttendeeRepeater</name>
             <fieldType>Repeater</fieldType>
             <fields>
@@ -1366,6 +1558,138 @@
             </fields>
             <isRequired>false</isRequired>
         </fields>
+        <fields>
+            <name>blankSpace</name>
+            <fieldText>&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+        <fields>
+            <name>hamiltonAttendeesText</name>
+            <fieldText>&lt;p&gt;&lt;span style=&quot;font-size: 20px;&quot;&gt;Hamilton Attendees:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+        <fields>
+            <name>prepopRepeater</name>
+            <fieldType>Repeater</fieldType>
+            <fields>
+                <name>prepopHAMAttendee</name>
+                <extensionName>flowruntime:lookup</extensionName>
+                <fieldType>ComponentInstance</fieldType>
+                <inputParameters>
+                    <name>fieldApiName</name>
+                    <value>
+                        <stringValue>ucinn_ascendv2__Fundraiser__c</stringValue>
+                    </value>
+                </inputParameters>
+                <inputParameters>
+                    <name>label</name>
+                    <value>
+                        <stringValue>Attendee</stringValue>
+                    </value>
+                </inputParameters>
+                <inputParameters>
+                    <name>objectApiName</name>
+                    <value>
+                        <stringValue>ucinn_ascendv2__Fundraiser_Contact_Report_Relation__c</stringValue>
+                    </value>
+                </inputParameters>
+                <inputParameters>
+                    <name>disabled</name>
+                    <value>
+                        <booleanValue>true</booleanValue>
+                    </value>
+                </inputParameters>
+                <inputParameters>
+                    <name>recordId</name>
+                    <value>
+                        <elementReference>fundraiserRelations[$EachItem].ucinn_ascendv2__Fundraiser__c</elementReference>
+                    </value>
+                </inputParameters>
+                <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
+                <isRequired>true</isRequired>
+                <storeOutputAutomatically>true</storeOutputAutomatically>
+            </fields>
+            <fields>
+                <name>contactOfficerRole</name>
+                <choiceReferences>fundraiserRole</choiceReferences>
+                <dataType>String</dataType>
+                <defaultValue>
+                    <elementReference>fundraiserRelations[$EachItem].ucinn_ascendv2__Fundraiser_Role__c</elementReference>
+                </defaultValue>
+                <fieldText>Contact Officer Role</fieldText>
+                <fieldType>DropdownBox</fieldType>
+                <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
+                <isDisabled>
+                    <booleanValue>true</booleanValue>
+                </isDisabled>
+                <isRequired>false</isRequired>
+            </fields>
+            <inputParameters>
+                <name>collection</name>
+                <value>
+                    <elementReference>fundraiserRelations</elementReference>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>canAddItem</name>
+                <value>
+                    <booleanValue>false</booleanValue>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>canRemoveItem</name>
+                <value>
+                    <booleanValue>false</booleanValue>
+                </value>
+            </inputParameters>
+            <isRequired>false</isRequired>
+        </fields>
+        <fields>
+            <name>HamiltonRepeater</name>
+            <fieldType>Repeater</fieldType>
+            <fields>
+                <name>FundraiserContactReportRelationId</name>
+                <extensionName>flowruntime:lookup</extensionName>
+                <fieldType>ComponentInstance</fieldType>
+                <inputParameters>
+                    <name>fieldApiName</name>
+                    <value>
+                        <stringValue>ucinn_ascendv2__Fundraiser__c</stringValue>
+                    </value>
+                </inputParameters>
+                <inputParameters>
+                    <name>objectApiName</name>
+                    <value>
+                        <stringValue>ucinn_ascendv2__Fundraiser_Contact_Report_Relation__c</stringValue>
+                    </value>
+                </inputParameters>
+                <inputParameters>
+                    <name>label</name>
+                    <value>
+                        <stringValue>Attendee</stringValue>
+                    </value>
+                </inputParameters>
+                <inputParameters>
+                    <name>required</name>
+                    <value>
+                        <booleanValue>true</booleanValue>
+                    </value>
+                </inputParameters>
+                <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
+                <isRequired>true</isRequired>
+                <storeOutputAutomatically>true</storeOutputAutomatically>
+            </fields>
+            <fields>
+                <name>hamContactRole</name>
+                <choiceReferences>secondaryOfficerValue</choiceReferences>
+                <dataType>String</dataType>
+                <fieldText>Contact Officer Role</fieldText>
+                <fieldType>DropdownBox</fieldType>
+                <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
+                <isRequired>true</isRequired>
+            </fields>
+            <isRequired>false</isRequired>
+        </fields>
         <nextOrFinishButtonLabel>Save</nextOrFinishButtonLabel>
         <showFooter>true</showFooter>
         <showHeader>false</showHeader>
@@ -1379,7 +1703,7 @@
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
         <connector>
-            <targetReference>Create_Contact_Report_Screen</targetReference>
+            <targetReference>Get_Running_User</targetReference>
         </connector>
         <fields>
             <name>NotOrgOrContactError_Section1</name>
@@ -1479,6 +1803,46 @@
         <isInput>true</isInput>
         <isOutput>true</isOutput>
         <objectType>EventRelation</objectType>
+    </variables>
+    <variables>
+        <name>fundraiserContactReportRelation</name>
+        <dataType>SObject</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>ucinn_ascendv2__Fundraiser_Contact_Report_Relation__c</objectType>
+    </variables>
+    <variables>
+        <name>fundraiserRelations</name>
+        <dataType>SObject</dataType>
+        <isCollection>true</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>ucinn_ascendv2__Fundraiser_Contact_Report_Relation__c</objectType>
+    </variables>
+    <variables>
+        <name>hamEventRelation</name>
+        <dataType>SObject</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>EventRelation</objectType>
+    </variables>
+    <variables>
+        <name>internalHAMUsers</name>
+        <dataType>SObject</dataType>
+        <isCollection>true</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>User</objectType>
+    </variables>
+    <variables>
+        <name>primaryFundraiser</name>
+        <dataType>SObject</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>ucinn_ascendv2__Fundraiser_Contact_Report_Relation__c</objectType>
     </variables>
     <variables>
         <name>recordId</name>

@@ -11,6 +11,7 @@ import CONTACT_OBJECT from '@salesforce/schema/Contact';
 import getContactsBriefing from '@salesforce/apex/DigitalBriefingPdfController.getContactsBriefing';
 import saveBriefing from '@salesforce/apex/DigitalBriefingPdfController.saveBriefing';
 import getBaseUrl from '@salesforce/apex/DigitalBriefingPdfController.getBaseUrl';
+import generatePdf from '@salesforce/apex/DigitalBriefingPdfController.generatePdf';
 
 export default class DigitalBriefingPdf extends NavigationMixin(LightningElement) {
     @api recordId;
@@ -112,15 +113,61 @@ export default class DigitalBriefingPdf extends NavigationMixin(LightningElement
         }
     }
 
-    async handleGeneratePdf() {
-        this.isLoading = true;
+    async handleSaveBriefing() {
+        try {
+            
+            this.isLoading = true;
+    
+            const ifrmEle = this.template.querySelector('iframe');
+            if (ifrmEle) {
+                ifrmEle.src = '';
+            }
+            
+            await saveBriefing({ briefingId: this.briefingId, detail: this.briefingDetail });
 
-        const ifrmEle = this.template.querySelector('iframe');
-        ifrmEle.src = '';
-        await saveBriefing({ briefingId: this.briefingId, detail: this.briefingDetail });
-        ifrmEle.src = `${this.wiredBasedUrl.data}/apex/digitalBriefingPdf?contactId=${this.recordId}`
+            if (ifrmEle) {
+                ifrmEle.src = `${this.wiredBasedUrl.data}/apex/digitalBriefingPdf?contactId=${this.recordId}`
+            }
+        } catch (error) {
+            console.log('error', JSON.stringify(error));
+            
+        }
 
         this.isLoading = false;
+    }
+
+    handleGeneratePdf() {
+        this.isLoading = true;
+
+        generatePdf({ contactId: this.recordId })
+            .then(result => {
+                if (result === 'success') {
+                    const evt = new ShowToastEvent({
+                        title: 'PDF generated',
+                        message: 'PDF generated',
+                        variant: 'success'
+                    });
+                    this.dispatchEvent(evt);
+                } else {
+                    const evt = new ShowToastEvent({
+                        title: 'Error',
+                        message: 'Failed to generate PDF',
+                        variant: 'error'
+                    });
+                    this.dispatchEvent(evt);
+                }
+
+            }).catch(error => {
+                console.error('error', error);
+                const evt = new ShowToastEvent({
+                    title: 'Error',
+                    message: error.body.message,
+                    variant: 'error'
+                });
+                this.dispatchEvent(evt);
+            }).finally(() => {
+                this.isLoading = false;
+            });
     }
 
     handleTypeChange(event) {

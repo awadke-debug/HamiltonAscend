@@ -161,6 +161,10 @@
         <visible>true</visible>
     </applicationVisibilities>
     <classAccesses>
+        <apexClass>AbstractMapFinder</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
         <apexClass>AdvanceFilterDto</apexClass>
         <enabled>true</enabled>
     </classAccesses>
@@ -305,6 +309,10 @@
         <enabled>true</enabled>
     </classAccesses>
     <classAccesses>
+        <apexClass>GenericMapFinder</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
         <apexClass>GeocodeResponse</apexClass>
         <enabled>true</enabled>
     </classAccesses>
@@ -350,6 +358,14 @@
     </classAccesses>
     <classAccesses>
         <apexClass>HAMJediContactReportControllerTest</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>HAMJediEndowedFundRecControllerTest</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>HAMJediEndowedFundRecipientsController</apexClass>
         <enabled>true</enabled>
     </classAccesses>
     <classAccesses>
@@ -437,6 +453,10 @@
         <enabled>true</enabled>
     </classAccesses>
     <classAccesses>
+        <apexClass>HAM_EncryptionUtil</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
         <apexClass>HAM_FooterNavigationController</apexClass>
         <enabled>true</enabled>
     </classAccesses>
@@ -473,7 +493,19 @@
         <enabled>true</enabled>
     </classAccesses>
     <classAccesses>
+        <apexClass>HamJEDIInvolvementController</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>HamJEDIInvolvementControllerTest</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
         <apexClass>HamMyProspectController</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>ItineraryMapFinder</apexClass>
         <enabled>true</enabled>
     </classAccesses>
     <classAccesses>
@@ -501,11 +533,31 @@
         <enabled>true</enabled>
     </classAccesses>
     <classAccesses>
+        <apexClass>MapFinderAbstract</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>MapFinderContext</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
         <apexClass>MapFinderController</apexClass>
         <enabled>true</enabled>
     </classAccesses>
     <classAccesses>
         <apexClass>MapFinderControllerTest</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>MapFinderGeneric</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>MapFinderInterface</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>MapFinderItinerary</apexClass>
         <enabled>true</enabled>
     </classAccesses>
     <classAccesses>
@@ -8076,6 +8128,11 @@
     <fieldPermissions>
         <editable>false</editable>
         <field>Map_Finder_Instance__mdt.Campaign_Member_Id_Field__c</field>
+        <readable>false</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Map_Finder_Instance__mdt.Finder_Class__c</field>
         <readable>false</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -16845,6 +16902,11 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
+        <field>ucinn_ascendv2__Involvement_Value__c.HAM_Category__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
         <field>ucinn_ascendv2__Involvement_Value__c.ucinn_ascendv2__Type__c</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -19415,6 +19477,14 @@
     </flowAccesses>
     <flowAccesses>
         <enabled>false</enabled>
+        <flow>HAM_Send_Sprint_Newsletter</flow>
+    </flowAccesses>
+    <flowAccesses>
+        <enabled>false</enabled>
+        <flow>HAM_Sprint_Newsletter</flow>
+    </flowAccesses>
+    <flowAccesses>
+        <enabled>false</enabled>
         <flow>HAM_Update_Birth_Name_Field_on_Constituent</flow>
     </flowAccesses>
     <flowAccesses>
@@ -20405,6 +20475,10 @@
     <layoutAssignments>
         <layout>ucinn_ascendv2__Involvement__c-Committee</layout>
         <recordType>ucinn_ascendv2__Involvement__c.Committee</recordType>
+    </layoutAssignments>
+    <layoutAssignments>
+        <layout>ucinn_ascendv2__Involvement__c-Volunteer Engagement</layout>
+        <recordType>ucinn_ascendv2__Involvement__c.Volunteer_Engagement</recordType>
     </layoutAssignments>
     <layoutAssignments>
         <layout>ucinn_ascendv2__Payment__c-ucinn_ascendv2__Payment Layout</layout>
@@ -22294,6 +22368,11 @@
     <recordTypeVisibilities>
         <default>false</default>
         <recordType>ucinn_ascendv2__Involvement__c.Committee</recordType>
+        <visible>true</visible>
+    </recordTypeVisibilities>
+    <recordTypeVisibilities>
+        <default>false</default>
+        <recordType>ucinn_ascendv2__Involvement__c.Volunteer_Engagement</recordType>
         <visible>true</visible>
     </recordTypeVisibilities>
     <recordTypeVisibilities>

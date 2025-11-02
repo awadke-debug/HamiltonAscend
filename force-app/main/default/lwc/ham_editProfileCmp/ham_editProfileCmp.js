@@ -27,6 +27,8 @@ import country from '@salesforce/label/c.ham_EditProfCountry';
 import postalCode from '@salesforce/label/c.ham_EditProfPostalCode';
 import cancel from '@salesforce/label/c.ham_Cancel';
 import save from '@salesforce/label/c.ham_Save';
+import phoneErrorLabel from '@salesforce/label/c.ham_EditProfPhoneErrorLabel';
+import emailErrorLabel from '@salesforce/label/c.ham_EditProfEmailErrorLabel';
 
 /**
  * @description A component to display and allow editing of a user's personal and professional information.
@@ -68,7 +70,9 @@ export default class Ham_editProfileCmp extends LightningElement {
         country: country,
         postalcode: postalCode,
         cancel: cancel,
-        save: save
+        save: save,
+        phoneErrorLabel: phoneErrorLabel,
+        emailErrorLabel: emailErrorLabel
     }
 
     /**
@@ -97,7 +101,6 @@ export default class Ham_editProfileCmp extends LightningElement {
             this.constId = data.constId; // Setting Contact Id
             this.error = undefined; 
             this.isLoading = false;
-            
         
         } else if (error) {
             console.error('Error fetching contact data:', error);
@@ -139,6 +142,14 @@ export default class Ham_editProfileCmp extends LightningElement {
             this.personalUpdatedInfo = { ...this.personalUpdatedInfo,
                 [currentField]: currentValue
             };
+
+            //Updating the phoneNo and email properties so that the made chage is visible on UI for these two fields
+            if(this.personalUpdatedInfo.phoneNo){
+                this.personalInfo.phoneNo = this.personalUpdatedInfo.phoneNo; 
+            }
+            if(this.personalUpdatedInfo.email){
+                this.personalInfo.email = this.personalUpdatedInfo.email;
+            }
         }
     }
 
@@ -153,7 +164,7 @@ export default class Ham_editProfileCmp extends LightningElement {
                 personalInfoResp: JSON.stringify(this.personalUpdatedInfo),
                 currentUserContactId: this.constId, // Pass Contact Id
                 contentDocId: this.updatedContentDocId // Pass Content Document Id
-            }).then(response => {
+            }).then(response => { 
                     if(response === 'Success') { 
                         this.dispatchEvent(
                             new ShowToastEvent({
@@ -163,7 +174,7 @@ export default class Ham_editProfileCmp extends LightningElement {
                                 mode: 'dismissable'
                             })
                         );
-                        this.dispatchEvent(new CustomEvent('close'));
+                        this.dispatchEvent(new CustomEvent('close'));                        
                         // Refresh the wired data
                         return refreshApex(this.wiredPersonalInfo)
                             .then(() => {
@@ -173,10 +184,19 @@ export default class Ham_editProfileCmp extends LightningElement {
                             });
                     }
                     else {
+                        //Custom error messages for phoneNo and email fields
+                        let errorMessage;  
+                        if(response.includes('ucinn_ascendv2__Phone_Number__c')){
+                            errorMessage = this.personalUpdatedInfo.phoneNo + ' ' + this.label.phoneErrorLabel;
+                        }else if(response.includes('ucinn_ascendv2__Email_Address__c')){
+                            errorMessage = this.personalUpdatedInfo.email + ' ' + this.label.emailErrorLabel;
+                        }else{
+                            errorMessage = 'An error occurred while saving your information. '+response;
+                        }
                         this.dispatchEvent(
                             new ShowToastEvent({
                                 title: 'Error',
-                                message: 'An error occurred while saving your information. ' + response,
+                                message: errorMessage,
                                 variant: 'error',
                                 mode: 'sticky'
                             })

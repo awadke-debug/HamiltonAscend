@@ -79,6 +79,18 @@ public with sharing class DigitalBriefingPdfControllerTest {
     }
 
     @IsTest
+    static void testGeneratePdf(){
+        Contact contact = [SELECT Id FROM Contact WHERE LastName = 'Test' LIMIT 1];
+        String contactId = contact.Id;
+
+        Test.startTest();
+        DigitalBriefingPdfController.generatePdf(contactId);
+
+        Test.stopTest();
+        
+    }
+
+    @IsTest
     static void testSaveBriefing(){
         ucinn_ascendv2__Briefing__c briefing = new ucinn_ascendv2__Briefing__c();
         briefing.HAM_Briefing_Details__c = '<p>Test</p>';

@@ -1,5 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Workflow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <alerts>
+        <fullName>AIS_Sprint_Newsletter</fullName>
+        <description>AIS Sprint Newsletter</description>
+        <protected>false</protected>
+        <recipients>
+            <recipient>awadke@hamilton.edu.ham.prod</recipient>
+            <type>user</type>
+        </recipients>
+        <senderAddress>hamily@hamilton.edu</senderAddress>
+        <senderType>OrgWideEmailAddress</senderType>
+        <template>ucinn_ascendv2__Prospect_Management_Emails/NEWSprintNewsletter</template>
+    </alerts>
     <fieldUpdates>
         <fullName>Mogli_SMS__UpdateMogliNumber</fullName>
         <description>Update Mogli Number based on value in Mobile field (remove all non-numerical values)</description>
