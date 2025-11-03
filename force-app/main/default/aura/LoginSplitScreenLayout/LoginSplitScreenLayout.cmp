@@ -1,0 +1,15 @@
+<aura:component implements="forceCommunity:layout" access="global">
+    <aura:attribute name="column1" type="Aura.Component[]"/>
+    <aura:attribute name="column2" type="Aura.Component[]"/>
+
+    <div class="twocol">
+      <lightning:layout multipleRows="true" pullToBoundary="small" horizontalAlign="spread">
+          <lightning:layoutItem size="12" smallDeviceSize="12" mediumDeviceSize="6" largeDeviceSize="6" padding="around-small">
+              <div class="left"><div class="form-wrapper">{!v.column1}</div></div>
+          </lightning:layoutItem>
+          <lightning:layoutItem size="12" smallDeviceSize="12" mediumDeviceSize="6" largeDeviceSize="6" padding="none">
+              <div class="right">{!v.column2}</div>
+          </lightning:layoutItem>
+      </lightning:layout>
+    </div>
+</aura:component>
