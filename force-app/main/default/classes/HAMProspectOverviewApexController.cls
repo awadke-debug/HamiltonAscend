@@ -1,7 +1,7 @@
 public with sharing class HAMProspectOverviewApexController {
     @AuraEnabled(cacheable=true)
     public static Contact searchProspectDetails(String contactId) {
-        Contact objProspect = [SELECT ID, Name,HAM_Parents__c,HAM_Name_w_Suffix__c,ucinn_ascendv2__Donor_ID__c, ucinn_ascendv2__Contact_Type__c, HAM_Preferred_Chapter_Lookup__c,HAM_Preferred_Chapter_Lookup__r.name, HAM_Profile_Picture_URL__c,HAM_Current_Chapters__c,HAM_Alternate_Chapter__c,HAM_Alternate_Chapter__r.name, HAM_Phone_and_Type__c,HAM_PreferredEmail__c,HAM_LiveAlumni_Employer__c,HAM_LiveAlumni_Job_Title__c,ucinn_ascendv2__Preferred_Address_Formula__c,ucinn_ascendv2__PRM__c,ucinn_ascendv2__PRM__r.Name, ucinn_ascendv2__Preferred_Spouse__c,ucinn_ascendv2__Preferred_Spouse__r.name, HAM_Children__c,ucinn_ascendv2__Gender__c,Birthdate FROM Contact WHERE Id =:contactId];
+        Contact objProspect = [SELECT ID, Name,HAM_Name_w_Suffix__c,ucinn_ascendv2__Donor_ID__c, ucinn_ascendv2__Contact_Type__c, HAM_Preferred_Chapter_Lookup__c,HAM_Preferred_Chapter_Lookup__r.name, HAM_Profile_Picture_URL__c,HAM_Current_Chapters__c,HAM_Alternate_Chapter__c,HAM_Alternate_Chapter__r.name, HAM_Phone_and_Type__c,HAM_PreferredEmail__c,HAM_LiveAlumni_Employer__c,HAM_LiveAlumni_Job_Title__c,ucinn_ascendv2__Preferred_Address_Formula__c,ucinn_ascendv2__PRM__c,ucinn_ascendv2__PRM__r.Name, ucinn_ascendv2__Preferred_Spouse__c,ucinn_ascendv2__Preferred_Spouse__r.name,ucinn_ascendv2__Gender__c,Birthdate FROM Contact WHERE Id =:contactId];
         system.debug('recentlyViewedRecords-----'+objProspect);
         return objProspect;
     }
