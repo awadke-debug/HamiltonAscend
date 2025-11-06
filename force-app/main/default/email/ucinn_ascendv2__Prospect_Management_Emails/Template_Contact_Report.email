@@ -1,0 +1,172 @@
+<messaging:emailTemplate subject="Contact Report Summary" 
+    recipientType="User" 
+    relatedToType="ucinn_ascendv2__Contact_Report__c">
+
+    <messaging:htmlEmailBody >
+      
+        
+       
+          <head>
+            <meta name="viewport" content="width=device-width, initial-scale=1" />
+            <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+            <style type="text/css">
+              ReadMsgBody{ width: 100%;}
+              .ExternalClass {width: 100%;}
+              .ExternalClass, .ExternalClass p, .ExternalClass span, .ExternalClass font, .ExternalClass td, .ExternalClass div {line-height: 100%;}
+              body {-webkit-text-size-adjust:100%; -ms-text-size-adjust:100%;margin:0 !important;}
+              p { margin: 1em 0;}
+              table td { border-collapse: collapse;}
+              img {outline:0;}
+              a img {border:none;}
+              @-ms-viewport{ width: device-width;}
+            </style>
+            <style type="text/css">
+              @media only screen and (max-width: 480px) {
+                .container {width: 100% !important;}
+                .footer { width:auto !important; margin-left:0; }
+                .mobile-hidden { display:none !important; }
+                .logo { display:block !important; padding:0 !important; }
+                img { max-width:100% !important; height:auto !important; max-height:auto !important;}
+                .header img{max-width:100% !important;height:auto !important; max-height:auto !important;}
+                .photo img { width:100% !important; max-width:100% !important; height:auto !important;}
+                .drop { display:block !important; width: 100% !important; float:left; clear:both;}
+                .footerlogo { display:block !important; width: 100% !important; padding-top:15px; float:left; clear:both;}
+                .nav4, .nav5, .nav6 { display: none !important; }
+                .tableBlock {width:100% !important;}
+                .responsive-td {width:100% !important; display:block !important; padding:0 !important; }
+                .fluid, .fluid-centered {
+                  width: 100% !important;
+                  max-width: 100% !important;
+                  height: auto !important;
+                  margin-left: auto !important;
+                  margin-right: auto !important;
+                }
+                body, .tb_properties{font-family: Tahoma, Geneva, sans-serif !important; font-size: 14px !important; color: #4A4A4A !important; line-height: 1.5 !important; padding: 0px !important; }
+              }
+              @media only screen and (max-width: 640px) {
+                .container { width:100% !important; }
+                .mobile-hidden { display:none !important; }
+                .logo { display:block !important; padding:0 !important; }
+                .photo img { width:100% !important; height:auto !important;}
+                .nav5, .nav6 { display: none !important;}
+                .fluid, .fluid-centered {
+                  width: 100% !important;
+                  max-width: 100% !important;
+                  height: auto !important;
+                  margin-left: auto !important;
+                  margin-right: auto !important;
+                }
+              }
+            </style>
+          </head>
+
+          <body bgcolor="#FFFFFF" text="#000000" 
+            style="-webkit-text-size-adjust:none;background-color:#FFFFFF;font-family:Tahoma, Geneva, sans-serif;line-height:150%;font-size:14px;color:#4A4A4A;padding:0px;">
+
+            <table width="100%" border="0" cellpadding="0" cellspacing="0" align="center">
+              <tr>
+                <td align="center">
+                  <table cellspacing="0" cellpadding="0" border="0" width="600" class="container" align="center">
+                    <tr>
+                      <td>
+                        <table style="background-color:#FFFFFF;font-size:14px;font-family:Tahoma, Geneva, sans-serif;line-height:150%;color:#4A4A4A;" width="100%">
+                          <tr>
+                            <td align="center" valign="top">
+                              <table align="left" border="0" cellpadding="0" cellspacing="0" width="100%">
+                                <tr>
+                                  <td style="padding:0px;">
+                                    <table width="100%">
+                                      <tr>
+                                        <td align="center" valign="top">
+                                          <img src="https://hamiltoncollege.my.salesforce.com/file-asset-public/Hamiltonbannerjpg?oid=00D3t000005Ydd0" alt="Hamilton College" width="600" style="display:block;width:600px;height:auto;border:0px;"/> 
+                                          <!--
+                                          <img src="https://image.contact.hamilton.edu/lib/fe3611737164057c721573/m/1/a827b6da-0d39-4f24-bcb8-fff2f2458ece.jpg" alt="Hamilton College" width="600" style="display:block;width:100%;border:0px;"/> -->
+                                          <h2 style="color:#002F86;font-family:Tahoma, Geneva, sans-serif;font-size:22px;font-weight:bold;line-height:130%;">
+                                            Primary Prospect: {!relatedTo.ucinn_ascendv2__Contact__r.Name} {!relatedTo.HAM_Institutional_Suffix__c} {!relatedTo.ucinn_ascendv2__Account__r.Name}
+                                          </h2>
+
+                                          <table cellpadding="0" cellspacing="0" bgcolor="#F8F8FA" style="border:1px solid #efefef;line-height:135%;box-shadow:-5px 16px 72px -8px rgba(143,143,143,1);" align="center" width="80%">
+                                            <tr>
+                                              <td align="center" valign="top">
+                                                <table width="640">
+                                                  <tr>
+                                                    <td colspan="2" align="center">
+                                                      <img src="{!IF(ISBLANK(relatedTo.HAM_ProfilePictureURL__c), 'https://hamiltoncollege.my.salesforce.com/file-asset-public/Hamiltonlogojpg?oid=00D3t000005Ydd0', relatedTo.HAM_ProfilePictureURL__c)}" alt="Profile Picture" width="100" height="100" style="margin-top:30px;"/>
+                                                    </td>
+                                                  </tr>
+
+                                                  <tr>
+                                                    <td align="center">
+                                                      <p style="font-size:16px;margin-top:30px;">Date of Contact: {!relatedTo.ucinn_ascendv2__Date__c}</p>
+                                                    </td>
+                                                    <td align="center">
+                                                      <p style="font-size:16px;margin-top:30px;">Method: {!relatedTo.ucinn_ascendv2__Contact_Method__c}</p>
+                                                    </td>
+                                                  </tr>
+
+                                                  <tr>
+                                                    <td align="center">
+                                                      <p style="font-size:16px;margin-top:30px;">Wealth Rating: {!relatedTo.HAM_Wealth_Rating_at_time_of_Meeting__c}</p>
+                                                    </td>
+                                                    <td align="center">
+                                                      <p style="font-size:16px;margin-top:30px;">Contact Report Submitter: {!relatedTo.CreatedBy.Name}</p>
+                                                    </td>
+                                                  </tr>
+
+                                                  <tr>
+                                                    <td align="center">
+                                                      <p style="font-size:16px;margin-top:30px;">Assigned PRM: {!relatedTo.HAM_PRM_at_Time_of_Meeting__c}</p>
+                                                    </td>
+                                                    <td align="center">
+                                                      <p style="font-size:16px;margin-top:30px;">Type: {!relatedTo.HAM_Type__c}</p>
+                                                    </td>
+                                                  </tr>
+
+                                                </table>
+                                              </td>
+                                            </tr>
+                                          </table>
+
+                                          <p><b>Meeting Details:</b></p>
+                                          <p><b>Summary:</b> {!relatedTo.ucinn_ascendv2__Description__c}</p>
+                                          <p><b>Key Points:</b> {!relatedTo.ucinn_ascendv2__Contact_Report_Body__c}</p>
+                                        </td>
+                                      </tr>
+                                    </table>
+
+                                    <!-- Footer -->
+                                    <table width="100%" style="background-color:#002f86;padding:15px 30px 30px 30px;color:white;font-family:Georgia,serif;font-size:14px;">
+                                      <tr>
+                                        <td style="text-align:left;">
+                                          <strong><a href="https://www.hamilton.edu" style="color:#ffffff;text-decoration:none;">Hamilton College</a></strong><br/>
+                                          198 College Hill Road, Clinton, NY 13323
+                                        </td>
+                                        <td style="text-align:left;">
+                                          <a href="https://www.facebook.com/HamiltonCollege"><img src="https://image.contact.hamilton.edu/lib/fe2d11737164047b701374/m/1/66c5ac45-1d93-4e36-a39e-6d9426b5a50e.png" width="25" style="padding:0 4px;"/></a>
+                                          <a href="https://twitter.com/hamiltoncollege"><img src="https://image.contact.hamilton.edu/lib/fe2d11737164047b701374/m/1/c88275a7-47ff-452f-a9df-7ef86f42b867.png" width="25" style="padding:0 4px;"/></a>
+                                          <a href="https://www.instagram.com/hamiltoncollege"><img src="https://image.contact.hamilton.edu/lib/fe2d11737164047b701374/m/1/cd4c8728-22d0-4417-8307-dd9c33e6640e.png" width="25" style="padding:0 4px;"/></a>
+                                          <a href="https://www.linkedin.com/school/hamilton-college"><img src="https://image.contact.hamilton.edu/lib/fe2d11737164047b701374/m/1/149cf3ca-4675-49d7-b4c7-de0b9016223b.png" width="25" style="padding:0 4px;"/></a>
+                                          <a href="https://www.youtube.com/channel/UCxwTJV0bVVvwmdaXN_rqgQw"><img src="https://image.contact.hamilton.edu/lib/fe2d11737164047b701374/m/1/3e3862bb-bd98-419b-90b2-10fc8cd34998.png" width="25" style="padding-left:4px;"/></a>
+                                        </td>
+                                      </tr>
+                                    </table>
+
+                               
+
+                                  </td>
+                                </tr>
+                              </table>
+                            </td>
+                          </tr>
+                        </table>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+          </body>
+        
+ 
+    </messaging:htmlEmailBody>
+</messaging:emailTemplate>
