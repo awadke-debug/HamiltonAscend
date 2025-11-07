@@ -46,6 +46,12 @@ export default class Ham_editProfileCmp extends LightningElement {
     updatedContentDocId;
     @api mainResource;
     @track images = {};
+    showCustomToast = false;
+    isMobile = false;
+    toastTitle;
+    toastVariant;
+    toastDuration = 10000;
+    toastMessage;
 
     // Wire property to store the result object for refreshApex
     wiredPersonalInfo;
@@ -83,6 +89,19 @@ export default class Ham_editProfileCmp extends LightningElement {
         this.images = {
             cameraImage: this.mainResource + '/camera.png'
         };
+        // detect mobile screen
+        this.isMobile = window.innerWidth <= 768;
+
+        // Recalculate if screen size changes
+        window.addEventListener('resize', this.handleResize.bind(this));
+    }
+
+    disconnectedCallback() {
+        window.removeEventListener('resize', this.handleResize.bind(this));
+    }
+
+    handleResize() {
+        this.isMobile = window.innerWidth <= 768;
     }
 
     /**
@@ -187,20 +206,28 @@ export default class Ham_editProfileCmp extends LightningElement {
                         //Custom error messages for phoneNo and email fields
                         let errorMessage;  
                         if(response.includes('ucinn_ascendv2__Phone_Number__c')){
-                            errorMessage = this.personalUpdatedInfo.phoneNo + ' ' + this.label.phoneErrorLabel;
+                            errorMessage = this.personalInfo.phoneNo+' '+this.label.phoneErrorLabel;
                         }else if(response.includes('ucinn_ascendv2__Email_Address__c')){
-                            errorMessage = this.personalUpdatedInfo.email + ' ' + this.label.emailErrorLabel;
+                            errorMessage = this.personalInfo.email+' '+this.label.emailErrorLabel;
                         }else{
                             errorMessage = 'An error occurred while saving your information. '+response;
                         }
-                        this.dispatchEvent(
-                            new ShowToastEvent({
-                                title: 'Error',
-                                message: errorMessage,
-                                variant: 'error',
-                                mode: 'sticky'
-                            })
-                        );
+                        if(!this.isMobile){
+                            this.dispatchEvent(
+                                new ShowToastEvent({
+                                    title: 'Error',
+                                    message: errorMessage,
+                                    variant: 'error',
+                                    mode: 'dismissible',
+                                    duration: 10000
+                                })
+                            );
+                        }else{
+                            this.toastTitle = 'Error';
+                            this.toastMessage = errorMessage;
+                            this.toastVariant = 'error';
+                            this.showCustomToast = true;
+                        }
                     }
                 })
                 .catch(error => {
@@ -219,6 +246,10 @@ export default class Ham_editProfileCmp extends LightningElement {
                 this.isLoading = false;
             });
         });
+    }
+
+    handleErrorClose(){
+        this.showCustomToast = false;
     }
 
     /**

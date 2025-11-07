@@ -1,0 +1,12 @@
+<template>
+    <template if:true={visible}>
+        <div class={toastClass}>
+            <lightning-icon icon-name='utility:close' alternative-text='close' size='small' title='close' onclick={handleErrorClose}
+            class="close-icon"></lightning-icon>
+            <div class="toast-content">
+                <strong>{title}</strong>
+                <p>{message}</p>
+            </div>
+        </div>
+    </template>
+</template>

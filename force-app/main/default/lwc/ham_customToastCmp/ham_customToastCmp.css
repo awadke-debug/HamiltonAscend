@@ -1,0 +1,56 @@
+.toast {
+    position: fixed !important;
+    top: 1rem;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+    display: flex;
+    justify-content: center;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    color: white;
+    padding: 1.25rem 1rem;
+    z-index: 99999;
+    width: 400px;           /* fixed max width for desktop */
+    max-width: 90%;         /* responsive for smaller screens */
+    transition: all 0.3s ease;
+    text-align: left;
+    position: relative;
+    word-wrap: break-word;  /* ensures long words break */
+    overflow-wrap: break-word; /* extra safety */
+    white-space: normal;    /* text can wrap to next line */
+}
+
+/* Toast content fills container */
+.toast-content {
+    width: 100%;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+    .toast {
+        width: 90%;
+        font-size: 0.85rem;
+    }
+}
+
+/* Variants */
+.toast.success { background-color: #28a745; }
+.toast.error { background-color: #dc3545; }
+.toast.info { background-color: #007bff; }
+
+/* Close icon */
+.close-icon {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    cursor: pointer;
+    --slds-c-icon-color-foreground-default: white;
+}
+
+/* Optional hover */
+.close-icon:hover {
+    transform: scale(1.1);
+}
