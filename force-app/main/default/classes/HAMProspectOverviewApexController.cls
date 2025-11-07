@@ -42,8 +42,38 @@ public with sharing class HAMProspectOverviewApexController {
      @AuraEnabled(cacheable=true)
     public static DegreeWrapper searchProspectEducation(String contactId) {
         DegreeWrapper objWrapper = new DegreeWrapper();
-        
+
         objWrapper.hamiltonDegree = getDegreeRecord(contactId);
+
+        // Concatenate concentrations (majors)
+        List<String> concentrationList = new List<String>();
+        if(objWrapper.hamiltonDegree != null) {
+            if(String.isNotBlank(objWrapper.hamiltonDegree.ucinn_ascendv2__Major_Formula__c)) {
+                concentrationList.add(objWrapper.hamiltonDegree.ucinn_ascendv2__Major_Formula__c);
+            }
+            if(String.isNotBlank(objWrapper.hamiltonDegree.ucinn_ascendv2__Second_Major_Formula__c)) {
+                concentrationList.add(objWrapper.hamiltonDegree.ucinn_ascendv2__Second_Major_Formula__c);
+            }
+            if(String.isNotBlank(objWrapper.hamiltonDegree.Third_Concentration_Formula__c)) {
+                concentrationList.add(objWrapper.hamiltonDegree.Third_Concentration_Formula__c);
+            }
+        }
+        objWrapper.concentrations = String.join(concentrationList, '; ');
+
+        // Concatenate minors 
+        List<String> minorList = new List<String>();
+        if(objWrapper.hamiltonDegree != null) {
+            if(String.isNotBlank(objWrapper.hamiltonDegree.ucinn_ascendv2__Minor_Formula__c)) {
+                minorList.add(objWrapper.hamiltonDegree.ucinn_ascendv2__Minor_Formula__c);
+            }
+            if(String.isNotBlank(objWrapper.hamiltonDegree.Second_Minor__c)) {
+                minorList.add(objWrapper.hamiltonDegree.Second_Minor__c);
+            }
+            if(String.isNotBlank(objWrapper.hamiltonDegree.Third_Minor__c)) {
+                minorList.add(objWrapper.hamiltonDegree.Third_Minor__c);
+            }
+        }
+        objWrapper.minors = String.join(minorList, '; ');
 
         objWrapper = getProspectInvolments(contactId, objWrapper);
 
@@ -62,7 +92,7 @@ public with sharing class HAMProspectOverviewApexController {
         ucinn_ascendv2__Degree_Information__c objHamiltonDegree = new ucinn_ascendv2__Degree_Information__c();
         system.debug('recordTypeId---'+recordTypeId);
         system.debug('contactId---'+contactId);
-        objHamiltonDegree = [SELECT ID, Name,ucinn_ascendv2__Major_Formula__c,ucinn_ascendv2__Minor_Formula__c,ucinn_ascendv2__Conferred_Degree_Year__c,HAM_Reunion_Milestone_Year__c FROM ucinn_ascendv2__Degree_Information__c WHERE ucinn_ascendv2__Contact__c =:contactId AND RecordTypeID =: recordTypeId ORDER BY CreatedDate DESC LIMIT 1];
+        objHamiltonDegree = [SELECT ID, Name,ucinn_ascendv2__Major_Formula__c,ucinn_ascendv2__Second_Major_Formula__c,Third_Concentration_Formula__c,ucinn_ascendv2__Minor_Formula__c,Second_Minor__c,Third_Minor__c,ucinn_ascendv2__Conferred_Degree_Year__c,HAM_Reunion_Milestone_Year__c FROM ucinn_ascendv2__Degree_Information__c WHERE ucinn_ascendv2__Contact__c =:contactId AND RecordTypeID =: recordTypeId ORDER BY CreatedDate DESC LIMIT 1];
         return objHamiltonDegree;
     }
     public static  DegreeWrapper getProspectInvolments(String contactId, DegreeWrapper objWrapper){
@@ -116,6 +146,10 @@ public with sharing class HAMProspectOverviewApexController {
         public String societies;
         @AuraEnabled
         public List<ucinn_ascendv2__Designation_Beneficiary__c> awards;
+        @AuraEnabled
+        public String concentrations;
+        @AuraEnabled
+        public String minors;
     }
 
     /**
