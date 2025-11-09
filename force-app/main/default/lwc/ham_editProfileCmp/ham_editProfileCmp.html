@@ -133,4 +133,13 @@
             </div>
         </template>
     </div>
+    <template lwc:if={showCustomToast}>
+        <c-ham_custom-toast-cmp
+            title={toastTitle}
+            message={toastMessage}
+            variant={toastVariant}
+            duration={toastDuration}
+            onclose={handleErrorClose}>
+        </c-ham_custom-toast-cmp>
+    </template>
 </template>

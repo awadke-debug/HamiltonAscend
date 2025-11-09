@@ -14,7 +14,7 @@ public with sharing abstract class MapFinderAbstract {
         fieldSelectClause.validateOutputfields(outFlds);
         filters.addAll((List<String>)fieldSelectClause.outputFields);
 
-        return String.format('SELECT {0} FROM {1} WHERE {2} AND ', new List<Object>{ String.join(filters, ', '), mfi.Object__c, mfi.Base_Filter__c });
+        return String.format('SELECT {0} FROM {1} WHERE {2}', new List<Object>{ String.join(filters, ', '), mfi.Object__c, String.isNotBlank(mfi.Base_Filter__c) ? mfi.Base_Filter__c + ' AND ' : '' });
     }
     
     public String buildQueryWithFilter(String q, List<AdvanceFilterParam> advanceFilterParams, Map<String, Object> bindVars, Decimal latitude, Decimal longitude, Integer radius) {
@@ -26,15 +26,18 @@ public with sharing abstract class MapFinderAbstract {
 
         q += String.join(filters, ' AND ');
 
+        Boolean hasGeolocationFilter = false;
         if (radius != null && latitude != null && longitude != null) {
-            q += advanceFilterParams.size() > 0 ? ' AND ' :'';
+            q += filters.size() > 0 ? ' AND ' :'';
             q += String.format('DISTANCE({0}, GEOLOCATION({1}, {2}), \'mi\') < {3}', 
                 new List<Object>{mfi.Geolocation_Field__c, latitude, longitude, radius});
+
+            hasGeolocationFilter = true;
         }
 
         if (this.filterAugmentation == null) return q;
 
-        q += augmentQueryFilter(bindVars);
+        q += (filters.size() > 0 || hasGeolocationFilter) ? ' AND ' + augmentQueryFilter(bindVars) : augmentQueryFilter(bindVars);
 
         return q;
     }

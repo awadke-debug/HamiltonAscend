@@ -53,6 +53,7 @@ export default class MapFinderConstituentTable extends LightningElement {
     filters;
     originPoint;
     radius;
+    filterAugmentation;
 
     @api
     hidePageNav = false;
@@ -115,12 +116,16 @@ export default class MapFinderConstituentTable extends LightningElement {
     }
 
     @api
-    async searchConstituents(filters, originPoint, radius, isNewSearch) {
-            this.filters = filters || this.filters;
-            this.originPoint = originPoint || this.originPoint;
-            this.radius = radius || this.radius;
+    async searchConstituents(filters, originPoint, radius, isNewSearch, filterAugmentation) {
+            this.filters = isNewSearch ? filters : (filters || this.filters);
+            this.originPoint = isNewSearch ? originPoint : (originPoint || this.originPoint);
+            this.radius = isNewSearch ? radius : (radius || this.radius);
+            this.filterAugmentation = isNewSearch ? filterAugmentation : (filterAugmentation || this.filterAugmentation);
     
-            if ((!this.filters || this.filters.length === 0) && (!this.originPoint?.Latitude || !this.originPoint?.Longitude || !this.radius)) {
+            if ((!this.filters || this.filters.length === 0) 
+                    && (!this.originPoint?.Latitude || !this.originPoint?.Longitude || !this.radius)
+                    && (!this.filterAugmentation || Object.keys(this.filterAugmentation).length === 0)) {
+                
                 this.contacts = [];
                 return;
             }
@@ -142,6 +147,7 @@ export default class MapFinderConstituentTable extends LightningElement {
                     latitude: this.originPoint?.Latitude,
                     longitude: this.originPoint?.Longitude,
                     radius: this.radius,
+                    filterAugmentation: this.filterAugmentation ? JSON.stringify(this.filterAugmentation) : '',
                 },
                 offset: this.offset,
                 pageSize: this.pageSize,

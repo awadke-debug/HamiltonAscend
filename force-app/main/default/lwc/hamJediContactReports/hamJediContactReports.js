@@ -13,6 +13,7 @@ export default class HamJediContactReports extends LightningElement {
     // =========================================
     // Data model
     // =========================================
+    @track rawContactReports = [];  // original unfiltered dataset from server
     @track allContactReports = [];  // full, sorted dataset; pagination slices from here
     @track pageReports = [];        // current page rows bound to the datatable
 
@@ -65,6 +66,23 @@ export default class HamJediContactReports extends LightningElement {
     // Modal and Flow
     @track isFlowModalOpen = false;
     @track flowInputVariables = [];
+
+    // =========================================
+    // Advance Filters
+    // =========================================
+    @track showAdvanceFilters = false;
+    @track filterStartDate = '';
+    @track filterEndDate = '';
+    @track filterPublishToListserv = '';
+
+    // Picklist options for Publish to Listserv
+    get publishToListservOptions() {
+        return [
+            { label: '--None--', value: '' },
+            { label: 'Yes', value: 'Yes' },
+            { label: 'No', value: 'No' }
+        ];
+    }
 
     // =========================================
     // Datatable columns (sorting supported)
@@ -143,11 +161,15 @@ export default class HamJediContactReports extends LightningElement {
                 const rows = result || [];
 
                 // Add recordLink for the Name URL column and flatten LastModifiedBy.Name
-                this.allContactReports = rows.map(r => ({
+                const processedRows = rows.map(r => ({
                     ...r,
                     recordLink: `/lightning/r/${r.Id}/view`,
                     LastModifiedByName: r.LastModifiedBy?.Name || ''
                 }));
+
+                // Store original unfiltered data
+                this.rawContactReports = [...processedRows];
+                this.allContactReports = [...processedRows];
 
                 this.totalRecords = this.allContactReports.length;
 
@@ -158,11 +180,12 @@ export default class HamJediContactReports extends LightningElement {
                 this.pageNumber = 1;
                 this.derivePage();
 
-                // Ensure the Contact Reports section is open
-                this.activeReportSection = 'Contact Reports';
+                // Open accordion if records exist, close if no records
+                this.activeReportSection = this.totalRecords > 0 ? 'Contact Reports' : '';
             })
             .catch(error => {
                 console.error('Error fetching Contact Reports:', error);
+                this.rawContactReports = [];
                 this.allContactReports = [];
                 this.pageReports = [];
                 this.totalRecords = 0;
@@ -238,6 +261,111 @@ export default class HamJediContactReports extends LightningElement {
         if (event.detail.status === 'FINISHED' || event.detail.status === 'FINISHED_SCREEN') {
             this.closeFlowModal();
             this.fetchContactReports(); // refresh after flow
+        }
+    }
+
+    // =========================================
+    // Advance Filter Methods
+    // =========================================
+    toggleAdvanceFilters() {
+        this.showAdvanceFilters = !this.showAdvanceFilters;
+    }
+
+    handleStartDateChange(event) {
+        this.filterStartDate = event.target.value;
+    }
+
+    handleEndDateChange(event) {
+        this.filterEndDate = event.target.value;
+    }
+
+    handlePublishToListservChange(event) {
+        this.filterPublishToListserv = event.detail.value;
+    }
+
+    handleSearchFilters() {
+        // Start with original unfiltered data
+        let filteredReports = [...this.rawContactReports];
+
+        // Apply Date Filters
+        if (this.filterStartDate || this.filterEndDate) {
+            filteredReports = filteredReports.filter(report => {
+                const reportDate = report.ucinn_ascendv2__Date__c;
+                if (!reportDate) return false;
+
+                // Normalize report date to date-only (strip time) for proper comparison
+                const reportDateOnly = new Date(reportDate);
+                reportDateOnly.setHours(0, 0, 0, 0);
+                const reportDateStr = reportDateOnly.toISOString().split('T')[0];
+
+                // Scenario 1: Only Start Date → from start date to today (inclusive)
+                if (this.filterStartDate && !this.filterEndDate) {
+                    const startDateObj = new Date(this.filterStartDate);
+                    const startDateStr = startDateObj.toISOString().split('T')[0];
+                    const today = new Date();
+                    const todayStr = today.toISOString().split('T')[0];
+                    return reportDateStr >= startDateStr && reportDateStr <= todayStr;
+                }
+
+                // Scenario 2: Only End Date → from beginning to end date (inclusive)
+                if (!this.filterStartDate && this.filterEndDate) {
+                    const endDateObj = new Date(this.filterEndDate);
+                    const endDateStr = endDateObj.toISOString().split('T')[0];
+                    return reportDateStr <= endDateStr;
+                }
+
+                // Scenario 3: Both Start and End Date → specific range (both inclusive)
+                if (this.filterStartDate && this.filterEndDate) {
+                    const startDateObj = new Date(this.filterStartDate);
+                    const startDateStr = startDateObj.toISOString().split('T')[0];
+                    const endDateObj = new Date(this.filterEndDate);
+                    const endDateStr = endDateObj.toISOString().split('T')[0];
+                    return reportDateStr >= startDateStr && reportDateStr <= endDateStr;
+                }
+
+                return true;
+            });
+        }
+
+        // Apply Publish to Listserv Filter
+        if (this.filterPublishToListserv) {
+            filteredReports = filteredReports.filter(report => {
+                return report.HAM_Publish_to_Listserv__c === this.filterPublishToListserv;
+            });
+        }
+
+        // Update allContactReports with filtered data
+        this.allContactReports = [...filteredReports];
+        this.totalRecords = this.allContactReports.length;
+
+        // Re-apply current sort
+        this.sortContactReportData(this.sortedBy, this.sortedDirection);
+
+        // Reset to page 1 and update display
+        this.pageNumber = 1;
+        this.derivePage();
+    }
+
+    handleClearFilters() {
+        // Clear filter values
+        this.filterStartDate = '';
+        this.filterEndDate = '';
+        this.filterPublishToListserv = '';
+
+        // Reset to original unfiltered data
+        this.allContactReports = [...this.rawContactReports];
+        this.totalRecords = this.allContactReports.length;
+
+        // Re-apply current sort
+        this.sortContactReportData(this.sortedBy, this.sortedDirection);
+
+        // Reset to page 1 and update display
+        this.pageNumber = 1;
+        this.derivePage();
+
+        // Open accordion if records exist after clearing filters
+        if (this.totalRecords > 0) {
+            this.activeReportSection = 'Contact Reports';
         }
     }
 }

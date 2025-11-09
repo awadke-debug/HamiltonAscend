@@ -374,6 +374,31 @@ public with sharing class HamItineraryController {
         return options;
     }
 
+    @AuraEnabled(cacheable=true)
+    public static List<Map<String, String>> getInvolvementOptions(List<String> categories) {
+        List<Map<String, String>> options = new List<Map<String, String>>{
+            new Map<String, String>{
+                'value' => null,
+                'label' => '--None--'
+            }
+        };
+
+        for (ucinn_ascendv2__Involvement_Value__c involvementVal: [SELECT Id, HAM_Category__c, ucinn_ascendv2__Code__c , ucinn_ascendv2__Involvement_Description__c 
+            FROM ucinn_ascendv2__Involvement_Value__c 
+            WHERE ucinn_ascendv2__Type__c = 'Student Involvement' 
+            AND HAM_Category__c IN :categories ORDER BY ucinn_ascendv2__Involvement_Description__c]) {
+            options.add(
+                new Map<String, String>{
+                    'value' => involvementVal.Id,
+                    'label' => involvementVal.ucinn_ascendv2__Involvement_Description__c
+                }
+            );
+
+        }
+
+        return options;
+    }
+    
     private static List<String> filterEmails(String commaDelimitedEmails) {
         List<String> emails = HamEmailUtil.trimCommaDelimitedEmails(commaDelimitedEmails);
         HamEmailUtil.removeEmailConstituents(emails);

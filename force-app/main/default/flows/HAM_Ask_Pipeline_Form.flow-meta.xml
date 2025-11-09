@@ -26,6 +26,14 @@
         </value>
     </choices>
     <choices>
+        <name>Completed</name>
+        <choiceText>Completed</choiceText>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>Completed</stringValue>
+        </value>
+    </choices>
+    <choices>
         <name>Conversation</name>
         <choiceText>Conversation</choiceText>
         <dataType>String</dataType>
@@ -39,6 +47,14 @@
         <dataType>String</dataType>
         <value>
             <stringValue>Declined</stringValue>
+        </value>
+    </choices>
+    <choices>
+        <name>Open</name>
+        <choiceText>Open</choiceText>
+        <dataType>String</dataType>
+        <value>
+            <stringValue>Open</stringValue>
         </value>
     </choices>
     <choices>
@@ -60,10 +76,29 @@
     <constants>
         <name>OpportunityRecordType_Proposal</name>
         <dataType>String</dataType>
-        <value>
-            <stringValue>0123t000000JeMpAAK</stringValue>
-        </value>
     </constants>
+    <decisions>
+        <name>Create_task</name>
+        <label>Create task</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>Do not Create Task</defaultConnectorLabel>
+        <rules>
+            <name>Yes_Create_Task</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>task_create</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Task_Creation</targetReference>
+            </connector>
+            <label>Yes Create Task</label>
+        </rules>
+    </decisions>
     <description>Flow on Account object (Organization) to capture details for Ask Pipeline</description>
     <environments>Default</environments>
     <interviewLabel>HAM Ask Pipeline Form {!$Flow.CurrentDateTime}</interviewLabel>
@@ -92,6 +127,9 @@
         <label>Create_Opportunity</label>
         <locationX>0</locationX>
         <locationY>0</locationY>
+        <connector>
+            <targetReference>Create_task</targetReference>
+        </connector>
         <inputAssignments>
             <field>AccountId</field>
             <value>
@@ -131,7 +169,7 @@
         <inputAssignments>
             <field>RecordTypeId</field>
             <value>
-                <elementReference>OpportunityRecordType_Proposal</elementReference>
+                <elementReference>Get_Opp_rec_ID.Id</elementReference>
             </value>
         </inputAssignments>
         <inputAssignments>
@@ -155,6 +193,78 @@
         <object>Opportunity</object>
         <storeOutputAutomatically>true</storeOutputAutomatically>
     </recordCreates>
+    <recordCreates>
+        <name>Create_Task_record</name>
+        <label>Create Task record</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <inputAssignments>
+            <field>ActivityDate</field>
+            <value>
+                <elementReference>Due_date</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>OwnerId</field>
+            <value>
+                <elementReference>Assigned_To.recordId</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Status</field>
+            <value>
+                <elementReference>Status_task</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Subject</field>
+            <value>
+                <elementReference>Subject</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>WhatId</field>
+            <value>
+                <elementReference>Create_Opportunity</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>ucinn_ascendv2__Comments__c</field>
+            <value>
+                <elementReference>Comments</elementReference>
+            </value>
+        </inputAssignments>
+        <object>Task</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordCreates>
+    <recordLookups>
+        <name>Get_Opp_rec_ID</name>
+        <label>Get Opp rec ID</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Screen_1</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>SobjectType</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Opportunity</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>DeveloperName</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>Proposal</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>RecordType</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
     <recordLookups>
         <name>Get_Triggering_Organization_Account</name>
         <label>Get Triggering Organization/Account</label>
@@ -162,7 +272,7 @@
         <locationY>0</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
-            <targetReference>Screen_1</targetReference>
+            <targetReference>Get_Opp_rec_ID</targetReference>
         </connector>
         <filterLogic>and</filterLogic>
         <filters>
@@ -187,11 +297,6 @@
         <connector>
             <targetReference>Create_Opportunity</targetReference>
         </connector>
-        <fields>
-            <name>Test1</name>
-            <fieldText>&lt;p&gt;Triggering Org/Acc ID : {!recordId}&lt;/p&gt;&lt;p&gt;Record ID of Org/Acc : {!Get_Triggering_Organization_Account.RecordTypeId}&lt;/p&gt;</fieldText>
-            <fieldType>DisplayText</fieldType>
-        </fields>
         <fields>
             <name>AccountName</name>
             <extensionName>flowruntime:lookup</extensionName>
@@ -230,7 +335,7 @@
             <fieldText>Opportunity Name</fieldText>
             <fieldType>InputField</fieldType>
             <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
-            <isRequired>false</isRequired>
+            <isRequired>true</isRequired>
         </fields>
         <fields>
             <name>Ask_Amount</name>
@@ -263,7 +368,7 @@
             <fieldText>Status</fieldText>
             <fieldType>DropdownBox</fieldType>
             <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
-            <isRequired>false</isRequired>
+            <isRequired>true</isRequired>
         </fields>
         <fields>
             <name>Strategy_Notes</name>
@@ -294,7 +399,105 @@
             <fieldText>Completed Date</fieldText>
             <fieldType>InputField</fieldType>
             <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
+            <isRequired>true</isRequired>
+        </fields>
+        <fields>
+            <name>task_create</name>
+            <dataType>Boolean</dataType>
+            <defaultValue>
+                <booleanValue>false</booleanValue>
+            </defaultValue>
+            <fieldText>Create Task?</fieldText>
+            <fieldType>InputField</fieldType>
+            <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
+            <isRequired>true</isRequired>
+        </fields>
+        <showFooter>true</showFooter>
+        <showHeader>true</showHeader>
+    </screens>
+    <screens>
+        <name>Task_Creation</name>
+        <label>Task_Creation</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <allowBack>true</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>true</allowPause>
+        <connector>
+            <targetReference>Create_Task_record</targetReference>
+        </connector>
+        <fields>
+            <name>Subject</name>
+            <dataType>String</dataType>
+            <fieldText>Subject</fieldText>
+            <fieldType>InputField</fieldType>
+            <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
+            <isRequired>true</isRequired>
+        </fields>
+        <fields>
+            <name>Status_task</name>
+            <choiceReferences>Open</choiceReferences>
+            <choiceReferences>Completed</choiceReferences>
+            <dataType>String</dataType>
+            <defaultSelectedChoiceReference>Open</defaultSelectedChoiceReference>
+            <fieldText>Status</fieldText>
+            <fieldType>DropdownBox</fieldType>
+            <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
+            <isRequired>true</isRequired>
+        </fields>
+        <fields>
+            <name>Due_date</name>
+            <dataType>Date</dataType>
+            <fieldText>Due date</fieldText>
+            <fieldType>InputField</fieldType>
+            <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
             <isRequired>false</isRequired>
+        </fields>
+        <fields>
+            <name>Comments</name>
+            <dataType>String</dataType>
+            <fieldText>Comments</fieldText>
+            <fieldType>InputField</fieldType>
+            <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
+            <isRequired>false</isRequired>
+        </fields>
+        <fields>
+            <name>Assigned_To</name>
+            <extensionName>flowruntime:lookup</extensionName>
+            <fieldType>ComponentInstance</fieldType>
+            <inputParameters>
+                <name>fieldApiName</name>
+                <value>
+                    <stringValue>CreatedById</stringValue>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>label</name>
+                <value>
+                    <stringValue>Assigned To</stringValue>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>objectApiName</name>
+                <value>
+                    <stringValue>Contact</stringValue>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>disabled</name>
+                <value>
+                    <booleanValue>false</booleanValue>
+                </value>
+            </inputParameters>
+            <inputParameters>
+                <name>required</name>
+                <value>
+                    <booleanValue>true</booleanValue>
+                </value>
+            </inputParameters>
+            <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
+            <isRequired>true</isRequired>
+            <storeOutputAutomatically>true</storeOutputAutomatically>
         </fields>
         <showFooter>true</showFooter>
         <showHeader>true</showHeader>
@@ -307,6 +510,16 @@
         </connector>
     </start>
     <status>Active</status>
+    <variables>
+        <name>Proposal</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <value>
+            <stringValue>Proposal</stringValue>
+        </value>
+    </variables>
     <variables>
         <name>recordId</name>
         <dataType>String</dataType>

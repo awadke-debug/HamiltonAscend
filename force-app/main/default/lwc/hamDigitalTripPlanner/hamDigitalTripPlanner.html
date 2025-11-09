@@ -37,12 +37,8 @@
                 <div>
                     <lightning-accordion allow-multiple-sections-open="true" active-section-name="Search Constitiuents" >
                         <lightning-accordion-section name="Search Constitiuents" label="Search Constitiuents">
-                            <c-map-finder 
-                                map-instance="Map_Finder_App" 
-                                show-table="true" 
-                                is-schedulable="false"
-                                show-add-to-campaign-btn="false"
-                                show-export-result-btn="false"
+                            <c-itinerary-map-finder 
+                                map-instance="Itinerary_Planner" 
                                 map-title-property="ucinn_ascendv2__Expanded_Name_Formula__c"
                                 map-title-property-lookup-object="ucinn_ascendv2__Contact__r"
                                 contact-id-field="ucinn_ascendv2__Contact__c"
@@ -50,7 +46,7 @@
                                 hide-page-nav="true"
                                 onsearch={handleMapSearch}
                                 onselectall={handleSelectAll}
-                            ></c-map-finder>
+                            ></c-itinerary-map-finder>
                         </lightning-accordion-section>
                     </lightning-accordion>
                     <lightning-button variant="neutral" label="Next" title="Next" onclick={handleSaveAndNext} class="slds-m-left_x-small"></lightning-button>

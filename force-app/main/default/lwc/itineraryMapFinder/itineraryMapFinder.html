@@ -1,0 +1,165 @@
+<template>
+  <div class="main-container slds-is-relative">
+    <div class="search-container">
+      <div style="align-self: start;">
+        <lightning-input type="text" label="ADDRESS OR ZIP" class="address-zip" value={addressText} onchange={handleAddressChange}></lightning-input>
+      </div>
+      <div style="align-self: start;">
+        <lightning-combobox name="radius" label="RADIUS" options={radius} value={selectedRadius}
+          onchange={handleRadiusChange} placeholder="Select Radius" class="radius-select"></lightning-combobox>
+      </div>
+      
+    </div>
+
+    <div style="display: flex; padding-top: 1rem; padding-bottom: 1 rem;">
+      
+      <lightning-button-stateful label-when-off="Advance Search" label-when-on="Hide Advance Search"
+        style="margin-left: auto;" selected={showAdvanceFilter} onclick={handleToggleFilter}
+        disabled={advanceFilterdisabled} class="slds-var-m-bottom_small" variant="text"></lightning-button-stateful>
+
+        <template lwc:if={showAdvanceFilter}>
+          <lightning-button-menu 
+            alternative-text="Show menu"
+            icon-name="utility:settings"
+            icon-size="medium"
+            variant="border-filled"
+            menu-alignment="auto"
+            class="slds-var-m-left_small"
+            onselect={handleOnFilterMenu}
+          >
+            <lightning-menu-item value="load" label="Load Saved Filter"></lightning-menu-item>
+            <lightning-menu-item value="save" label="Save Filter"></lightning-menu-item>
+            <lightning-menu-item value="delete" label="Delete Saved Filter"></lightning-menu-item>
+            <lightning-menu-item value="clear" label="Clear Advance Filter"></lightning-menu-item>
+          </lightning-button-menu>
+        </template>
+    </div>
+
+    <template lwc:if={showAdvanceFilter}>
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); gap: 1rem; margin-bottom: 1rem;">
+
+        <template for:each={advanceSearchFilters} for:item="fld">
+          <template lwc:if={fld.isMultiRow}>
+            <div key={fld.key} style={fld.style}>
+              <c-map-filter-item field={fld} map-instance={mapInstance}></c-map-filter-item>
+            </div>
+          </template>
+        </template>
+
+        <template for:each={advanceSearchFilters} for:item="fld">
+          <template if:false={fld.isMultiRow}>
+            <div key={fld.key}>
+              <c-map-filter-item field={fld} map-instance={mapInstance}></c-map-filter-item>
+            </div>
+          </template>
+        </template>
+
+        <div class="slds-grid">
+          <lightning-combobox
+            name="sportAssociation"
+            label="Sport Association"
+            placeholder="Select option"
+            options={sportAssociationOptions}
+            onchange={handleInvolvementChange}
+            lwc:ref="sportAssociation"
+            style="flex: 1;"
+
+          ></lightning-combobox>
+          <lightning-helptext style="align-self: center;" class="slds-var-p-left_x-small" 
+            content="This filter is not part of the configurable advance filter, therefore you can't save or delete value of this filter."
+          ></lightning-helptext>
+        </div>
+  
+        <div class="slds-grid">
+          <lightning-combobox
+            name="studentOrganization"
+            label="Student Organization"
+            placeholder="Select option"
+            options={studentOrganizationOptions}
+            onchange={handleInvolvementChange}
+            lwc:ref="studentOrganization"
+            style="flex: 1;"
+          ></lightning-combobox>
+          <lightning-helptext style="align-self: center;" class="slds-var-p-left_x-small"
+            content="This filter is not part of the configurable advance filter, therefore you can't save or delete value of this filter."
+          ></lightning-helptext>
+          </div>
+        </div>
+      </template>
+
+    <div style="display: flex;" class="slds-var-m-bottom_xx-large">
+      <div style="margin-right: auto; flex: 1; display:flex;">
+
+        <lightning-button-stateful
+          label-when-off="Show Map"
+          label-when-on="Hide Map"
+          label-when-hover="Toggle Map"
+          icon-name-when-off="utility:expand"
+          icon-name-when-on="utility:hide"
+          variant="neutral"
+          selected={showMap}
+          onclick={handleToggleMap}
+        ></lightning-button-stateful>
+    
+        <lightning-button-stateful
+            label-when-off="Show pins"
+            label-when-on="Hide pins"
+            icon-name-when-off="utility:checkin"
+            icon-name-when-on="utility:hide"
+            selected={showPins}
+            onclick={handleTogglePin}
+            variant="neutral"
+            class="slds-var-m-left_small slds-var-m-right_small"
+            disabled={disableShowPinsBtn}
+        ></lightning-button-stateful>
+        <lightning-helptext content="Toggle to show/hide pins."></lightning-helptext>
+      </div>
+      <div style="margin-left: auto;" class="slds-var-p-left_medium">
+        <lightning-button class="search-btn slds-var-m-right_small" label="Search" onclick={handleSearch} variant="brand" icon-name="utility:search"></lightning-button>
+        <lightning-button label="Clear" onclick={handleClearSearch} icon-name="utility:refresh" variant="brand-outline"></lightning-button>
+      </div>
+    </div>
+    <template if:true={showMap}>
+      <template lwc:if={zoomLevel}>
+        <lightning-map map-markers={mapMarkers} onmarkerselect={handleMarkerSelect}
+          selected-marker-value={selectedMarkerValue} list-view={listView} zoom-level={zoomLevel} center={center}></lightning-map>
+      </template>
+      <template lwc:else>
+        <lightning-map map-markers={mapMarkers} onmarkerselect={handleMarkerSelect}
+          selected-marker-value={selectedMarkerValue} list-view={listView} center={center}></lightning-map>
+      </template>
+    </template>
+
+      <c-map-finder-constituent-table onsearch={showSpinner}
+        onrowselect={handleRowSelect} table-columns={tableColumns}
+        onpagechange={handlePageChange}
+        map-instance={mapInstance}
+        oncheckrow={handleCheckRow}
+        hide-page-nav={hidePageNav}
+        onselectall={handleSelectAll}
+        show-table="true"
+      >
+      </c-map-finder-constituent-table>
+
+      <template lwc:if={displaySpinner}>
+        <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+      </template>
+      <template lwc:elseif={advanceFiltersLoading}>
+        <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+
+      </template>
+      <template lwc:elseif={markerDescPropsLoading}>
+        <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+        
+      </template>
+      <template lwc:elseif={markerPropertiesLoading}>
+        <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+        
+      </template>
+      <template lwc:elseif={dataTablePropertiesLoading}>
+        <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+      </template>
+    
+  </div>
+
+</template>
