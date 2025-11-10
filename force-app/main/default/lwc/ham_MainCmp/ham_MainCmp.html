@@ -34,7 +34,7 @@
                     </div>
 
                     <div class="slds-m-right_medium">
-                        <a href={label.makeagiftlink} target="_self" class="slds-button slds-button_brand make-a-gift-button">
+                        <a href={label.makeagiftlink} target="_blank" class="slds-button slds-button_brand make-a-gift-button">
                             <span class="icon"><img class="make-gift-img" src={images.makeaGiftImage} alt={label.makeagift}></img></span>
                             <span class="slds-m-left_x-small">{label.makeagift}</span>
                         </a>
@@ -97,9 +97,7 @@
         <template if:true={isMobileMenuOpen}>
             <div class="mobile-menu-overlay">
                 <div class="mobile-menu-content slds-p-around_medium" data-id="menuContent">
-
                     <div style="color: #fff;" class="mobile-menu-content-cross-icon" onclick={toggleMobileMenu}>×</div>
-
                     <a class="mobile-menu-item" onclick={handleMobileMenuItemClick} data-name={label.myimpact}>{label.myimpact}</a>
                     <a class="mobile-menu-item" onclick={handleMobileMenuItemClick} data-name={label.alumnidirectory}>{label.alumnidirectory}</a>
 
