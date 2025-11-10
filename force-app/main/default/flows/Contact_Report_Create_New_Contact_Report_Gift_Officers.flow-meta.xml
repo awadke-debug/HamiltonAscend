@@ -5,8 +5,8 @@
     <assignments>
         <name>Add_record_variables_to_lists</name>
         <label>Add record variables to lists</label>
-        <locationX>468</locationX>
-        <locationY>4712</locationY>
+        <locationX>688</locationX>
+        <locationY>5786</locationY>
         <assignmentItems>
             <assignToReference>EventRelationList</assignToReference>
             <operator>Add</operator>
@@ -19,10 +19,26 @@
         </connector>
     </assignments>
     <assignments>
+        <name>Add_to_attendeeIds</name>
+        <label>Add to attendeeIds</label>
+        <locationX>543</locationX>
+        <locationY>3938</locationY>
+        <assignmentItems>
+            <assignToReference>contactAttendeeIds</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>Loop_Thorough_Donor_Attendees.AttendeeId.recordId</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Set_EventRelation_Fields</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
         <name>Add_to_EventRelation_List</name>
         <label>Add to EventRelation List</label>
-        <locationX>314</locationX>
-        <locationY>3488</locationY>
+        <locationX>543</locationX>
+        <locationY>4154</locationY>
         <assignmentItems>
             <assignToReference>EventRelationList</assignToReference>
             <operator>Add</operator>
@@ -37,7 +53,7 @@
     <assignments>
         <name>Add_to_internalHAMUsers</name>
         <label>Add to internalHAMUsers</label>
-        <locationX>380</locationX>
+        <locationX>349</locationX>
         <locationY>950</locationY>
         <assignmentItems>
             <assignToReference>internalHAMUsers</assignToReference>
@@ -53,8 +69,8 @@
     <assignments>
         <name>Add_to_Task_List</name>
         <label>Add to Task List</label>
-        <locationX>270</locationX>
-        <locationY>5804</locationY>
+        <locationX>305</locationX>
+        <locationY>6962</locationY>
         <assignmentItems>
             <assignToReference>TaskList</assignToReference>
             <operator>Add</operator>
@@ -67,10 +83,42 @@
         </connector>
     </assignments>
     <assignments>
+        <name>Add_to_userIds</name>
+        <label>Add to userIds</label>
+        <locationX>846</locationX>
+        <locationY>2006</locationY>
+        <assignmentItems>
+            <assignToReference>userIds</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>Loop_through_hamAttendees.internalHAMUserLookup.recordId</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Is_primary_officer</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Add_to_userIds_Second</name>
+        <label>Add to userIds</label>
+        <locationX>688</locationX>
+        <locationY>4862</locationY>
+        <assignmentItems>
+            <assignToReference>userIds</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>Loop_Through_Hamilton_Attendees.FundraiserContactReportRelationId.recordId</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Is_Primary_Officer_Meeting</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
         <name>Assign_contactReportId</name>
         <label>Assign contactReportId</label>
-        <locationX>50</locationX>
-        <locationY>6212</locationY>
+        <locationX>217</locationX>
+        <locationY>7454</locationY>
         <assignmentItems>
             <assignToReference>tempCRR.ucinn_ascendv2__Contact_Report__c</assignToReference>
             <operator>Assign</operator>
@@ -85,8 +133,8 @@
     <assignments>
         <name>Assign_ContactReportId_FCRR</name>
         <label>Assign ContactReportId</label>
-        <locationX>138</locationX>
-        <locationY>7844</locationY>
+        <locationX>305</locationX>
+        <locationY>9086</locationY>
         <assignmentItems>
             <assignToReference>Assign_ContactReportId_to_FCRR.ucinn_ascendv2__Contact_Report__c</assignToReference>
             <operator>Assign</operator>
@@ -108,8 +156,8 @@
     <assignments>
         <name>Assign_contactReportId_on_Event</name>
         <label>Assign contactReportId on Event</label>
-        <locationX>50</locationX>
-        <locationY>6620</locationY>
+        <locationX>217</locationX>
+        <locationY>7862</locationY>
         <assignmentItems>
             <assignToReference>tempEvent.HAM_Contact_Report__c</assignToReference>
             <operator>Assign</operator>
@@ -124,8 +172,8 @@
     <assignments>
         <name>Assign_Event_Id</name>
         <label>Assign Event Id</label>
-        <locationX>138</locationX>
-        <locationY>7160</locationY>
+        <locationX>305</locationX>
+        <locationY>8402</locationY>
         <assignmentItems>
             <assignToReference>Add_Event_Id_to_EventRelationList.EventId</assignToReference>
             <operator>Assign</operator>
@@ -147,8 +195,8 @@
     <assignments>
         <name>Assign_EventId</name>
         <label>Assign EventId</label>
-        <locationX>50</locationX>
-        <locationY>6836</locationY>
+        <locationX>217</locationX>
+        <locationY>8078</locationY>
         <assignmentItems>
             <assignToReference>eventId</assignToReference>
             <operator>Assign</operator>
@@ -163,8 +211,8 @@
     <assignments>
         <name>Assign_EventRelation_values</name>
         <label>Assign EventRelation values</label>
-        <locationX>622</locationX>
-        <locationY>2672</locationY>
+        <locationX>846</locationX>
+        <locationY>2930</locationY>
         <assignmentItems>
             <assignToReference>tempEventRelation.RelationId</assignToReference>
             <operator>Assign</operator>
@@ -193,8 +241,8 @@
     <assignments>
         <name>Assign_Fundraiser_Contact_Report_Relation_values</name>
         <label>Assign Fundraiser Contact Report Relation values</label>
-        <locationX>622</locationX>
-        <locationY>2564</locationY>
+        <locationX>846</locationX>
+        <locationY>2822</locationY>
         <assignmentItems>
             <assignToReference>tempFundraiserCRR.ucinn_ascendv2__Contact_Report__c</assignToReference>
             <operator>Assign</operator>
@@ -230,7 +278,7 @@
     <assignments>
         <name>Assign_RecordId</name>
         <label>Assign RecordId</label>
-        <locationX>380</locationX>
+        <locationX>349</locationX>
         <locationY>434</locationY>
         <assignmentItems>
             <assignToReference>$Flow.CurrentRecord</assignToReference>
@@ -246,8 +294,8 @@
     <assignments>
         <name>Assign_RelatedToId</name>
         <label>Assign RelatedToId</label>
-        <locationX>138</locationX>
-        <locationY>8444</locationY>
+        <locationX>305</locationX>
+        <locationY>9686</locationY>
         <assignmentItems>
             <assignToReference>Assign_RelatedToId_on_tasks.WhatId</assignToReference>
             <operator>Assign</operator>
@@ -269,7 +317,7 @@
     <assignments>
         <name>Remove_first</name>
         <label>Remove first</label>
-        <locationX>248</locationX>
+        <locationX>208</locationX>
         <locationY>1682</locationY>
         <assignmentItems>
             <assignToReference>tempFundraiserRelations</assignToReference>
@@ -285,8 +333,8 @@
     <assignments>
         <name>Remove_first_meeting</name>
         <label>Remove first</label>
-        <locationX>94</locationX>
-        <locationY>3788</locationY>
+        <locationX>50</locationX>
+        <locationY>4538</locationY>
         <assignmentItems>
             <assignToReference>tempFundraiserRelations</assignToReference>
             <operator>RemovePosition</operator>
@@ -301,8 +349,8 @@
     <assignments>
         <name>Set_EventRelation_Fields</name>
         <label>Set EventRelation Fields</label>
-        <locationX>314</locationX>
-        <locationY>3380</locationY>
+        <locationX>543</locationX>
+        <locationY>4046</locationY>
         <assignmentItems>
             <assignToReference>EventRelation_Iteration.EventId</assignToReference>
             <operator>Assign</operator>
@@ -331,8 +379,8 @@
     <assignments>
         <name>Set_EventRelation_Fields_HAM</name>
         <label>Set EventRelation Fields</label>
-        <locationX>468</locationX>
-        <locationY>4604</locationY>
+        <locationX>688</locationX>
+        <locationY>5678</locationY>
         <assignmentItems>
             <assignToReference>hamEventRelation.EventId</assignToReference>
             <operator>Assign</operator>
@@ -361,8 +409,8 @@
     <assignments>
         <name>Set_Prim_Count</name>
         <label>Set Prim Count</label>
-        <locationX>314</locationX>
-        <locationY>4112</locationY>
+        <locationX>534</locationX>
+        <locationY>5078</locationY>
         <assignmentItems>
             <assignToReference>primCount</assignToReference>
             <operator>Add</operator>
@@ -377,8 +425,8 @@
     <assignments>
         <name>Set_Primary_Count</name>
         <label>Set Primary Count</label>
-        <locationX>468</locationX>
-        <locationY>2006</locationY>
+        <locationX>692</locationX>
+        <locationY>2222</locationY>
         <assignmentItems>
             <assignToReference>primCount</assignToReference>
             <operator>Add</operator>
@@ -393,7 +441,7 @@
     <assignments>
         <name>Set_primaryFundraiser_first</name>
         <label>Set primaryFundraiser</label>
-        <locationX>380</locationX>
+        <locationX>349</locationX>
         <locationY>1058</locationY>
         <assignmentItems>
             <assignToReference>primaryFundraiser.ucinn_ascendv2__Fundraiser__c</assignToReference>
@@ -410,7 +458,7 @@
             </value>
         </assignmentItems>
         <assignmentItems>
-            <assignToReference>tempFundraiserRelations</assignToReference>
+            <assignToReference>primaryFundraiserDefaultList</assignToReference>
             <operator>Add</operator>
             <value>
                 <elementReference>primaryFundraiser</elementReference>
@@ -424,7 +472,7 @@
         <description>Sets recordId with value from contactId</description>
         <name>Set_RecordId_contactId</name>
         <label>Set RecordId contactId</label>
-        <locationX>468</locationX>
+        <locationX>437</locationX>
         <locationY>242</locationY>
         <assignmentItems>
             <assignToReference>recordId</assignToReference>
@@ -440,8 +488,8 @@
     <assignments>
         <name>Set_Task_Fields</name>
         <label>Set Task Fields</label>
-        <locationX>270</locationX>
-        <locationY>5696</locationY>
+        <locationX>305</locationX>
+        <locationY>6854</locationY>
         <assignmentItems>
             <assignToReference>task_iteration.ActivityDate</assignToReference>
             <operator>Assign</operator>
@@ -498,7 +546,7 @@
     <assignments>
         <name>Set_Temp_Contact_Report_and_Contact_Report_Relation_Vars</name>
         <label>Set Temp Contact Report and Contact Report Relation Vars</label>
-        <locationX>116</locationX>
+        <locationX>85</locationX>
         <locationY>1382</locationY>
         <assignmentItems>
             <assignToReference>tempContactReport.HAM_In_Person__c</assignToReference>
@@ -570,7 +618,7 @@
     <assignments>
         <name>Set_Temp_Contact_Report_and_Contact_Report_Relation_Vars_Account</name>
         <label>Set Temp Contact Report and Contact Report Relation Vars</label>
-        <locationX>380</locationX>
+        <locationX>349</locationX>
         <locationY>1382</locationY>
         <assignmentItems>
             <assignToReference>tempContactReport.HAM_In_Person__c</assignToReference>
@@ -642,8 +690,8 @@
     <assignments>
         <name>Set_Temp_Event_Var</name>
         <label>Set Temp Event Var</label>
-        <locationX>226</locationX>
-        <locationY>3164</locationY>
+        <locationX>191</locationX>
+        <locationY>3614</locationY>
         <assignmentItems>
             <assignToReference>tempEvent.EndDateTime</assignToReference>
             <operator>Assign</operator>
@@ -712,10 +760,40 @@
         </connector>
     </assignments>
     <assignments>
+        <name>Set_temp_EventRelation_Fields</name>
+        <label>Set temp EventRelation Fields</label>
+        <locationX>191</locationX>
+        <locationY>3398</locationY>
+        <assignmentItems>
+            <assignToReference>tempEventRelation.Status</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>New</stringValue>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>tempEventRelation.RelationId</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Get_Contact.Id</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>extAttendees</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>tempEventRelation</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>CreateMeetingScreen</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
         <name>Set_ucinn_ascendv2_Fundraiser_Contact_Report_Relation_c</name>
         <label>Set ucinn_ascendv2__Fundraiser_Contact_Report_Relation__c</label>
-        <locationX>336</locationX>
-        <locationY>4928</locationY>
+        <locationX>556</locationX>
+        <locationY>6002</locationY>
         <assignmentItems>
             <assignToReference>fundraiserContactReportRelation.ucinn_ascendv2__Fundraiser__c</assignToReference>
             <operator>Assign</operator>
@@ -818,8 +896,8 @@
     <decisions>
         <name>Add_HAM_Attendees_Selected</name>
         <label>Add HAM Attendees Selected?</label>
-        <locationX>226</locationX>
-        <locationY>3680</locationY>
+        <locationX>191</locationX>
+        <locationY>4430</locationY>
         <defaultConnector>
             <targetReference>Create_Task_is_True</targetReference>
         </defaultConnector>
@@ -843,8 +921,8 @@
     <decisions>
         <name>Add_Hamilton_Attendees_False</name>
         <label>Add Hamilton Attendees False?</label>
-        <locationX>468</locationX>
-        <locationY>4820</locationY>
+        <locationX>688</locationX>
+        <locationY>5894</locationY>
         <defaultConnector>
             <targetReference>Loop_Through_Hamilton_Attendees</targetReference>
         </defaultConnector>
@@ -868,7 +946,7 @@
     <decisions>
         <name>Add_Hamilton_Attendees_Selected_Contact</name>
         <label>Add Hamilton Attendees Selected?</label>
-        <locationX>380</locationX>
+        <locationX>349</locationX>
         <locationY>1574</locationY>
         <defaultConnector>
             <targetReference>Create_Meeting_True</targetReference>
@@ -893,7 +971,7 @@
     <decisions>
         <name>Constituent_or_Organization</name>
         <label>Constituent or Organization?</label>
-        <locationX>380</locationX>
+        <locationX>349</locationX>
         <locationY>542</locationY>
         <defaultConnector>
             <targetReference>NotOrgOrContactError</targetReference>
@@ -933,8 +1011,8 @@
     <decisions>
         <name>Create_Meeting_True</name>
         <label>Create Meeting True?</label>
-        <locationX>380</locationX>
-        <locationY>2948</locationY>
+        <locationX>349</locationX>
+        <locationY>3290</locationY>
         <defaultConnector>
             <targetReference>Create_Task_is_True</targetReference>
         </defaultConnector>
@@ -950,7 +1028,7 @@
                 </rightValue>
             </conditions>
             <connector>
-                <targetReference>CreateMeetingScreen</targetReference>
+                <targetReference>Set_temp_EventRelation_Fields</targetReference>
             </connector>
             <label>CreateMeetingTrue</label>
         </rules>
@@ -958,8 +1036,8 @@
     <decisions>
         <name>Create_Meeting_True_end</name>
         <label>Create Meeting True?</label>
-        <locationX>182</locationX>
-        <locationY>6512</locationY>
+        <locationX>349</locationX>
+        <locationY>7754</locationY>
         <defaultConnector>
             <targetReference>Is_Fundraiser_Relations_empty</targetReference>
         </defaultConnector>
@@ -983,8 +1061,11 @@
     <decisions>
         <name>Create_Task_is_True</name>
         <label>Create Task is True?</label>
-        <locationX>380</locationX>
-        <locationY>5372</locationY>
+        <locationX>349</locationX>
+        <locationY>6530</locationY>
+        <defaultConnector>
+            <targetReference>recordId_is_Constituent_or_Organization_end</targetReference>
+        </defaultConnector>
         <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
         <rules>
             <name>CreateTaskTrue</name>
@@ -1005,8 +1086,8 @@
     <decisions>
         <name>Create_Task_is_True_End</name>
         <label>Create Task is True?</label>
-        <locationX>182</locationX>
-        <locationY>8228</locationY>
+        <locationX>349</locationX>
+        <locationY>9470</locationY>
         <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
         <rules>
             <name>CreateTaskTrue_End</name>
@@ -1025,10 +1106,85 @@
         </rules>
     </decisions>
     <decisions>
+        <name>Duplicate_Contact</name>
+        <label>Duplicate Contact?</label>
+        <locationX>411</locationX>
+        <locationY>3830</locationY>
+        <defaultConnector>
+            <targetReference>Add_to_attendeeIds</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>False</defaultConnectorLabel>
+        <rules>
+            <name>True_dupe_contact</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>contactAttendeeIds</leftValueReference>
+                <operator>Contains</operator>
+                <rightValue>
+                    <elementReference>Loop_Thorough_Donor_Attendees.AttendeeId.recordId</elementReference>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Error_Screen_dupe_contact</targetReference>
+            </connector>
+            <label>True</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Duplicate_Id</name>
+        <label>Duplicate Id?</label>
+        <locationX>571</locationX>
+        <locationY>1898</locationY>
+        <defaultConnector>
+            <targetReference>Add_to_userIds</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>False</defaultConnectorLabel>
+        <rules>
+            <name>True_Dupe</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>userIds</leftValueReference>
+                <operator>Contains</operator>
+                <rightValue>
+                    <elementReference>Loop_through_hamAttendees.internalHAMUserLookup.recordId</elementReference>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Error_Screen_Duplicate_First</targetReference>
+            </connector>
+            <label>True</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Duplicate_Id_Meeting</name>
+        <label>Duplicate Id?</label>
+        <locationX>413</locationX>
+        <locationY>4754</locationY>
+        <defaultConnector>
+            <targetReference>Add_to_userIds_Second</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>False</defaultConnectorLabel>
+        <rules>
+            <name>True_Second</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>userIds</leftValueReference>
+                <operator>Contains</operator>
+                <rightValue>
+                    <elementReference>Loop_Through_Hamilton_Attendees.FundraiserContactReportRelationId.recordId</elementReference>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Error_Screen_Second</targetReference>
+            </connector>
+            <label>True</label>
+        </rules>
+    </decisions>
+    <decisions>
         <description>contactId variable is populated through LWC on JEDI Overview page.</description>
         <name>Is_contactId_Null</name>
         <label>Is contactId Null?</label>
-        <locationX>380</locationX>
+        <locationX>349</locationX>
         <locationY>134</locationY>
         <defaultConnector>
             <targetReference>Set_RecordId_contactId</targetReference>
@@ -1053,8 +1209,8 @@
     <decisions>
         <name>Is_Fundraiser_Relations_empty</name>
         <label>Is Fundraiser Relations empty?</label>
-        <locationX>182</locationX>
-        <locationY>7628</locationY>
+        <locationX>349</locationX>
+        <locationY>8870</locationY>
         <defaultConnector>
             <targetReference>Create_Task_is_True_End</targetReference>
         </defaultConnector>
@@ -1078,8 +1234,8 @@
     <decisions>
         <name>Is_primary_officer</name>
         <label>Is primary officer?</label>
-        <locationX>622</locationX>
-        <locationY>1898</locationY>
+        <locationX>846</locationX>
+        <locationY>2114</locationY>
         <defaultConnector>
             <targetReference>Assign_Fundraiser_Contact_Report_Relation_values</targetReference>
         </defaultConnector>
@@ -1103,8 +1259,8 @@
     <decisions>
         <name>Is_Primary_Officer_Meeting</name>
         <label>Is Primary Officer?</label>
-        <locationX>468</locationX>
-        <locationY>4004</locationY>
+        <locationX>688</locationX>
+        <locationY>4970</locationY>
         <defaultConnector>
             <targetReference>Set_EventRelation_Fields_HAM</targetReference>
         </defaultConnector>
@@ -1128,8 +1284,8 @@
     <decisions>
         <name>Is_primCount_1</name>
         <label>Is primCount &gt; 1</label>
-        <locationX>314</locationX>
-        <locationY>4220</locationY>
+        <locationX>534</locationX>
+        <locationY>5186</locationY>
         <defaultConnector>
             <targetReference>Set_EventRelation_Fields_HAM</targetReference>
         </defaultConnector>
@@ -1153,8 +1309,8 @@
     <decisions>
         <name>Not_Running_User</name>
         <label>Not Running User</label>
-        <locationX>270</locationX>
-        <locationY>7052</locationY>
+        <locationX>437</locationX>
+        <locationY>8294</locationY>
         <defaultConnector>
             <targetReference>Add_Event_Id_to_EventRelationList</targetReference>
         </defaultConnector>
@@ -1178,8 +1334,8 @@
     <decisions>
         <name>Primary_Count_1</name>
         <label>Primary Count &gt; 1</label>
-        <locationX>468</locationX>
-        <locationY>2114</locationY>
+        <locationX>692</locationX>
+        <locationY>2330</locationY>
         <defaultConnector>
             <targetReference>Assign_Fundraiser_Contact_Report_Relation_values</targetReference>
         </defaultConnector>
@@ -1204,7 +1360,7 @@
         <description>Checks recordId prefix to see if the Screen Flow was spawned from a Constituent (003) or Organization (001)</description>
         <name>recordId_is_Constituent_or_Organization</name>
         <label>recordId is Constituent or Organization?</label>
-        <locationX>380</locationX>
+        <locationX>349</locationX>
         <locationY>1274</locationY>
         <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
         <rules>
@@ -1242,8 +1398,8 @@
         <description>Checks recordId prefix to see if the Screen Flow was spawned from a Constituent (003) or Organization (001)</description>
         <name>recordId_is_Constituent_or_Organization_end</name>
         <label>recordId is Constituent or Organization?</label>
-        <locationX>182</locationX>
-        <locationY>5996</locationY>
+        <locationX>349</locationX>
+        <locationY>7238</locationY>
         <defaultConnector>
             <targetReference>Create_Meeting_True_end</targetReference>
         </defaultConnector>
@@ -1401,8 +1557,8 @@
     <loops>
         <name>Add_Event_Id_to_EventRelationList</name>
         <label>Add Event Id to EventRelationList</label>
-        <locationX>50</locationX>
-        <locationY>6944</locationY>
+        <locationX>217</locationX>
+        <locationY>8186</locationY>
         <collectionReference>EventRelationList</collectionReference>
         <iterationOrder>Asc</iterationOrder>
         <nextValueConnector>
@@ -1415,8 +1571,8 @@
     <loops>
         <name>Assign_ContactReportId_to_FCRR</name>
         <label>Assign ContactReportId to FCRR</label>
-        <locationX>50</locationX>
-        <locationY>7736</locationY>
+        <locationX>217</locationX>
+        <locationY>8978</locationY>
         <collectionReference>tempFundraiserRelations</collectionReference>
         <iterationOrder>Asc</iterationOrder>
         <nextValueConnector>
@@ -1429,8 +1585,8 @@
     <loops>
         <name>Assign_RelatedToId_on_tasks</name>
         <label>Assign RelatedToId on tasks</label>
-        <locationX>50</locationX>
-        <locationY>8336</locationY>
+        <locationX>217</locationX>
+        <locationY>9578</locationY>
         <collectionReference>TaskList</collectionReference>
         <iterationOrder>Asc</iterationOrder>
         <nextValueConnector>
@@ -1443,12 +1599,12 @@
     <loops>
         <name>Loop_Thorough_Donor_Attendees</name>
         <label>Loop Thorough Donor Attendees</label>
-        <locationX>226</locationX>
-        <locationY>3272</locationY>
+        <locationX>191</locationX>
+        <locationY>3722</locationY>
         <collectionReference>AttendeeRepeater.AllItems</collectionReference>
         <iterationOrder>Asc</iterationOrder>
         <nextValueConnector>
-            <targetReference>Set_EventRelation_Fields</targetReference>
+            <targetReference>Duplicate_Contact</targetReference>
         </nextValueConnector>
         <noMoreValuesConnector>
             <targetReference>Add_HAM_Attendees_Selected</targetReference>
@@ -1457,12 +1613,12 @@
     <loops>
         <name>Loop_through_hamAttendees</name>
         <label>Loop through hamAttendees</label>
-        <locationX>248</locationX>
+        <locationX>208</locationX>
         <locationY>1790</locationY>
         <collectionReference>hamAttendeesFirst.AllItems</collectionReference>
         <iterationOrder>Asc</iterationOrder>
         <nextValueConnector>
-            <targetReference>Is_primary_officer</targetReference>
+            <targetReference>Duplicate_Id</targetReference>
         </nextValueConnector>
         <noMoreValuesConnector>
             <targetReference>Create_Meeting_True</targetReference>
@@ -1471,12 +1627,12 @@
     <loops>
         <name>Loop_Through_Hamilton_Attendees</name>
         <label>Loop Through Hamilton Attendees</label>
-        <locationX>94</locationX>
-        <locationY>3896</locationY>
+        <locationX>50</locationX>
+        <locationY>4646</locationY>
         <collectionReference>HamiltonRepeater.AllItems</collectionReference>
         <iterationOrder>Asc</iterationOrder>
         <nextValueConnector>
-            <targetReference>Is_Primary_Officer_Meeting</targetReference>
+            <targetReference>Duplicate_Id_Meeting</targetReference>
         </nextValueConnector>
         <noMoreValuesConnector>
             <targetReference>Create_Task_is_True</targetReference>
@@ -1486,8 +1642,8 @@
         <description>Loop through repeated tasks</description>
         <name>Loop_Through_Tasks</name>
         <label>Loop Through Tasks</label>
-        <locationX>182</locationX>
-        <locationY>5588</locationY>
+        <locationX>217</locationX>
+        <locationY>6746</locationY>
         <collectionReference>TaskRepeater.AllItems</collectionReference>
         <iterationOrder>Asc</iterationOrder>
         <nextValueConnector>
@@ -1519,8 +1675,8 @@
     <recordCreates>
         <name>Create_Contact_Report</name>
         <label>Create Contact Report</label>
-        <locationX>50</locationX>
-        <locationY>6104</locationY>
+        <locationX>217</locationX>
+        <locationY>7346</locationY>
         <connector>
             <targetReference>Assign_contactReportId</targetReference>
         </connector>
@@ -1529,8 +1685,8 @@
     <recordCreates>
         <name>Create_Contact_Report_Relation</name>
         <label>Create Contact Report Relation</label>
-        <locationX>50</locationX>
-        <locationY>6320</locationY>
+        <locationX>217</locationX>
+        <locationY>7562</locationY>
         <connector>
             <targetReference>Create_Meeting_True_end</targetReference>
         </connector>
@@ -1539,8 +1695,8 @@
     <recordCreates>
         <name>Create_Event_Related_to_Contact_Report</name>
         <label>Create Event Related to Contact Report</label>
-        <locationX>50</locationX>
-        <locationY>6728</locationY>
+        <locationX>217</locationX>
+        <locationY>7970</locationY>
         <connector>
             <targetReference>Assign_EventId</targetReference>
         </connector>
@@ -1549,8 +1705,8 @@
     <recordCreates>
         <name>Create_FCRRs</name>
         <label>Create FCRRs</label>
-        <locationX>50</locationX>
-        <locationY>8036</locationY>
+        <locationX>217</locationX>
+        <locationY>9278</locationY>
         <connector>
             <targetReference>Create_Task_is_True_End</targetReference>
         </connector>
@@ -1559,8 +1715,8 @@
     <recordCreates>
         <name>Insert_EventRelationList</name>
         <label>Insert EventRelationList</label>
-        <locationX>50</locationX>
-        <locationY>7436</locationY>
+        <locationX>217</locationX>
+        <locationY>8678</locationY>
         <connector>
             <targetReference>Is_Fundraiser_Relations_empty</targetReference>
         </connector>
@@ -1569,15 +1725,15 @@
     <recordCreates>
         <name>Insert_TaskList</name>
         <label>Insert TaskList</label>
-        <locationX>50</locationX>
-        <locationY>8636</locationY>
+        <locationX>217</locationX>
+        <locationY>9878</locationY>
         <inputReference>tasksToCreate</inputReference>
     </recordCreates>
     <recordLookups>
         <description>Gets Contact to grab fields from recordId</description>
         <name>Get_Contact</name>
         <label>Get Contact</label>
-        <locationX>116</locationX>
+        <locationX>85</locationX>
         <locationY>650</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
@@ -1601,7 +1757,7 @@
         <description>Gets Org to grab fields from recordId</description>
         <name>Get_Organization</name>
         <label>Get Organization</label>
-        <locationX>380</locationX>
+        <locationX>349</locationX>
         <locationY>650</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
@@ -1624,7 +1780,7 @@
     <recordLookups>
         <name>Get_Running_User</name>
         <label>Get Running User</label>
-        <locationX>380</locationX>
+        <locationX>349</locationX>
         <locationY>842</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
@@ -1645,7 +1801,7 @@
     <screens>
         <name>Create_Contact_Report_Screen</name>
         <label>Create Contact Report Screen</label>
-        <locationX>380</locationX>
+        <locationX>349</locationX>
         <locationY>1166</locationY>
         <allowBack>false</allowBack>
         <allowFinish>true</allowFinish>
@@ -2044,7 +2200,7 @@
                 <inputParameters>
                     <name>recordId</name>
                     <value>
-                        <elementReference>tempFundraiserRelations[$EachItem].ucinn_ascendv2__Fundraiser__c</elementReference>
+                        <elementReference>primaryFundraiserDefaultList[$EachItem].ucinn_ascendv2__Fundraiser__c</elementReference>
                     </value>
                 </inputParameters>
                 <inputParameters>
@@ -2070,7 +2226,7 @@
                 <choiceReferences>fundraiserRole</choiceReferences>
                 <dataType>String</dataType>
                 <defaultValue>
-                    <elementReference>tempFundraiserRelations[$EachItem].ucinn_ascendv2__Fundraiser_Role__c</elementReference>
+                    <elementReference>primaryFundraiserDefaultList[$EachItem].ucinn_ascendv2__Fundraiser_Role__c</elementReference>
                 </defaultValue>
                 <fieldText>Contact Officer Role</fieldText>
                 <fieldType>DropdownBox</fieldType>
@@ -2088,7 +2244,7 @@
             <inputParameters>
                 <name>collection</name>
                 <value>
-                    <elementReference>tempFundraiserRelations</elementReference>
+                    <elementReference>primaryFundraiserDefaultList</elementReference>
                 </value>
             </inputParameters>
             <isRequired>false</isRequired>
@@ -2168,8 +2324,8 @@
     <screens>
         <name>Create_Task_Screen</name>
         <label>Create Task Screen</label>
-        <locationX>182</locationX>
-        <locationY>5480</locationY>
+        <locationX>217</locationX>
+        <locationY>6638</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -2319,8 +2475,8 @@
     <screens>
         <name>CreateMeetingScreen</name>
         <label>Create Meeting Screen</label>
-        <locationX>226</locationX>
-        <locationY>3056</locationY>
+        <locationX>191</locationX>
+        <locationY>3506</locationY>
         <allowBack>true</allowBack>
         <allowFinish>true</allowFinish>
         <allowPause>false</allowPause>
@@ -2620,7 +2776,7 @@
                 <inputParameters>
                     <name>recordId</name>
                     <value>
-                        <elementReference>recordId</elementReference>
+                        <elementReference>extAttendees[$EachItem].RelationId</elementReference>
                     </value>
                 </inputParameters>
                 <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
@@ -2635,6 +2791,12 @@
                     </width>
                 </styleProperties>
             </fields>
+            <inputParameters>
+                <name>collection</name>
+                <value>
+                    <elementReference>extAttendees</elementReference>
+                </value>
+            </inputParameters>
             <isRequired>false</isRequired>
             <styleProperties>
                 <verticalAlignment>
@@ -2715,7 +2877,7 @@
                 <inputParameters>
                     <name>recordId</name>
                     <value>
-                        <elementReference>internalHAMUsers[$EachItem].Id</elementReference>
+                        <elementReference>primaryFundraiserDefaultList[$EachItem].ucinn_ascendv2__Fundraiser__c</elementReference>
                     </value>
                 </inputParameters>
                 <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
@@ -2735,7 +2897,7 @@
                 <choiceReferences>fundraiserRole</choiceReferences>
                 <dataType>String</dataType>
                 <defaultValue>
-                    <stringValue>Primary Fundraiser</stringValue>
+                    <elementReference>primaryFundraiserDefaultList[$EachItem].ucinn_ascendv2__Fundraiser_Role__c</elementReference>
                 </defaultValue>
                 <fieldText>Contact Officer Role</fieldText>
                 <fieldType>DropdownBox</fieldType>
@@ -2753,7 +2915,7 @@
             <inputParameters>
                 <name>collection</name>
                 <value>
-                    <elementReference>internalHAMUsers</elementReference>
+                    <elementReference>primaryFundraiserDefaultList</elementReference>
                 </value>
             </inputParameters>
             <isRequired>false</isRequired>
@@ -2783,19 +2945,65 @@
     <screens>
         <name>Error_Screen</name>
         <label>Error Screen</label>
-        <locationX>336</locationX>
-        <locationY>2222</locationY>
+        <locationX>560</locationX>
+        <locationY>2438</locationY>
         <allowBack>true</allowBack>
         <allowFinish>false</allowFinish>
         <allowPause>false</allowPause>
         <backButtonLabel>Return</backButtonLabel>
-        <connector>
-            <isGoTo>true</isGoTo>
-            <targetReference>Create_Contact_Report_Screen</targetReference>
-        </connector>
         <fields>
             <name>primOfficerErrorText</name>
-            <fieldText>&lt;p style=&quot;text-align: center;&quot;&gt;&lt;strong style=&quot;font-size: 20px; color: rgb(255, 0, 0);&quot;&gt;There can only be one Primary Officer. Please click Return to revise your selection.&lt;/strong&gt;&lt;/p&gt;</fieldText>
+            <fieldText>&lt;p style=&quot;text-align: center;&quot;&gt;&lt;strong style=&quot;color: rgb(221, 24, 24); font-size: 20px;&quot;&gt;There can only be one Primary Officer. Please click Return to revise your selection.&lt;/strong&gt;&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+            <styleProperties>
+                <verticalAlignment>
+                    <stringValue>top</stringValue>
+                </verticalAlignment>
+                <width>
+                    <stringValue>12</stringValue>
+                </width>
+            </styleProperties>
+        </fields>
+        <showFooter>true</showFooter>
+        <showHeader>false</showHeader>
+    </screens>
+    <screens>
+        <name>Error_Screen_dupe_contact</name>
+        <label>Error Screen</label>
+        <locationX>279</locationX>
+        <locationY>3938</locationY>
+        <allowBack>true</allowBack>
+        <allowFinish>false</allowFinish>
+        <allowPause>false</allowPause>
+        <backButtonLabel>Return</backButtonLabel>
+        <fields>
+            <name>displayTextErrorDupeContact</name>
+            <fieldText>&lt;p style=&quot;text-align: center;&quot;&gt;&lt;strong style=&quot;background-color: rgb(255, 255, 255); font-size: 20px; color: rgb(221, 24, 24);&quot;&gt;You cannot create duplicate attendees. Please return and revise your selection.&lt;/strong&gt;&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+            <styleProperties>
+                <verticalAlignment>
+                    <stringValue>top</stringValue>
+                </verticalAlignment>
+                <width>
+                    <stringValue>12</stringValue>
+                </width>
+            </styleProperties>
+        </fields>
+        <showFooter>true</showFooter>
+        <showHeader>false</showHeader>
+    </screens>
+    <screens>
+        <name>Error_Screen_Duplicate_First</name>
+        <label>Error Screen</label>
+        <locationX>296</locationX>
+        <locationY>2006</locationY>
+        <allowBack>true</allowBack>
+        <allowFinish>false</allowFinish>
+        <allowPause>false</allowPause>
+        <backButtonLabel>Return</backButtonLabel>
+        <fields>
+            <name>displayTextErrorDupe</name>
+            <fieldText>&lt;p style=&quot;text-align: center;&quot;&gt;&lt;strong style=&quot;color: rgb(221, 24, 24); font-size: 20px; background-color: rgb(255, 255, 255);&quot;&gt;You cannot create duplicate attendees. Please return and revise your selection.&lt;/strong&gt;&lt;/p&gt;</fieldText>
             <fieldType>DisplayText</fieldType>
             <styleProperties>
                 <verticalAlignment>
@@ -2812,18 +3020,40 @@
     <screens>
         <name>Error_Screen_Meeting</name>
         <label>Error Screen</label>
-        <locationX>182</locationX>
-        <locationY>4328</locationY>
+        <locationX>402</locationX>
+        <locationY>5294</locationY>
         <allowBack>true</allowBack>
         <allowFinish>false</allowFinish>
         <allowPause>false</allowPause>
         <backButtonLabel>Return</backButtonLabel>
-        <connector>
-            <targetReference>Set_EventRelation_Fields_HAM</targetReference>
-        </connector>
         <fields>
             <name>errorTextMeeting</name>
-            <fieldText>&lt;h1 style=&quot;text-align: center;&quot;&gt;&lt;strong style=&quot;background-color: rgb(255, 255, 255); font-size: 20px; color: rgb(255, 0, 0);&quot;&gt;There can only be one Primary Officer. Please click Return to revise your selection.&lt;/strong&gt;&lt;/h1&gt;</fieldText>
+            <fieldText>&lt;h1 style=&quot;text-align: center;&quot;&gt;&lt;strong style=&quot;color: rgb(221, 24, 24); font-size: 20px; background-color: rgb(255, 255, 255);&quot;&gt;There can only be one Primary Officer. Please click Return to revise your selection.&lt;/strong&gt;&lt;/h1&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+            <styleProperties>
+                <verticalAlignment>
+                    <stringValue>top</stringValue>
+                </verticalAlignment>
+                <width>
+                    <stringValue>12</stringValue>
+                </width>
+            </styleProperties>
+        </fields>
+        <showFooter>true</showFooter>
+        <showHeader>false</showHeader>
+    </screens>
+    <screens>
+        <name>Error_Screen_Second</name>
+        <label>Error Screen</label>
+        <locationX>138</locationX>
+        <locationY>4862</locationY>
+        <allowBack>true</allowBack>
+        <allowFinish>false</allowFinish>
+        <allowPause>false</allowPause>
+        <backButtonLabel>Return</backButtonLabel>
+        <fields>
+            <name>displayTextDupeSecond</name>
+            <fieldText>&lt;p style=&quot;text-align: center;&quot;&gt;&lt;strong style=&quot;background-color: rgb(255, 255, 255); font-size: 20px; color: rgb(221, 24, 24);&quot;&gt;You cannot create duplicate attendees. Please return and revise your selection.&lt;/strong&gt;&lt;/p&gt;</fieldText>
             <fieldType>DisplayText</fieldType>
             <styleProperties>
                 <verticalAlignment>
@@ -2840,7 +3070,7 @@
     <screens>
         <name>NotOrgOrContactError</name>
         <label>NotOrgOrContactError</label>
-        <locationX>644</locationX>
+        <locationX>613</locationX>
         <locationY>650</locationY>
         <allowBack>false</allowBack>
         <allowFinish>true</allowFinish>
@@ -2912,18 +3142,25 @@
         <showHeader>false</showHeader>
     </screens>
     <start>
-        <locationX>254</locationX>
+        <locationX>223</locationX>
         <locationY>0</locationY>
         <connector>
             <targetReference>Is_contactId_Null</targetReference>
         </connector>
     </start>
-    <status>Active</status>
+    <status>Draft</status>
     <textTemplates>
         <name>keyPointsTextTemplate</name>
         <isViewedAsPlainText>false</isViewedAsPlainText>
         <text>&lt;p&gt;{!Key_Points}&lt;/p&gt;</text>
     </textTemplates>
+    <variables>
+        <name>contactAttendeeIds</name>
+        <dataType>String</dataType>
+        <isCollection>true</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
     <variables>
         <name>contactId</name>
         <dataType>String</dataType>
@@ -2979,6 +3216,14 @@
         <objectType>EventRelation</objectType>
     </variables>
     <variables>
+        <name>extAttendees</name>
+        <dataType>SObject</dataType>
+        <isCollection>true</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>EventRelation</objectType>
+    </variables>
+    <variables>
         <name>fcrrsToCreate</name>
         <dataType>SObject</dataType>
         <isCollection>true</isCollection>
@@ -3025,6 +3270,14 @@
         <name>primaryFundraiser</name>
         <dataType>SObject</dataType>
         <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>ucinn_ascendv2__Fundraiser_Contact_Report_Relation__c</objectType>
+    </variables>
+    <variables>
+        <name>primaryFundraiserDefaultList</name>
+        <dataType>SObject</dataType>
+        <isCollection>true</isCollection>
         <isInput>false</isInput>
         <isOutput>false</isOutput>
         <objectType>ucinn_ascendv2__Fundraiser_Contact_Report_Relation__c</objectType>
@@ -3115,5 +3368,12 @@
         <isInput>false</isInput>
         <isOutput>false</isOutput>
         <objectType>ucinn_ascendv2__Fundraiser_Contact_Report_Relation__c</objectType>
+    </variables>
+    <variables>
+        <name>userIds</name>
+        <dataType>String</dataType>
+        <isCollection>true</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
     </variables>
 </Flow>
