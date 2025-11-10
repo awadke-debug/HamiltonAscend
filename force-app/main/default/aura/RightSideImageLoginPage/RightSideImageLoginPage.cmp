@@ -1,0 +1,14 @@
+<aura:component implements="forceCommunity:availableForAllPageTypes" access="global">
+    <!-- Optional runtime URL (leave blank to use the static resource) -->
+    <aura:attribute name="imageUrl" type="String"/>
+    <aura:attribute name="useStatic" type="Boolean" default="true"/>
+    <aura:attribute name="bgStyle"  type="String"/>
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+
+    <aura:html tag="style">
+        .img-full { min-height: 100vh; width: 100%; background-size: cover; background-position: center; background-repeat: no-repeat; }
+    </aura:html>
+
+    <div class="img-full" style="{!v.bgStyle}"></div>
+</aura:component>

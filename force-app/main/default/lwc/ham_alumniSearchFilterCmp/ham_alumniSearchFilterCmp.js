@@ -29,7 +29,8 @@ export default class Ham_alumniSearchFilterCmp extends LightningElement {
      */
     connectedCallback() {
         this.images = {
-            searchImage: this.mainResource + '/search.png'
+            searchImage: this.mainResource + '/search.png',
+            resetFilterImg: this.mainResource + '/resetFilter.png'
         };
         this.fetchFilterMetadata();
     }
@@ -106,7 +107,6 @@ export default class Ham_alumniSearchFilterCmp extends LightningElement {
                     const saved = savedFilters.find(f => f.placeholder === option.placeholder);
                     return saved ? { ...option, selectedValue: saved.value } : option;
                 });
-                
                 // Change bookmark button color to indicate saved preferences
                 this.bookmarkBtnCssDesktop = 'bookmark-btn active desktop-only'; // Set bookmark to green
                 this.bookmarkBtnCssMobile = 'bookmark-btn active mobile-only'; // Set bookmark to green
@@ -196,6 +196,43 @@ export default class Ham_alumniSearchFilterCmp extends LightningElement {
             });
             this.dispatchEvent(evt);
         } finally {
+            this.isLoading = false;
+        }
+    }
+
+    /**
+     * @description Resets filters with just place holders.
+     * Fetches filter metadata and their available values from Apex.
+     * The bookmark button class is also changed to default state accordingly.
+     */
+    async handleResetFilters(){
+        this.isLoading =true;
+        try {
+            const metaDataFilters = await getFilterMetadataAndValues();
+
+            // Map the returned metadata to a new array and initialize selectedValue
+            this.filterOptions = metaDataFilters.map(filter => ({
+                ...filter,
+                selectedValue: null
+            }));
+
+            // Initialize the selectedFilters array for tracking user selections
+            this.selectedFilters = this.filterOptions.map(f => ({
+                placeholder: f.placeholder,
+                value: ''
+            }));
+            this.searchStr = '';
+            this.bookmarkBtnCssDesktop = 'bookmark-btn desktop-only';
+            this.bookmarkBtnCssMobile = 'bookmark-btn mobile-only';
+        }catch(error) {
+            console.error('Error fetching filter metadata:', error);
+            const evt = new ShowToastEvent({
+                title: 'Error',
+                message: 'Error fetching filter metadata. Please try again.',
+                variant: 'error'
+            });
+            this.dispatchEvent(evt);
+        }finally {
             this.isLoading = false;
         }
     }

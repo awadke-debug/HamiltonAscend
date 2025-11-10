@@ -8,12 +8,8 @@
     <template if:false={isLoading}>
         <div class="search-filter">
             <div class="search-box">
-                <input
-                    type="text"
-                    class="search-input"
-                    onchange={handleSearchChange}
-                    placeholder={label.alumnisearchplaceholder}
-                />
+                <input type="text" class="search-input" onchange={handleSearchChange}
+                    placeholder={label.alumnisearchplaceholder} />
                 <button class="search-button" onclick={handleSearchClick}>
                     <span><img src={images.searchImage} alt="" width="20px" height="20px"></img></span>
                     <span class="label desktop-only">{label.search}</span>
@@ -25,25 +21,22 @@
             <div class="filters">
                 <template for:each={filterOptions} for:item="filter">
                     <div key={filter.placeholder} class="filter-box">
-                        <select class="filter-select" 
-                                onchange={handleFilterChange} 
-                                data-placeholder={filter.placeholder}
-                                value={filter.selectedValue}>
-                            <option value="" >{filter.placeholder}</option>
+                        <select class="filter-select" onchange={handleFilterChange}
+                            data-placeholder={filter.placeholder} value={filter.selectedValue}>
+                            <option value="">{filter.placeholder}</option>
                             <template for:each={filter.values} for:item="option">
                                 <option key={option} value={option}>{option}</option>
                             </template>
                         </select>
-                        <lightning-icon
-                            icon-name="utility:down"
-                            size="xx-small"
-                            alternative-text="Dropdown"
-                            class="dropdown-icon"
-                        ></lightning-icon>
+                        <lightning-icon icon-name="utility:down" size="xx-small" alternative-text="Dropdown"
+                            class="dropdown-icon"></lightning-icon>
                     </div>
                 </template>
                 <button class={bookmarkBtnCssDesktop} title={label.save} onclick={handleBookmarkClick}>
                     <lightning-icon icon-name="utility:bookmark" size="small" alternative-text="Save"></lightning-icon>
+                </button>
+                <button class="reset-btn" title={label.resetFilters} onclick={handleResetFilters}>
+                    <span><img src={images.resetFilterImg} alt="Reset" width="20px" height="20px"></img></span>                    
                 </button>
             </div>
         </div>
