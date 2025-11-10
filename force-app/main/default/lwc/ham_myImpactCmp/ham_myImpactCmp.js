@@ -33,6 +33,8 @@ import DonationHistoryContent from '@salesforce/label/c.ham_donationHistoryConte
 import TaxReceipt from '@salesforce/label/c.ham_taxReceipt';
 import DonationHistory from '@salesforce/label/c.ham_donationHistory';
 import MyLinkedinProfile from '@salesforce/label/c.ham_MyLinkedinProfile';
+import BoardOfTrusteeLable from '@salesforce/label/c.ham_boardOfTrusteeLabel';
+import BoardOfTrusteeLink from '@salesforce/label/c.ham_boardOfTrusteeLink';
 
 /**
  * @description A comprehensive component to display a user's "My Impact" page.
@@ -85,7 +87,9 @@ export default class Ham_myImpactCmp extends LightningElement {
         donationhistorycontent: DonationHistoryContent,
         taxreceipt: TaxReceipt,
         donationhistory: DonationHistory,
-        mylinkedinprofile: MyLinkedinProfile
+        mylinkedinprofile: MyLinkedinProfile,
+        boardOfTruteeLabel: BoardOfTrusteeLable,
+        boardOfTruteeLink: BoardOfTrusteeLink
     };
 
     /**
@@ -248,12 +252,13 @@ export default class Ham_myImpactCmp extends LightningElement {
         }
 
         if (data.degree && Array.isArray(data.degree)) {
-            const majors = [];
-            const minors = [];
-            data.degree.forEach(degreeItem => {
-                if (degreeItem.major) majors.push(degreeItem.major);
-                if (degreeItem.minor) minors.push(degreeItem.minor);
-            });
+
+           const majorsArray = data.degree[0].majors;
+           const minorsArray = data.degree[0].minors;
+
+           let majors = majorsArray.filter(major => major !== null && major !== undefined && major.trim() != '');
+           let minors = minorsArray.filter(minor => minor !== null && minor !== undefined && minor.trim() != '');
+            
             this.majorMinor = {
                 majors: majors.join('; '),
                 minors: minors.join('; ')

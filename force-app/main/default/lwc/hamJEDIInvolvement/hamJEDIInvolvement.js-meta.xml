@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>65.0</apiVersion>
+    <isExposed>true</isExposed>
+    <targets>
+        <target>lightning__AppPage</target>
+        <target>lightning__RecordPage</target>
+        <target>lightning__HomePage</target>
+    </targets>
+    <targetConfigs>
+        <targetConfig targets="lightning__AppPage,lightning__RecordPage,lightning__HomePage">
+            <property name="tableTitle" type="String" default="Volunteer Engagements"
+                      label="Table Title"
+                      description="The title that will display as the table header" />
+            <property name="recordTypeId" type="String"
+                      label="Record Type ID"
+                      description="The Record Type ID to filter Involvement records (e.g., 0123t000000mnA5AAI for Volunteer_Engagement)"
+                      required="true" />
+        </targetConfig>
+    </targetConfigs>
+</LightningComponentBundle>

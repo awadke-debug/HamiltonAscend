@@ -1,7 +1,7 @@
 public with sharing class HAMProspectOverviewApexController {
     @AuraEnabled(cacheable=true)
     public static Contact searchProspectDetails(String contactId) {
-        Contact objProspect = [SELECT ID, Name,HAM_Parents__c,HAM_Name_w_Suffix__c,ucinn_ascendv2__Donor_ID__c, ucinn_ascendv2__Contact_Type__c, HAM_Preferred_Chapter_Lookup__c,HAM_Preferred_Chapter_Lookup__r.name, HAM_Profile_Picture_URL__c,HAM_Current_Chapters__c,HAM_Alternate_Chapter__c,HAM_Alternate_Chapter__r.name, HAM_Phone_and_Type__c,HAM_PreferredEmail__c,HAM_LiveAlumni_Employer__c,HAM_LiveAlumni_Job_Title__c,ucinn_ascendv2__Preferred_Address_Formula__c,ucinn_ascendv2__PRM__c,ucinn_ascendv2__PRM__r.Name, ucinn_ascendv2__Preferred_Spouse__c,ucinn_ascendv2__Preferred_Spouse__r.name, HAM_Children__c,ucinn_ascendv2__Gender__c,Birthdate FROM Contact WHERE Id =:contactId];
+        Contact objProspect = [SELECT ID, Name,HAM_Name_w_Suffix__c,ucinn_ascendv2__Donor_ID__c, ucinn_ascendv2__Contact_Type__c, HAM_Preferred_Chapter_Lookup__c,HAM_Preferred_Chapter_Lookup__r.name, HAM_Profile_Picture_URL__c,HAM_Current_Chapters__c,HAM_Alternate_Chapter__c,HAM_Alternate_Chapter__r.name, HAM_Phone_and_Type__c,HAM_PreferredEmail__c,HAM_LiveAlumni_Employer__c,HAM_LiveAlumni_Job_Title__c,ucinn_ascendv2__Preferred_Address_Formula__c,ucinn_ascendv2__PRM__c,ucinn_ascendv2__PRM__r.Name, ucinn_ascendv2__Preferred_Spouse__c,ucinn_ascendv2__Preferred_Spouse__r.name,ucinn_ascendv2__Gender__c,Birthdate FROM Contact WHERE Id =:contactId];
         system.debug('recentlyViewedRecords-----'+objProspect);
         return objProspect;
     }
@@ -107,7 +107,7 @@ public with sharing class HAMProspectOverviewApexController {
 
     Public class DegreeWrapper{
         @AuraEnabled
-        public ucinn_ascendv2__Degree_Information__c hamiltonDegree; 
+        public ucinn_ascendv2__Degree_Information__c hamiltonDegree;
         @AuraEnabled
         public String athletics;
         @AuraEnabled
@@ -116,5 +116,119 @@ public with sharing class HAMProspectOverviewApexController {
         public String societies;
         @AuraEnabled
         public List<ucinn_ascendv2__Designation_Beneficiary__c> awards;
+    }
+
+    /**
+     * Retrieves children contacts from the Relationship object
+     *
+     * @param contactId The ID of the parent contact
+     * @return List of ChildContact wrappers containing child display names and IDs
+     *
+     * Query Logic:
+     * - Queries ucinn_ascendv2__Relationship__c where ucinn_ascendv2__Contact__c = contactId (parent)
+     * - Filters by ucinn_ascendv2__Related_Contact_Role__c = 'Child'
+     * - Orders by CreatedDate ASC (oldest relationship first)
+     * - Returns HAM_Name_w_Suffix__c for display (falls back to Name if blank)
+     */
+    @AuraEnabled(cacheable=true)
+    public static List<ChildContact> getChildrenFromRelationships(String contactId) {
+        List<ChildContact> childContacts = new List<ChildContact>();
+
+        if (String.isBlank(contactId)) {
+            return childContacts;
+        }
+
+        // Query relationships where current contact is parent and role is Child
+        List<ucinn_ascendv2__Relationship__c> relationships = [
+            SELECT Id,
+                   ucinn_ascendv2__Related_Contact__c,
+                   ucinn_ascendv2__Related_Contact__r.Name,
+                   ucinn_ascendv2__Related_Contact__r.HAM_Name_w_Suffix__c,
+                   CreatedDate
+            FROM ucinn_ascendv2__Relationship__c
+            WHERE ucinn_ascendv2__Contact__c = :contactId
+            AND ucinn_ascendv2__Related_Contact_Role__c = 'Child'
+            ORDER BY CreatedDate ASC
+        ];
+
+        // Build response with child name and Contact ID
+        for (ucinn_ascendv2__Relationship__c rel : relationships) {
+            if (rel.ucinn_ascendv2__Related_Contact__c != null) {
+                String displayName = String.isBlank(rel.ucinn_ascendv2__Related_Contact__r.HAM_Name_w_Suffix__c)
+                    ? rel.ucinn_ascendv2__Related_Contact__r.Name
+                    : rel.ucinn_ascendv2__Related_Contact__r.HAM_Name_w_Suffix__c;
+
+                childContacts.add(new ChildContact(
+                    displayName,
+                    rel.ucinn_ascendv2__Related_Contact__c
+                ));
+            }
+        }
+
+        return childContacts;
+    }
+
+    /**
+     * Retrieves parent contacts from the Relationship object
+     *
+     * @param contactId The ID of the child contact
+     * @return List of ChildContact wrappers containing parent display names and IDs
+     *
+     * Query Logic:
+     * - Queries ucinn_ascendv2__Relationship__c where ucinn_ascendv2__Contact__c = contactId (child)
+     * - Filters by ucinn_ascendv2__Related_Contact_Role__c = 'Parent'
+     * - Orders by CreatedDate ASC (oldest relationship first)
+     * - Returns HAM_Name_w_Suffix__c for display (falls back to Name if blank)
+     */
+    @AuraEnabled(cacheable=true)
+    public static List<ChildContact> getParentsFromRelationships(String contactId) {
+        List<ChildContact> parentContacts = new List<ChildContact>();
+
+        if (String.isBlank(contactId)) {
+            return parentContacts;
+        }
+
+        // Query relationships where current contact is child and role is Parent
+        List<ucinn_ascendv2__Relationship__c> relationships = [
+            SELECT Id,
+                   ucinn_ascendv2__Related_Contact__c,
+                   ucinn_ascendv2__Related_Contact__r.Name,
+                   ucinn_ascendv2__Related_Contact__r.HAM_Name_w_Suffix__c,
+                   CreatedDate
+            FROM ucinn_ascendv2__Relationship__c
+            WHERE ucinn_ascendv2__Contact__c = :contactId
+            AND ucinn_ascendv2__Related_Contact_Role__c = 'Parent'
+            ORDER BY CreatedDate ASC
+        ];
+
+        // Build response with parent name and Contact ID
+        for (ucinn_ascendv2__Relationship__c rel : relationships) {
+            if (rel.ucinn_ascendv2__Related_Contact__c != null) {
+                String displayName = String.isBlank(rel.ucinn_ascendv2__Related_Contact__r.HAM_Name_w_Suffix__c)
+                    ? rel.ucinn_ascendv2__Related_Contact__r.Name
+                    : rel.ucinn_ascendv2__Related_Contact__r.HAM_Name_w_Suffix__c;
+
+                parentContacts.add(new ChildContact(
+                    displayName,
+                    rel.ucinn_ascendv2__Related_Contact__c
+                ));
+            }
+        }
+
+        return parentContacts;
+    }
+
+    /**
+     * Wrapper class to store contact display information for children/parents
+     * Used by getChildrenFromRelationships() and getParentsFromRelationships()
+     */
+    public class ChildContact {
+        @AuraEnabled public String displayName;
+        @AuraEnabled public String contactId;
+
+        public ChildContact(String displayName, String contactId) {
+            this.displayName = displayName;
+            this.contactId = contactId;
+        }
     }
 }

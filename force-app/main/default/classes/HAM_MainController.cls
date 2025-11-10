@@ -10,6 +10,7 @@
 *==============================================================================
 * 1.0 | July 7, 2025 |  Sachin | Initial Version
 * 1.1 | Sept 04, 2025 |  Sachin |  Done as part of Optimization
+* 1.2 | Oct 30, 2025 |  Sachin |  create a new method to fetch primary consitutent type
 **/
 
 public with sharing class HAM_MainController {
@@ -46,5 +47,29 @@ public with sharing class HAM_MainController {
             currentUserContactId = (portalUsr != null && !portalUsr.isEmpty()) ? portalUsr[0].ContactId : null;
         }
         return currentUserContactId;
+    }
+
+    /**
+     * @description: Fetches the 'ucinn_ascendv2__Primary_Contact_Type__c' field for a given Contact ID.
+     * @param contactId The ID of the Contact record to query.
+     * @return The value of the Primary Contact Type field (String), or null if the contact is not found.
+     */
+    @AuraEnabled(cacheable=true)
+    public static Contact getPrimaryContactType(Id contactId) {
+        if (contactId == null) {
+            return null;
+        }
+        Contact contactRecord = [
+            SELECT ucinn_ascendv2__Primary_Contact_Type__c
+            FROM Contact
+            WHERE Id = :contactId
+            LIMIT 1
+        ];
+
+        if (contactRecord != null) {
+            return contactRecord;
+        } else {
+            return null;
+        }
     }
 }
