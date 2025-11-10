@@ -18,7 +18,8 @@ export default class HamJEDIInvolvement extends LightningElement {
     // =========================================
     // Data model
     // =========================================
-    @track involvementDetails = [];  // full dataset
+    @track rawInvolvements = [];     // original unfiltered dataset from server
+    @track involvementDetails = [];  // full, sorted dataset; pagination slices from here
     @track pageInvolvements = [];    // current page rows
     @track displayColumns = [];
 
@@ -26,6 +27,17 @@ export default class HamJEDIInvolvement extends LightningElement {
     // UI Properties
     // =========================================
     @track activeSection = '';
+
+    // =========================================
+    // Advance Filters
+    // =========================================
+    @track showAdvanceFilters = false;
+    @track filterCategory = [];  // Array for multi-select
+    @track filterRole = '';
+    @track filterStartDate = '';
+    @track filterEndDate = '';
+    @track categoryOptions = [];
+    @track roleOptions = [];
 
     // =========================================
     // Sorting state
@@ -95,7 +107,7 @@ export default class HamJEDIInvolvement extends LightningElement {
 
         getInvolvements({ contactId: this.recordId, recordTypeId: this.recordTypeId })
             .then(result => {
-                this.involvementDetails = result || [];
+                const rows = result || [];
 
                 // Define columns for datatable
                 this.displayColumns = [
@@ -142,10 +154,41 @@ export default class HamJEDIInvolvement extends LightningElement {
                 ];
 
                 // Add record links for navigation
-                this.involvementDetails = this.involvementDetails.map(record => ({
+                const processedRows = rows.map(record => ({
                     ...record,
                     recordLink: `/${record.Id}`
                 }));
+
+                // Store original unfiltered data
+                this.rawInvolvements = [...processedRows];
+                this.involvementDetails = [...processedRows];
+
+                // Extract unique Categories for filter options (multi-select, no --None--)
+                const uniqueCategories = new Set();
+                processedRows.forEach(row => {
+                    if (row.HAM_Category__c) {
+                        uniqueCategories.add(row.HAM_Category__c);
+                    }
+                });
+                this.categoryOptions = Array.from(uniqueCategories).sort().map(cat => ({
+                    label: cat,
+                    value: cat
+                }));
+
+                // Extract unique Roles for filter options
+                const uniqueRoles = new Set();
+                processedRows.forEach(row => {
+                    if (row.ucinn_ascendv2__Role__c) {
+                        uniqueRoles.add(row.ucinn_ascendv2__Role__c);
+                    }
+                });
+                this.roleOptions = [
+                    { label: '--None--', value: '' },
+                    ...Array.from(uniqueRoles).sort().map(role => ({
+                        label: role,
+                        value: role
+                    }))
+                ];
 
                 this.finalizeDataSetup();
             })
@@ -171,11 +214,12 @@ export default class HamJEDIInvolvement extends LightningElement {
         this.pageNumber = 1;
         this.derivePage();
 
-        // Set active section
-        this.activeSection = this.tableTitle;
+        // Set active section - only open if there are records
+        this.activeSection = this.totalRecords > 0 ? this.tableTitle : '';
     }
 
     handleError() {
+        this.rawInvolvements = [];
         this.involvementDetails = [];
         this.pageInvolvements = [];
         this.totalRecords = 0;
@@ -241,5 +285,148 @@ export default class HamJEDIInvolvement extends LightningElement {
             let dateB = b.ucinn_ascendv2__Start_Date__c ? new Date(b.ucinn_ascendv2__Start_Date__c).getTime() : 0;
             return dateA - dateB;
         });
+    }
+
+    // =========================================
+    // Advance Filter Methods
+    // =========================================
+    toggleAdvanceFilters() {
+        this.showAdvanceFilters = !this.showAdvanceFilters;
+    }
+
+    handleCategoryChange(event) {
+        this.filterCategory = event.detail.value;
+    }
+
+    handleRoleChange(event) {
+        this.filterRole = event.detail.value;
+    }
+
+    handleStartDateChange(event) {
+        this.filterStartDate = event.target.value;
+    }
+
+    handleEndDateChange(event) {
+        this.filterEndDate = event.target.value;
+    }
+
+    handleSearchFilters() {
+        // Start with original unfiltered data
+        let filteredInvolvements = [...this.rawInvolvements];
+
+        // Apply Category Filter (multi-select)
+        if (this.filterCategory && this.filterCategory.length > 0) {
+            filteredInvolvements = filteredInvolvements.filter(involvement => {
+                return this.filterCategory.includes(involvement.HAM_Category__c);
+            });
+        }
+
+        // Apply Role Filter
+        if (this.filterRole) {
+            filteredInvolvements = filteredInvolvements.filter(involvement => {
+                return involvement.ucinn_ascendv2__Role__c === this.filterRole;
+            });
+        }
+
+        // Apply Date Filters (BOTH start date and end date must fall within filter range)
+        if (this.filterStartDate || this.filterEndDate) {
+            filteredInvolvements = filteredInvolvements.filter(involvement => {
+                const involvementStartDate = involvement.ucinn_ascendv2__Start_Date__c;
+                const involvementEndDate = involvement.ucinn_ascendv2__End_Date__c;
+
+                // Skip if no start date
+                if (!involvementStartDate) return false;
+
+                // Normalize involvement start date to date-only (strip time)
+                const invStartDateOnly = new Date(involvementStartDate);
+                invStartDateOnly.setHours(0, 0, 0, 0);
+                const invStartDateStr = invStartDateOnly.toISOString().split('T')[0];
+
+                // Normalize involvement end date if it exists
+                let invEndDateStr = null;
+                if (involvementEndDate) {
+                    const invEndDateOnly = new Date(involvementEndDate);
+                    invEndDateOnly.setHours(0, 0, 0, 0);
+                    invEndDateStr = invEndDateOnly.toISOString().split('T')[0];
+                }
+
+                // Scenario 1: Only Filter Start Date → from filter start date to today (inclusive)
+                if (this.filterStartDate && !this.filterEndDate) {
+                    const filterStartDateObj = new Date(this.filterStartDate);
+                    const filterStartDateStr = filterStartDateObj.toISOString().split('T')[0];
+                    const today = new Date();
+                    const todayStr = today.toISOString().split('T')[0];
+
+                    // BOTH start and end date must be in range
+                    const startInRange = invStartDateStr >= filterStartDateStr && invStartDateStr <= todayStr;
+                    if (!invEndDateStr) return startInRange; // If no end date, only check start
+                    const endInRange = invEndDateStr >= filterStartDateStr && invEndDateStr <= todayStr;
+                    return startInRange && endInRange;
+                }
+
+                // Scenario 2: Only Filter End Date → from beginning to filter end date (inclusive)
+                if (!this.filterStartDate && this.filterEndDate) {
+                    const filterEndDateObj = new Date(this.filterEndDate);
+                    const filterEndDateStr = filterEndDateObj.toISOString().split('T')[0];
+
+                    // BOTH start and end date must be in range
+                    const startInRange = invStartDateStr <= filterEndDateStr;
+                    if (!invEndDateStr) return startInRange; // If no end date, only check start
+                    const endInRange = invEndDateStr <= filterEndDateStr;
+                    return startInRange && endInRange;
+                }
+
+                // Scenario 3: Both Filter Start and End Date → specific range (both inclusive)
+                if (this.filterStartDate && this.filterEndDate) {
+                    const filterStartDateObj = new Date(this.filterStartDate);
+                    const filterStartDateStr = filterStartDateObj.toISOString().split('T')[0];
+                    const filterEndDateObj = new Date(this.filterEndDate);
+                    const filterEndDateStr = filterEndDateObj.toISOString().split('T')[0];
+
+                    // BOTH start and end date must be in range
+                    const startInRange = invStartDateStr >= filterStartDateStr && invStartDateStr <= filterEndDateStr;
+                    if (!invEndDateStr) return startInRange; // If no end date, only check start
+                    const endInRange = invEndDateStr >= filterStartDateStr && invEndDateStr <= filterEndDateStr;
+                    return startInRange && endInRange;
+                }
+
+                return true;
+            });
+        }
+
+        // Update involvementDetails with filtered data
+        this.involvementDetails = [...filteredInvolvements];
+        this.totalRecords = this.involvementDetails.length;
+
+        // Re-apply current sort
+        this.sortData(this.sortedBy, this.sortedDirection);
+
+        // Reset to page 1 and update display
+        this.pageNumber = 1;
+        this.derivePage();
+    }
+
+    handleClearFilters() {
+        // Clear filter values
+        this.filterCategory = [];  // Clear array for multi-select
+        this.filterRole = '';
+        this.filterStartDate = '';
+        this.filterEndDate = '';
+
+        // Reset to original unfiltered data
+        this.involvementDetails = [...this.rawInvolvements];
+        this.totalRecords = this.involvementDetails.length;
+
+        // Re-apply current sort
+        this.sortData(this.sortedBy, this.sortedDirection);
+
+        // Reset to page 1 and update display
+        this.pageNumber = 1;
+        this.derivePage();
+
+        // Keep active section open if records exist after clearing filters
+        if (this.totalRecords > 0) {
+            this.activeSection = this.tableTitle;
+        }
     }
 }
