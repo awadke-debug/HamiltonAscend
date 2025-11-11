@@ -4,14 +4,15 @@ import { CurrentPageReference } from 'lightning/navigation';
 import { NavigationMixin } from 'lightning/navigation';
 import getCampaignDetail from '@salesforce/apex/HAMJEDIPledgeBalanceController.getCampaignDetail';
 import getGivingByPurposeDetail from '@salesforce/apex/HAMJEDIPledgeBalanceController.getGivingByPurposeDetail';
+import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import badge1812 from '@salesforce/resourceUrl/HAMBadgeFor1812';
-import badge10to5 from '@salesforce/resourceUrl/HAM10To5';  
-import alumniCouncil from '@salesforce/resourceUrl/HAMAlumniCouncil'; 
-import chapelBell from '@salesforce/resourceUrl/HAMChapelBell'; 
-import CoperGuild from '@salesforce/resourceUrl/HAMCouperGuild'; 
-import founderCircle from '@salesforce/resourceUrl/HAMFoundersCircle'; 
-import jBABadge from '@salesforce/resourceUrl/HAMJBABadge'; 
-import trusteebadge from '@salesforce/resourceUrl/HAMTrusteeBadge'; 
+import badge10to5 from '@salesforce/resourceUrl/HAM10To5';
+import alumniCouncil from '@salesforce/resourceUrl/HAMAlumniCouncil';
+import chapelBell from '@salesforce/resourceUrl/HAMChapelBell';
+import CoperGuild from '@salesforce/resourceUrl/HAMCouperGuild';
+import founderCircle from '@salesforce/resourceUrl/HAMFoundersCircle';
+import jBABadge from '@salesforce/resourceUrl/HAMJBABadge';
+import trusteebadge from '@salesforce/resourceUrl/HAMTrusteeBadge';
 import formURL from '@salesforce/label/c.HAM_JEDI_Feedback_Link';
 
 export default class HamProspectGivingOverview extends LightningElement {
@@ -29,6 +30,13 @@ export default class HamProspectGivingOverview extends LightningElement {
     @track badgeFC = founderCircle;
     @track badgeForJBA = jBABadge;
     @track badgeTrustee = trusteebadge;
+
+    // =========================================
+    // Ask Pipeline Form Modal and Flow
+    // =========================================
+    @track isAskPipelineModalOpen = false;
+    @track askPipelineFlowInputVariables = [];
+    @track isFlowLoading = true;
 
     // =========================================
     // Giving by Designation Data & Pagination
@@ -398,5 +406,136 @@ export default class HamProspectGivingOverview extends LightningElement {
 
     navigateToHelp() {
         window.open(formURL, '_blank');
+    }
+
+    navigateToPresidentialBriefing() {
+        const baseUrl = window.location.origin;
+        const briefingUrl = `${baseUrl}/lightning/cmp/c__digitalBriefingPdfCmp?c__recordId=${this.recordId}`;
+        window.open(briefingUrl, '_blank');
+    }
+
+    // =========================================
+    // Ask Pipeline Form Modal Methods
+    // =========================================
+    openAskPipelineModal() {
+        const accountId = this.contactDetails?.AccountId;
+
+        if (!accountId) {
+            console.error('No Account ID found for this contact');
+            return;
+        }
+
+        this.askPipelineFlowInputVariables = [
+            {
+                name: 'recordId',
+                type: 'String',
+                value: accountId
+            }
+        ];
+
+        console.log('Ask Pipeline Flow Variables:', this.askPipelineFlowInputVariables);
+        this.isFlowLoading = true;
+        this.isAskPipelineModalOpen = true;
+    }
+
+    closeAskPipelineModal() {
+        this.isAskPipelineModalOpen = false;
+        this.isFlowLoading = true; // Reset for next time
+    }
+
+    handleAskPipelineFlowStatusChange(event) {
+        const status = event.detail.status;
+
+        // Hide spinner once flow starts rendering
+        if (status === 'STARTED' || status === 'PAUSED') {
+            this.isFlowLoading = false;
+        }
+
+        if (status === 'FINISHED' || status === 'FINISHED_SCREEN') {
+            this.closeAskPipelineModal();
+
+            // Show success toast
+            this.dispatchEvent(
+                new ShowToastEvent({
+                    title: 'Success',
+                    message: 'Ask Pipeline Form submitted successfully',
+                    variant: 'success'
+                })
+            );
+
+            // Refresh the contact data to reflect any changes
+            this.refreshAllData();
+        }
+    }
+
+    refreshContactData() {
+        if (!this.recordId) return;
+
+        this.loading = true;
+        searchProspectGivingDetails({ contactId: this.recordId })
+            .then(result => {
+                this.contactgivingrecord = result;
+                this.contactDetails = this.contactgivingrecord.objRecord;
+                this.designationDetails = this.contactgivingrecord.designations;
+
+                if (this.designationDetails) {
+                    this.designationDetails = this.designationDetails.map(fund => ({
+                        ...fund,
+                        recordLink: `/lightning/r/${fund.Id}/view`
+                    }));
+                }
+            })
+            .catch(error => {
+                console.error('Error refreshing contact data:', error);
+            })
+            .finally(() => {
+                this.loading = false;
+            });
+    }
+
+    // Optimized refresh that runs all API calls in parallel
+    refreshAllData() {
+        if (!this.recordId) return;
+
+        this.loading = true;
+
+        Promise.all([
+            searchProspectGivingDetails({ contactId: this.recordId }),
+            getGivingByPurposeDetail({ contactId: this.recordId }),
+            getCampaignDetail({ contactId: this.recordId })
+        ])
+        .then(([prospectResult, givingResult, campaignResult]) => {
+            // Process Prospect Giving Details
+            this.contactgivingrecord = prospectResult;
+            this.contactDetails = this.contactgivingrecord.objRecord;
+            this.designationDetails = this.contactgivingrecord.designations;
+
+            if (this.designationDetails) {
+                this.designationDetails = this.designationDetails.map(fund => ({
+                    ...fund,
+                    recordLink: `/lightning/r/${fund.Id}/view`
+                }));
+            }
+
+            // Process Giving by Purpose Details
+            this.allGivingDetails = givingResult || [];
+            this.givingTotalRecords = this.allGivingDetails.length;
+            this.sortGivingData(this.givingSortedBy, this.givingSortedDirection);
+            this.givingPageNumber = 1;
+            this.deriveGivingPage();
+
+            // Process Campaign Details
+            this.allCampaignDetails = campaignResult || [];
+            this.campaignTotalRecords = this.allCampaignDetails.length;
+            this.sortCampaignData(this.campaignSortedBy, this.campaignSortedDirection);
+            this.campaignPageNumber = 1;
+            this.deriveCampaignPage();
+        })
+        .catch(error => {
+            console.error('Error refreshing all data:', error);
+        })
+        .finally(() => {
+            this.loading = false;
+        });
     }
 }

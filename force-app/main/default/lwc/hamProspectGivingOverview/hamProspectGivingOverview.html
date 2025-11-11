@@ -13,6 +13,8 @@
                      <div class="slds-grid slds-wrap slds-gutters slds-p-around_small">
                         <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2"></div>
                         <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 slds-text-align_right">
+                            <lightning-button label="Ask Pipeline Form" onclick={openAskPipelineModal} class="slds-m-right_x-small"></lightning-button>
+                            <lightning-button label="Presidential Briefing" onclick={navigateToPresidentialBriefing} class="slds-m-right_x-small"></lightning-button>
                             <lightning-button label="Share Feedback" onclick={navigateToHelp}></lightning-button>
                         </div>
                     </div>
@@ -210,5 +212,30 @@
                 </template>
             </lightning-accordion-section>
         </lightning-accordion>
+
+        <!-- Modal for Ask Pipeline Form Flow -->
+        <template if:true={isAskPipelineModalOpen}>
+            <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open slds-modal_small">
+                <div class="slds-modal__container">
+                    <header class="slds-modal__header">
+                        <h2 class="slds-modal__title">Ask Pipeline Form</h2>
+                        <button class="slds-button slds-button_icon slds-modal__close" title="Close" onclick={closeAskPipelineModal}>
+                            <lightning-icon icon-name="utility:close" alternative-text="close" size="small"></lightning-icon>
+                        </button>
+                    </header>
+                    <div class="slds-modal__content slds-p-around_medium" style="min-height: 200px; position: relative;">
+                        <template if:true={isFlowLoading}>
+                            <lightning-spinner alternative-text="Loading form..." size="medium" variant="brand"></lightning-spinner>
+                        </template>
+                        <lightning-flow
+                            flow-api-name="HAM_Ask_Pipeline_Form"
+                            flow-input-variables={askPipelineFlowInputVariables}
+                            onstatuschange={handleAskPipelineFlowStatusChange}>
+                        </lightning-flow>
+                    </div>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </template>
     </div>
 </template>
