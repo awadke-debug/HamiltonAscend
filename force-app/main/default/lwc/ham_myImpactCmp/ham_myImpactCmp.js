@@ -122,7 +122,7 @@ export default class Ham_myImpactCmp extends LightningElement {
                     })
                 );
                  this.loading = false;
-            } else {                 
+            } else {  
                 try {
                     this.loading = true;
                     this.processContactData(data);
@@ -252,17 +252,23 @@ export default class Ham_myImpactCmp extends LightningElement {
         }
 
         if (data.degree && Array.isArray(data.degree)) {
+            if(data.degree.length){
+            const majorsArray = data.degree[0].majors ? data.degree[0].majors : '-'
+            const minorsArray = data.degree[0].minors ? data.degree[0].minors : '-'
 
-           const majorsArray = data.degree[0].majors;
-           const minorsArray = data.degree[0].minors;
-
-           let majors = majorsArray.filter(major => major !== null && major !== undefined && major.trim() != '');
-           let minors = minorsArray.filter(minor => minor !== null && minor !== undefined && minor.trim() != '');
-            
-            this.majorMinor = {
-                majors: majors.join('; '),
-                minors: minors.join('; ')
-            };
+            let majors = majorsArray.filter(major => major !== null && major !== undefined && major.trim() != '');
+            let minors = minorsArray.filter(minor => minor !== null && minor !== undefined && minor.trim() != '');
+                
+                this.majorMinor = {
+                    majors: Array.isArray(majors) && majors.length ? majors.join('; ') : '-',
+                    minors: Array.isArray(minors) && minors.length ? minors.join('; ') : '-'
+                };
+            }else{
+                this.majorMinor = {
+                    majors: '-',
+                    minors: '-'
+                };
+            }
         }
 
         if (data.otherInfo && data.otherInfo.facebook) {
