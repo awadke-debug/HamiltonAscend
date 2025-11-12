@@ -3,11 +3,11 @@
     <apiVersion>64.0</apiVersion>
     <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
     <constants>
-        <description>as of now this is single person, eventually it will be team.</description>
+        <description>as of no this is single person, eventually it will be team.</description>
         <name>OwnerIDForTaskAssignment</name>
         <dataType>String</dataType>
         <value>
-            <stringValue>005U1000005aCcTIAU</stringValue>
+            <stringValue>00GVG000006P9Sr2AK</stringValue>
         </value>
     </constants>
     <decisions>
@@ -140,7 +140,9 @@
             <label>Count &gt; 0</label>
         </rules>
     </decisions>
-    <description>Ensures Attendee records are always linked to the right Contact and reduces manual cleanup. Tasks are created for the Events Team whenever the system cannot resolve conflicts automatically.</description>
+    <description>Ensures Attendee records are always linked to the right Contact and reduces manual cleanup. Tasks are created for the Events Team whenever the system cannot resolve conflicts automatically.
+
+Added condition to not run for guest registrations .</description>
     <environments>Default</environments>
     <interviewLabel>HAM Contact And Last Name Update {!$Flow.CurrentDateTime}</interviewLabel>
     <label>HAM Contact And Last Name Update</label>
@@ -280,7 +282,7 @@
         <connector>
             <targetReference>C1_Last_Name_Blank</targetReference>
         </connector>
-        <filterLogic>or</filterLogic>
+        <filterLogic>(1 OR 2 ) AND 3</filterLogic>
         <filters>
             <field>conference360__Last_Name2__c</field>
             <operator>IsNull</operator>
@@ -295,11 +297,18 @@
                 <booleanValue>true</booleanValue>
             </value>
         </filters>
+        <filters>
+            <field>HAM_Event_Item_Public_Item_Name__c</field>
+            <operator>NotEqualTo</operator>
+            <value>
+                <stringValue>Guest Registration</stringValue>
+            </value>
+        </filters>
         <object>conference360__Attendee__c</object>
         <recordTriggerType>CreateAndUpdate</recordTriggerType>
         <triggerType>RecordAfterSave</triggerType>
     </start>
-    <status>Draft</status>
+    <status>Active</status>
     <variables>
         <name>currentItem_Filter_final_collection</name>
         <dataType>SObject</dataType>
