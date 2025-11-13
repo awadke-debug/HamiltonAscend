@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Layout xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>ucinn_ascendv2__Designation__c-ucinn_ascendv2__Designation Layout</fullName>
     <excludeButtons>ChangeOwnerOne</excludeButtons>
     <excludeButtons>Delete</excludeButtons>
     <excludeButtons>OpenSlackRecordChannel</excludeButtons>
@@ -17,11 +18,35 @@
             </layoutItems>
             <layoutItems>
                 <behavior>Edit</behavior>
-                <field>ucinn_ascendv2__Fund_Name__c</field>
+                <field>ucinn_ascendv2__Parent_Designation__c</field>
             </layoutItems>
             <layoutItems>
                 <behavior>Edit</behavior>
-                <field>HAM_Fund_Comments__c</field>
+                <field>ucinn_ascendv2__G_L_Account__c</field>
+            </layoutItems>
+            <layoutItems>
+                <behavior>Edit</behavior>
+                <field>HAM_Match__c</field>
+            </layoutItems>
+            <layoutItems>
+                <behavior>Edit</behavior>
+                <field>HAM_Match_Type__c</field>
+            </layoutItems>
+            <layoutItems>
+                <behavior>Edit</behavior>
+                <field>HAM_Match_Expiration_Date__c</field>
+            </layoutItems>
+            <layoutItems>
+                <behavior>Edit</behavior>
+                <field>HAM_Maximum_Match__c</field>
+            </layoutItems>
+            <layoutItems>
+                <behavior>Edit</behavior>
+                <field>HAM_Match_Eligible__c</field>
+            </layoutItems>
+            <layoutItems>
+                <behavior>Edit</behavior>
+                <field>HAM_Fund_Fiscal_Year__c</field>
             </layoutItems>
         </layoutColumns>
         <layoutColumns>
@@ -30,16 +55,20 @@
                 <field>RecordTypeId</field>
             </layoutItems>
             <layoutItems>
-                <behavior>Edit</behavior>
-                <field>HAM_Fund_Status__c</field>
+                <behavior>Readonly</behavior>
+                <field>ucinn_ascendv2__Status_Formula__c</field>
             </layoutItems>
             <layoutItems>
                 <behavior>Edit</behavior>
-                <field>HAM_Fund_Status_Date__c</field>
+                <field>ucinn_ascendv2__G_L_Effective_Date__c</field>
             </layoutItems>
             <layoutItems>
                 <behavior>Edit</behavior>
-                <field>HAM_Fund_Reporting_Status__c</field>
+                <field>ucinn_ascendv2__G_L_Expiration_Date__c</field>
+            </layoutItems>
+            <layoutItems>
+                <behavior>Edit</behavior>
+                <field>ucinn_ascendv2__Override_Status__c</field>
             </layoutItems>
             <layoutItems>
                 <behavior>Edit</behavior>
@@ -47,24 +76,10 @@
             </layoutItems>
             <layoutItems>
                 <behavior>Edit</behavior>
-                <field>HAM_Match_Eligible__c</field>
+                <field>HAM_Designation_Comments__c</field>
             </layoutItems>
         </layoutColumns>
         <style>TwoColumnsTopToBottom</style>
-    </layoutSections>
-    <layoutSections>
-        <customLabel>true</customLabel>
-        <detailHeading>false</detailHeading>
-        <editHeading>true</editHeading>
-        <label>Custom Links</label>
-        <layoutColumns>
-            <layoutItems>
-                <customLink>HAM_Fund_OnBase_Folder</customLink>
-            </layoutItems>
-        </layoutColumns>
-        <layoutColumns/>
-        <layoutColumns/>
-        <style>CustomLinks</style>
     </layoutSections>
     <layoutSections>
         <customLabel>true</customLabel>
@@ -74,7 +89,7 @@
         <layoutColumns>
             <layoutItems>
                 <behavior>Edit</behavior>
-                <field>ucinn_ascendv2__Acknowledgement_Description__c</field>
+                <field>ucinn_ascendv2__Designation_Name__c</field>
             </layoutItems>
             <layoutItems>
                 <behavior>Edit</behavior>
@@ -84,8 +99,10 @@
                 <behavior>Edit</behavior>
                 <field>ucinn_ascendv2__Fund_Group__c</field>
             </layoutItems>
-        </layoutColumns>
-        <layoutColumns>
+            <layoutItems>
+                <behavior>Edit</behavior>
+                <field>ucinn_ascendv2__Payroll_Code__c</field>
+            </layoutItems>
             <layoutItems>
                 <behavior>Edit</behavior>
                 <field>ucinn_ascendv2__Program_Code__c</field>
@@ -93,6 +110,28 @@
             <layoutItems>
                 <behavior>Edit</behavior>
                 <field>ucinn_ascendv2__Program_Code_Descripton__c</field>
+            </layoutItems>
+        </layoutColumns>
+        <layoutColumns>
+            <layoutItems>
+                <behavior>Edit</behavior>
+                <field>ucinn_ascendv2__CASE_Type__c</field>
+            </layoutItems>
+            <layoutItems>
+                <behavior>Required</behavior>
+                <field>ucinn_ascendv2__CASE_Purpose_v1__c</field>
+            </layoutItems>
+            <layoutItems>
+                <behavior>Edit</behavior>
+                <field>ucinn_ascendv2__Areas_of_Giving_CASE_Type__c</field>
+            </layoutItems>
+            <layoutItems>
+                <behavior>Edit</behavior>
+                <field>HAM_CASE_VSE_Type__c</field>
+            </layoutItems>
+            <layoutItems>
+                <behavior>Edit</behavior>
+                <field>HAM_CASE_VSE_Purpose__c</field>
             </layoutItems>
         </layoutColumns>
         <style>TwoColumnsLeftToRight</style>
@@ -139,100 +178,45 @@
         <customLabel>true</customLabel>
         <detailHeading>true</detailHeading>
         <editHeading>true</editHeading>
-        <label>Endowment Information</label>
+        <label>Workday Financials</label>
         <layoutColumns>
             <layoutItems>
                 <behavior>Edit</behavior>
-                <field>HAM_Kirkland_Endowment__c</field>
+                <field>HAM_Workday_Fund__c</field>
             </layoutItems>
             <layoutItems>
                 <behavior>Edit</behavior>
-                <field>ucinn_ascendv2__Fund_Type__c</field>
+                <field>HAM_Workday_Cost_Center__c</field>
             </layoutItems>
             <layoutItems>
                 <behavior>Edit</behavior>
-                <field>ucinn_ascendv2__Minimum_Gift_Amount__c</field>
+                <field>HAM_Workday_Spend_Category__c</field>
             </layoutItems>
             <layoutItems>
                 <behavior>Edit</behavior>
-                <field>HAM_History__c</field>
-            </layoutItems>
-            <layoutItems>
-                <behavior>Edit</behavior>
-                <field>HAM_Restrictions__c</field>
+                <field>HAM_Workday_Gift_ID__c</field>
             </layoutItems>
         </layoutColumns>
         <layoutColumns>
             <layoutItems>
                 <behavior>Edit</behavior>
-                <field>HAM_FA_Code__c</field>
+                <field>HAM_Workday_Program__c</field>
             </layoutItems>
             <layoutItems>
                 <behavior>Edit</behavior>
-                <field>HAM_Reporting_Occasion__c</field>
+                <field>HAM_Workday_Ledger_Account__c</field>
             </layoutItems>
             <layoutItems>
                 <behavior>Edit</behavior>
-                <field>HAM_Scholarship_Type__c</field>
+                <field>HAM_Workday_Revenue_Category__c</field>
             </layoutItems>
             <layoutItems>
                 <behavior>Edit</behavior>
-                <field>HAM_Professorship_Type__c</field>
+                <field>HAM_Workday_Grant__c</field>
             </layoutItems>
             <layoutItems>
                 <behavior>Edit</behavior>
-                <field>HAM_Catalog_Description__c</field>
-            </layoutItems>
-            <layoutItems>
-                <behavior>Edit</behavior>
-                <field>HAM_Circulation_Date__c</field>
-            </layoutItems>
-            <layoutItems>
-                <behavior>Edit</behavior>
-                <field>HAM_Date_Established__c</field>
-            </layoutItems>
-            <layoutItems>
-                <behavior>Edit</behavior>
-                <field>HAM_Governing_Fund_Details__c</field>
-            </layoutItems>
-            <layoutItems>
-                <behavior>Edit</behavior>
-                <field>HAM_Governing_Instruments__c</field>
-            </layoutItems>
-        </layoutColumns>
-        <style>TwoColumnsLeftToRight</style>
-    </layoutSections>
-    <layoutSections>
-        <customLabel>true</customLabel>
-        <detailHeading>true</detailHeading>
-        <editHeading>true</editHeading>
-        <label>Summary Endowment Values</label>
-        <layoutColumns>
-            <layoutItems>
-                <behavior>Edit</behavior>
-                <field>ucinn_ascendv2__Endowment_Book_Value__c</field>
-            </layoutItems>
-            <layoutItems>
-                <behavior>Edit</behavior>
-                <field>ucinn_ascendv2__Endowment_Market_Value__c</field>
-            </layoutItems>
-            <layoutItems>
-                <behavior>Edit</behavior>
-                <field>ucinn_ascendv2__Endowment_Income__c</field>
-            </layoutItems>
-        </layoutColumns>
-        <layoutColumns>
-            <layoutItems>
-                <behavior>Edit</behavior>
-                <field>HAM_Endowment_Book_Value_Date__c</field>
-            </layoutItems>
-            <layoutItems>
-                <behavior>Edit</behavior>
-                <field>HAM_Endowment_Market_Value_Date__c</field>
-            </layoutItems>
-            <layoutItems>
-                <behavior>Edit</behavior>
-                <field>HAM_Endowment_Spending_Distribution_Date__c</field>
+                <field>HAM_Workday_Initiative__c</field>
             </layoutItems>
         </layoutColumns>
         <style>TwoColumnsLeftToRight</style>
@@ -268,6 +252,16 @@
         </layoutColumns>
         <style>TwoColumnsTopToBottom</style>
     </layoutSections>
+    <layoutSections>
+        <customLabel>true</customLabel>
+        <detailHeading>false</detailHeading>
+        <editHeading>true</editHeading>
+        <label>Custom Links</label>
+        <layoutColumns />
+        <layoutColumns />
+        <layoutColumns />
+        <style>CustomLinks</style>
+    </layoutSections>
     <platformActionList>
         <actionListContext>Record</actionListContext>
         <platformActionListItems>
@@ -297,10 +291,63 @@
         </platformActionListItems>
     </platformActionList>
     <relatedLists>
+        <excludeButtons>MassChangeOwner</excludeButtons>
+        <excludeButtons>New</excludeButtons>
         <fields>NAME</fields>
-        <fields>ucinn_ascendv2__Designation_Name__c</fields>
-        <fields>ucinn_ascendv2__FASB_Type__c</fields>
-        <relatedList>ucinn_ascendv2__Designation__c.ucinn_ascendv2__Parent_Designation__c</relatedList>
+        <fields>ucinn_ascendv2__Amount__c</fields>
+        <fields>ucinn_ascendv2__Amount_Paid_to_Date_Roll_Up__c</fields>
+        <fields>ucinn_ascendv2__Remaining_Amount_Due_Formula__c</fields>
+        <fields>ucinn_ascendv2__Contact__c</fields>
+        <fields>ucinn_ascendv2__Account__c</fields>
+        <fields>ucinn_ascendv2__Number_of_Payments__c</fields>
+        <fields>ucinn_ascendv2__Number_of_Payments_to_Date_Roll_Up__c</fields>
+        <fields>ucinn_ascendv2__Opportunity__c</fields>
+        <fields>ucinn_ascendv2__Campaign__c</fields>
+        <relatedList>ucinn_ascendv2__Designation_Detail__c.ucinn_ascendv2__Designation__c</relatedList>
+    </relatedLists>
+    <relatedLists>
+        <excludeButtons>MassChangeOwner</excludeButtons>
+        <excludeButtons>New</excludeButtons>
+        <fields>NAME</fields>
+        <fields>ucinn_ascendv2__Transaction_Type__c</fields>
+        <fields>ucinn_ascendv2__Tender_Type_Formula__c</fields>
+        <fields>ucinn_ascendv2__Payment_Amount__c</fields>
+        <fields>ucinn_ascendv2__Credit_Date__c</fields>
+        <fields>ucinn_ascendv2__Contact__c</fields>
+        <fields>ucinn_ascendv2__Account__c</fields>
+        <fields>ucinn_ascendv2__Non_Gift_Amount__c</fields>
+        <fields>ucinn_ascendv2__Opportunity__c</fields>
+        <fields>ucinn_ascendv2__Campaign__c</fields>
+        <relatedList>ucinn_ascendv2__Payment__c.ucinn_ascendv2__Designation__c</relatedList>
+        <sortField>ucinn_ascendv2__Credit_Date__c</sortField>
+        <sortOrder>Asc</sortOrder>
+    </relatedLists>
+    <relatedLists>
+        <excludeButtons>MassChangeOwner</excludeButtons>
+        <excludeButtons>New</excludeButtons>
+        <fields>NAME</fields>
+        <fields>ucinn_ascendv2__Amount__c</fields>
+        <fields>CREATED_DATE</fields>
+        <fields>ucinn_ascendv2__Expected_Date__c</fields>
+        <fields>ucinn_ascendv2__Payment_Amount__c</fields>
+        <relatedList>ucinn_ascendv2__Installment__c.ucinn_ascendv2__Designation__c</relatedList>
+    </relatedLists>
+    <relatedLists>
+        <excludeButtons>MassChangeOwner</excludeButtons>
+        <excludeButtons>New</excludeButtons>
+        <fields>NAME</fields>
+        <fields>ucinn_ascendv2__Credit_Type__c</fields>
+        <fields>ucinn_ascendv2__Credit_Amount__c</fields>
+        <fields>ucinn_ascendv2__Credit_Date_Formula__c</fields>
+        <fields>ucinn_ascendv2__Source__c</fields>
+        <fields>ucinn_ascendv2__Contact__c</fields>
+        <fields>ucinn_ascendv2__Account__c</fields>
+        <fields>ucinn_ascendv2__Payment__c</fields>
+        <fields>ucinn_ascendv2__Opportunity__c</fields>
+        <fields>ucinn_ascendv2__Designation_Detail__c</fields>
+        <relatedList>ucinn_ascendv2__Hard_and_Soft_Credit__c.ucinn_ascendv2__Designation__c</relatedList>
+        <sortField>ucinn_ascendv2__Credit_Date_Formula__c</sortField>
+        <sortOrder>Asc</sortOrder>
     </relatedLists>
     <relatedLists>
         <excludeButtons>MassChangeOwner</excludeButtons>
@@ -314,25 +361,18 @@
         <relatedList>ucinn_ascendv2__Endowment_Financials__c.ucinn_ascendv2__Designation_Code__c</relatedList>
     </relatedLists>
     <relatedLists>
-        <excludeButtons>MassChangeOwner</excludeButtons>
         <fields>NAME</fields>
-        <fields>ucinn_ascendv2__Type__c</fields>
-        <fields>ucinn_ascendv2__Contact__c</fields>
-        <fields>HAM_Anonymous__c</fields>
-        <fields>HAM_Sort_Fiscal_Year__c</fields>
-        <fields>HAM_Award_Session__c</fields>
-        <relatedList>ucinn_ascendv2__Designation_Beneficiary__c.ucinn_ascendv2__Designation__c</relatedList>
+        <fields>HAM_Recipient_Organization__c</fields>
+        <fields>HAM_Distribution_Amount__c</fields>
+        <fields>HAM_Distribution_Date__c</fields>
+        <relatedList>HAM_HDAF_Distributions__c.HAM_Designation__c</relatedList>
     </relatedLists>
     <relatedLists>
         <fields>NAME</fields>
-        <fields>ucinn_ascendv2__Contact_Stewardee__c</fields>
-        <fields>ucinn_ascendv2__Account_Stewardee__c</fields>
-        <fields>ucinn_ascendv2__Role__c</fields>
-        <fields>HAM_Stewardee_is_Deceased__c</fields>
-        <fields>ucinn_ascendv2__Status__c</fields>
-        <fields>ucinn_ascendv2__Is_Anonymous__c</fields>
-        <fields>HAM_Reporting_Type__c</fields>
-        <relatedList>ucinn_ascendv2__Designation_Stewardship__c.ucinn_ascendv2__Designation__c</relatedList>
+        <fields>HAM_Campaign_Priority__c</fields>
+        <fields>HAM_Priority_Start_Date__c</fields>
+        <fields>HAM_Priority_End_Date__c</fields>
+        <relatedList>HAM_Designation_Priority__c.HAM_Designation__c</relatedList>
     </relatedLists>
     <relatedLists>
         <relatedList>RelatedFileList</relatedList>
@@ -354,7 +394,7 @@
     <showRunAssignmentRulesCheckbox>false</showRunAssignmentRulesCheckbox>
     <showSubmitAndAttachButton>false</showSubmitAndAttachButton>
     <summaryLayout>
-        <masterLabel>00hU1000000M9Hv</masterLabel>
+        <masterLabel>00h3t00000aNGW9</masterLabel>
         <sizeX>4</sizeX>
         <sizeY>0</sizeY>
         <summaryLayoutStyle>Default</summaryLayoutStyle>
