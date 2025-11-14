@@ -131,12 +131,18 @@ export default class HamJEDIInvolvement extends LightningElement {
                         label: 'Start Date',
                         fieldName: 'ucinn_ascendv2__Start_Date__c',
                         type: 'date',
+                        typeAttributes: {
+                            timeZone: 'UTC'
+                        },
                         sortable: true
                     },
                     {
                         label: 'End Date',
                         fieldName: 'ucinn_ascendv2__End_Date__c',
                         type: 'date',
+                        typeAttributes: {
+                            timeZone: 'UTC'
+                        },
                         sortable: true
                     },
                     {
@@ -290,6 +296,11 @@ export default class HamJEDIInvolvement extends LightningElement {
     // =========================================
     // Advance Filter Methods
     // =========================================
+    // Dynamic button label for Advance Filters
+    get advanceFiltersButtonLabel() {
+        return this.showAdvanceFilters ? 'Hide Advance Filters' : 'Show Advance Filters';
+    }
+
     toggleAdvanceFilters() {
         this.showAdvanceFilters = !this.showAdvanceFilters;
     }
@@ -337,56 +348,30 @@ export default class HamJEDIInvolvement extends LightningElement {
                 // Skip if no start date
                 if (!involvementStartDate) return false;
 
-                // Normalize involvement start date to date-only (strip time)
-                const invStartDateOnly = new Date(involvementStartDate);
-                invStartDateOnly.setHours(0, 0, 0, 0);
-                const invStartDateStr = invStartDateOnly.toISOString().split('T')[0];
-
-                // Normalize involvement end date if it exists
-                let invEndDateStr = null;
-                if (involvementEndDate) {
-                    const invEndDateOnly = new Date(involvementEndDate);
-                    invEndDateOnly.setHours(0, 0, 0, 0);
-                    invEndDateStr = invEndDateOnly.toISOString().split('T')[0];
-                }
-
-                // Scenario 1: Only Filter Start Date → from filter start date to today (inclusive)
+                // Scenario 1: Only Filter Start Date → from filter start date onwards (no upper limit)
                 if (this.filterStartDate && !this.filterEndDate) {
-                    const filterStartDateObj = new Date(this.filterStartDate);
-                    const filterStartDateStr = filterStartDateObj.toISOString().split('T')[0];
-                    const today = new Date();
-                    const todayStr = today.toISOString().split('T')[0];
-
-                    // BOTH start and end date must be in range
-                    const startInRange = invStartDateStr >= filterStartDateStr && invStartDateStr <= todayStr;
-                    if (!invEndDateStr) return startInRange; // If no end date, only check start
-                    const endInRange = invEndDateStr >= filterStartDateStr && invEndDateStr <= todayStr;
+                    // BOTH start and end date must be >= filter start date
+                    const startInRange = involvementStartDate >= this.filterStartDate;
+                    if (!involvementEndDate) return startInRange; // If no end date, only check start
+                    const endInRange = involvementEndDate >= this.filterStartDate;
                     return startInRange && endInRange;
                 }
 
                 // Scenario 2: Only Filter End Date → from beginning to filter end date (inclusive)
                 if (!this.filterStartDate && this.filterEndDate) {
-                    const filterEndDateObj = new Date(this.filterEndDate);
-                    const filterEndDateStr = filterEndDateObj.toISOString().split('T')[0];
-
-                    // BOTH start and end date must be in range
-                    const startInRange = invStartDateStr <= filterEndDateStr;
-                    if (!invEndDateStr) return startInRange; // If no end date, only check start
-                    const endInRange = invEndDateStr <= filterEndDateStr;
+                    // BOTH start and end date must be <= filter end date
+                    const startInRange = involvementStartDate <= this.filterEndDate;
+                    if (!involvementEndDate) return startInRange; // If no end date, only check start
+                    const endInRange = involvementEndDate <= this.filterEndDate;
                     return startInRange && endInRange;
                 }
 
                 // Scenario 3: Both Filter Start and End Date → specific range (both inclusive)
                 if (this.filterStartDate && this.filterEndDate) {
-                    const filterStartDateObj = new Date(this.filterStartDate);
-                    const filterStartDateStr = filterStartDateObj.toISOString().split('T')[0];
-                    const filterEndDateObj = new Date(this.filterEndDate);
-                    const filterEndDateStr = filterEndDateObj.toISOString().split('T')[0];
-
                     // BOTH start and end date must be in range
-                    const startInRange = invStartDateStr >= filterStartDateStr && invStartDateStr <= filterEndDateStr;
-                    if (!invEndDateStr) return startInRange; // If no end date, only check start
-                    const endInRange = invEndDateStr >= filterStartDateStr && invEndDateStr <= filterEndDateStr;
+                    const startInRange = involvementStartDate >= this.filterStartDate && involvementStartDate <= this.filterEndDate;
+                    if (!involvementEndDate) return startInRange; // If no end date, only check start
+                    const endInRange = involvementEndDate >= this.filterStartDate && involvementEndDate <= this.filterEndDate;
                     return startInRange && endInRange;
                 }
 
