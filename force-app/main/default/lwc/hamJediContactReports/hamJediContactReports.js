@@ -84,6 +84,11 @@ export default class HamJediContactReports extends LightningElement {
         ];
     }
 
+    // Dynamic button label for Advance Filters
+    get advanceFiltersButtonLabel() {
+        return this.showAdvanceFilters ? 'Hide Advance Filters' : 'Show Advance Filters';
+    }
+
     // =========================================
     // Datatable columns (sorting supported)
     // =========================================
