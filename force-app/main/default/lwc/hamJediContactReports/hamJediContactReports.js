@@ -123,7 +123,7 @@ export default class HamJediContactReports extends LightningElement {
         },
         {
             label: 'Contact Report Body',
-            fieldName: 'ucinn_ascendv2__Contact_Report_Body__c',
+            fieldName: 'cleanContactReportBody',
             type: 'text',
             sortable: true
         },
@@ -172,7 +172,8 @@ export default class HamJediContactReports extends LightningElement {
                 const processedRows = rows.map(r => ({
                     ...r,
                     recordLink: `/lightning/r/${r.Id}/view`,
-                    LastModifiedByName: r.LastModifiedBy?.Name || ''
+                    LastModifiedByName: r.LastModifiedBy?.Name || '',
+                    cleanContactReportBody: this.stripHTML(r.ucinn_ascendv2__Contact_Report_Body__c)
                 }));
 
                 // Store original unfiltered data
@@ -360,5 +361,15 @@ export default class HamJediContactReports extends LightningElement {
         if (this.totalRecords > 0) {
             this.activeReportSection = 'Contact Reports';
         }
+    }
+
+    // =========================================
+    // Helper Methods
+    // =========================================
+    stripHTML(html) {
+        if (!html) return '';
+        const div = document.createElement('div');
+        div.innerHTML = html;
+        return div.textContent || div.innerText || '';
     }
 }
