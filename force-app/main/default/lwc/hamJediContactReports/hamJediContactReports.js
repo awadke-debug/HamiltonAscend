@@ -124,7 +124,7 @@ export default class HamJediContactReports extends LightningElement {
         {
             label: 'Contact Report Body',
             fieldName: 'ucinn_ascendv2__Contact_Report_Body__c',
-            type: 'richText',
+            type: 'text',
             sortable: true
         },
         {
