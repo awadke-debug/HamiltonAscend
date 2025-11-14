@@ -126,6 +126,9 @@ export default class HamJediContactReports extends LightningElement {
             label: 'Date',
             fieldName: 'ucinn_ascendv2__Date__c',
             type: 'date',
+            typeAttributes: {
+                timeZone: 'UTC'
+            },
             sortable: true
         },
         {
@@ -293,34 +296,19 @@ export default class HamJediContactReports extends LightningElement {
                 const reportDate = report.ucinn_ascendv2__Date__c;
                 if (!reportDate) return false;
 
-                // Normalize report date to date-only (strip time) for proper comparison
-                const reportDateOnly = new Date(reportDate);
-                reportDateOnly.setHours(0, 0, 0, 0);
-                const reportDateStr = reportDateOnly.toISOString().split('T')[0];
-
-                // Scenario 1: Only Start Date → from start date to today (inclusive)
+                // Scenario 1: Only Start Date → from start date onwards (no upper limit)
                 if (this.filterStartDate && !this.filterEndDate) {
-                    const startDateObj = new Date(this.filterStartDate);
-                    const startDateStr = startDateObj.toISOString().split('T')[0];
-                    const today = new Date();
-                    const todayStr = today.toISOString().split('T')[0];
-                    return reportDateStr >= startDateStr && reportDateStr <= todayStr;
+                    return reportDate >= this.filterStartDate;
                 }
 
                 // Scenario 2: Only End Date → from beginning to end date (inclusive)
                 if (!this.filterStartDate && this.filterEndDate) {
-                    const endDateObj = new Date(this.filterEndDate);
-                    const endDateStr = endDateObj.toISOString().split('T')[0];
-                    return reportDateStr <= endDateStr;
+                    return reportDate <= this.filterEndDate;
                 }
 
                 // Scenario 3: Both Start and End Date → specific range (both inclusive)
                 if (this.filterStartDate && this.filterEndDate) {
-                    const startDateObj = new Date(this.filterStartDate);
-                    const startDateStr = startDateObj.toISOString().split('T')[0];
-                    const endDateObj = new Date(this.filterEndDate);
-                    const endDateStr = endDateObj.toISOString().split('T')[0];
-                    return reportDateStr >= startDateStr && reportDateStr <= endDateStr;
+                    return reportDate >= this.filterStartDate && reportDate <= this.filterEndDate;
                 }
 
                 return true;
