@@ -1,0 +1,12 @@
+<template>
+    <div style="display: flex; align-items: center; gap: 0.25rem;">
+        <div>{resultCoverageInfo}</div>
+        <lightning-button-icon icon-name="utility:chevronleft" alternative-text="Previous" size="medium"
+            title="Previous" onclick={handlePreviousPage}></lightning-button-icon>
+
+        <div>{resultPageInfo}</div>
+
+        <lightning-button-icon icon-name="utility:chevronright" alternative-text="Next" size="medium"
+            title="Next" onclick={handleNextPage}></lightning-button-icon>
+    </div>
+</template>

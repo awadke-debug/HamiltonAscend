@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <RecordType xmlns="http://soap.sforce.com/2006/04/metadata">
-    <fullName>HAM_Meeting</fullName>
+    <fullName>HAM_Transportation</fullName>
     <active>true</active>
-    <description>Record type for Meeting related fields</description>
-    <label>Meeting</label>
+    <description>Record type for all travel related fields</description>
+    <label>Transportation</label>
     <picklistValues>
         <picklist>HAM_Campus_Stakeholders__c</picklist>
         <values>
@@ -20,6 +20,17 @@
         </values>
         <values>
             <fullName>VP Finance</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>HAM_Car_Ownership__c</picklist>
+        <values>
+            <fullName>Rented</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Self</fullName>
             <default>false</default>
         </values>
     </picklistValues>
@@ -51,6 +62,36 @@
         </values>
         <values>
             <fullName>Scheduled</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>HAM_Meeting_Type__c</picklist>
+        <values>
+            <fullName>In-Person</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Virtual</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>HAM_Mode__c</picklist>
+        <values>
+            <fullName>Bus</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Car</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Flight</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Train</fullName>
             <default>false</default>
         </values>
     </picklistValues>
@@ -231,47 +272,6 @@
         </values>
         <values>
             <fullName>Stewardship%2FRecognition Gift</fullName>
-            <default>false</default>
-        </values>
-    </picklistValues>
-    <picklistValues>
-        <picklist>HAM_Car_Ownership__c</picklist>
-        <values>
-            <fullName>Rented</fullName>
-            <default>false</default>
-        </values>
-        <values>
-            <fullName>Self</fullName>
-            <default>false</default>
-        </values>
-    </picklistValues>
-    <picklistValues>
-        <picklist>HAM_Meeting_Type__c</picklist>
-        <values>
-            <fullName>In-Person</fullName>
-            <default>false</default>
-        </values>
-        <values>
-            <fullName>Virtual</fullName>
-            <default>false</default>
-        </values>
-    </picklistValues>
-    <picklistValues>
-        <picklist>HAM_Mode__c</picklist>
-        <values>
-            <fullName>Bus</fullName>
-            <default>false</default>
-        </values>
-        <values>
-            <fullName>Car</fullName>
-            <default>false</default>
-        </values>
-        <values>
-            <fullName>Flight</fullName>
-            <default>false</default>
-        </values>
-        <values>
-            <fullName>Train</fullName>
             <default>false</default>
         </values>
     </picklistValues>

@@ -1,0 +1,33 @@
+<template>
+    <lightning-card icon-name="standard:record_create" variant="base">
+      <div slot="title">
+          Trip Quick Create
+      </div>
+      <div class="slds-var-p-around_large">
+        <lightning-record-edit-form
+            density="compact"
+            object-api-name="HAM_Trip_Details__c"
+            onsuccess={handleSuccess}
+            onload={handleOnLoad}
+        >
+            <lightning-input-field field-name={titleField}></lightning-input-field> 
+            <lightning-input-field field-name={startDateField}></lightning-input-field> 
+            <lightning-input-field field-name={endDateField}></lightning-input-field> 
+            <lightning-input-field field-name={statusField}></lightning-input-field> 
+
+            <lightning-button 
+                variant="brand"
+                label="Save" 
+                type="submit"
+            ></lightning-button>
+        </lightning-record-edit-form>
+        
+      </div>
+    </lightning-card>
+    
+    <lightning-spinner lwc:if={displaySpinner}
+      alternative-text="Loading" 
+      size="xx-small"
+      variant="base"
+    ></lightning-spinner>
+</template>

@@ -1,0 +1,47 @@
+<apex:page controller="HamItineraryController" renderAs="pdf" showHeader="false" standardStylesheets="false" applyHtmlTag="false" applyBodyTag="false">
+    <head>
+        <style>
+            .event_day {
+                padding-top: 1rem;
+            }
+            .event_detail {
+                padding-bottom: 1rem;
+            }
+        </style>
+    </head>
+    
+    <body>
+        <div class="trip_header">
+            {!tripName}
+        </div>
+
+        <apex:repeat value="{!outputMap}" var="outKey">
+            <div class="event_day">
+
+                <p><u>{!outKey}</u></p>
+    
+                <table>
+                    <apex:repeat value="{!outputMap[outKey]}" var="evt">
+                        <tr>
+                            <!-- <td>
+                                <div>{!evt.eventTime}</div>
+                            </td>
+                            <td>
+                                <div>&nbsp;&nbsp;&nbsp; -->
+                                    <apex:outputText value="{!evt.description}" escape="false"></apex:outputText>
+                                <!-- </div>
+                            </td> -->
+                        </tr>
+                    </apex:repeat>
+                </table>
+            </div>
+
+        </apex:repeat>
+
+        <p><u>Attempted Meetings</u></p>
+        <apex:repeat value="{!contactReports}" var="contactReport">
+            <div>{!contactReport.name}<apex:outputText value="{!contactReport.result}" escape="false"></apex:outputText></div>
+        </apex:repeat>
+
+    </body>
+</apex:page>

@@ -1,0 +1,81 @@
+<template>
+
+    <template lwc:if={isBasicInput}>
+    <lightning-input 
+        type={type}
+        label={label}
+        value={value}
+        onchange={handleChange}
+        variant="label-stacked"
+        disabled={isImproperlyConfigured}
+    ></lightning-input>
+    </template>
+    <template lwc:elseif={isMultiSelect}>
+        <lightning-select
+            label={label}
+            options={options}
+            multiple
+            onchange={handleChange}
+            value={multipickValue}
+            disabled={isImproperlyConfigured}
+            size="5"
+        ></lightning-select>
+    </template>
+    <template lwc:elseif={isCombobox}>
+        <lightning-combobox
+            label={label}
+            options={options}
+            placeholder="Select an item"
+            value={value}
+            onchange={handleChange}
+            disabled={isImproperlyConfigured}
+        ></lightning-combobox>
+    </template>
+    
+    <template lwc:elseif={isNumber}>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+            <div style="grid-column: 1/-1;">{label}</div>
+            <lightning-combobox
+              label="Operation"
+              placeholder="Select operation"
+              options={operationOptions}
+              onchange={handleOperationChange}
+              variant="label-hidden"
+              value={operator}
+              disabled={isImproperlyConfigured}
+            ></lightning-combobox>
+            <lightning-input
+                type={type}
+                label='Value'
+                placeholder="Enter value"
+                value={value}
+                onchange={handleChange}
+                variant="label-hidden"
+                disabled={isImproperlyConfigured}
+            ></lightning-input>
+        </div>
+    </template>
+    <template lwc:elseif={isRecordPicker}>
+        <lightning-record-picker 
+          label={label}
+          placeholder="type here..."
+          object-api-name={lookupObjectApiName}
+          onchange={handleChange}
+          value={value}
+          disabled={isImproperlyConfigured}
+        ></lightning-record-picker>
+
+    </template>
+    <template if:true={isImproperlyConfigured}>
+        <div class="slds-notify slds-notify_alert slds-theme_alert-texture slds-theme_warning" role="alert">
+            <span class="slds-assistive-text">error</span>
+            <span class="slds-icon_container slds-icon-utility-error" title={label}>
+                <svg class="slds-icon slds-icon_x-small" aria-hidden="true">
+                    <use xlink:href="/_slds/icons/utility-sprite/svg/symbols.svg#warning"></use>
+                </svg>
+                <span class="slds-assistive-text">{label}</span>
+            </span>
+            <p>{label} is improperly configured. Please check your custom metadata config.</p>
+        </div>
+    </template>
+</template>

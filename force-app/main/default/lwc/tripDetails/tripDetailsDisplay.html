@@ -1,0 +1,40 @@
+<template>
+    <div class="slds-p-horizontal_small">
+        <div class="slds-p-around_medium">
+            <div class="slds-grid slds-wrap slds-gutters">
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-1">
+                    <div class="slds-form-element">
+                        <h2 class="header">{tripDetailsName}</h2>
+                    </div>
+                </div>
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                    <div class="slds-form-element">
+                        <h2 class="header">Start Date:</h2>
+                        <lightning-formatted-date-time value={tripDetailsStartDate} year="2-digit" month="short" day="2-digit"
+                            hour="numeric" weekday="long" era="short"></lightning-formatted-date-time>
+                    </div>
+                </div>
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                    <div class="slds-form-element">
+                        <h2 class="header">End Date:</h2>
+                        <lightning-formatted-date-time value={tripDetailsEndDate} year="2-digit" month="short" day="2-digit"
+                            hour="numeric" weekday="long" era="short"></lightning-formatted-date-time>
+                    </div>
+                </div>
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                    <div class="slds-form-element">
+                        <h2 class="header">Total Meetings:</h2>
+                        <slot></slot>
+                        
+                    </div>
+                </div>
+                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                    <div class="slds-form-element">
+                        <h2 class="header">Other Stackeholders:</h2>
+                        <lightning-formatted-text value={stakeHolderNames}></lightning-formatted-text>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>

@@ -1,0 +1,155 @@
+<template>
+    <template if:true={showTable}>
+
+        <div style="display: flex;" class="slds-var-m-right_small slds-var-m-top_large slds-var-p-top_xx-large slds-border_top">
+            <p class="slds-text-heading_large slds-text-color_weak slds-var-m-left_medium">Results</p>
+    
+            <div style="margin-left: auto;">
+                <template if:true={displayExportResultBtn}>
+                    <lightning-button 
+                        variant="brand"
+                        label="Export"
+                        icon-name="utility:download"
+                        icon-position="left"
+                        class="slds-var-p-around_small"
+                        onclick={handleClickExport}
+                        disabled={disableExport}
+                        ></lightning-button>
+                </template>
+
+                <template if:true={displayAddToCampaignBtn}>
+                    <lightning-button 
+                      variant="brand-outline"
+                      label="Add to Campaign" 
+                      disabled={disableAddToCampaign}
+                      class="slds-var-p-around_small"
+                      onclick={handleAddToCampaign}
+                    ></lightning-button>
+        
+                    <template if:false={isMarketingUser}>
+                        <lightning-helptext 
+                          content="Only marketing user can add campaign members."
+                        ></lightning-helptext>
+                    </template>
+                </template>
+            </div>
+        </div>
+    
+        <div style={tableStyle}>
+            <div class="data-table_header">
+                <template lwc:if={displayTable}>
+                    <lightning-input 
+                      type="checkbox"
+                      label="Select All"
+                      name="all"
+                      variant="label-hidden"
+                      onchange={handleIncludeAll}
+                      checked={isAllSelected}
+                    ></lightning-input>
+                </template>
+            </div>
+    
+            <template for:each={tableColumns} for:item="col">
+                <div key={col.fieldName} class="slds-text-heading_medium data-table_header slds-text-title_caps" style="display: flex;">
+                    <p class="slds-var-p-right_xx-small">{col.label}</p>
+    
+                    <template if:true={displayTable}>
+                        <template if:false={disableSort}>
+                            <template lwc:if={col.isSortByThisField}>
+                                <template lwc:if={isAscending}>
+                                    <lightning-icon icon-name="utility:arrowup" onclick={handleSort} alternative-text="ASC" size="xx-small" data-fieldname={col.fullFieldName} style="cursor: pointer;"></lightning-icon>
+                                </template>
+                                <template lwc:else>
+                                    <lightning-icon icon-name="utility:arrowdown" onclick={handleSort} alternative-text="DESC" size="xx-small" data-fieldname={col.fullFieldName} style="cursor: pointer;"></lightning-icon>
+                                </template>
+                            </template>
+                            <template lwc:else>
+                                <div class="slds-transition-hide sort-btn">
+                                    <lightning-icon icon-name="utility:sort" onclick={handleSort} alternative-text="Sort" size="xx-small" data-fieldname={col.fullFieldName} style="cursor: pointer;"></lightning-icon>
+                                </div>
+                            </template>
+                        </template>
+                    </template>
+                </div>
+            </template>
+            
+
+            <div lwc:if={isSchedulable} class="data-table_header"></div>
+    
+            <template lwc:if={displayTable}>
+                <template for:each={contacts} for:item="contact" for:index="idx">
+                    <div style={contact.style} key={contact.Id}>
+                        <lightning-input
+                          type="checkbox"
+                          label="Include row"
+                          name="includeRow"
+                          variant="label-hidden"
+                          data-idx={idx}
+                          onchange={handleIncludeRow}
+                          checked={contact.checked}
+                        ></lightning-input>
+                    </div>
+                    <template for:each={tableColumns} for:item="col">
+                        <div style={contact.style} key={col.fieldName} onclick={handleRowSelect} data-idx={idx}>
+                            <c-map-finder-table-item idx={idx} contact={contact}
+                                field-api-name={col.fieldName}></c-map-finder-table-item>
+                        </div>
+                    </template>
+    
+                    <div lwc:if={isSchedulable} style={contact.style} key={contact.Id}>
+                        <lightning-button-icon icon-name="utility:event" alternative-text="Schedule meeting" size="large"
+                            variant="border-filled" data-idx={idx} onclick={handleScheduleMeeting}></lightning-button-icon>
+                    </div>
+                </template>
+            </template>
+            <template lwc:else>
+                <div style={noResultsDivStyle} class="slds-var-p-vertical_medium slds-text-color_weak"><i>No results found.</i></div>
+            </template>
+    
+        </div>
+    
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr);" class="slds-var-p-right_medium" if:true={displayTable}>
+            <div style="margin-right: auto;" class="slds-var-m-vertical_small slds-var-m-left_small">
+                <div class="slds-text-color_weak">
+                    {constituentSelected}
+                </div>
+            </div>
+            <div style="display: flex; justify-content: center; align-items: center;">
+                Show me
+                <lightning-button 
+                  variant="base"
+                  label="fewer" 
+                  icon-name="utility:chevronup"
+                  icon-position="right"
+                  onclick={handlePageSizeChange}
+                ></lightning-button>
+                /
+                <lightning-button 
+                  variant="base"
+                  label="more" 
+                  icon-name="utility:chevrondown"
+                  icon-position="left"
+                  onclick={handlePageSizeChange}
+                ></lightning-button>
+                records per list page
+            </div>
+            <div lwc:if={hidePageNav}></div>
+            <div lwc:else style="display: flex; align-items: center; gap: 0.25rem; margin-left: auto;">
+                <div>{resultCoverageInfo}</div>
+                <lightning-button-icon icon-name="utility:chevronleft" alternative-text="Previous" size="medium"
+                    title="Previous" onclick={handlePreviousPage}></lightning-button-icon>
+    
+                <div>{resultPageInfo}</div>
+    
+                <lightning-button-icon icon-name="utility:chevronright" alternative-text="Next" size="medium"
+                    title="Next" onclick={handleNextPage}></lightning-button-icon>
+            </div>
+        </div>
+    </template>
+        
+
+    <template if:true={displaySpinner}>
+        <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+    </template>
+
+</template>

@@ -1,0 +1,156 @@
+<template> 
+    <div class="main-container slds-is-relative">
+        <lightning-tabset variant="vertical" active-tab-value={activeTab}>
+            <lightning-tab label="Trip Details" value="TD" onactive={handleActiveTab}>
+                Trip Details Like Name, Start and End Date
+                <lightning-accordion allow-multiple-sections-open="true" active-section-name="Trip Details">
+                    <lightning-accordion-section name="Trip Details" label="Trip Details">
+                        <c-trip-details display-only="false" lwc:ref="tripDetailsForm" trip-detail-id={tripDetailId} ontripdetailchange={handleTripChange}></c-trip-details>
+                    </lightning-accordion-section>
+                    <lightning-accordion-section name="Stay Details" label="Stay Details">
+                        <div class="slds-p-around_medium lgc-bg">
+                            <template for:each={stayDetailFormElems} for:item="stay" for:index="idx">
+                                <c-stay-details key={stay.idx} stay-details={stay} data-display-only="false" display-only="false" data-stay-detail-idx={idx}>
+                                    <lightning-button label="Remove" onclick={handleRemoveStayDetails} data-stay-detail-idx={idx} data-stay-detail-id={stay.id}></lightning-button>
+                                </c-stay-details>
+                            </template>
+                            <lightning-button variant="brand" label="Add More" title="Add More" onclick={handleAddStayDetails} class="slds-m-left_x-small"></lightning-button>
+                        </div>
+
+                    </lightning-accordion-section>
+                    <lightning-accordion-section name="Transport Details" label="Mode of Transport">
+                        <div class="slds-p-around_medium lgc-bg">
+                            <template for:each={transpoDetailFormElems} for:item="transport" for:index="idx">
+                                <c-transport-details key={transport.idx} transport-details={transport} data-display-only="false" display-only="false">
+                                    <lightning-button label="Remove" onclick={handleRemoveTranspo} data-transpo-detail-idx={idx} data-transpo-detail-id={transport.id}></lightning-button>
+                                </c-transport-details>
+                            </template>
+                            <lightning-button variant="brand" label="Add More" title="Add More" onclick={handleAddTranspo} class="slds-m-left_x-small"></lightning-button>
+                        </div>
+                    </lightning-accordion-section>
+                </lightning-accordion>
+                
+                <lightning-button variant="brand" label="Save and Next" title="Save and Next" onclick={handleSaveAndNext} class="slds-m-left_x-small"></lightning-button>
+
+            </lightning-tab>
+            <lightning-tab label="Search Constitiuents" value="SC" onactive={handleActiveTab}>
+                <div>
+                    <lightning-accordion allow-multiple-sections-open="true" active-section-name="Search Constitiuents" >
+                        <lightning-accordion-section name="Search Constitiuents" label="Search Constitiuents">
+                            <c-itinerary-map-finder 
+                                map-instance="Itinerary_Planner" 
+                                map-title-property="ucinn_ascendv2__Expanded_Name_Formula__c"
+                                map-title-property-lookup-object="ucinn_ascendv2__Contact__r"
+                                contact-id-field="ucinn_ascendv2__Contact__c"
+                                oncheckrow={handleCheckRow}
+                                hide-page-nav="true"
+                                onsearch={handleMapSearch}
+                                onselectall={handleSelectAll}
+                            ></c-itinerary-map-finder>
+                        </lightning-accordion-section>
+                    </lightning-accordion>
+                    <lightning-button variant="neutral" label="Next" title="Next" onclick={handleSaveAndNext} class="slds-m-left_x-small"></lightning-button>
+
+                </div>
+            </lightning-tab>
+            <lightning-tab label="Schedule Meetings" value="SM" onactive={handleActiveTab}>
+                Tiles with constitiuent names and meeting details
+                <lightning-accordion allow-multiple-sections-open="true" active-section-name="Meetings" >
+                    <lightning-accordion-section name="Meetings" label="Meetings">
+                        <template if:false={hasMeetingItems}>
+                            <i>Please select constituents in the previous step.</i>
+                        </template>
+                        <template for:each={meetings} for:item="meeting" for:index="idx">
+                            <c-meeting-item key={meeting.name} meeting={meeting} data-display-only="false" display-only="false">
+                                <lightning-button variant="Neutral" label="Remove" title="Remove" data-meeting-detail-id={meeting.id} data-map-row-id={meeting.mapRowId} data-meeting-detail-idx={idx} onclick={handleRemoveMeeting}></lightning-button>                        
+                            </c-meeting-item>
+                        </template>
+                    
+                    </lightning-accordion-section>
+                </lightning-accordion>
+                <lightning-button variant="brand" label="Save and Next" title="Save and Next" onclick={handleSaveAndNext} class="slds-m-left_x-small"></lightning-button>
+
+            </lightning-tab>
+            <lightning-tab label="Preview &amp; Submit" value="PR" onactive={handleActiveTab}>
+                PDF view and Email views
+                Submit button with a sub form showing each details
+                <lightning-accordion allow-multiple-sections-open="true" active-section-name="Preview" >
+                    <lightning-accordion-section name="Preview" label="Preview">
+                        <div class="slds-p-around_x-small slds-text-align_center">
+                            <img src={previewlogo} alt="Hamilton Logo" title="Hamilton Logo" class="icon-image-small" />   
+                        </div>
+                        <div>
+                            <lightning-card  variant="Narrow"  title="Trip Details" icon-name="custom:custom31">
+                                <c-trip-details display-only="true" trip-details={tripDetails} trip-detail-id={tripDetailId}>
+                                    <lightning-formatted-number value={meetingCount} maximum-fraction-digits="0"></lightning-formatted-number>
+                                </c-trip-details>
+                            </lightning-card>
+
+                            <!-- <template lwc:if={hasStayDetails}> -->
+                                <template for:each={stayDetails} for:item="stay">
+                                    <c-stay-details key={stay.name} data-display-only="true" display-only="true" stay-details={stay}></c-stay-details>
+                                </template>
+                            <!-- </template> -->
+                            <!-- <template lwc:else>
+                                <lightning-card  variant="Narrow"  title="Stay Details" >
+                                    <i>Stay details not provided.</i>
+                                </lightning-card>
+                            </template> -->
+                            
+                            <template lwc:if={hasTransportDetails}>
+                                <template for:each={transportDetails} for:item="transport">
+                                    <c-transport-details key={transport.flight} display-only="true" transport-details={transport}></c-transport-details>
+                                </template>
+                            </template>
+                            <template lwc:else>
+                                <lightning-card variant="Narrow" title="Transport Details" >
+                                    <i>Transport details not provided.</i>
+                                </lightning-card>
+                            </template>
+                            
+                            <div class="slds-p-around_medium">
+                                <h2 class="slds-text-heading_medium slds-m-bottom_small">Meetings:</h2>
+                                <ul class="slds-list_dotted slds-m-left_medium">
+                                    <template for:each={meetings} for:item="meeting">
+                                        <c-meeting-item key={meeting.contactId} display-only="true" meeting={meeting}></c-meeting-item>
+                                    </template>
+                                </ul>
+                            </div>
+                        </div>
+                    </lightning-accordion-section>
+                    <lightning-accordion-section name="Email Content" label="Email Content">
+                        <div class="slds-p-horizontal_small">
+                            <div class="slds-p-around_medium">
+                                <div class="slds-grid slds-wrap slds-gutters">
+                                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                                        <div class="slds-form-element">
+                                            <lightning-input type="text" label="Email Subject" placeholder="Enter the Email Subject" onchange={handleEmailSubjectChange}></lightning-input>
+                                        </div>
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                                        <div class="slds-form-element">
+                                            <lightning-input type="text" label="Email Content" placeholder="Enter the Email Body" onchange={handleEmailBodyChange}></lightning-input>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <lightning-accordion-section name="PDF View" label="PDF view">
+                            <template if:true={url}>
+                                <iframe src={url} style={pdfHeight} frameborder="0" scrolling="no"></iframe>
+                            </template>
+                        </lightning-accordion-section>
+                    </lightning-accordion-section>
+                </lightning-accordion>
+
+                <lightning-button variant="brand" label="Save & Send Email" title="Save & Send Email" onclick={handleSendEmail} class="slds-m-left_x-small"></lightning-button>
+                <lightning-button variant="Neutral" label="Save for Later" title="Save for Later" onclick={handleSaveAndNext} class="slds-m-left_x-small"></lightning-button>
+
+            </lightning-tab>
+        </lightning-tabset>
+
+        <div if:true={displaySpinner}>
+            <lightning-spinner alternative-text="Loading" size="large"></lightning-spinner>
+        </div>
+    </div>
+</template>
